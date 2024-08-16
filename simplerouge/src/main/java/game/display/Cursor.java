@@ -57,10 +57,10 @@ public class Cursor extends DisplayableTile{
     }
 
     public void collectExaminables(){
-        if (selectedSpace.getLight() == 0){
-            examined = null;
-            return;
-        }
+        // if (selectedSpace.getLight() == 0){
+        //     examined = null;
+        //     return;
+        // }
         examinables = new ArrayList<Examinable>();
         if (selectedSpace.isOccupied()){
             examinables.add((Examinable)selectedSpace.getOccupant());
