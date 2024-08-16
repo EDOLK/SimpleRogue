@@ -40,7 +40,7 @@ public abstract class Animal extends Entity implements HasBehavior{
     }
 
     /**
-     * Wandering
+     * AnimalBehavior
      */
     protected class AnimalBehavior extends Behavior{
 
