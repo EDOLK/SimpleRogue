@@ -78,6 +78,7 @@ nb-configuration.xml
 ##############################
 .vscode/
 .code-workspace
+.VSCodeCounter
 
 ##############################
 ## OS X
