@@ -10,6 +10,7 @@ public class Chainmail extends Armor {
     public Chainmail(){
         super(TileColor.transparent(), TileColor.create(153, 153, 153, 255), 'c');
         setName("Chainmail");
+        setTileName("Chainmail");
         setDescription("Armor made of interlocking metal chains. Effectively catches bladed weapons, though a bit heavy.");
         getResistances().add(new RangeResistance(DamageType.PIERCING, this, 2, 6));
         getResistances().add(new RangeResistance(DamageType.SLASHING, this, 2, 6));

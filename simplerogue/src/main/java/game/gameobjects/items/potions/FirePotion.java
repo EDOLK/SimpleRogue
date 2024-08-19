@@ -20,7 +20,7 @@ public class FirePotion extends Item implements Aimable, Consumable{
         setfGColor(TileColor.create(250, 134, 7, 255));
         setbGColor(TileColor.transparent());
         setDescription("An orange potion, it seems volitile.");
-        setName("Fire Potion");
+        setName("Orange Potion");
         setWeight(1);
     }
 

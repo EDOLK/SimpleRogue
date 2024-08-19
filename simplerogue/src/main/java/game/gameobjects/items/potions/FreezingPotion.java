@@ -12,6 +12,7 @@ import game.gameobjects.terrains.gasses.FreezingAir;
 public class FreezingPotion extends Item implements Aimable, Consumable {
     
     public FreezingPotion(){
+        setTileName("Cyan Potion");
         this.setCharacter('p');
         this.setfGColor(TileColor.create(100, 100, 255, 255));
         this.setName("Freezing potion");

@@ -17,6 +17,7 @@ public class HealingPotion extends Item implements Consumable{
         setbGColor(TileColor.transparent());
         setDescription("A red potion, it looks... healthy?");
         setName("Healing Potion");
+        setTileName("Red Potion");
         setWeight(1);
     }
 

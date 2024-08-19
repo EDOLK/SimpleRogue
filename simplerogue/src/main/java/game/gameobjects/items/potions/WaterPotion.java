@@ -12,6 +12,7 @@ public class WaterPotion extends Item implements Aimable{
     
     public WaterPotion(){
         setName("Water Potion");
+        setTileName("Blue Potion");
         setDescription("A bottle of water");
         setCharacter('p');
         setfGColor(TileColor.create(100, 100, 255, 255));

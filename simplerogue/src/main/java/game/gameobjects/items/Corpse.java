@@ -35,6 +35,7 @@ public class Corpse extends Item implements Behavable, Consumable, SelfAware, Fl
         setbGColor(entity.getbGColor());
         setName("Corpse of " + entity.getName());
         setDescription("The corpse of a " + entity.getName() + ", it's rotting.");
+        setTileName("Generic Corpse");
         setWeight(entity.getBaseWeight());
         decayLimit = getWeight() * 20;
     }
