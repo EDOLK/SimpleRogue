@@ -9,6 +9,7 @@ public class App
         Pools.inintialize();
         Dungeon.initialize(50, 50);
         Display.initialize(70, 61);
+        System.out.println("test");
     }
 
     public static int randomNumber(int min, int max){
