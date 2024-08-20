@@ -245,7 +245,6 @@ public class Spider extends Animal implements HasDodge, HasInventory{
         @Override
         public void behave() {
             int dist = (Math.abs(spider.getX() - spider.nestSpace.getX()) + Math.abs(spider.getY() - spider.nestSpace.getY()))/2;
-            System.out.println(dist + " / " + spider.maxDistance);
             if (dist >= spider.maxDistance){
                 spider.setBehavior(new Waiting(spider));
                 return;
@@ -307,8 +306,7 @@ public class Spider extends Animal implements HasDodge, HasInventory{
                 entity.addStatus(new Webbed(5));
                 getSpace().getTerrains().remove(this);
                 if (!(spider.getBehavior() instanceof Hunting)){
-                    int dist = (Math.abs(getSpace().getX() - spider.nestSpace.getX()) + Math.abs(getSpace().getY() - spider.nestSpace.getY()))/2;
-                    if (dist < spider.maxDistance){
+                    if (getDistance() < spider.maxDistance){
                         spider.setBehavior(new Hunting(spider, entity));
                     }
                 }
@@ -345,6 +343,10 @@ public class Spider extends Animal implements HasDodge, HasInventory{
         @Override
         public void onBurn(Fire fire) {
             getSpace().remove(this);
+        }
+        
+        public int getDistance(){
+            return (Math.abs(getSpace().getX() - spider.nestSpace.getX()) + Math.abs(getSpace().getY() - spider.nestSpace.getY()))/2;
         }
         
     }
