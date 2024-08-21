@@ -60,7 +60,7 @@ public class Slime extends Animal implements DropsXP, HasDodge, HasResistances, 
         if (!getSpace().getItems().isEmpty()){
             Item item = getSpace().getItems().get(randomNumber(0, getSpace().getItems().size()-1));
             addItemToInventory(item);
-            getSpace().getItems().remove(item);
+            getSpace().remove(item);
             Display.log("The " + item.getName() + " becomes suspended in the " + getName(), getSpace());
             setMaxHP(getMaxHP() + 1);
             setHP(getHP()+1);

@@ -74,7 +74,7 @@ public class ItemSelectMenu extends Menu{
 
         Function<Item, UIEventResponse> function = (item) ->{
             if (pickUpper.addItemToInventory(item)){
-                space.getItems().remove(item);
+                space.remove(item);
                 Display.log("Picked up the " + item.getName() + ".");
             } else {
                 Display.log("The " + item.getName() + " is too heavy.");

@@ -156,8 +156,8 @@ public class Space extends DisplayableTile{
         return addTerrain(fire);
     }
     
-    public ArrayList<Item> getItems() {
-        return items;
+    public List<Item> getItems() {
+        return List.copyOf(items);
     }
 
     public boolean addItem(Item item){
@@ -171,6 +171,10 @@ public class Space extends DisplayableTile{
             return items.add(item);
         }
         return false;
+    }
+    
+    public boolean removeItem(Item item){
+        return items.remove(item);
     }
 
     public int getX(){
@@ -231,7 +235,7 @@ public class Space extends DisplayableTile{
                 return this.getTerrains().remove(terrain);
             }
             case Item item -> {
-                return this.getItems().remove(item);
+                return removeItem(item);
             }
             case Entity entity ->{
                 this.setOccupant(null);

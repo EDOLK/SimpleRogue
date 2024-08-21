@@ -36,7 +36,7 @@ public class ScrollOfUpgrade extends Item implements SelfAware, Scrollable, Flam
     @Override
     public void onBurn(Fire fire) {
         Display.log("The " + getName() + " burns up.", currentSpace);
-        getSpace().getItems().remove(this);
+        getSpace().remove(this);
     }
 
     @Override
