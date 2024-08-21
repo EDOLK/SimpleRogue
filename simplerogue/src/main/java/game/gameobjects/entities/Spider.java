@@ -1,5 +1,8 @@
 package game.gameobjects.entities;
 
+import static game.Dungeon.getCurrentFloor;
+import static game.App.randomNumber;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +33,7 @@ public class Spider extends Animal implements HasDodge, HasInventory{
     
     private ArrayList<Item> inventory = new ArrayList<Item>();
     protected Space nestSpace;
+    protected int maxDistance = 12;
     protected List<Space> trappedSpaces = new ArrayList<Space>();
     protected int maxTraps = 4;
 
@@ -42,7 +46,7 @@ public class Spider extends Animal implements HasDodge, HasInventory{
         setTileName("Spider");
         setDescription("A giant spider");
         setCorpse(new Corpse(this));
-        setBehavior(new Wandering(this));
+        setBehavior(new Nesting(this));
 
         Weapon fangs = new Weapon();
         fangs.setName("fangs");
@@ -74,63 +78,114 @@ public class Spider extends Animal implements HasDodge, HasInventory{
     /**
      * Nesting
      */
-    private static class Nesting extends Behavior{
+    protected class Nesting extends Behavior{
 
         private Spider spider;
-        private PathFinder pathFinder;
-
         public Nesting(Spider spider){
             this.spider = spider;
         }
 
         @Override
         public void behave() {
+            spider.nestSpace = spider.getSpace();
+            for (int i = -1; i <= 1; i++) {
+                for (int j = -1; j <= 1; j++) {
+                    try {
+                        Space pSpace = getCurrentFloor().getSpace(spider.getX()+i, spider.getY()+j);
+                        if (!pSpace.isOccupied() || pSpace.getOccupant() == spider){
+                            pSpace.addTerrain(spider.new Web(spider));
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        continue;
+                    }
+                }
+            }
+            spider.setBehavior(new Trapping(spider));
         }
         
     }
 
-    private static class Wandering extends Behavior{
-        
-        private Spider spider;
-        private Space wanderSpace;
-        private PathFinder pathFinder;
-        private int wanderRange = 10;
-
-        public Wandering(Spider spider){
-            this.spider = spider;
-        }
-
-
-        @Override
-        public void behave() {
-
-        }
-
-    }
-    
     /**
      * Trapping
      */
-    private static class Trapping extends Behavior{
+    protected class Trapping extends Behavior{
         
         protected Spider spider;
         protected PathFinder pathFinder;
         
-        public Trapping(Spider spider){
+        protected Trapping(Spider spider){
             this.spider = spider;
+        }
+
+        protected Space getEmptyViableSpace(){
+            int yMin = spider.nestSpace.getY() - spider.maxDistance;
+            int yMax = spider.nestSpace.getY() + spider.maxDistance;
+            int xMin = spider.nestSpace.getX() - spider.maxDistance;
+            int xMax = spider.nestSpace.getX() + spider.maxDistance;
+            if (yMin < 0){
+                yMin = 0;
+            }
+            if (yMax >= getCurrentFloor().SIZE_Y){
+                yMax = getCurrentFloor().SIZE_Y-1;
+            }
+            if (xMin < 0){
+                xMin = 0;
+            }
+            if (xMax >= getCurrentFloor().SIZE_X){
+                xMax = getCurrentFloor().SIZE_X-1;
+            }
+            Space possibleSpace = getCurrentFloor().getSpace(randomNumber(xMin, xMax), randomNumber(yMin, yMax));
+            while (possibleSpace.isOccupied()) {
+                possibleSpace = getCurrentFloor().getSpace(randomNumber(xMin, xMax), randomNumber(yMin, yMax));
+            }
+            return possibleSpace;
         }
 
         @Override
         public void behave() {
+            if (spider.trappedSpaces.size() >= spider.maxTraps){
+                Waiting w = new Waiting(spider);
+                spider.setBehavior(w);
+                w.behave();
+                return;
+            }
+            if (pathFinder != null){
+                Space nextSpace = pathFinder.getSpace();
+                if (Space.moveEntity(spider, nextSpace)){
+                    if (!pathFinder.pathHasEnded()){
+                        pathFinder.iterate();
+                    } else {
+                        nextSpace.addTerrain(new Web(spider));
+                        spider.trappedSpaces.add(nextSpace);
+                        pathFinder = null;
+                    }
+                } else {
+                    pathFinder = null;
+                }
+            } else {
+                Space querySpace = getEmptyViableSpace();
+                if (!spider.trappedSpaces.contains(querySpace)){
+                    if (pathFinder == null){
+                        try {
+                            pathFinder = new PathFinder(spider.getSpace(), querySpace);
+                            pathFinder.iterate();
+                        } catch (Exception e) {
+
+                        }
+                    }
+                }
+            }
         }
     }
 
     /**
      * Waiting
      */
-    private static class Waiting extends Behavior{
+    protected class Waiting extends Behavior{
 
         private Spider spider;
+        private PathFinder pathFinder;
         
         public Waiting(Spider spider){
             this.spider = spider;
@@ -138,9 +193,75 @@ public class Spider extends Animal implements HasDodge, HasInventory{
 
         @Override
         public void behave() {
+            if (pathFinder != null && spider.getSpace() != spider.nestSpace){
+                if(Space.moveEntity(spider, pathFinder.getSpace()) && !pathFinder.pathHasEnded()){
+                    pathFinder.iterate();
+                } else {
+                    try {
+                        pathFinder = new PathFinder(spider.getSpace(), spider.nestSpace);
+                        pathFinder.iterate();
+                    } catch (Exception e) {
 
+                    }
+                }
+            } else if (spider.getSpace() != spider.nestSpace){
+                try {
+                    pathFinder = new PathFinder(spider.getSpace(), spider.nestSpace);
+                    pathFinder.iterate();
+                } catch (Exception e) {
+
+                }
+            } else {
+                for (int i = -2; i <= 2; i++) {
+                    for (int j = -2; j <= 2; j++) {
+                        try {
+                            Space querySpace = getCurrentFloor().getSpace(spider.getX() + i, spider.getY() + j);
+                            if (querySpace.isOccupied() && querySpace.getOccupant() instanceof PlayerEntity playerEntity){
+                                spider.setBehavior(new Hunting(spider, playerEntity));
+                            }
+                        } catch (Exception e) {
+                            continue;
+                        }
+                    }
+                }
+            }
         }
     
+    }
+    
+    /**
+     * Hunting
+     */
+    protected class Hunting extends Behavior {
+        
+        private Entity target;
+        private Spider spider;
+
+        protected Hunting(Spider spider, Entity target){
+            this.spider = spider;
+            this.target = target;
+        }
+
+        @Override
+        public void behave() {
+            int dist = (Math.abs(spider.getX() - spider.nestSpace.getX()) + Math.abs(spider.getY() - spider.nestSpace.getY()))/2;
+            if (dist >= spider.maxDistance){
+                spider.setBehavior(new Waiting(spider));
+                return;
+            }
+            try {
+                PathFinder p = new PathFinder(spider.getSpace(), target.getSpace());
+                if (!Space.moveEntity(spider, p.getNext())){
+                    if (p.getSpace().getOccupant() == target){
+                        Floor.doAttack(spider, target);
+                    }
+                }
+            } catch (Exception e) {
+
+            }
+        }
+    
+        
     }
     
     /**
@@ -184,6 +305,11 @@ public class Spider extends Animal implements HasDodge, HasInventory{
                 t = true;
                 entity.addStatus(new Webbed(5));
                 getSpace().getTerrains().remove(this);
+                if (!(spider.getBehavior() instanceof Hunting)){
+                    if (getDistance() < spider.maxDistance){
+                        spider.setBehavior(new Hunting(spider, entity));
+                    }
+                }
             } else {
                 t = false;
             }
@@ -217,6 +343,10 @@ public class Spider extends Animal implements HasDodge, HasInventory{
         @Override
         public void onBurn(Fire fire) {
             getSpace().remove(this);
+        }
+        
+        public int getDistance(){
+            return (Math.abs(getSpace().getX() - spider.nestSpace.getX()) + Math.abs(getSpace().getY() - spider.nestSpace.getY()))/2;
         }
         
     }

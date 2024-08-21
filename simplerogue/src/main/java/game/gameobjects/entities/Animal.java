@@ -50,11 +50,15 @@ public abstract class Animal extends Entity implements HasBehavior{
         private Animal animal;
         private Entity currentTarget;
         
-        public AnimalBehavior(Animal animal){
+        protected AnimalBehavior(Animal animal){
             this.animal = animal;
         }
 
-        private Space getEmptyViableSpace(){
+        protected void setWanderRange(int wanderRange) {
+            this.wanderRange = wanderRange;
+        }
+
+        protected Space getEmptyViableSpace(){
             int yMin = animal.getY() - wanderRange;
             int yMax = animal.getY() + wanderRange;
             int xMin = animal.getX() - wanderRange;
@@ -78,7 +82,7 @@ public abstract class Animal extends Entity implements HasBehavior{
             return possibleSpace;
         }
 
-        private Entity checkForTarget(){
+        protected Entity checkForTarget(){
             for (Space space : animal.getSpacesInVision()) {
                 if (space.isOccupied() && space.getOccupant() instanceof PlayerEntity){
                     return space.getOccupant();
@@ -119,7 +123,7 @@ public abstract class Animal extends Entity implements HasBehavior{
             }
         }
         
-        private void wander(){
+        protected void wander(){
             wanderSpace = getEmptyViableSpace();
             try {
                 pathFinder = new PathFinder(getSpace(), wanderSpace);
