@@ -304,7 +304,7 @@ public class Spider extends Animal implements HasDodge, HasInventory{
                 }
                 t = true;
                 entity.addStatus(new Webbed(5));
-                getSpace().getTerrains().remove(this);
+                getSpace().removeTerrain(this);
                 if (!(spider.getBehavior() instanceof Hunting)){
                     if (getDistance() < spider.maxDistance){
                         spider.setBehavior(new Hunting(spider, entity));

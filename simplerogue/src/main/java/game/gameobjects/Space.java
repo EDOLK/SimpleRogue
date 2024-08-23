@@ -123,8 +123,12 @@ public class Space extends DisplayableTile{
         this.light = light;
     }
     
-    public ArrayList<Terrain> getTerrains(){
-        return terrains;
+    public List<Terrain> getTerrains(){
+        return List.copyOf(terrains);
+    }
+    
+    public boolean removeTerrain(Terrain terrain){
+        return terrains.remove(terrain);
     }
 
     public boolean addGas(Gas gas){
@@ -232,7 +236,7 @@ public class Space extends DisplayableTile{
     private boolean removeHelper(Object object){
         switch (object) {
             case Terrain terrain -> {
-                return this.getTerrains().remove(terrain);
+                return removeTerrain(terrain);
             }
             case Item item -> {
                 return removeItem(item);

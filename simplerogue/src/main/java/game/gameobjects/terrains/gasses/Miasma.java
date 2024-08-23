@@ -56,7 +56,7 @@ public class Miasma extends Gas implements Flammable{
 
     @Override
     public void onBurn(Fire fire) {
-        getSpace().getTerrains().remove(this);
+        getSpace().removeTerrain(this);
     }
 
     @Override

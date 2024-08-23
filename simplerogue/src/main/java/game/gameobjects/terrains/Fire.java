@@ -93,7 +93,7 @@ public class Fire extends Terrain implements Behavable, SelfAware, Examinable, L
     public void behave() {
 
         if (fuel <= 0){
-            getSpace().getTerrains().remove(this);
+            getSpace().removeTerrain(this);
             setSpace(null);
             return;
         }
