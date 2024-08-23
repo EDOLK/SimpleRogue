@@ -142,7 +142,7 @@ public abstract class Gas extends Terrain implements Examinable, SelfAware, Beha
         }
 
         if (density <= 0){
-            getSpace().getTerrains().remove(this);
+            getSpace().removeTerrain(this);
             setSpace(null);
             return;
         }
@@ -163,7 +163,7 @@ public abstract class Gas extends Terrain implements Examinable, SelfAware, Beha
                     space.addGas(gas);
                     density--;
                     if (density <= 0){
-                        getSpace().getTerrains().remove(this);
+                        getSpace().removeTerrain(this);
                         setSpace(null);
                         return;
                     }

@@ -31,7 +31,7 @@ public class OpenDoor extends Terrain implements Interactable, Examinable, Flamm
         if (door.getSpace().isOccupied()){
             Display.log("Something is in the way.");
         } else {
-            door.getSpace().getTerrains().remove(this);
+            door.getSpace().removeTerrain(this);
             door.getSpace().setOccupant(door);
             Display.update();
         }
@@ -57,7 +57,7 @@ public class OpenDoor extends Terrain implements Interactable, Examinable, Flamm
         door.addStatus(new Burning());
         int damage = randomNumber(1, 3);
         if (door.getHP() - damage <= 0){
-            door.getSpace().getTerrains().remove(this);
+            door.getSpace().removeTerrain(this);
         }
         door.dealDamage(damage, DamageType.FIRE);
     }

@@ -26,7 +26,7 @@ public class HiddenTrap extends Trap implements SelfAware{
     public void triggerOnEntity(Entity entity) {
         exposedTrap.triggerOnEntity(entity);
         if (exposedTrap.isDestroyedOnTrigger()){
-            getSpace().getTerrains().remove(this);
+            getSpace().removeTerrain(this);
         }
     }
 
