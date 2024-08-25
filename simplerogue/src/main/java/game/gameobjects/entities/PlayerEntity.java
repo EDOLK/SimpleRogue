@@ -65,11 +65,6 @@ public class PlayerEntity extends Entity implements Armored, Armed, Levelable, E
         club.setTileName("Club");
         addItemToInventory(club);
         
-        addItemToInventory(new ScrollOfUpgrade());
-        addItemToInventory(new WaterPotion());
-        addItemToInventory(new FirePotion());
-        addItemToInventory(new FreezingPotion());
-
         armorSlots.add(new ArmorSlot(ArmorType.HEAD));
         armorSlots.add(new ArmorSlot(ArmorType.CHEST_OUTER));
         armorSlots.add(new ArmorSlot(ArmorType.CHEST_INNER));
