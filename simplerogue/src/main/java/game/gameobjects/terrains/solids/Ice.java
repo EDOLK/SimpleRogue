@@ -25,7 +25,6 @@ public class Ice extends Solid implements Triggerable, SelfAware, Examinable{
         super(amount);
         name = "Ice";
         description = "Ice. Slippery.";
-        setTileName("Ice");
         setbGColor(TileColor.create(150, 245, 255, 100));
         setfGColor(TileColor.transparent());
         setCharacter(' ');

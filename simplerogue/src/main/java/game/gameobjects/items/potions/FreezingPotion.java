@@ -13,11 +13,12 @@ public class FreezingPotion extends Item implements Aimable, Consumable {
     
     public FreezingPotion(){
         setTileName("Cyan Potion");
-        this.setCharacter('p');
-        this.setfGColor(TileColor.create(100, 100, 255, 255));
-        this.setName("Freezing potion");
-        this.setWeight(1);
-        this.setDescription("A potion filled with a cloudy, bluish liquid. It's quite cold to the touch");
+        setCharacter('p');
+        setfGColor(TileColor.create(100, 100, 255, 255));
+        setName("Freezing potion");
+        setTileName("Cyan Potion");
+        setWeight(1);
+        setDescription("A potion filled with a cloudy, bluish liquid. It's quite cold to the touch");
     }
 
     @Override

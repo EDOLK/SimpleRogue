@@ -10,6 +10,7 @@ public class LeatherPants extends Armor {
     public LeatherPants(){
         super(TileColor.transparent(), TileColor.create(168, 73, 0, 255), 'p');
         setName("Leather Pants");
+        setTileName("Leather Pants");
         setDescription("Pants made of tanned leather.");
         getResistances().add(new RangeResistance(DamageType.PIERCING, this, 0, 2));
         getResistances().add(new RangeResistance(DamageType.SLASHING, this, 0, 2));

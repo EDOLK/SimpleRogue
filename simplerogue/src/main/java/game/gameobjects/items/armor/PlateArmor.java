@@ -10,6 +10,7 @@ public class PlateArmor extends Armor{
     public PlateArmor(){
         super(TileColor.transparent(), TileColor.create(200, 200, 200, 255), 'p');
         setName("Plate Armor");
+        setTileName("Chestplate");
         setDescription("Massive plate armor. Staggeringly heavy.");
         getResistances().add(new RangeResistance(DamageType.PIERCING, this, 3, 9));
         getResistances().add(new RangeResistance(DamageType.SLASHING, this, 3, 9));

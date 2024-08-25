@@ -15,6 +15,7 @@ public class Water extends Liquid{
         setfGColor(TileColor.transparent());
         setbGColor(TileColor.create(75, 75, 235, 235));
         setName("Water");
+        setTileName("Water");
         setViscosity(0);
         this.minOpacity = 100;
         this.maxOpacity = 255;

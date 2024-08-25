@@ -10,6 +10,7 @@ public class IronHelm extends Armor{
     public IronHelm(){
         super(TileColor.transparent(), TileColor.create(200, 200, 200, 255), 'h');
         setName("Iron Helm");
+        setTileName("Iron Helm");
         setDescription("A sturdy iron helmet.");
         getResistances().add(new RangeResistance(DamageType.PIERCING, this, 1, 3));
         getResistances().add(new RangeResistance(DamageType.SLASHING, this, 1, 3));

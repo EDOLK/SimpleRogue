@@ -9,7 +9,7 @@ public class ShortSword extends Weapon {
     public ShortSword(){
         super(TileColor.transparent(), TileColor.create(153, 153, 153, 255), 's');
         setName("Shortsword");
-        setTileName("Short Sword");
+        setTileName("Shortsword");
         setDescription("An iron shortsword.");
         setMinDamage(1);
         setMaxDamage(6);

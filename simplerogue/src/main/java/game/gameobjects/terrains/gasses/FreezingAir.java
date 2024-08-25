@@ -23,6 +23,7 @@ public class FreezingAir extends Gas{
         this.setfGColor(TileColor.create(180, 180, 255, 255));
         this.setbGColor(TileColor.transparent());
         this.setSpreadFactor(0.5);
+        setTileName("Freezing Air");
         this.disapparationRate = 10;
     }
 

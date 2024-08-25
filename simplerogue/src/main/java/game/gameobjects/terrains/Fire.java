@@ -56,6 +56,7 @@ public class Fire extends Terrain implements Behavable, SelfAware, Examinable, L
         setfGColor(TileColor.create(255, 72, 0, 255));
         setbGColor(TileColor.create(250, 205, 0, 255));
         setCharacter('▓');
+        setTileName("Fire");
         Set<Modifier> modSet = new HashSet<Modifier>();
         modSet.add(Modifiers.blink());
         setModifiers(modSet);

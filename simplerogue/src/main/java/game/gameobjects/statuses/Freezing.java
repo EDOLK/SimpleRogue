@@ -25,9 +25,10 @@ public class Freezing extends Status implements Seperate, Behavable, OverridesMo
         Set<Modifier> modSet = new HashSet<Modifier>();
         modSet.add(Modifiers.blink());
         setModifiers(modSet);
-        this.setfGColor(TileColor.create(100, 100, 255, 255));
-        this.setbGColor(TileColor.transparent());
-        this.setDescriptor("Freezing");
+        setfGColor(TileColor.create(100, 100, 255, 255));
+        setbGColor(TileColor.transparent());
+        setDescriptor("Freezing");
+        setTileName("Freezing Air");
     }
 
     @Override
