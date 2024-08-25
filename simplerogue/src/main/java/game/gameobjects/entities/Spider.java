@@ -280,6 +280,7 @@ public class Spider extends Animal implements HasDodge, HasInventory{
             setCharacter('#');
             setfGColor(TileColor.create(200, 200, 200, 255));
             setbGColor(TileColor.transparent());
+            setTileName("Web");
             this.name = "Webs";
             this.description = "Spider webs.";
         }
@@ -374,6 +375,7 @@ public class Spider extends Animal implements HasDodge, HasInventory{
             setbGColor(TileColor.transparent());
             setfGColor(TileColor.create(255, 255, 255, 255));
             setDescriptor("Webbed");
+            setTileName("Web");
         }
 
         @Override

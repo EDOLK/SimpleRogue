@@ -22,6 +22,10 @@ import game.gameobjects.items.Corpse;
 import game.gameobjects.items.Item;
 import game.gameobjects.items.armor.Armor;
 import game.gameobjects.items.armor.ArmorType;
+import game.gameobjects.items.potions.FirePotion;
+import game.gameobjects.items.potions.FreezingPotion;
+import game.gameobjects.items.potions.WaterPotion;
+import game.gameobjects.items.scrolls.ScrollOfUpgrade;
 import game.gameobjects.items.weapons.Weapon;
 
 public class PlayerEntity extends Entity implements Armored, Armed, Levelable, Experiential, HasInventory, LightSource{
@@ -61,10 +65,10 @@ public class PlayerEntity extends Entity implements Armored, Armed, Levelable, E
         club.setTileName("Club");
         addItemToInventory(club);
         
-        // addItemToInventory(new ScrollOfUpgrade());
-        // addItemToInventory(new WaterPotion());
-        // addItemToInventory(new FirePotion());
-        // addItemToInventory(new FreezingPotion());
+        addItemToInventory(new ScrollOfUpgrade());
+        addItemToInventory(new WaterPotion());
+        addItemToInventory(new FirePotion());
+        addItemToInventory(new FreezingPotion());
 
         armorSlots.add(new ArmorSlot(ArmorType.HEAD));
         armorSlots.add(new ArmorSlot(ArmorType.CHEST_OUTER));

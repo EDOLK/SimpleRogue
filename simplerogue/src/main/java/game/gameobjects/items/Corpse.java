@@ -89,7 +89,6 @@ public class Corpse extends Item implements Behavable, Consumable, SelfAware, Fl
 
     private void deleteSelf(){
         getSpace().remove(this);
-        setSpace(null);
     }
 
     @Override
@@ -123,8 +122,8 @@ public class Corpse extends Item implements Behavable, Consumable, SelfAware, Fl
 
     @Override
     public void onBurn(Fire fire) {
-        getSpace().remove(this);
         getSpace().addItem(new CookedCorpse(this));
+        getSpace().remove(this);
     }
 
     @Override

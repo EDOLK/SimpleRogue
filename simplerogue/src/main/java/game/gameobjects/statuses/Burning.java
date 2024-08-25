@@ -42,6 +42,7 @@ public class Burning extends Status implements Behavable, LightSource, Seperate{
         setfGColor(TileColor.create(252, 132, 3, 255));
         setModifiers(mods);
         setDescriptor("Burning");
+        setTileName("Fire");
     }
 
     @Override
