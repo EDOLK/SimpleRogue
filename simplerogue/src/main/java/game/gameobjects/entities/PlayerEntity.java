@@ -22,10 +22,6 @@ import game.gameobjects.items.Corpse;
 import game.gameobjects.items.Item;
 import game.gameobjects.items.armor.Armor;
 import game.gameobjects.items.armor.ArmorType;
-import game.gameobjects.items.potions.FirePotion;
-import game.gameobjects.items.potions.FreezingPotion;
-import game.gameobjects.items.potions.WaterPotion;
-import game.gameobjects.items.scrolls.ScrollOfUpgrade;
 import game.gameobjects.items.weapons.Weapon;
 
 public class PlayerEntity extends Entity implements Armored, Armed, Levelable, Experiential, HasInventory, LightSource{
