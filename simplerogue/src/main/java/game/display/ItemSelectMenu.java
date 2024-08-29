@@ -104,10 +104,7 @@ public class ItemSelectMenu extends Menu{
             Display.update();
             return UIEventResponse.processed();
         };
-        String name = "Pickup";
-        if (fromInventory instanceof Examinable examinable){
-            name = examinable.getName();
-        }
+        String name = fromInventory instanceof Examinable examinable ? examinable.getName() : "Pickup";
         Display.populateMenu(menu, function, name, fromInventory.getInventory());
         return menu;
     }

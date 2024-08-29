@@ -129,8 +129,7 @@ public class ItemContextMenu extends Menu{
                     playerEntity.addItemToInventory(playerEntity.getWeaponSlots().get(0).setEquippedWeapon((Weapon)item));
                     playerEntity.removeItemFromInventory(item);
                 }
-                Display.revertMenu();
-                Display.revertMenu();
+                Display.revertMenu(2);
                 Display.setMenu(ItemSelectMenu.createInventoryMenu(Dungeon.getCurrentFloor().getPlayer()));
                 return UIEventResponse.processed();
             });
@@ -156,8 +155,7 @@ public class ItemContextMenu extends Menu{
                     try {
                         playerEntity.addItemToInventory(thisArmorSlot.setEquippedArmor((Armor)item));
                         playerEntity.removeItemFromInventory(item);
-                        Display.revertMenu();
-                        Display.revertMenu();
+                        Display.revertMenu(2);
                         Display.setMenu(ItemSelectMenu.createInventoryMenu(Dungeon.getCurrentFloor().getPlayer()));
                     } catch (Exception e) {
                         Display.log(e.getMessage());
@@ -178,8 +176,7 @@ public class ItemContextMenu extends Menu{
                 if(((Consumable)item).consume(playerEntity)){
                     playerEntity.removeItemFromInventory(item);
                 }
-                Display.revertMenu();
-                Display.revertMenu();
+                Display.revertMenu(2);
                 return UIEventResponse.processed();
             });
             itemPanel.addComponent(consumeButton);
