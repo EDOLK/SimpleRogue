@@ -1,4 +1,4 @@
-package game.zirc;
+package game;
 
 /**
  * Unit test for simple App.
