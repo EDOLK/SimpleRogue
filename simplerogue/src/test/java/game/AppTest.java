@@ -1,4 +1,4 @@
-package edolkh1.zirc;
+package game;
 
 /**
  * Unit test for simple App.
