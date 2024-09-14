@@ -11,9 +11,6 @@ import org.hexworks.zircon.api.data.Position;
 import org.hexworks.zircon.api.data.Tile;
 import org.hexworks.zircon.api.graphics.BoxType;
 import org.hexworks.zircon.api.uievent.ComponentEventType;
-import org.hexworks.zircon.api.uievent.KeyCode;
-import org.hexworks.zircon.api.uievent.KeyboardEvent;
-import org.hexworks.zircon.api.uievent.UIEventPhase;
 import org.hexworks.zircon.api.uievent.UIEventResponse;
 
 import game.Dungeon;
@@ -236,13 +233,5 @@ public class ItemContextMenu extends Menu{
 
     }
 
-    @Override
-    public UIEventResponse handleKeyboardEvent(KeyboardEvent event, UIEventPhase phase) {
-        if (event.getCode() == KeyCode.ESCAPE){
-            Display.revertMenu();
-            return UIEventResponse.processed();
-        }
-        return UIEventResponse.pass();
-    }
     
 }

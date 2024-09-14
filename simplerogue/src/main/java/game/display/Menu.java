@@ -1,6 +1,5 @@
 package game.display;
 
-import org.hexworks.zircon.api.CP437TilesetResources;
 import org.hexworks.zircon.api.builder.screen.ScreenBuilder;
 import org.hexworks.zircon.api.component.ColorTheme;
 import org.hexworks.zircon.api.grid.TileGrid;
@@ -10,6 +9,8 @@ import org.hexworks.zircon.api.uievent.KeyboardEvent;
 import org.hexworks.zircon.api.uievent.KeyboardEventType;
 import org.hexworks.zircon.api.uievent.UIEventPhase;
 import org.hexworks.zircon.api.uievent.UIEventResponse;
+
+import game.display.KeyMap.Action;
 
 public abstract class Menu {
 
@@ -46,6 +47,12 @@ public abstract class Menu {
     }
 
 
-    public abstract UIEventResponse handleKeyboardEvent(KeyboardEvent event, UIEventPhase phase);
+    public UIEventResponse handleKeyboardEvent(KeyboardEvent event, UIEventPhase phase){
+        if (Display.getKeyMap().getAction(event.getCode()) == Action.ESCAPE){
+            Display.revertMenu();
+            return UIEventResponse.processed();
+        }
+        return UIEventResponse.pass();
+    };
 
 }

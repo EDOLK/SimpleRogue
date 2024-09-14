@@ -21,7 +21,6 @@ import org.hexworks.zircon.api.data.Position;
 import org.hexworks.zircon.api.data.Tile;
 import org.hexworks.zircon.api.graphics.BoxType;
 import org.hexworks.zircon.api.graphics.Layer;
-import org.hexworks.zircon.api.uievent.KeyCode;
 import org.hexworks.zircon.api.uievent.KeyboardEvent;
 import org.hexworks.zircon.api.uievent.UIEventPhase;
 import org.hexworks.zircon.api.uievent.UIEventResponse;
@@ -29,6 +28,7 @@ import org.hexworks.zircon.api.uievent.UIEventResponse;
 import game.Dungeon;
 import game.Line;
 import game.display.Display.Mode;
+import game.display.KeyMap.Action;
 import game.gamelogic.Aimable;
 import game.gamelogic.Experiential;
 import game.gamelogic.Interactable;
@@ -476,93 +476,93 @@ public final class FloorMenu extends Menu{
     
     public UIEventResponse handleInGame(KeyboardEvent event, UIEventPhase phase){
         boolean actionSuccessful = false;
-        switch (event.getCode()) {
-            case NUMPAD_8: //up
+        switch (Display.getKeyMap().getAction(event.getCode())) {
+            case UP: //up
                 if (event.getCtrlDown()){
                     actionSuccessful = forceHit(0, -1);
                     break;
                 }
                 actionSuccessful = tryMoveToAdjecent(0, -1);
                 break;
-            case NUMPAD_2: //down
+            case DOWN: //down
                 if (event.getCtrlDown()){
                     actionSuccessful = forceHit(0, 1);
                     break;
                 }
                 actionSuccessful = tryMoveToAdjecent(0, 1);
                 break;
-            case NUMPAD_4: //left
+            case LEFT: //left
                 if (event.getCtrlDown()){
                     actionSuccessful = forceHit(-1, 0);
                     break;
                 }
                 actionSuccessful = tryMoveToAdjecent(-1, 0);
                 break;
-            case NUMPAD_6: //right
+            case RIGHT: //right
                 if (event.getCtrlDown()){
                     actionSuccessful = forceHit(1, 0);
                     break;
                 }
                 actionSuccessful = tryMoveToAdjecent(1, 0);
                 break;
-            case NUMPAD_7: //up-left
+            case UP_LEFT: //up-left
                 if (event.getCtrlDown()){
                     actionSuccessful = forceHit(-1, -1);
                     break;
                 }
                 actionSuccessful = tryMoveToAdjecent(-1, -1);
                 break;
-            case NUMPAD_9: //up-right
+            case UP_RIGHT: //up-right
                 if (event.getCtrlDown()){
                     actionSuccessful = forceHit(1, -1);
                     break;
                 }
                 actionSuccessful = tryMoveToAdjecent(1, -1);
                 break;
-            case NUMPAD_1: //down-left
+            case DOWN_LEFT: //down-left
                 if (event.getCtrlDown()){
                     actionSuccessful = forceHit(-1, 1);
                     break;
                 }
                 actionSuccessful = tryMoveToAdjecent(-1, 1);
                 break;
-            case NUMPAD_3: //down-right
+            case DOWN_RIGHT: //down-right
                 if (event.getCtrlDown()){
                     actionSuccessful = forceHit(1, 1);
                     break;
                 }
                 actionSuccessful = tryMoveToAdjecent(1, 1);
                 break;
-            case NUMPAD_5: //wait
+            case CENTER: //wait
                 addToLog("waiting...");
                 actionSuccessful = true;
                 break;
-            case SPACE: //Interact
+            case INTERACT_TOGGLE: //Interact
                 currentState = State.INTERACTING;
                 break;
             case ESCAPE: //pause
                 Display.setMenu(new PauseMenu());
                 break;
-            case KEY_X: //examining
+            case EXAMINE_TOGGLE: //examining
                 toggleExamination();
                 currentState = State.EXAMINE;
                 break;
-            case KEY_G: //getting
+            case GET_TOGGLE: //getting
                 currentState = State.GETTING;
                 break;
-            case KEY_E: //equiping
+            case EQUIPMENT: //equiping
                 Display.setMenu(EquipmentMenu.createEquipEquipmentMenu(currentFloor.getPlayer()));
                 break;
-            case KEY_D: //dropping
+            case DROP_TOGGLE: //dropping
                 currentState = State.DROPPING;
                 break;
-            case KEY_Q: //consuming
+            case CONSUME: //consuming
                 Display.setMenu(ItemSelectMenu.createConsumableSelectMenu(currentFloor.getPlayer()));
                 break;
-            case KEY_I: //inventory
+            case INVENTORY: //inventory
                 Display.setMenu(ItemSelectMenu.createInventoryMenu(currentFloor.getPlayer()));
                 break;
-            case KEY_T: //throwing
+            case THROWING: //throwing
                 Display.setMenu(ItemSelectMenu.createThrowMenu(currentFloor.getPlayer()));
                 break;
             default:
@@ -614,32 +614,32 @@ public final class FloorMenu extends Menu{
     }
 
     public UIEventResponse handleInteracting(KeyboardEvent event, UIEventPhase phase){
-        switch (event.getCode()){
-            case NUMPAD_8: //up
+        switch (Display.getKeyMap().getAction(event.getCode())){
+            case UP: //up
                 interactAdjacent(0, -1);
                 break;
-            case NUMPAD_2: //down
+            case DOWN: //down
                 interactAdjacent(0, 1);
                 break;
-            case NUMPAD_4: //left
+            case LEFT: //left
                 interactAdjacent(-1, 0);
                 break;
-            case NUMPAD_6: //right
+            case RIGHT: //right
                 interactAdjacent(1, 0);
                 break;
-            case NUMPAD_7: //up-left
+            case UP_LEFT: //up-left
                 interactAdjacent(-1, -1);
                 break;
-            case NUMPAD_9: //up-right
+            case UP_RIGHT: //up-right
                 interactAdjacent(1, -1);
                 break;
-            case NUMPAD_1: //down-left
+            case DOWN_LEFT: //down-left
                 interactAdjacent(-1, 1);
                 break;
-            case NUMPAD_3: //down-right
+            case DOWN_RIGHT: //down-right
                 interactAdjacent(1, 1);
                 break;
-            case NUMPAD_5: //center
+            case CENTER: //center
                 interactAdjacent(0,0);
                 break;
             case ESCAPE:
@@ -684,8 +684,8 @@ public final class FloorMenu extends Menu{
     }
     
     public UIEventResponse handleExamining(KeyboardEvent event, UIEventPhase phase){
-        switch (event.getCode()) {
-            case KEY_X:
+        switch (Display.getKeyMap().getAction(event.getCode())) {
+            case EXAMINE_TOGGLE:
                 toggleExamination();
                 currentState = State.INGAME;
                 Display.update();
@@ -695,47 +695,47 @@ public final class FloorMenu extends Menu{
                 currentState = State.INGAME;
                 Display.update();
                 break;
-            case NUMPAD_8: //up
+            case UP: //up
                 moveCursor(0, -1);
                 break;
-            case NUMPAD_2: //down
+            case DOWN: //down
                 moveCursor(0, 1);
                 break;
-            case NUMPAD_4: //left
+            case LEFT: //left
                 moveCursor(-1, 0);
                 break;
-            case NUMPAD_6: //right
+            case RIGHT: //right
                 moveCursor(1, 0);
                 break;
-            case NUMPAD_7: //up-left
+            case UP_LEFT: //up-left
                 moveCursor(-1, -1);
                 break;
-            case NUMPAD_9: //up-right
+            case UP_RIGHT: //up-right
                 moveCursor(1, -1);
                 break;
-            case NUMPAD_1: //down-left
+            case DOWN_LEFT: //down-left
                 moveCursor(-1, 1);
                 break;
-            case NUMPAD_3: //down-right
+            case DOWN_RIGHT: //down-right
                 moveCursor(1, 1);
                 break;
-            case ENTER: //examine current
+            case SUBMIT: //examine current
                 if (getCursor().getExamined() != null){
                     Display.setMenu(new ExamineMenu(getCursor().getExamined()));
                 }
                 break;
-            case SPACE: //examine current
+            case INTERACT_TOGGLE: //examine current
                 if (getCursor().getExamined() != null){
                     Display.setMenu(new ExamineMenu(getCursor().getExamined()));
                 }
                 break;
-            case COMMA:
+            case SCROLL_LEFT:
                 if (getCursor().getExamined() != null){
                     getCursor().previousExaminable();
                     setExamineTooltip();
                 }
                 break;
-            case PERIOD:
+            case SCROLL_RIGHT:
                 if (getCursor().getExamined() != null){
                     getCursor().nextExaminable();
                     setExamineTooltip();
@@ -764,32 +764,32 @@ public final class FloorMenu extends Menu{
     }
     
     public UIEventResponse handleGetting(KeyboardEvent event, UIEventPhase phase){
-        switch (event.getCode()){
-            case NUMPAD_8: //up
+        switch (Display.getKeyMap().getAction(event.getCode())){
+            case UP: //up
                 getAdjacent(0, -1);
                 break;
-            case NUMPAD_2: //down
+            case DOWN: //down
                 getAdjacent(0, 1);
                 break;
-            case NUMPAD_4: //left
+            case LEFT: //left
                 getAdjacent(-1, 0);
                 break;
-            case NUMPAD_6: //right
+            case RIGHT: //right
                 getAdjacent(1, 0);
                 break;
-            case NUMPAD_7: //up-left
+            case UP_LEFT: //up-left
                 getAdjacent(-1, -1);
                 break;
-            case NUMPAD_9: //up-right
+            case UP_RIGHT: //up-right
                 getAdjacent(1, -1);
                 break;
-            case NUMPAD_1: //down-left
+            case DOWN_LEFT: //down-left
                 getAdjacent(-1, 1);
                 break;
-            case NUMPAD_3: //down-right
+            case DOWN_RIGHT: //down-right
                 getAdjacent(1, 1);
                 break;
-            case NUMPAD_5: //center
+            case CENTER: //center
                 getAdjacent(0,0);
                 break;
             case ESCAPE:
@@ -815,32 +815,32 @@ public final class FloorMenu extends Menu{
     }
     
     public UIEventResponse handleDropping(KeyboardEvent event, UIEventPhase phase){
-        switch (event.getCode()){
-            case NUMPAD_8: //up
+        switch (Display.getKeyMap().getAction(event.getCode())){
+            case UP: //up
                 dropAdjacent(0, -1);
                 break;
-            case NUMPAD_2: //down
+            case DOWN: //down
                 dropAdjacent(0, 1);
                 break;
-            case NUMPAD_4: //left
+            case LEFT: //left
                 dropAdjacent(-1, 0);
                 break;
-            case NUMPAD_6: //right
+            case RIGHT: //right
                 dropAdjacent(1, 0);
                 break;
-            case NUMPAD_7: //up-left
+            case UP_LEFT: //up-left
                 dropAdjacent(-1, -1);
                 break;
-            case NUMPAD_9: //up-right
+            case UP_RIGHT: //up-right
                 dropAdjacent(1, -1);
                 break;
-            case NUMPAD_1: //down-left
+            case DOWN_LEFT: //down-left
                 dropAdjacent(-1, 1);
                 break;
-            case NUMPAD_3: //down-right
+            case DOWN_RIGHT: //down-right
                 dropAdjacent(1, 1);
                 break;
-            case NUMPAD_5: //center
+            case CENTER: //center
                 dropAdjacent(0,0);
                 break;
             case ESCAPE:
@@ -864,36 +864,36 @@ public final class FloorMenu extends Menu{
     }
     
     public UIEventResponse handleAiming(KeyboardEvent event, UIEventPhase phase){
-        switch (event.getCode()) {
-            case NUMPAD_8: //up
+        switch (Display.getKeyMap().getAction(event.getCode())) {
+            case UP: //up
                 moveCursor(0, -1);
                 break;
-            case NUMPAD_2: //down
+            case DOWN: //down
                 moveCursor(0, 1);
                 break;
-            case NUMPAD_4: //left
+            case LEFT: //left
                 moveCursor(-1, 0);
                 break;
-            case NUMPAD_6: //right
+            case RIGHT: //right
                 moveCursor(1, 0);
                 break;
-            case NUMPAD_7: //up-left
+            case UP_LEFT: //up-left
                 moveCursor(-1, -1);
                 break;
-            case NUMPAD_9: //up-right
+            case UP_RIGHT: //up-right
                 moveCursor(1, -1);
                 break;
-            case NUMPAD_1: //down-left
+            case DOWN_LEFT: //down-left
                 moveCursor(-1, 1);
                 break;
-            case NUMPAD_3: //down-right
+            case DOWN_RIGHT: //down-right
                 moveCursor(1, 1);
                 break;
             case ESCAPE:
                 Display.revertMenu();
                 break;
-            case SPACE:
-            case ENTER:
+            case INTERACT_TOGGLE:
+            case SUBMIT:
                 Space aimingSpace = cursor.getSelectedSpace();
                 if (currentFloor.getPlayer().getSpace() == aimingSpace){
                     thowingItem.onHit(currentFloor.getPlayer());
@@ -926,7 +926,7 @@ public final class FloorMenu extends Menu{
     }
     
     public UIEventResponse handleDead(KeyboardEvent event, UIEventPhase phase){
-        if (event.getCode() == KeyCode.ESCAPE){
+        if (Display.getKeyMap().getAction(event.getCode()) == Action.ESCAPE){
             Display.setMenu(new PauseMenu());
         }
         return UIEventResponse.processed();
@@ -936,42 +936,42 @@ public final class FloorMenu extends Menu{
 
         FloorMenu floorMenu = Display.getFloorMenu();
 
-        switch (event.getCode()) {
-            case NUMPAD_8: //up
+        switch (Display.getKeyMap().getAction(event.getCode())) {
+            case UP: //up
                 dropDirect(0, -1);
                 floorMenu.update();
                 Display.setAndForgetMenus(floorMenu);
                 break;
-            case NUMPAD_2: //down
+            case DOWN: //down
                 dropDirect(0, 1);
                 floorMenu.update();
                 Display.setAndForgetMenus(floorMenu);
                 break;
-            case NUMPAD_4: //left
+            case LEFT: //left
                 dropDirect(-1, 0);
                 floorMenu.update();
                 Display.setAndForgetMenus(floorMenu);
                 break;
-            case NUMPAD_6: //right
+            case RIGHT: //right
                 dropDirect(1, 0);
                 floorMenu.update();
                 Display.setAndForgetMenus(floorMenu);
                 break;
-            case NUMPAD_7: //up-left
+            case UP_LEFT: //up-left
                 dropDirect(-1, -1);
                 Display.setAndForgetMenus(floorMenu);
                 break;
-            case NUMPAD_9: //up-right
+            case UP_RIGHT: //up-right
                 dropDirect(1, -1);
                 floorMenu.update();
                 Display.setAndForgetMenus(floorMenu);
                 break;
-            case NUMPAD_1: //down-left
+            case DOWN_LEFT: //down-left
                 dropDirect(-1, 1);
                 floorMenu.update();
                 Display.setAndForgetMenus(floorMenu);
                 break;
-            case NUMPAD_3: //down-right
+            case DOWN_RIGHT: //down-right
                 dropDirect(1, 1);
                 floorMenu.update();
                 Display.setAndForgetMenus(floorMenu);
