@@ -1,5 +1,7 @@
 package game.display;
 
+import java.io.File;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -38,6 +40,26 @@ public class Display {
     private static Menu currentMenu;
     private static FloorMenu floorMenu;
     private static Mode mode = Mode.GRAPHICAL;
+
+    private static KeyMap keyMap = new KeyMap();
+    
+    public static KeyMap getKeyMap() {
+        return keyMap;
+    }
+
+    static{
+        File file = Paths.get("keymap").toFile();
+        if (!file.exists()){
+            try {
+                file.createNewFile();
+                keyMap.writeToFile(file);
+            } catch (Exception e) {
+                e.printStackTrace(System.err);
+            }
+        } else {
+            keyMap = new KeyMap(file);
+        }
+    }
 
     public static void setTileGrid(TileGrid tileGrid) {
         Display.tileGrid = tileGrid;

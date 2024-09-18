@@ -11,9 +11,6 @@ import org.hexworks.zircon.api.component.Container;
 import org.hexworks.zircon.api.component.VBox;
 import org.hexworks.zircon.api.data.Position;
 import org.hexworks.zircon.api.graphics.BoxType;
-import org.hexworks.zircon.api.uievent.KeyCode;
-import org.hexworks.zircon.api.uievent.KeyboardEvent;
-import org.hexworks.zircon.api.uievent.UIEventPhase;
 import org.hexworks.zircon.api.uievent.UIEventResponse;
 
 import game.display.FloorMenu.State;
@@ -309,14 +306,5 @@ public class ItemSelectMenu extends Menu{
         Display.populateContainer(container, function, list);
         itemSelectMenu.screen.addComponent(container);
         return itemSelectMenu;
-    }
-
-    @Override
-    public UIEventResponse handleKeyboardEvent(KeyboardEvent event, UIEventPhase phase) {
-        if (event.getCode() == KeyCode.ESCAPE){
-            Display.revertMenu();
-            return UIEventResponse.processed();
-        }
-        return UIEventResponse.pass();
     }
 }

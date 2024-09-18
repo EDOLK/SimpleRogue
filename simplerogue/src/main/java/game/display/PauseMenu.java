@@ -7,9 +7,6 @@ import org.hexworks.zircon.api.component.Button;
 import org.hexworks.zircon.api.component.Panel;
 import org.hexworks.zircon.api.graphics.BoxType;
 import org.hexworks.zircon.api.uievent.ComponentEventType;
-import org.hexworks.zircon.api.uievent.KeyCode;
-import org.hexworks.zircon.api.uievent.KeyboardEvent;
-import org.hexworks.zircon.api.uievent.UIEventPhase;
 import org.hexworks.zircon.api.uievent.UIEventResponse;
 
 public class PauseMenu extends Menu{
@@ -52,13 +49,5 @@ public class PauseMenu extends Menu{
         pausePanel.addComponent(quitButton);
     }
 
-    @Override
-    public UIEventResponse handleKeyboardEvent(KeyboardEvent event, UIEventPhase phase) {
-        if (event.getCode() == KeyCode.ESCAPE){
-            Display.revertMenu();
-            return UIEventResponse.processed();
-        }
-        return UIEventResponse.pass();
-    }
     
 }
