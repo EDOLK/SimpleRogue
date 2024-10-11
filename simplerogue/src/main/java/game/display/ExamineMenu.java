@@ -26,12 +26,8 @@ import game.gameobjects.items.Item;
 
 public class ExamineMenu extends Menu{
 
-    private Examinable examinable;
-
     public ExamineMenu(Examinable examinable){
         super();
-
-        this.examinable = examinable;
 
         String description = examinable.getDescription();
         String name = examinable.getName();
@@ -193,10 +189,5 @@ public class ExamineMenu extends Menu{
 
         screen.draw(tile, Position.topLeftOf(panel).plus(Position.create(1, 1)));
     }
-
-    public void setExaminable(Examinable examinableObject) {
-        this.examinable = examinableObject;
-    }
-
     
 }
