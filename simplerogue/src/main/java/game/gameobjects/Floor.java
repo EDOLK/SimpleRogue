@@ -341,10 +341,10 @@ public class Floor{
                 attackInfo.setDamageDelt(damageDelt);
                 // attacker on hit and defender on hitted
                 for (OnHit onHit : attackerOnHit) {
-                    onHit.activate(attacker, defender, null);
+                    onHit.activate(attacker, defender, attackInfo);
                 }
                 for (OnHitted onHitted : defenderOnHitted) {
-                    onHitted.activate(defender, attacker, null);
+                    onHitted.activate(defender, attacker, attackInfo);
                 }
                 //
                 
