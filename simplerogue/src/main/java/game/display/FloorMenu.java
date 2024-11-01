@@ -59,6 +59,7 @@ public final class FloorMenu extends Menu{
     private Layer gasLayer;
     private Layer cursorLayer;
     private Layer healthBarLayer;
+    private Layer darknessLayer;
     private Floor currentFloor;
     private LogArea logMessageArea;
     private Header hpText;
@@ -133,6 +134,8 @@ public final class FloorMenu extends Menu{
         gasLayer.clear();
         cursorLayer.clear();
         healthBarLayer.clear();
+        if (Display.getMode() == Mode.GRAPHICAL)
+            darknessLayer.clear();
         ArrayList<Space> visibleSpaces = new ArrayList<Space>();
         for (int x = 0; x < currentFloor.SIZE_X; x++) {
             for (int y = 0; y < currentFloor.SIZE_Y; y++){
@@ -156,8 +159,8 @@ public final class FloorMenu extends Menu{
     private void addToLayers(Space current, PlayerEntity playerEntity){
         int x = current.getX();
         int y = current.getY();
-        // double darkness = 1.0 - current.getLight();
-        double darkness = 0;
+        double darkness = 1.0 - current.getLight();
+        // double darkness = 0;
 
         spaceLayer.draw(current.getTile(darkness), Position.create(x, y));
 
@@ -202,6 +205,15 @@ public final class FloorMenu extends Menu{
             } else {
                 terrainLayer.draw(terrain.getTile(darkness), Position.create(x, y));
             }
+        }
+
+        if (Display.getMode() == Mode.GRAPHICAL){
+            int darkValue = (int)(darkness * 10);
+            Tile darknessTile = Tile.newBuilder()
+                .withName("Darkness " + darkValue)
+                .withTileset(Display.getGraphicalTileSet())
+                .buildGraphicalTile();
+            darknessLayer.draw(darknessTile, Position.create(x, y));
         }
 
         if (cursor != null){
@@ -427,6 +439,12 @@ public final class FloorMenu extends Menu{
             .withSize(currentFloor.SIZE_X, currentFloor.SIZE_Y)
             .build();
         screen.addLayer(gasLayer);
+
+        if (Display.getMode() == Mode.GRAPHICAL){
+            darknessLayer = Layer.newBuilder()
+                .withSize(currentFloor.SIZE_X, currentFloor.SIZE_Y)
+                .build();
+        }
 
         cursorLayer = LayerBuilder.newBuilder()
             .withSize(currentFloor.SIZE_X, currentFloor.SIZE_Y)
