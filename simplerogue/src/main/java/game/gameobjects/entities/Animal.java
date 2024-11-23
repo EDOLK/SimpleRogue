@@ -13,7 +13,7 @@ import game.gameobjects.Space;
 
 public abstract class Animal extends Entity implements HasBehavior{
 
-    private Behavior behavior = new AnimalBehavior(this);
+    private Behavior behavior = new AnimalBehavior();
 
     public Animal(){
         super();
@@ -47,22 +47,19 @@ public abstract class Animal extends Entity implements HasBehavior{
         private Space wanderSpace;
         private PathFinder pathFinder;
         private int wanderRange = 10;
-        private Animal animal;
         private Entity currentTarget;
         
-        protected AnimalBehavior(Animal animal){
-            this.animal = animal;
-        }
+        protected AnimalBehavior(){}
 
         protected void setWanderRange(int wanderRange) {
             this.wanderRange = wanderRange;
         }
 
         protected Space getEmptyViableSpace(){
-            int yMin = animal.getY() - wanderRange;
-            int yMax = animal.getY() + wanderRange;
-            int xMin = animal.getX() - wanderRange;
-            int xMax = animal.getX() + wanderRange;
+            int yMin = Animal.this.getY() - wanderRange;
+            int yMax = Animal.this.getY() + wanderRange;
+            int xMin = Animal.this.getX() - wanderRange;
+            int xMax = Animal.this.getX() + wanderRange;
             if (yMin < 0){
                 yMin = 0;
             }
@@ -83,7 +80,7 @@ public abstract class Animal extends Entity implements HasBehavior{
         }
 
         protected Entity checkForTarget(){
-            for (Space space : animal.getSpacesInVision()) {
+            for (Space space : Animal.this.getSpacesInVision()) {
                 if (space.isOccupied() && space.getOccupant() instanceof PlayerEntity){
                     return space.getOccupant();
                 }
@@ -104,13 +101,13 @@ public abstract class Animal extends Entity implements HasBehavior{
             }
             if (pathFinder != null){
                 Space nextSpace = pathFinder.getSpace();
-                if (Space.moveEntity(animal, nextSpace)){
+                if (Space.moveEntity(Animal.this, nextSpace)){
                     if (!pathFinder.pathHasEnded()){
                         pathFinder.iterate();
                     }
                 } else {
                     if (nextSpace.isOccupied() && nextSpace.getOccupant() == currentTarget){
-                        Floor.doAttack(animal, currentTarget);
+                        Floor.doAttack(Animal.this, currentTarget);
                     } else {
                         wander();
                     }

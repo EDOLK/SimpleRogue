@@ -46,7 +46,7 @@ public class Spider extends Animal implements HasDodge, HasInventory{
         setTileName("Spider");
         setDescription("A giant spider");
         setCorpse(new Corpse(this));
-        setBehavior(new Nesting(this));
+        setBehavior(new Nesting());
 
         Weapon fangs = new Weapon();
         fangs.setName("fangs");
@@ -80,20 +80,17 @@ public class Spider extends Animal implements HasDodge, HasInventory{
      */
     protected class Nesting extends Behavior{
 
-        private Spider spider;
-        public Nesting(Spider spider){
-            this.spider = spider;
-        }
+        protected Nesting(){}
 
         @Override
         public void behave() {
-            spider.nestSpace = spider.getSpace();
+            nestSpace = getSpace();
             for (int i = -1; i <= 1; i++) {
                 for (int j = -1; j <= 1; j++) {
                     try {
-                        Space pSpace = getCurrentFloor().getSpace(spider.getX()+i, spider.getY()+j);
-                        if (!pSpace.isOccupied() || pSpace.getOccupant() == spider){
-                            pSpace.addTerrain(spider.new Web(spider));
+                        Space pSpace = getCurrentFloor().getSpace(getX()+i, getY()+j);
+                        if (!pSpace.isOccupied() || pSpace.getOccupant() == Spider.this){
+                            pSpace.addTerrain(new Web());
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -101,7 +98,7 @@ public class Spider extends Animal implements HasDodge, HasInventory{
                     }
                 }
             }
-            spider.setBehavior(new Trapping(spider));
+            setBehavior(new Trapping());
         }
         
     }
@@ -111,18 +108,15 @@ public class Spider extends Animal implements HasDodge, HasInventory{
      */
     protected class Trapping extends Behavior{
         
-        protected Spider spider;
         protected PathFinder pathFinder;
         
-        protected Trapping(Spider spider){
-            this.spider = spider;
-        }
+        protected Trapping(){}
 
         protected Space getEmptyViableSpace(){
-            int yMin = spider.nestSpace.getY() - spider.maxDistance;
-            int yMax = spider.nestSpace.getY() + spider.maxDistance;
-            int xMin = spider.nestSpace.getX() - spider.maxDistance;
-            int xMax = spider.nestSpace.getX() + spider.maxDistance;
+            int yMin = Spider.this.nestSpace.getY() - Spider.this.maxDistance;
+            int yMax = Spider.this.nestSpace.getY() + Spider.this.maxDistance;
+            int xMin = Spider.this.nestSpace.getX() - Spider.this.maxDistance;
+            int xMax = Spider.this.nestSpace.getX() + Spider.this.maxDistance;
             if (yMin < 0){
                 yMin = 0;
             }
@@ -144,20 +138,20 @@ public class Spider extends Animal implements HasDodge, HasInventory{
 
         @Override
         public void behave() {
-            if (spider.trappedSpaces.size() >= spider.maxTraps){
-                Waiting w = new Waiting(spider);
-                spider.setBehavior(w);
+            if (Spider.this.trappedSpaces.size() >= Spider.this.maxTraps){
+                Waiting w = new Waiting();
+                Spider.this.setBehavior(w);
                 w.behave();
                 return;
             }
             if (pathFinder != null){
                 Space nextSpace = pathFinder.getSpace();
-                if (Space.moveEntity(spider, nextSpace)){
+                if (Space.moveEntity(Spider.this, nextSpace)){
                     if (!pathFinder.pathHasEnded()){
                         pathFinder.iterate();
                     } else {
-                        nextSpace.addTerrain(new Web(spider));
-                        spider.trappedSpaces.add(nextSpace);
+                        nextSpace.addTerrain(new Web());
+                        Spider.this.trappedSpaces.add(nextSpace);
                         pathFinder = null;
                     }
                 } else {
@@ -165,10 +159,10 @@ public class Spider extends Animal implements HasDodge, HasInventory{
                 }
             } else {
                 Space querySpace = getEmptyViableSpace();
-                if (!spider.trappedSpaces.contains(querySpace)){
+                if (!Spider.this.trappedSpaces.contains(querySpace)){
                     if (pathFinder == null){
                         try {
-                            pathFinder = new PathFinder(spider.getSpace(), querySpace);
+                            pathFinder = new PathFinder(Spider.this.getSpace(), querySpace);
                             pathFinder.iterate();
                         } catch (Exception e) {
 
@@ -184,29 +178,26 @@ public class Spider extends Animal implements HasDodge, HasInventory{
      */
     protected class Waiting extends Behavior{
 
-        private Spider spider;
         private PathFinder pathFinder;
         
-        public Waiting(Spider spider){
-            this.spider = spider;
-        }
+        public Waiting(){}
 
         @Override
         public void behave() {
-            if (pathFinder != null && spider.getSpace() != spider.nestSpace){
-                if(Space.moveEntity(spider, pathFinder.getSpace()) && !pathFinder.pathHasEnded()){
+            if (pathFinder != null && Spider.this.getSpace() != Spider.this.nestSpace){
+                if(Space.moveEntity(Spider.this, pathFinder.getSpace()) && !pathFinder.pathHasEnded()){
                     pathFinder.iterate();
                 } else {
                     try {
-                        pathFinder = new PathFinder(spider.getSpace(), spider.nestSpace);
+                        pathFinder = new PathFinder(Spider.this.getSpace(), Spider.this.nestSpace);
                         pathFinder.iterate();
                     } catch (Exception e) {
 
                     }
                 }
-            } else if (spider.getSpace() != spider.nestSpace){
+            } else if (Spider.this.getSpace() != Spider.this.nestSpace){
                 try {
-                    pathFinder = new PathFinder(spider.getSpace(), spider.nestSpace);
+                    pathFinder = new PathFinder(Spider.this.getSpace(), Spider.this.nestSpace);
                     pathFinder.iterate();
                 } catch (Exception e) {
 
@@ -215,9 +206,9 @@ public class Spider extends Animal implements HasDodge, HasInventory{
                 for (int i = -2; i <= 2; i++) {
                     for (int j = -2; j <= 2; j++) {
                         try {
-                            Space querySpace = getCurrentFloor().getSpace(spider.getX() + i, spider.getY() + j);
+                            Space querySpace = getCurrentFloor().getSpace(Spider.this.getX() + i, Spider.this.getY() + j);
                             if (querySpace.isOccupied() && querySpace.getOccupant() instanceof PlayerEntity playerEntity){
-                                spider.setBehavior(new Hunting(spider, playerEntity));
+                                Spider.this.setBehavior(new Hunting(playerEntity));
                             }
                         } catch (Exception e) {
                             continue;
@@ -235,25 +226,23 @@ public class Spider extends Animal implements HasDodge, HasInventory{
     protected class Hunting extends Behavior {
         
         private Entity target;
-        private Spider spider;
 
-        protected Hunting(Spider spider, Entity target){
-            this.spider = spider;
+        protected Hunting(Entity target){
             this.target = target;
         }
 
         @Override
         public void behave() {
-            int dist = (Math.abs(spider.getX() - spider.nestSpace.getX()) + Math.abs(spider.getY() - spider.nestSpace.getY()))/2;
-            if (dist >= spider.maxDistance){
-                spider.setBehavior(new Waiting(spider));
+            int dist = (Math.abs(Spider.this.getX() - Spider.this.nestSpace.getX()) + Math.abs(Spider.this.getY() - Spider.this.nestSpace.getY()))/2;
+            if (dist >= Spider.this.maxDistance){
+                Spider.this.setBehavior(new Waiting());
                 return;
             }
             try {
-                PathFinder p = new PathFinder(spider.getSpace(), target.getSpace());
-                if (!Space.moveEntity(spider, p.getNext())){
+                PathFinder p = new PathFinder(Spider.this.getSpace(), target.getSpace());
+                if (!Space.moveEntity(Spider.this, p.getNext())){
                     if (p.getSpace().getOccupant() == target){
-                        Floor.doAttack(spider, target);
+                        Floor.doAttack(Spider.this, target);
                     }
                 }
             } catch (Exception e) {
@@ -273,10 +262,8 @@ public class Spider extends Animal implements HasDodge, HasInventory{
         protected String description;
         protected Space space;
         protected boolean t = false;
-        protected Spider spider;
         
-        public Web(Spider spider){
-            this.spider = spider;
+        public Web(){
             setCharacter('#');
             setfGColor(TileColor.create(200, 200, 200, 255));
             setbGColor(TileColor.transparent());
@@ -306,9 +293,9 @@ public class Spider extends Animal implements HasDodge, HasInventory{
                 t = true;
                 entity.addStatus(new Webbed(5));
                 getSpace().removeTerrain(this);
-                if (!(spider.getBehavior() instanceof Hunting)){
-                    if (getDistance() < spider.maxDistance){
-                        spider.setBehavior(new Hunting(spider, entity));
+                if (!(Spider.this.getBehavior() instanceof Hunting)){
+                    if (getDistance() < Spider.this.maxDistance){
+                        Spider.this.setBehavior(new Hunting(entity));
                     }
                 }
             } else {
@@ -347,7 +334,7 @@ public class Spider extends Animal implements HasDodge, HasInventory{
         }
         
         public int getDistance(){
-            return (Math.abs(getSpace().getX() - spider.nestSpace.getX()) + Math.abs(getSpace().getY() - spider.nestSpace.getY()))/2;
+            return (Math.abs(getSpace().getX() - Spider.this.nestSpace.getX()) + Math.abs(getSpace().getY() - Spider.this.nestSpace.getY()))/2;
         }
         
     }
