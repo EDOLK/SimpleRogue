@@ -14,6 +14,7 @@ import game.gameobjects.items.armor.PlateArmor;
 import game.gameobjects.items.armor.PlateGauntlets;
 import game.gameobjects.items.potions.FirePotion;
 import game.gameobjects.items.potions.HealingPotion;
+import game.gameobjects.items.scrolls.ScrollOfEnchantment;
 import game.gameobjects.items.scrolls.ScrollOfUpgrade;
 import game.gameobjects.items.weapons.BoStaff;
 import game.gameobjects.items.weapons.Dagger;
@@ -61,6 +62,8 @@ public class ItemFactory{
 				return new ShortSword();
             case SCROLL_OF_UPGRADE:
                 return new ScrollOfUpgrade();
+            case SCROLL_OF_ENCHANTMENT:
+                return new ScrollOfEnchantment();
             default:
 				return null;
         }
@@ -83,6 +86,23 @@ public class ItemFactory{
     }
 
     public enum ItemIdentifier{
-        SHORTSWORD, HANDAXE, DAGGER, BO_STAFF, FIRE_POTION, HEALING_POTION, CHAINMAIL, CLOAK, IRON_GREAVES, IRON_HELM, LEATHER_ARMOR, LEATHER_CAP, LEATHER_GLOVES, LEATHER_PANTS, PLATE_ARMOR, PLATE_GAUNTLETS, SCROLL_OF_UPGRADE,
+        SHORTSWORD,
+        HANDAXE,
+        DAGGER,
+        BO_STAFF,
+        FIRE_POTION,
+        HEALING_POTION,
+        CHAINMAIL,
+        CLOAK,
+        IRON_GREAVES,
+        IRON_HELM,
+        LEATHER_ARMOR,
+        LEATHER_CAP,
+        LEATHER_GLOVES,
+        LEATHER_PANTS,
+        PLATE_ARMOR,
+        PLATE_GAUNTLETS,
+        SCROLL_OF_UPGRADE,
+        SCROLL_OF_ENCHANTMENT,
     }
 }

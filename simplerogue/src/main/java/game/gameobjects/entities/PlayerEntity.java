@@ -22,6 +22,13 @@ import game.gameobjects.items.Corpse;
 import game.gameobjects.items.Item;
 import game.gameobjects.items.armor.Armor;
 import game.gameobjects.items.armor.ArmorType;
+import game.gameobjects.items.armor.Chainmail;
+import game.gameobjects.items.armor.LeatherArmor;
+import game.gameobjects.items.armor.LeatherCap;
+import game.gameobjects.items.armor.LeatherGloves;
+import game.gameobjects.items.armor.LeatherPants;
+import game.gameobjects.items.scrolls.ScrollOfEnchantment;
+import game.gameobjects.items.scrolls.ScrollOfUpgrade;
 import game.gameobjects.items.weapons.Weapon;
 
 public class PlayerEntity extends Entity implements Armored, Armed, Levelable, Experiential, HasInventory, LightSource{
@@ -60,6 +67,18 @@ public class PlayerEntity extends Entity implements Armored, Armed, Levelable, E
         club.setWeight(5);
         club.setTileName("Club");
         addItemToInventory(club);
+        // addItemToInventory(new ScrollOfEnchantment());
+        // addItemToInventory(new ScrollOfEnchantment());
+        // addItemToInventory(new ScrollOfEnchantment());
+        // addItemToInventory(new ScrollOfEnchantment());
+        // addItemToInventory(new ScrollOfEnchantment());
+        // addItemToInventory(new LeatherArmor());
+        // addItemToInventory(new LeatherCap());
+        // addItemToInventory(new LeatherGloves());
+        // addItemToInventory(new LeatherPants());
+        addItemToInventory(new ScrollOfUpgrade());
+        addItemToInventory(new ScrollOfUpgrade());
+        addItemToInventory(new ScrollOfUpgrade());
         
         armorSlots.add(new ArmorSlot(ArmorType.HEAD));
         armorSlots.add(new ArmorSlot(ArmorType.CHEST_OUTER));

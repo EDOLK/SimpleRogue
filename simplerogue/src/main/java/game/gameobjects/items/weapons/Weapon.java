@@ -11,6 +11,7 @@ import game.gamelogic.Upgrader;
 import game.gameobjects.DamageType;
 import game.gameobjects.enchantments.WeaponEnchantment;
 import game.gameobjects.items.Item;
+import game.gameobjects.items.scrolls.ScrollOfEnchantment;
 import game.gameobjects.items.scrolls.ScrollOfUpgrade;
 
 
@@ -88,8 +89,7 @@ public class Weapon extends Item implements HasAccuracy, Levelable, Upgradable{
 
     @Override
     public boolean upgrade(Upgrader upgrader) {
-        level += upgrader.getUpgradeValue();
-        return true;
+        return upgrader.doUpgrade(this);
     }
 
     @Override
@@ -100,7 +100,7 @@ public class Weapon extends Item implements HasAccuracy, Levelable, Upgradable{
 
     @Override
     public boolean canUpgrade(Upgrader upgrader) {
-        return upgrader instanceof ScrollOfUpgrade;
+        return upgrader instanceof ScrollOfUpgrade || upgrader instanceof ScrollOfEnchantment;
     }
 
     @Override

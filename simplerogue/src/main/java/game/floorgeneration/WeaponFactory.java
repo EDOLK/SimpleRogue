@@ -1,5 +1,6 @@
 package game.floorgeneration;
 
+import game.gamelogic.Upgradable;
 import game.gamelogic.Upgrader;
 import game.gameobjects.enchantments.WeaponEnchantment;
 import game.gameobjects.items.weapons.Weapon;
@@ -14,10 +15,13 @@ public class WeaponFactory extends ItemFactory{
 
     public WeaponFactory withLevel(int level){
         Upgrader upgrader = new Upgrader() {
+
             @Override
-            public int getUpgradeValue() {
-                return level;
+            public boolean doUpgrade(Upgradable upgradable) {
+                weapon.setLevel(weapon.getLevel() + level);
+                return true;
             }
+
         };
         weapon.upgrade(upgrader);
         return this;

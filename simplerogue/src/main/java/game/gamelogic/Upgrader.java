@@ -1,5 +1,5 @@
 package game.gamelogic;
 
 public interface Upgrader{
-    public int getUpgradeValue();
+    public boolean doUpgrade(Upgradable upgradable);
 }

@@ -12,6 +12,7 @@ import game.gamelogic.Upgrader;
 import game.gamelogic.resistances.Resistance;
 import game.gameobjects.enchantments.ArmorEnchantment;
 import game.gameobjects.items.Item;
+import game.gameobjects.items.scrolls.ScrollOfEnchantment;
 import game.gameobjects.items.scrolls.ScrollOfUpgrade;
 
 public class Armor extends Item implements HasResistances, HasDodge, Levelable, Upgradable{
@@ -32,6 +33,16 @@ public class Armor extends Item implements HasResistances, HasDodge, Levelable, 
 
     public Armor(TileColor bGColor, TileColor fGColor, char character) {
         super(bGColor, fGColor, character);
+    }
+
+    @Override
+    public String getName() {
+        String s = super.getName();
+        if (enchantment != null){
+            s = enchantment.hasPrefix() ? enchantment.getPrefix() + " " + s : s;
+            s = enchantment.hasSuffix() ? s + " " + enchantment.getSuffix() : s;
+        }
+        return s;
     }
 
     public Armor(){
@@ -62,8 +73,7 @@ public class Armor extends Item implements HasResistances, HasDodge, Levelable, 
 
     @Override
     public boolean upgrade(Upgrader upgrader) {
-        level += upgrader.getUpgradeValue();
-        return true;
+        return upgrader.doUpgrade(this);
     }
 
     @Override
@@ -79,7 +89,7 @@ public class Armor extends Item implements HasResistances, HasDodge, Levelable, 
 
     @Override
     public boolean canUpgrade(Upgrader upgrader) {
-        return upgrader instanceof ScrollOfUpgrade;
+        return upgrader instanceof ScrollOfUpgrade || upgrader instanceof ScrollOfEnchantment;
     }
 
 }
