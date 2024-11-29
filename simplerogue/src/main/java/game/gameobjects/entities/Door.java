@@ -28,7 +28,6 @@ public class Door extends Entity implements Interactable, HasResistances{
         setSightBlocker(true);
         setGasBlocker(true);
         setLiquidBlocker(true);
-        setLightBlocker(true);
 
         setCorpse(new Item(this.getbGColor().darkenByPercent(.50), this.getfGColor().darkenByPercent(.50), '░'));
         getCorpse().setName("Broken Door");

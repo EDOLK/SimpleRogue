@@ -20,7 +20,6 @@ import game.gameobjects.Space;
 import game.gameobjects.WeaponSlot;
 import game.gameobjects.items.Corpse;
 import game.gameobjects.items.Item;
-import game.gameobjects.items.Torch;
 import game.gameobjects.items.armor.Armor;
 import game.gameobjects.items.armor.ArmorType;
 import game.gameobjects.items.weapons.Weapon;
@@ -61,7 +60,6 @@ public class PlayerEntity extends Entity implements Armored, Armed, Levelable, E
         club.setWeight(5);
         club.setTileName("Club");
         addItemToInventory(club);
-        addItemToInventory(new Torch());
         
         armorSlots.add(new ArmorSlot(ArmorType.HEAD));
         armorSlots.add(new ArmorSlot(ArmorType.CHEST_OUTER));
@@ -169,7 +167,7 @@ public class PlayerEntity extends Entity implements Armored, Armed, Levelable, E
 
     @Override
     public int getLightSourceIntensity() {
-        return 2;
+        return 7;
     }
 
     @Override

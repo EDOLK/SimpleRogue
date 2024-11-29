@@ -104,7 +104,7 @@ public class Burning extends Status implements Behavable, LightSource, Seperate{
 
     @Override
     public int getLightSourceIntensity() {
-        return (int)(turns * 2.5);
+        return 5;
     }
 
     @Override

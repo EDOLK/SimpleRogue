@@ -214,7 +214,7 @@ public class Fire extends Terrain implements Behavable, SelfAware, Examinable, L
 
     @Override
     public int getLightSourceIntensity() {
-        return (int)lerp(0, 0, MAX_FUEL, 20, fuel);
+        return (int)lerp(0, 0, MAX_FUEL, 10, fuel);
     }
 
 }
