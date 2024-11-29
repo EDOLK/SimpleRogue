@@ -8,6 +8,7 @@ import java.util.Stack;
 import org.hexworks.zircon.api.color.TileColor;
 
 import game.App;
+import game.Line;
 import game.display.Display;
 import game.floorgeneration.FloorGenerator;
 import game.gamelogic.Armed;
@@ -153,12 +154,20 @@ public class Floor{
 		}
         intensity = strongestLightSource != null ? strongestLightSource.getLightSourceIntensity() : 0;
         for (int xDiff = -intensity; xDiff <= intensity; xDiff++) {
+            yDiffLoop:
             for (int yDiff = -intensity; yDiff <= intensity; yDiff++) {
                 Space querySpace = null;
                 try {
                     querySpace = spaces[space.getX() + xDiff][space.getY() + yDiff];
+                    List<Space> list = Line.getLineAsArrayList(space,querySpace);
+                    for (Space s : list) {
+                        if (s.isOccupied() && s.getOccupant().isLightBlocker()){
+                            continue yDiffLoop;
+                        }
+                    }
                     int distance = Math.max(Math.abs(xDiff), Math.abs(yDiff));
-                    double light = lerp(0.0, 0.0, intensity, 1.0, Math.max(0.0, intensity-distance));
+                    double light = Math.max(intensity - distance, 0.0);
+                    light = light >= 10 ? 1 : lerp(0,0,10,1,light);
                     if (querySpace.getLight() < light){
                         querySpace.setLight(light);
                     }
