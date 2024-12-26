@@ -421,7 +421,7 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
             }
         }
 
-        if (this instanceof Armed armed && armed.dropsEquipedWeaponsOnKill()){
+        if (this instanceof Armed armed && armed.dropsEquippedWeaponsOnKill()){
             for (Weapon weapon : armed.getWeapons()) {
                 space.addItem(weapon);
             }

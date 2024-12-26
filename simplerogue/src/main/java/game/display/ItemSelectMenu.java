@@ -21,6 +21,7 @@ import game.gamelogic.HasInventory;
 import game.gamelogic.Upgradable;
 import game.gamelogic.Upgrader;
 import game.gameobjects.ArmorSlot;
+import game.gameobjects.ItemSlot;
 import game.gameobjects.Space;
 import game.gameobjects.WeaponSlot;
 import game.gameobjects.entities.Entity;
@@ -305,6 +306,64 @@ public class ItemSelectMenu extends Menu{
         };
         Display.populateContainer(container, function, list);
         itemSelectMenu.screen.addComponent(container);
+        return itemSelectMenu;
+    }
+
+    public static Menu createItemSelectMenu(Button itemButton, ItemSlot itemSlot, Entity entity) {
+
+        ItemSelectMenu itemSelectMenu = new ItemSelectMenu(false);
+        
+        ArrayList<Item> items = new ArrayList<>();
+        if (entity instanceof HasInventory hasInventory){
+            items.addAll(hasInventory.getInventory());
+        }
+
+        Container container = Display.createFittedContainer(itemSelectMenu.screen, "Select", items);
+        
+        Item nothing = new Item();
+
+        nothing.setName("Nothing");
+        
+        Function<Item, UIEventResponse> nothingFunction = nonItem ->{
+            itemButton.setText("Nothing");
+            try {
+                if (entity instanceof HasInventory hasInventory){
+                    hasInventory.addItemToInventory(itemSlot.setEquippedItem(null));
+                } else {
+                    itemSlot.setEquippedItem(null);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            Display.revertMenu();
+            return UIEventResponse.processed();
+        };
+
+        Display.populateContainer(container, nothingFunction, nothing);
+
+        Function<Item, UIEventResponse> itemFunction = new Function<Item,UIEventResponse>() {
+            @Override
+            public UIEventResponse apply(Item item){
+                itemButton.setText(item.getName());
+                try {
+                    if (entity instanceof HasInventory hasInventory){
+                        hasInventory.removeItemFromInventory(item);
+                        hasInventory.addItemToInventory(itemSlot.setEquippedItem(item));
+                    } else {
+                        itemSlot.setEquippedItem(item);
+                    }
+                } catch (Exception e) {
+                    Display.log(e.getMessage());
+                }
+                Display.revertMenu();
+                return UIEventResponse.processed();
+            }
+        };
+
+        Display.populateContainer(container, itemFunction, items);
+
+        itemSelectMenu.screen.addComponent(container);
+
         return itemSelectMenu;
     }
 }

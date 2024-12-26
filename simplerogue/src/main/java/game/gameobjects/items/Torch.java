@@ -3,6 +3,7 @@ package game.gameobjects.items;
 import org.hexworks.zircon.api.color.TileColor;
 
 import game.App;
+import game.display.Display;
 import game.gamelogic.Flammable;
 import game.gamelogic.Interactable;
 import game.gamelogic.LightSource;
@@ -79,8 +80,12 @@ public class Torch extends Item implements Flammable, LightSource, SelfAware, Be
 
     @Override
     public void onInteract(Entity interactor) {
-        if (!lit)
+        if (!lit){
             lit = true;
+        } else {
+            Display.log("The torch is already lit.");
+        }
+        Display.revertMenu();
     }
 
 }

@@ -15,6 +15,7 @@ import game.gamelogic.Armed;
 import game.gamelogic.Armored;
 import game.gamelogic.HasAccuracy;
 import game.gamelogic.HasDodge;
+import game.gamelogic.HasOffHand;
 import game.gamelogic.LightSource;
 import game.gamelogic.OverridesAttack;
 import game.gamelogic.behavior.Behavable;
@@ -35,6 +36,7 @@ import game.gameobjects.items.armor.Armor;
 import game.gameobjects.items.weapons.Weapon;
 import game.gameobjects.statuses.Status;
 import game.gameobjects.terrains.Terrain;
+import kotlin.Pair;
 
 public class Floor{
 
@@ -81,6 +83,15 @@ public class Floor{
 		return spaces[x][y];
 	}
 
+    public Space getClampedSpace(int x, int y){
+        x = x >= SIZE_X ? SIZE_X-1 : x;
+        x = x < 0 ? 0 : x;
+        y = y >= SIZE_Y ? SIZE_Y-1 : y;
+        y = y < 0 ? 0 : y;
+        return spaces[x][y];
+    }
+
+
 	public void update(){
 
 		Stack<Behavable> behavables = new Stack<Behavable>();
@@ -103,6 +114,13 @@ public class Floor{
 							behavables.add(behavableStatus);
 						}
 					}
+
+                    if (entity instanceof HasOffHand hasOffHand){
+                        ItemSlot slot = hasOffHand.getOffHandSlot();
+                        if (slot.getEquippedItem() != null && slot.getEquippedItem() instanceof Behavable behavableItem){
+                            behavables.add(behavableItem);
+                        }
+                    }
 
 				}
 
@@ -130,13 +148,47 @@ public class Floor{
 
 		for (int x = 0; x < spaces.length; x++) {
 			for (int y = 0; y < spaces[x].length; y++) {
-				doLight(spaces[x][y]);
+				doLightRevised(spaces[x][y]);
 			}
 		}
+        // TODO: weak direct light overrides strong diffracted light, pls fix
+        Stack<Pair<Space,Double>> diffractSpaces = new Stack<>();
+		for (int x = 0; x < spaces.length; x++) {
+			for (int y = 0; y < spaces[x].length; y++) {
+				doDiffraction(spaces[x][y], diffractSpaces);
+			}
+		}
+        while (!diffractSpaces.isEmpty()) {
+            Pair<Space,Double> pair = diffractSpaces.pop();
+            pair.getFirst().setLight(pair.getSecond());
+        }
 
 	}
 	
-	public void doLight(Space space){
+	private void doDiffraction(Space space, Stack<Pair<Space,Double>> diffractSpaces) {
+        // if (space.getLight() > 0){
+        //     return;
+        // }
+        double brightest = 0.0;
+        for (int x = -1; x <= 1; x++) {
+            for (int y = -1; y <= 1; y++) {
+                if (x == 0 && y == 0)
+                    continue;
+                try {
+                    double b = getSpace(space.getX() + x,space.getY() + y).getLight();
+                    brightest = b > brightest ? b : brightest;
+                } catch (Exception e) {
+                    continue;
+                }
+            }
+        }
+        if (brightest > 0.0 && brightest/2 > space.getLight()){
+            diffractSpaces.push(new Pair<Space,Double>(space,brightest/2));
+            // space.setLight(brightest/2);
+        }
+    }
+
+    public void doLight(Space space){
 		LightSource strongestLightSource = null;
 		int intensity = 0;
 		for (Item item : space.getItems()) {
@@ -151,14 +203,16 @@ public class Floor{
 			for (Status status : occupant.getStatuses()) {
                 strongestLightSource = calculateLightSource(strongestLightSource, status);
 			}
+            if (occupant instanceof HasOffHand hasOffHand && hasOffHand.getOffHandSlot().getEquippedItem() != null){
+                strongestLightSource = calculateLightSource(strongestLightSource, hasOffHand.getOffHandSlot().getEquippedItem());
+            }
 		}
         intensity = strongestLightSource != null ? strongestLightSource.getLightSourceIntensity() : 0;
         for (int xDiff = -intensity; xDiff <= intensity; xDiff++) {
             yDiffLoop:
             for (int yDiff = -intensity; yDiff <= intensity; yDiff++) {
-                Space querySpace = null;
                 try {
-                    querySpace = spaces[space.getX() + xDiff][space.getY() + yDiff];
+                    Space querySpace = spaces[space.getX() + xDiff][space.getY() + yDiff];
                     List<Space> list = Line.getLineAsArrayList(space,querySpace);
                     for (Space s : list) {
                         if (s.isOccupied() && s.getOccupant().isLightBlocker()){
@@ -177,6 +231,63 @@ public class Floor{
             }
         }
 	}
+
+	public void doLightRevised(Space space){
+		LightSource strongestLightSource = null;
+		int intensity = 0;
+		for (Item item : space.getItems()) {
+			strongestLightSource = calculateLightSource(strongestLightSource, item);
+		}
+		for (Terrain terrain : space.getTerrains()) {
+            strongestLightSource = calculateLightSource(strongestLightSource, terrain);
+		}
+		if (space.isOccupied()){
+			Entity occupant = space.getOccupant();
+            strongestLightSource = calculateLightSource(strongestLightSource, occupant);
+			for (Status status : occupant.getStatuses()) {
+                strongestLightSource = calculateLightSource(strongestLightSource, status);
+			}
+            if (occupant instanceof HasOffHand hasOffHand && hasOffHand.getOffHandSlot().getEquippedItem() != null){
+                strongestLightSource = calculateLightSource(strongestLightSource, hasOffHand.getOffHandSlot().getEquippedItem());
+            }
+		}
+        intensity = strongestLightSource != null ? strongestLightSource.getLightSourceIntensity() : 0;
+        for (int i = -intensity; i <= intensity; i++) {
+            Space querySpace;
+
+            querySpace = getClampedSpace(space.getX() + i,space.getY() - intensity);
+            doLineLight(space, intensity, querySpace);
+
+            querySpace = getClampedSpace(space.getX() + i,space.getY() + intensity);
+            doLineLight(space, intensity, querySpace);
+
+            if (i == -intensity || i == intensity){
+                continue;
+            }
+
+            querySpace = getClampedSpace(space.getX() - intensity, space.getY() + i);
+            doLineLight(space, intensity, querySpace);
+
+            querySpace = getClampedSpace(space.getX() + intensity, space.getY() + i);
+            doLineLight(space, intensity, querySpace);
+        }
+	}
+
+    private void doLineLight(Space fromSpace, int intensity, Space toSpace) {
+        List<Space> lineList = Line.getLineAsListInclusive(fromSpace, toSpace);
+        for (int i = 0; i < lineList.size(); i++) {
+            Space space = lineList.get(i);
+            int j = intensity - i;
+            j = j > 10 ? 10 : j;
+            if (j <= 0)
+                return;
+            double light = lerp(0,0,10,1,j);
+            if (space.getLight() < light)
+                space.setLight(light);
+            if (space.isOccupied() && space.getOccupant().isLightBlocker())
+                return;
+        }
+    }
 
     private LightSource calculateLightSource(LightSource strongestLightSource, Object object) {
         if (object instanceof LightSource lightSource){
