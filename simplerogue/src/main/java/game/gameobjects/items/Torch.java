@@ -16,7 +16,8 @@ import game.gameobjects.terrains.Fire;
 public class Torch extends Item implements Flammable, LightSource, SelfAware, Behavable, Interactable {
 
     private boolean lit = false;
-    private int fuel = 100;
+    private int maxFuel = 500;
+    private int fuel = maxFuel;
     private Space space;
 
     public Torch(boolean lit) {
@@ -41,8 +42,9 @@ public class Torch extends Item implements Flammable, LightSource, SelfAware, Be
 
     @Override
     public int getLightSourceIntensity() {
+        // return 10;
         if (lit){
-            return (int)App.lerp(0,3,100,15,fuel);
+            return (int)App.lerp(0,3,maxFuel,11,fuel);
         } else {
             return 0;
         }
@@ -70,7 +72,13 @@ public class Torch extends Item implements Flammable, LightSource, SelfAware, Be
 
     @Override
     public void behave() {
-        fuel--;
+        if (lit) {
+            fuel--;
+        }
+        if (fuel <= 0) {
+            lit = false;
+            this.setName("Burnt Torch");
+        }
     }
 
     @Override

@@ -60,7 +60,7 @@ public class Floor{
 
 		for (int x = 0; x < spaces.length; x++) {
 			for (int y = 0; y < spaces[x].length; y++) {
-				spaces[x][y].setLight(0.0);
+				spaces[x][y].setLight(0.0f);
 			}
 		}
 		for (int x = 0; x < spaces.length; x++) {
@@ -100,7 +100,7 @@ public class Floor{
 			for (int y = 0; y < spaces[x].length; y++) {
 				Space currentSpace = getSpace(x, y);
                 
-                currentSpace.setLight(0.0);
+                currentSpace.setLight(0.0f);
 
 				if (currentSpace.isOccupied()){
 					Entity entity = currentSpace.getOccupant();
@@ -151,43 +151,53 @@ public class Floor{
 				doLightRevised(spaces[x][y]);
 			}
 		}
-        // TODO: weak direct light overrides strong diffracted light, pls fix
-        Stack<Pair<Space,Double>> diffractSpaces = new Stack<>();
-		for (int x = 0; x < spaces.length; x++) {
-			for (int y = 0; y < spaces[x].length; y++) {
-				doDiffraction(spaces[x][y], diffractSpaces);
-			}
-		}
-        while (!diffractSpaces.isEmpty()) {
-            Pair<Space,Double> pair = diffractSpaces.pop();
-            pair.getFirst().setLight(pair.getSecond());
-        }
+
+        Stack<Pair<Space,Float>> diffractSpaces = new Stack<>();
+        boolean continueDiffracting;
+        do {
+            continueDiffracting = false;
+            for (int x = 0; x < spaces.length; x++) {
+                for (int y = 0; y < spaces[x].length; y++) {
+                    boolean diffResult = doDiffraction(spaces[x][y], diffractSpaces);
+                    if (!continueDiffracting && diffResult) {
+                        continueDiffracting = true;
+                    }
+                }
+            }
+            while (!diffractSpaces.isEmpty()) {
+                Pair<Space,Float> pair = diffractSpaces.pop();
+                pair.getFirst().setLight(pair.getSecond());
+            }
+        } while (continueDiffracting);
 
 	}
 	
-	private void doDiffraction(Space space, Stack<Pair<Space,Double>> diffractSpaces) {
-        // if (space.getLight() > 0){
-        //     return;
-        // }
-        double brightest = 0.0;
+	private boolean doDiffraction(Space space, Stack<Pair<Space,Float>> diffractSpaces) {
+        float brightest = 0.0f;
         for (int x = -1; x <= 1; x++) {
             for (int y = -1; y <= 1; y++) {
                 if (x == 0 && y == 0)
                     continue;
                 try {
-                    double b = getSpace(space.getX() + x,space.getY() + y).getLight();
+                    Space space2 = getSpace(space.getX() + x,space.getY() + y);
+                    if (space2.isOccupied() && space2.getOccupant().isLightBlocker())
+                        continue;
+                    float b = space2.getLight();
                     brightest = b > brightest ? b : brightest;
                 } catch (Exception e) {
                     continue;
                 }
             }
         }
-        if (brightest > 0.0 && brightest/2 > space.getLight()){
-            diffractSpaces.push(new Pair<Space,Double>(space,brightest/2));
-            // space.setLight(brightest/2);
+        brightest -= 0.1;
+        if (brightest >= 0.1 && brightest > space.getLight()){
+            diffractSpaces.push(new Pair<Space,Float>(space,brightest));
+            return true;
         }
+        return false;
     }
 
+    @Deprecated
     public void doLight(Space space){
 		LightSource strongestLightSource = null;
 		int intensity = 0;
@@ -220,8 +230,8 @@ public class Floor{
                         }
                     }
                     int distance = Math.max(Math.abs(xDiff), Math.abs(yDiff));
-                    double light = Math.max(intensity - distance, 0.0);
-                    light = light >= 10 ? 1 : lerp(0,0,10,1,light);
+                    float light = Math.max(intensity - distance, 0.0f);
+                    light = light >= 10 ? 1 : (float)lerp(0,0,10,1,light);
                     if (querySpace.getLight() < light){
                         querySpace.setLight(light);
                     }
@@ -281,7 +291,7 @@ public class Floor{
             j = j > 10 ? 10 : j;
             if (j <= 0)
                 return;
-            double light = lerp(0,0,10,1,j);
+            float light = (float)lerp(0,0,10,1,j);
             if (space.getLight() < light)
                 space.setLight(light);
             if (space.isOccupied() && space.getOccupant().isLightBlocker())

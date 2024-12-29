@@ -159,7 +159,7 @@ public final class FloorMenu extends Menu{
     private void addToLayers(Space current, PlayerEntity playerEntity){
         int x = current.getX();
         int y = current.getY();
-        double darkness = 1.0 - current.getLight();
+        float darkness = 1.0f - current.getLight();
         // double darkness = 0;
 
         spaceLayer.draw(current.getTile(darkness), Position.create(x, y));
