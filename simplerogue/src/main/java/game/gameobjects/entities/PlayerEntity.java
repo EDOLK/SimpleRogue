@@ -11,20 +11,23 @@ import game.gamelogic.Armed;
 import game.gamelogic.Armored;
 import game.gamelogic.Experiential;
 import game.gamelogic.HasInventory;
+import game.gamelogic.HasOffHand;
 import game.gamelogic.Levelable;
 import game.gamelogic.LightSource;
 import game.gamelogic.SelfAware;
 import game.gameobjects.ArmorSlot;
 import game.gameobjects.DamageType;
+import game.gameobjects.ItemSlot;
 import game.gameobjects.Space;
 import game.gameobjects.WeaponSlot;
 import game.gameobjects.items.Corpse;
 import game.gameobjects.items.Item;
+import game.gameobjects.items.Torch;
 import game.gameobjects.items.armor.Armor;
 import game.gameobjects.items.armor.ArmorType;
 import game.gameobjects.items.weapons.Weapon;
 
-public class PlayerEntity extends Entity implements Armored, Armed, Levelable, Experiential, HasInventory, LightSource{
+public class PlayerEntity extends Entity implements Armored, Armed, Levelable, Experiential, HasInventory, LightSource, HasOffHand{
 
     private int maxWeight = 50;
     private int maxMP;
@@ -32,6 +35,7 @@ public class PlayerEntity extends Entity implements Armored, Armed, Levelable, E
     private List<ArmorSlot> armorSlots = new ArrayList<ArmorSlot>();
     private List<WeaponSlot> weaponSlots = new ArrayList<WeaponSlot>();
     private List<Item> inventory = new ArrayList<Item>();
+    private ItemSlot offHandSlot = new ItemSlot("Offhand");
     private int level = 1;
     private int XP = 0;
     private int XPToNextLevel = 15;
@@ -59,7 +63,6 @@ public class PlayerEntity extends Entity implements Armored, Armed, Levelable, E
         club.setDescription("A simple wooden club.");
         club.setWeight(5);
         club.setTileName("Club");
-        addItemToInventory(club);
         
         armorSlots.add(new ArmorSlot(ArmorType.HEAD));
         armorSlots.add(new ArmorSlot(ArmorType.CHEST_OUTER));
@@ -68,7 +71,10 @@ public class PlayerEntity extends Entity implements Armored, Armed, Levelable, E
         armorSlots.add(new ArmorSlot(ArmorType.HANDS));
         armorSlots.add(new ArmorSlot(ArmorType.FEET));
         
-        weaponSlots.add(new WeaponSlot("Primary Weapon", 1.0));
+        WeaponSlot e = new WeaponSlot("Primary Weapon", 1.0);
+        weaponSlots.add(e);
+        e.setEquippedWeapon(club);
+        offHandSlot.setEquippedItem(new Torch(true));
         
     }
 
@@ -167,7 +173,7 @@ public class PlayerEntity extends Entity implements Armored, Armed, Levelable, E
 
     @Override
     public int getLightSourceIntensity() {
-        return 7;
+        return 2;
     }
 
     @Override
@@ -176,7 +182,7 @@ public class PlayerEntity extends Entity implements Armored, Armed, Levelable, E
     }
 
     @Override
-    public boolean dropsEquipedWeaponsOnKill() {
+    public boolean dropsEquippedWeaponsOnKill() {
         return false;
     }
 
@@ -189,6 +195,11 @@ public class PlayerEntity extends Entity implements Armored, Armed, Levelable, E
     public boolean setLevel(int level) {
         this.level = level;
         return true;
+    }
+
+    @Override
+    public ItemSlot getOffHandSlot() {
+        return offHandSlot;
     }
 
 }

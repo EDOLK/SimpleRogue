@@ -42,6 +42,7 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
     protected boolean sightBlocker = false;
     protected boolean gasBlocker = false;
     protected boolean liquidBlocker = false;
+    protected boolean lightBlocker = false;
     private Weapon unarmedWeapon;
     private boolean alive = true;
 
@@ -67,6 +68,14 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
 
     public void setLiquidBlocker(boolean liquidBlocker) {
         this.liquidBlocker = liquidBlocker;
+    }
+
+    public boolean isLightBlocker() {
+        return lightBlocker;
+    }
+
+    public void setLightBlocker(boolean lightBlocker) {
+        this.lightBlocker = lightBlocker;
     }
 
     public Entity(TileColor bGColor, TileColor fGColor, char character) {
@@ -433,7 +442,7 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
             }
         }
 
-        if (this instanceof Armed armed && armed.dropsEquipedWeaponsOnKill()){
+        if (this instanceof Armed armed && armed.dropsEquippedWeaponsOnKill()){
             for (Weapon weapon : armed.getWeapons()) {
                 space.addItem(weapon);
             }

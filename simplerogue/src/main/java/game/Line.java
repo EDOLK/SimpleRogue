@@ -1,6 +1,7 @@
 package game;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import game.gameobjects.Space;
 
@@ -15,14 +16,17 @@ public final class Line {
         }
     }
     
+    @Deprecated
     public static ArrayList<Space> getLineAsArrayList(Space p0, Space p1){
         return getLineAsArrayList(p0, p1, Dungeon.getCurrentFloor().getSpaces());
     }
 
+    @Deprecated
     public static ArrayList<Space> getLineAsArrayListIncludeEnd(Space p0, Space p1){
         return getLineAsArrayListIncludeEnd(p0, p1, Dungeon.getCurrentFloor().getSpaces());
     }
 
+    @Deprecated
     public static ArrayList<Space> getLineAsArrayList(Space p0, Space p1, Space[][] spaces){
         ArrayList<Point> pointList = line(new Point(p0.getX(), p0.getY()), new Point(p1.getX(), p1.getY()));
         ArrayList<Space> spaceList = new ArrayList<Space>();
@@ -32,6 +36,33 @@ public final class Line {
         return spaceList;
     }
 
+    public static List<Space> getLineAsListInclusive(Space p0, Space p1){
+        return getLineAsListInclusive(p0,p1,Dungeon.getCurrentFloor().getSpaces());
+    }
+
+    public static List<Space> getLineAsListExclusive(Space p0, Space p1){
+        return getLineAsListExclusive(p0,p1,Dungeon.getCurrentFloor().getSpaces());
+    }
+
+    public static List<Space> getLineAsListInclusive(Space p0, Space p1, Space[][] spaces){
+        ArrayList<Point> pointList = line(new Point(p0.getX(), p0.getY()), new Point(p1.getX(), p1.getY()));
+        ArrayList<Space> spaceList = new ArrayList<Space>();
+        for (int i = 0; i < pointList.size(); i++) {
+            spaceList.add(spaces[(int)pointList.get(i).x][(int)pointList.get(i).y]);
+        }
+        return spaceList;
+    }
+
+    public static List<Space> getLineAsListExclusive(Space p0, Space p1, Space[][] spaces){
+        ArrayList<Point> pointList = line(new Point(p0.getX(), p0.getY()), new Point(p1.getX(), p1.getY()));
+        ArrayList<Space> spaceList = new ArrayList<Space>();
+        for (int i = 1; i < pointList.size()-1; i++) {
+            spaceList.add(spaces[(int)pointList.get(i).x][(int)pointList.get(i).y]);
+        }
+        return spaceList;
+    }
+
+    @Deprecated
     public static ArrayList<Space> getLineAsArrayListIncludeEnd(Space p0, Space p1, Space[][] spaces){
         ArrayList<Point> pointList = line(new Point(p0.getX(), p0.getY()), new Point(p1.getX(), p1.getY()));
         ArrayList<Space> spaceList = new ArrayList<Space>();

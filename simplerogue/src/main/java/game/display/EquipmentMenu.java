@@ -9,17 +9,17 @@ import org.hexworks.zircon.api.component.Header;
 import org.hexworks.zircon.api.component.Panel;
 import org.hexworks.zircon.api.data.Position;
 import org.hexworks.zircon.api.graphics.BoxType;
-import org.hexworks.zircon.api.uievent.ComponentEvent;
 import org.hexworks.zircon.api.uievent.ComponentEventType;
 import org.hexworks.zircon.api.uievent.UIEventResponse;
 
 import game.gamelogic.Armed;
 import game.gamelogic.Armored;
+import game.gamelogic.HasOffHand;
 import game.gameobjects.ArmorSlot;
+import game.gameobjects.ItemSlot;
 import game.gameobjects.WeaponSlot;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.items.armor.Armor;
-import kotlin.jvm.functions.Function1;
 
 public class EquipmentMenu extends Menu{
 
@@ -28,14 +28,14 @@ public class EquipmentMenu extends Menu{
     }
     
     public static EquipmentMenu createExamineEquipmentMenu(Entity entity){
-        return equipmentMenuHelper(entity, new WeaponSlotExamineFunction(entity), new ArmorSlotExamineFunction(entity));
+        return equipmentExamineMenuHelper(entity);
     }
     
     public static EquipmentMenu createEquipEquipmentMenu(Entity entity){
-        return equipmentMenuHelper(entity, new WeaponSlotButtonFunction(entity), new ArmorSlotButtonFunction(entity));
+        return equipmentEquipMenuHelper(entity);
     }
     
-    private static EquipmentMenu equipmentMenuHelper(Entity entity, WeaponSlotButtonFunction weaponFunction, ArmorSlotButtonFunction armorFunction){
+    private static EquipmentMenu equipmentExamineMenuHelper(Entity entity){
         EquipmentMenu equipmentMenu = new EquipmentMenu(entity);
 
         Panel equipmentPanel = PanelBuilder.newBuilder()
@@ -52,7 +52,7 @@ public class EquipmentMenu extends Menu{
             for (WeaponSlot weaponSlot : armed.getWeaponSlots()) {
                 Header weaponHeader = HeaderBuilder.newBuilder()
                     .withText(weaponSlot.getWeaponSlotName() + ":")
-                    .withPosition(pos,0)
+                    .withPosition(0,pos)
                     .build();
                 pos++;
                 equipmentPanel.addComponent(weaponHeader);
@@ -60,12 +60,43 @@ public class EquipmentMenu extends Menu{
                     .withText(weaponSlot.getEquippedWeapon() != null ? weaponSlot.getEquippedWeapon().getName() : "Nothing")
                     .withSize(equipmentPanel.getWidth()-3, 1)
                     .withDecorations()
-                    .withPosition(pos, 1)
+                    .withPosition(1, pos)
                     .build();
-                weaponButton.handleComponentEvents(ComponentEventType.ACTIVATED, weaponFunction.withButton(weaponButton).withSlot(weaponSlot).build());
+                weaponButton.handleComponentEvents(ComponentEventType.ACTIVATED, event -> {
+                    if (weaponSlot.getEquippedWeapon() != null){
+                        Display.setMenu(new ExamineMenu(weaponSlot.getEquippedWeapon()));
+                    }
+                    return UIEventResponse.processed();
+                });
                 equipmentPanel.addComponent(weaponButton);
                 pos ++;
             }
+        }
+
+        if (entity instanceof HasOffHand hasOffHand){
+
+            ItemSlot itemSlot = hasOffHand.getOffHandSlot();
+
+            Header itemHeader = HeaderBuilder.newBuilder()
+                .withText(itemSlot.getItemSlotName() + ":")
+                .withPosition(0,pos)
+                .build();
+            pos++;
+            equipmentPanel.addComponent(itemHeader);
+            Button itemButton = ButtonBuilder.newBuilder()
+                .withText(itemSlot.getEquippedItem() != null ? itemSlot.getEquippedItem().getName() : "Nothing")
+                .withSize(equipmentPanel.getWidth()-3, 1)
+                .withDecorations()
+                .withPosition(1, pos)
+                .build();
+            itemButton.handleComponentEvents(ComponentEventType.ACTIVATED, event -> {
+                if (itemSlot.getEquippedItem() != null){
+                    Display.setMenu(new ExamineMenu(itemSlot.getEquippedItem()));
+                }
+                return UIEventResponse.processed();
+            });
+            equipmentPanel.addComponent(itemButton);
+            pos ++;
         }
         
         if (entity instanceof Armored armored){
@@ -90,7 +121,12 @@ public class EquipmentMenu extends Menu{
                     .withPosition(1, pos)
                     .build();
                 
-                armorButton.handleComponentEvents(ComponentEventType.ACTIVATED, armorFunction.withButton(armorButton).withSlot(armorSlot).build());
+                armorButton.handleComponentEvents(ComponentEventType.ACTIVATED, event -> {
+                    if (armorSlot.getEquippedArmor() != null){
+                        Display.setMenu(new ExamineMenu(armorSlot.getEquippedArmor()));
+                    }
+                    return UIEventResponse.processed();
+                });
                 
                 equipmentPanel.addComponent(armorButton);
 
@@ -99,138 +135,93 @@ public class EquipmentMenu extends Menu{
         }
         return equipmentMenu;
     }
-    
-    /**
-     * ArmorSlotButtonFunction 
-     */
-    public static class ArmorSlotButtonFunction{
-        
-        protected Button armorButton;
-        protected ArmorSlot armorSlot;
-        protected Entity entity;
+    private static EquipmentMenu equipmentEquipMenuHelper(Entity entity){
+        EquipmentMenu equipmentMenu = new EquipmentMenu(entity);
 
-        public ArmorSlotButtonFunction(Entity entity){
-            this.entity = entity;
-        }
-        
-        public ArmorSlotButtonFunction withButton(Button button){
-            this.armorButton = button;
-            return this;
-        }
+        Panel equipmentPanel = PanelBuilder.newBuilder()
+            .withPosition(Position.create(equipmentMenu.screen.getWidth()/2 - (equipmentMenu.screen.getWidth()/3/2), equipmentMenu.screen.getHeight()/2 - (equipmentMenu.screen.getHeight()/3/2)))
+            .withSize(equipmentMenu.screen.getWidth()/3, equipmentMenu.screen.getHeight()/3)
+            .withDecorations(ComponentDecorations.box(BoxType.SINGLE, "Equipment"))
+            .build();
 
-        public ArmorSlotButtonFunction withSlot(ArmorSlot slot){
-            this.armorSlot = slot;
-            return this;
-        }
-        
-        public Function1<ComponentEvent, UIEventResponse> build(){
-            final ArmorSlot currentSlot = armorSlot;
-            final Entity currentEntity = entity;
-            final Button currentButton = armorButton;
-            return new Function1<ComponentEvent,UIEventResponse>() {
+        equipmentMenu.screen.addComponent(equipmentPanel);
 
-                @Override
-                public UIEventResponse invoke(ComponentEvent arg0) {
-                    Display.setMenu(ItemSelectMenu.createArmorSelectMenu(currentSlot, currentEntity, currentButton));
+        int pos = 0;
+
+        if (entity instanceof Armed armed){
+            for (WeaponSlot weaponSlot : armed.getWeaponSlots()) {
+                Header weaponHeader = HeaderBuilder.newBuilder()
+                    .withText(weaponSlot.getWeaponSlotName() + ":")
+                    .withPosition(0,pos)
+                    .build();
+                equipmentPanel.addComponent(weaponHeader);
+                pos++;
+                Button weaponButton = ButtonBuilder.newBuilder()
+                    .withText(weaponSlot.getEquippedWeapon() != null ? weaponSlot.getEquippedWeapon().getName() : "Nothing")
+                    .withSize(equipmentPanel.getWidth()-3, 1)
+                    .withDecorations()
+                    .withPosition(1, pos)
+                    .build();
+                weaponButton.handleComponentEvents(ComponentEventType.ACTIVATED, event -> {
+                    Display.setMenu(ItemSelectMenu.createWeaponSelectMenu(weaponButton, weaponSlot, entity));
                     return UIEventResponse.processed();
-                }
-                
-            };
-        }
-    
-    }
-    /**
-     * ArmorSlotExamineFunction
-     */
-    public static class ArmorSlotExamineFunction extends ArmorSlotButtonFunction {
-
-        public ArmorSlotExamineFunction(Entity entity) {
-            super(entity);
+                });
+                equipmentPanel.addComponent(weaponButton);
+                pos++;
+            }
         }
         
+        if (entity instanceof HasOffHand hasOffHand){
 
-        @Override
-        public Function1<ComponentEvent, UIEventResponse> build() {
-            final ArmorSlot currentSlot = armorSlot;
-            return new Function1<ComponentEvent,UIEventResponse>() {
-                @Override
-                public UIEventResponse invoke(ComponentEvent arg0) {
-                    if (currentSlot.getEquippedArmor() != null){
-                        Display.setMenu(new ExamineMenu(currentSlot.getEquippedArmor()));
-                    }
+            ItemSlot itemSlot = hasOffHand.getOffHandSlot();
+            Header itemHeader = HeaderBuilder.newBuilder()
+                .withText(itemSlot.getItemSlotName() + ":")
+                .withPosition(0,pos)
+                .build();
+            equipmentPanel.addComponent(itemHeader);
+            pos++;
+
+            Button itemButton = ButtonBuilder.newBuilder()
+                .withText(itemSlot.getEquippedItem() != null ? itemSlot.getEquippedItem().getName() : "Nothing")
+                .withSize(equipmentPanel.getWidth()-3, 1)
+                .withDecorations()
+                .withPosition(1,pos)
+                .build();
+            itemButton.handleComponentEvents(ComponentEventType.ACTIVATED, event -> {
+                Display.setMenu(ItemSelectMenu.createItemSelectMenu(itemButton, itemSlot, entity));
+                return UIEventResponse.processed();
+            });
+            equipmentPanel.addComponent(itemButton);
+            pos++;
+        }
+
+        if (entity instanceof Armored armored){
+            for (int i = 0; i < armored.getArmorSlots().size(); i ++) {
+
+                ArmorSlot armorSlot = armored.getArmorSlots().get(i);
+                Header armorSlotHeader = HeaderBuilder.newBuilder()
+                    .withText(armorSlot.getType().toString() + ":")
+                    .withPosition(0, pos)
+                    .build();
+                equipmentPanel.addComponent(armorSlotHeader);
+                pos++;
+
+                Armor equipedArmor = armorSlot.getEquippedArmor();
+                Button armorButton = ButtonBuilder.newBuilder()
+                    .withText(equipedArmor != null ? equipedArmor.getName() : "Nothing")
+                    .withSize(equipmentPanel.getWidth()-3, 1)
+                    .withDecorations()
+                    .withPosition(1, pos)
+                    .build();
+                armorButton.handleComponentEvents(ComponentEventType.ACTIVATED, event -> {
+                    Display.setMenu(ItemSelectMenu.createArmorSelectMenu(armorSlot,entity,armorButton));
                     return UIEventResponse.processed();
-                }
-            };
+                });
+                equipmentPanel.addComponent(armorButton);
+                pos++;
+            }
         }
-    }
-    
-    /**
-     * WeaponSlotButtonFunction
-     */
-    public static class WeaponSlotButtonFunction {
-    
-        protected Button weaponButton;
-        protected WeaponSlot weaponSlot;
-        protected Entity entity;
-
-        public WeaponSlotButtonFunction(Entity entity) {
-            this.entity = entity;
-        }
-        
-        public WeaponSlotButtonFunction withButton(Button button){
-            this.weaponButton = button;
-            return this;
-        }
-
-        public WeaponSlotButtonFunction withSlot(WeaponSlot slot){
-            this.weaponSlot = slot;
-            return this;
-        }
-
-        public Function1<ComponentEvent, UIEventResponse> build(){
-            final WeaponSlot currentSlot = weaponSlot;
-            final Entity currentEntity = entity;
-            final Button currentButton = weaponButton;
-            return new Function1<ComponentEvent,UIEventResponse>() {
-
-                @Override
-                public UIEventResponse invoke(ComponentEvent arg0) {
-                    Display.setMenu(ItemSelectMenu.createWeaponSelectMenu(currentButton, currentSlot, currentEntity));
-                    return UIEventResponse.processed();
-                }
-                
-            };
-        }
-        
-    }
-    
-    /**
-     * WeaponSlotExamineFunction
-     */
-    public static class WeaponSlotExamineFunction extends WeaponSlotButtonFunction {
-
-        public WeaponSlotExamineFunction(Entity entity) {
-            super(entity);
-        }
-
-        @Override
-        public Function1<ComponentEvent, UIEventResponse> build() {
-            
-            return new Function1<ComponentEvent,UIEventResponse>() {
-                final WeaponSlot currentSlot = weaponSlot;
-                @Override
-                public UIEventResponse invoke(ComponentEvent arg0) {
-                    if (currentSlot.getEquippedWeapon() != null){
-                        Display.setMenu(new ExamineMenu(currentSlot.getEquippedWeapon()));
-                    }
-                    return UIEventResponse.processed();
-                }
-
-            };
-
-        }
-        
-        
+        return equipmentMenu;
     }
     
 }
