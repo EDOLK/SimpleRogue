@@ -91,6 +91,13 @@ public class Floor{
         return spaces[x][y];
     }
 
+    public int clampX(int x){
+        return x = x >= SIZE_X ? SIZE_X-1 : (x < 0 ? 0 : x);
+    }
+
+    public int clampY(int y){
+        return y = y >= SIZE_Y ? SIZE_Y-1 : (y < 0 ? 0 : y);
+    }
 
 	public void update(){
 
@@ -618,17 +625,5 @@ public class Floor{
         }
         return accuracy;
     }
-
-    public void doOnHitted(Entity entity, AttackInfo info){
-        
-    }
-	
-	public int getSIZE_X() {
-		return SIZE_X;
-	}
-
-	public int getSIZE_Y() {
-		return SIZE_Y;
-	}
 
 }
