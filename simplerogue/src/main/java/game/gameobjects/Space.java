@@ -95,14 +95,14 @@ public class Space extends DisplayableTile{
     private Entity occupant;
     private ArrayList<Item> items;
     private ArrayList<Terrain> terrains;
-    private double light = 0.0;
+    private float light = 0.0f;
 
     private final int X;
     private final int Y;
 
     public Space(int x, int y){
         // this(TileColor.create(255,255,255,255), TileColor.create(0, 0, 0, 255), '█', x, y);
-        this(TileColor.create(0,0,0,0), TileColor.create(255, 255, 255, 255), '.', x, y);
+        this(TileColor.create(0, 0, 0, 0), TileColor.create(60, 60, 60, 255), '.', x, y);
     }
 
     public Space(TileColor bGColor, TileColor fGColor, char character, int x, int y) {
@@ -115,11 +115,11 @@ public class Space extends DisplayableTile{
         terrains = new ArrayList<Terrain>();
     }
     
-    public double getLight() {
+    public float getLight() {
         return light;
     }
 
-    public void setLight(double light) {
+    public void setLight(float light) {
         this.light = light;
     }
     

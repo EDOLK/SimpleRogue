@@ -59,6 +59,7 @@ public final class FloorMenu extends Menu{
     private Layer gasLayer;
     private Layer cursorLayer;
     private Layer healthBarLayer;
+    private Layer darknessLayer;
     private Floor currentFloor;
     private LogArea logMessageArea;
     private Header hpText;
@@ -133,11 +134,13 @@ public final class FloorMenu extends Menu{
         gasLayer.clear();
         cursorLayer.clear();
         healthBarLayer.clear();
+        if (Display.getMode() == Mode.GRAPHICAL)
+            darknessLayer.clear();
         ArrayList<Space> visibleSpaces = new ArrayList<Space>();
         for (int x = 0; x < currentFloor.SIZE_X; x++) {
             for (int y = 0; y < currentFloor.SIZE_Y; y++){
                 Space current = currentFloor.getSpace(x, y);
-                if (playerEntity.isWithinVision(current)){
+                if (playerEntity.isWithinVision(current) && current.getLight() != 0){
                     visibleSpaces.add(current);
                 }
                 // visibleSpaces.add(current);
@@ -150,14 +153,15 @@ public final class FloorMenu extends Menu{
         }
 
         updatePlayerStatus(playerEntity);
+        drawCursor(playerEntity);
 
     }
 
     private void addToLayers(Space current, PlayerEntity playerEntity){
         int x = current.getX();
         int y = current.getY();
-        // double darkness = 1.0 - current.getLight();
-        double darkness = 0;
+        float darkness = 1.0f - current.getLight();
+        // double darkness = 0;
 
         spaceLayer.draw(current.getTile(darkness), Position.create(x, y));
 
@@ -166,50 +170,69 @@ public final class FloorMenu extends Menu{
         }
 
         if (current.isOccupied()){
-            Entity occupant = current.getOccupant();
-            entityLayer.draw(occupant.getTile(darkness), Position.create(x, y));
-            if (!occupant.getStatuses().isEmpty()){
-                statusLayer.draw(occupant.getStatuses().get(0).getTile(darkness), Position.create(x, y));
-            }
-            if (Display.getMode() == Mode.GRAPHICAL && occupant.getHP() < occupant.getMaxHP()){
-                int healthBarValue = (int)lerp(0, 7, occupant.getMaxHP(), 1, occupant.getHP());
-                Tile healthBar = Tile.newBuilder()
-                    .withName("Health Bar " + healthBarValue)
-                    .withTileset(Display.getGraphicalTileSet())
-                    .buildGraphicalTile();
-                healthBarLayer.draw(healthBar, Position.create(x, y));
-            }
+            drawEntity(current.getOccupant(), x, y, darkness);
         }
 
         for (Terrain terrain : current.getTerrains()) {
-            if (terrain instanceof Liquid liquid){
-                if (liquid.getDepth() <= 1){
-                    lowLiquidLayer.draw(liquid.getTile(darkness), Position.create(x, y));
-                    continue;
-                }
-                if (liquid.getDepth() <= 5){
-                    midLiquidLayer.draw(liquid.getTile(darkness), Position.create(x, y));
-                    continue;
-                }
-                if (liquid.getDepth() <= 10){
-                    highLiquidLayer.draw(liquid.getTile(darkness), Position.create(x, y));
-                    continue;
-                }
-            } else if (terrain instanceof Gas gas){
-                gasLayer.draw(gas.getTile(darkness), Position.create(x, y));
-            } else if (terrain instanceof Trap trap){
-                trapLayer.draw(trap.getTile(darkness), Position.create(x, y));
-            } else {
-                terrainLayer.draw(terrain.getTile(darkness), Position.create(x, y));
-            }
+            drawTerrain( terrain, x, y, darkness);
         }
 
+        if (Display.getMode() == Mode.GRAPHICAL){
+            int darkValue = (int)(darkness * 10);
+            Tile darknessTile = Tile.newBuilder()
+                .withName("Darkness " + darkValue)
+                .withTileset(Display.getGraphicalTileSet())
+                .buildGraphicalTile();
+            darknessLayer.draw(darknessTile, Position.create(x, y));
+        }
+    }
+
+    private void drawCursor(PlayerEntity playerEntity) {
         if (cursor != null){
-            if (cursor.getSelectedSpace().equals(current)){
-                cursorLayer.draw(cursor.getTile(darkness), Position.create(x, y));
+            Space cursorSpace = cursor.getSelectedSpace();
+            cursorLayer.draw(cursor.getTile(), Position.create(cursorSpace.getX(), cursorSpace.getY()));
+            if (cursor.getSelectedSpace().getLight() > 0 && playerEntity.isWithinVision(cursorSpace)) {
                 cursor.collectExaminables();
                 setExamineTooltip();
             }
+        }
+    }
+
+    private void drawTerrain(Terrain terrain, int x, int y, double darkness) {
+        if (terrain instanceof Liquid liquid){
+            if (liquid.getDepth() <= 1){
+                lowLiquidLayer.draw(liquid.getTile(darkness), Position.create(x, y));
+                return;
+            }
+            if (liquid.getDepth() <= 5){
+                midLiquidLayer.draw(liquid.getTile(darkness), Position.create(x, y));
+                return;
+            }
+            if (liquid.getDepth() <= 10){
+                highLiquidLayer.draw(liquid.getTile(darkness), Position.create(x, y));
+                return;
+            }
+        } else if (terrain instanceof Gas gas){
+            gasLayer.draw(gas.getTile(darkness), Position.create(x, y));
+        } else if (terrain instanceof Trap trap){
+            trapLayer.draw(trap.getTile(darkness), Position.create(x, y));
+        } else {
+            terrainLayer.draw(terrain.getTile(darkness), Position.create(x, y));
+        }
+    }
+
+    private void drawEntity(Entity occupant, int x, int y, double darkness) {
+        entityLayer.draw(occupant.getTile(darkness), Position.create(x, y));
+        if (!occupant.getStatuses().isEmpty()){
+            statusLayer.draw(occupant.getStatuses().get(0).getTile(darkness), Position.create(x, y));
+        }
+        if (Display.getMode() == Mode.GRAPHICAL && occupant.getHP() < occupant.getMaxHP()){
+            int healthBarValue = (int)lerp(0, 7, occupant.getMaxHP(), 1, occupant.getHP());
+            Tile healthBar = Tile.newBuilder()
+                .withName("Health Bar " + healthBarValue)
+                .withTileset(Display.getGraphicalTileSet())
+                .buildGraphicalTile();
+            healthBarLayer.draw(healthBar, Position.create(x, y));
         }
     }
 
@@ -427,6 +450,13 @@ public final class FloorMenu extends Menu{
             .withSize(currentFloor.SIZE_X, currentFloor.SIZE_Y)
             .build();
         screen.addLayer(gasLayer);
+
+        if (Display.getMode() == Mode.GRAPHICAL){
+            darknessLayer = Layer.newBuilder()
+                .withSize(currentFloor.SIZE_X, currentFloor.SIZE_Y)
+                .build();
+            screen.addLayer(darknessLayer);
+        }
 
         cursorLayer = LayerBuilder.newBuilder()
             .withSize(currentFloor.SIZE_X, currentFloor.SIZE_Y)
@@ -758,7 +788,7 @@ public final class FloorMenu extends Menu{
         Cursor currentCursor = getCursor();
         int cursorX = currentCursor.getSelectedSpace().getX();
         int cursorY = currentCursor.getSelectedSpace().getY();
-        Space toMove = currentFloor.getSpace(cursorX+toX, cursorY+toY);
+        Space toMove = currentFloor.getClampedSpace(cursorX+toX, cursorY+toY);
         currentCursor.setSelectedSpace(toMove);
         update();
     }
