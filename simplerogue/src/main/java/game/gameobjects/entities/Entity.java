@@ -277,7 +277,7 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
     }
 
     public boolean isWithinVision(Space space){
-        if (space.getX() < getX() - visionRange || space.getX() > getX() + visionRange || space.getY() < getY() - visionRange || space.getY() > getY() + visionRange){
+        if (space.getX() < getX() - visionRange+1 || space.getX() > getX() + visionRange-1 || space.getY() < getY() - visionRange+1 || space.getY() > getY() + visionRange-1){
             return false;
         }
         boolean b = canDrawLine(space);
@@ -285,9 +285,8 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
             outer:
             for (int x = -1; x <= 1; x++) {
                 for (int y = -1; y <= 1 ; y++) {
-                    if (x == 1 && y == 1) {
+                    if (x == 1 && y == 1)
                         continue;
-                    }
                     Space p = Dungeon.getCurrentFloor().getClampedSpace(space.getX() + x, space.getY() + y);
                     if (canDrawLine(p) && (!p.isOccupied() || !p.getOccupant().isSightBlocker())) {
                         b = true;
