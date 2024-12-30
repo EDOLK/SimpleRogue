@@ -1,6 +1,7 @@
 package game.floorgeneration;
 
 import game.gameobjects.items.Item;
+import game.gameobjects.items.Torch;
 import game.gameobjects.items.armor.Armor;
 import game.gameobjects.items.armor.Chainmail;
 import game.gameobjects.items.armor.Cloak;
@@ -61,6 +62,8 @@ public class ItemFactory{
 				return new ShortSword();
             case SCROLL_OF_UPGRADE:
                 return new ScrollOfUpgrade();
+            case TORCH:
+                return new Torch(false);
             default:
 				return null;
         }
@@ -83,6 +86,23 @@ public class ItemFactory{
     }
 
     public enum ItemIdentifier{
-        SHORTSWORD, HANDAXE, DAGGER, BO_STAFF, FIRE_POTION, HEALING_POTION, CHAINMAIL, CLOAK, IRON_GREAVES, IRON_HELM, LEATHER_ARMOR, LEATHER_CAP, LEATHER_GLOVES, LEATHER_PANTS, PLATE_ARMOR, PLATE_GAUNTLETS, SCROLL_OF_UPGRADE,
+        SHORTSWORD,
+        HANDAXE,
+        DAGGER,
+        BO_STAFF,
+        FIRE_POTION,
+        HEALING_POTION,
+        CHAINMAIL,
+        CLOAK,
+        IRON_GREAVES,
+        IRON_HELM,
+        LEATHER_ARMOR,
+        LEATHER_CAP,
+        LEATHER_GLOVES,
+        LEATHER_PANTS,
+        PLATE_ARMOR,
+        PLATE_GAUNTLETS,
+        SCROLL_OF_UPGRADE,
+        TORCH,
     }
 }

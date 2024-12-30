@@ -122,6 +122,22 @@ public class Floor{
                         }
                     }
 
+                    if (entity instanceof Armed armedOccupant){
+                        for (Weapon weapon : armedOccupant.getWeapons()) {
+                            if (weapon instanceof Behavable behavableWeapon) {
+                                behavables.add(behavableWeapon);
+                            }
+                        }
+                    }
+
+                    if (entity instanceof Armored armoredOccupant){
+                        for (Armor armor : armoredOccupant.getArmor()) {
+                            if (armor instanceof Behavable behavableArmor) {
+                                behavables.add(behavableArmor);
+                            }
+                        }
+                    }
+
 				}
 
 				for (Item item : currentSpace.getItems()) {
@@ -257,6 +273,16 @@ public class Floor{
 			for (Status status : occupant.getStatuses()) {
                 strongestLightSource = calculateLightSource(strongestLightSource, status);
 			}
+            if (occupant instanceof Armed armedOccupant){
+                for (Weapon weapon : armedOccupant.getWeapons()) {
+                    strongestLightSource = calculateLightSource(strongestLightSource, weapon);
+                }
+            }
+            if (occupant instanceof Armored armoredOccupant){
+                for (Armor armor : armoredOccupant.getArmor()) {
+                    strongestLightSource = calculateLightSource(strongestLightSource, armor);
+                }
+            }
             if (occupant instanceof HasOffHand hasOffHand && hasOffHand.getOffHandSlot().getEquippedItem() != null){
                 strongestLightSource = calculateLightSource(strongestLightSource, hasOffHand.getOffHandSlot().getEquippedItem());
             }

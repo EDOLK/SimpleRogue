@@ -9,11 +9,13 @@ import game.gamelogic.Interactable;
 import game.gamelogic.LightSource;
 import game.gamelogic.SelfAware;
 import game.gamelogic.behavior.Behavable;
+import game.gameobjects.DamageType;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Entity;
+import game.gameobjects.items.weapons.Weapon;
 import game.gameobjects.terrains.Fire;
 
-public class Torch extends Item implements Flammable, LightSource, SelfAware, Behavable, Interactable {
+public class Torch extends Weapon implements Flammable, LightSource, SelfAware, Behavable, Interactable {
 
     private boolean lit = false;
     private int maxFuel = 500;
@@ -29,6 +31,15 @@ public class Torch extends Item implements Flammable, LightSource, SelfAware, Be
         setbGColor(TileColor.transparent());
         setDescription("A torch.");
         setWeight(1);
+        if (lit) {
+            setMinDamage(0);
+            setMaxDamage(3);
+            setDamageType(DamageType.FIRE);
+        } else {
+            setMinDamage(0);
+            setMaxDamage(2);
+            setDamageType(DamageType.BLUNT);
+        }
     }
 
     public Torch() {
@@ -78,6 +89,9 @@ public class Torch extends Item implements Flammable, LightSource, SelfAware, Be
         if (fuel <= 0) {
             lit = false;
             this.setName("Burnt Torch");
+            setMinDamage(0);
+            setMaxDamage(2);
+            setDamageType(DamageType.BLUNT);
         }
     }
 
@@ -90,6 +104,9 @@ public class Torch extends Item implements Flammable, LightSource, SelfAware, Be
     public void onInteract(Entity interactor) {
         if (!lit){
             lit = true;
+            setMinDamage(0);
+            setMaxDamage(3);
+            setDamageType(DamageType.FIRE);
         } else {
             Display.log("The torch is already lit.");
         }

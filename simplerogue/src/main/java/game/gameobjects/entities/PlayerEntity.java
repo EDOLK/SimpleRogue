@@ -63,8 +63,6 @@ public class PlayerEntity extends Entity implements Armored, Armed, Levelable, E
         club.setDescription("A simple wooden club.");
         club.setWeight(5);
         club.setTileName("Club");
-        addItemToInventory(club);
-        addItemToInventory(new Torch());
         
         armorSlots.add(new ArmorSlot(ArmorType.HEAD));
         armorSlots.add(new ArmorSlot(ArmorType.CHEST_OUTER));
@@ -73,7 +71,10 @@ public class PlayerEntity extends Entity implements Armored, Armed, Levelable, E
         armorSlots.add(new ArmorSlot(ArmorType.HANDS));
         armorSlots.add(new ArmorSlot(ArmorType.FEET));
         
-        weaponSlots.add(new WeaponSlot("Primary Weapon", 1.0));
+        WeaponSlot e = new WeaponSlot("Primary Weapon", 1.0);
+        weaponSlots.add(e);
+        e.setEquippedWeapon(club);
+        offHandSlot.setEquippedItem(new Torch(true));
         
     }
 

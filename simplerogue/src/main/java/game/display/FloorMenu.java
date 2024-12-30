@@ -153,6 +153,7 @@ public final class FloorMenu extends Menu{
         }
 
         updatePlayerStatus(playerEntity);
+        drawCursor(playerEntity);
 
     }
 
@@ -184,10 +185,13 @@ public final class FloorMenu extends Menu{
                 .buildGraphicalTile();
             darknessLayer.draw(darknessTile, Position.create(x, y));
         }
+    }
 
+    private void drawCursor(PlayerEntity playerEntity) {
         if (cursor != null){
-            if (cursor.getSelectedSpace().equals(current)){
-                cursorLayer.draw(cursor.getTile(darkness), Position.create(x, y));
+            Space cursorSpace = cursor.getSelectedSpace();
+            cursorLayer.draw(cursor.getTile(), Position.create(cursorSpace.getX(), cursorSpace.getY()));
+            if (cursor.getSelectedSpace().getLight() > 0 && playerEntity.isWithinVision(cursorSpace)) {
                 cursor.collectExaminables();
                 setExamineTooltip();
             }
@@ -784,11 +788,9 @@ public final class FloorMenu extends Menu{
         Cursor currentCursor = getCursor();
         int cursorX = currentCursor.getSelectedSpace().getX();
         int cursorY = currentCursor.getSelectedSpace().getY();
-        Space toMove = currentFloor.getSpace(cursorX+toX, cursorY+toY);
-        if (toMove.getLight() > 0 && currentFloor.getPlayer().isWithinVision(toMove)){
-            currentCursor.setSelectedSpace(toMove);
-            update();
-        }
+        Space toMove = currentFloor.getClampedSpace(cursorX+toX, cursorY+toY);
+        currentCursor.setSelectedSpace(toMove);
+        update();
     }
     
     public UIEventResponse handleGetting(KeyboardEvent event, UIEventPhase phase){
