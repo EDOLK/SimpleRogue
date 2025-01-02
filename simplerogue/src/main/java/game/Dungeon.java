@@ -77,7 +77,7 @@ public class Dungeon {
             currentDepth++;
             currentFloor = generateFloor(currentDepth, playerEntity);
             FloorMenu floorMenu = new FloorMenu();
-            Display.setFloorMenu(floorMenu);
+            Display.setRootMenu(floorMenu);
             Display.setMenu(floorMenu);
             floorMenu.update();
         }

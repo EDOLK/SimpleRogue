@@ -38,7 +38,7 @@ public class Display {
     private static TileGrid tileGrid;
 
     private static Menu currentMenu;
-    private static FloorMenu floorMenu;
+    private static FloorMenu rootMenu;
     private static Mode mode = Mode.GRAPHICAL;
 
     private static KeyMap keyMap = new KeyMap();
@@ -73,12 +73,12 @@ public class Display {
         Display.mode = mode;
     }
 
-    public static void setFloorMenu(FloorMenu floorMenu) {
-        Display.floorMenu = floorMenu;
+    public static void setRootMenu(FloorMenu floorMenu) {
+        Display.rootMenu = floorMenu;
     }
 
-    public static FloorMenu getFloorMenu() {
-        return floorMenu;
+    public static FloorMenu getRootMenu() {
+        return rootMenu;
     }
 
     public static TilesetResource getGraphicalTileSet() {
@@ -104,27 +104,34 @@ public class Display {
                 .build()
         );
         FloorMenu floorMenu = new FloorMenu();
-        setFloorMenu(floorMenu);
+        setRootMenu(floorMenu);
         setMenu(floorMenu);
         floorMenu.update();
     }
     
     public static void log(String message){
-        floorMenu.addToLog(message);
+        rootMenu.addToLog(message);
     }
 
     public static void log(String message, Space space){
-        floorMenu.addToLog(message, space);
+        rootMenu.addToLog(message, space);
     }
     
     public static void update(){
-        floorMenu.update();
+        rootMenu.update();
     }
     
     public static void setMenu(Menu menu){
         menu.setPreviousMenu(currentMenu);
         currentMenu = menu;
         menu.getScreen().display();
+    }
+
+    public static void replaceMenu(Menu menu){
+        Menu prevMenu = currentMenu.getPreviousMenu();
+        currentMenu = menu;
+        currentMenu.setPreviousMenu(prevMenu);
+        currentMenu.getScreen().display();
     }
 
     public static void forgetMenus(){
@@ -138,10 +145,13 @@ public class Display {
     
     public static void revertMenu(){
         if (currentMenu != null){
-            Menu previousMenu = currentMenu.getPreviousMenu();
-            if (previousMenu != null){
-                currentMenu = previousMenu;
-                previousMenu.getScreen().display();
+            Menu prevMenu = currentMenu.getPreviousMenu();
+            if (prevMenu != null){
+                Menu prePrevMenu = prevMenu.getPreviousMenu();
+                prevMenu = prevMenu.refresh();
+                prevMenu.setPreviousMenu(prePrevMenu);
+                currentMenu = prevMenu;
+                currentMenu.getScreen().display();
             }
         }
     }

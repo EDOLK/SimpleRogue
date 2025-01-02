@@ -34,8 +34,13 @@ public class ItemContextMenu extends Menu{
     private boolean weapon = false;
     private boolean armor = false;
 
+    private Item item;
+    private PlayerEntity playerEntity;
+
     public ItemContextMenu(Item item, PlayerEntity playerEntity){
         super();
+        this.item = item;
+        this.playerEntity = playerEntity;
 
         int width = item.getName().length() > 8 ? item.getName().length()+5 : 15;
         int height = 8;
@@ -127,8 +132,7 @@ public class ItemContextMenu extends Menu{
                     playerEntity.removeItemFromInventory(item);
                 }
                 Display.revertMenu();
-                Display.revertMenu();
-                Display.setMenu(ItemSelectMenu.createInventoryMenu(Dungeon.getCurrentFloor().getPlayer()));
+                // Display.setMenu(ItemSelectMenu.createInventoryMenu(Dungeon.getCurrentFloor().getPlayer()));
                 return UIEventResponse.processed();
             });
             itemPanel.addComponent(equipButton);
@@ -154,8 +158,6 @@ public class ItemContextMenu extends Menu{
                         playerEntity.addItemToInventory(thisArmorSlot.setEquippedArmor((Armor)item));
                         playerEntity.removeItemFromInventory(item);
                         Display.revertMenu();
-                        Display.revertMenu();
-                        Display.setMenu(ItemSelectMenu.createInventoryMenu(Dungeon.getCurrentFloor().getPlayer()));
                     } catch (Exception e) {
                         Display.log(e.getMessage());
                     }
@@ -175,7 +177,6 @@ public class ItemContextMenu extends Menu{
                 if(((Consumable)item).consume(playerEntity)){
                     playerEntity.removeItemFromInventory(item);
                 }
-                Display.revertMenu();
                 Display.revertMenu();
                 return UIEventResponse.processed();
             });
@@ -209,7 +210,7 @@ public class ItemContextMenu extends Menu{
             readButton.handleComponentEvents(ComponentEventType.ACTIVATED, (event) ->{
                 if (item instanceof Scrollable readableItem){
                     if (readableItem.read(playerEntity) && !readableItem.opensMenu()){
-                        Display.setAndForgetMenus(Display.getFloorMenu());
+                        Display.setAndForgetMenus(Display.getRootMenu());
                     }
                 }
                 return UIEventResponse.processed();
@@ -233,5 +234,9 @@ public class ItemContextMenu extends Menu{
 
     }
 
-    
+    @Override
+    public Menu refresh() {
+        return new ItemContextMenu(this.item, this.playerEntity);
+    }
+
 }
