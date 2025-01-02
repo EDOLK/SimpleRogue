@@ -58,17 +58,6 @@ public class Floor{
 		this.player = player;
 		floorGenerator.generateFloor(spaces, player);
 
-		for (int x = 0; x < spaces.length; x++) {
-			for (int y = 0; y < spaces[x].length; y++) {
-				spaces[x][y].setLight(0.0f);
-			}
-		}
-		for (int x = 0; x < spaces.length; x++) {
-			for (int y = 0; y < spaces[x].length; y++) {
-        doLight(spaces[x][y]);
-			}
-		}
-
 	}
 
 	public PlayerEntity getPlayer() {

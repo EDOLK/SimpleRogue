@@ -6,7 +6,7 @@ import game.floorgeneration.Pools;
 public class App 
 {
     public static void main(String[] args){
-        Pools.inintialize();
+        Pools.initialize();
         Dungeon.initialize(50, 50);
         Display.initialize(70, 61);
     }

@@ -22,7 +22,7 @@ public class Pools {
     
     public final static Pool<Class<? extends Entity>> LAYER_ONE_CHEST_POOL = new Pool<Class<? extends Entity>>();
     
-    public static void inintialize(){
+    public static void initialize(){
         
         Map<Class<? extends Entity>, Integer> layerOneChestMap = new HashMap<Class<? extends Entity>, Integer>();
         layerOneChestMap.put(Chest.class, 20);
