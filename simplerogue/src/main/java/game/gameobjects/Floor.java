@@ -83,21 +83,21 @@ public class Floor{
 		return spaces[x][y];
 	}
 
-  public Space getClampedSpace(int x, int y){
-    x = x >= SIZE_X ? SIZE_X-1 : x;
-    x = x < 0 ? 0 : x;
-    y = y >= SIZE_Y ? SIZE_Y-1 : y;
-    y = y < 0 ? 0 : y;
-    return spaces[x][y];
-  }
+    public Space getClampedSpace(int x, int y){
+        x = x >= SIZE_X ? SIZE_X-1 : x;
+        x = x < 0 ? 0 : x;
+        y = y >= SIZE_Y ? SIZE_Y-1 : y;
+        y = y < 0 ? 0 : y;
+        return spaces[x][y];
+    }
 
-  public int clampX(int x){
-    return x = x >= SIZE_X ? SIZE_X-1 : (x < 0 ? 0 : x);
-  }
+    public int clampX(int x){
+        return x = x >= SIZE_X ? SIZE_X-1 : (x < 0 ? 0 : x);
+    }
 
-  public int clampY(int y){
-    return y = y >= SIZE_Y ? SIZE_Y-1 : (y < 0 ? 0 : y);
-  }
+    public int clampY(int y){
+        return y = y >= SIZE_Y ? SIZE_Y-1 : (y < 0 ? 0 : y);
+    }
 
 	public void update(){
 

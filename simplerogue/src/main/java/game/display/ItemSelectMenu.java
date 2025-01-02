@@ -32,6 +32,16 @@ import game.gameobjects.items.weapons.Weapon;
 
 public class ItemSelectMenu extends Menu{
 
+    private Type type;
+    private HasInventory[] inventories;
+    private Entity entity;
+    private Space space;
+    private ArmorSlot armorSlot;
+    private WeaponSlot weaponSlot;
+    private ItemSlot itemSlot;
+    private Upgrader upgrader;
+
+
     private VBox createVbox(){
         return VBoxBuilder.newBuilder()
             .withPosition(Position.create(screen.getWidth()/2 - (screen.getWidth()/3/2), screen.getHeight()/2 - (screen.getHeight()/3/2)))
@@ -53,13 +63,14 @@ public class ItemSelectMenu extends Menu{
 
     public static ItemSelectMenu createDropMenu(Space space, HasInventory dropper){
         ItemSelectMenu itemSelectMenu = new ItemSelectMenu(false);
+        itemSelectMenu.type = Type.DROP;
+        itemSelectMenu.space = space;
+        itemSelectMenu.inventories = new HasInventory[]{dropper};
         Container container = Display.createFittedContainer(itemSelectMenu.screen, "Dropping", dropper.getInventory());
         Function<Item, UIEventResponse> function = (item) ->{
             dropper.removeItemFromInventory(item);
             space.addItem(item);
-            Display.update();
-            Display.revertMenu();
-            Display.setMenu(ItemSelectMenu.createDropMenu(space, dropper));
+            Display.replaceMenu(itemSelectMenu.refresh());
             return UIEventResponse.processed();
         };
         Display.populateContainer(container, function, dropper.getInventory());
@@ -69,6 +80,9 @@ public class ItemSelectMenu extends Menu{
     
     public static ItemSelectMenu createPickupMenu(Space space, HasInventory pickUpper){
         ItemSelectMenu itemSelectMenu = new ItemSelectMenu(false);
+        itemSelectMenu.type = Type.PICKUP;
+        itemSelectMenu.space = space;
+        itemSelectMenu.inventories = new HasInventory[]{pickUpper};
 
         Function<Item, UIEventResponse> function = (item) ->{
             if (pickUpper.addItemToInventory(item)){
@@ -78,9 +92,7 @@ public class ItemSelectMenu extends Menu{
                 Display.log("The " + item.getName() + " is too heavy.");
             }
 
-            Display.revertMenu();
-            Display.setMenu(createPickupMenu(space, pickUpper));
-            Display.update();
+            Display.replaceMenu(itemSelectMenu.refresh());
 
             return UIEventResponse.processed();
         };
@@ -90,6 +102,8 @@ public class ItemSelectMenu extends Menu{
     
     public static ItemSelectMenu createInventoryTransferMenu(HasInventory fromInventory, HasInventory toInventory){
         ItemSelectMenu menu = new ItemSelectMenu();
+        menu.type = Type.INVENTORY_TRANSFER;
+        menu.inventories = new HasInventory[]{fromInventory,toInventory};
         Function<Item, UIEventResponse> function = (item) ->{
             if (toInventory.addItemToInventory(item)){
                 fromInventory.removeItemFromInventory(item);
@@ -97,9 +111,7 @@ public class ItemSelectMenu extends Menu{
             } else {
                 Display.log("The " + item.getName() + " is too heavy.");
             }
-            Display.revertMenu();
-            Display.setMenu(createInventoryTransferMenu(fromInventory, toInventory));
-            Display.update();
+            Display.setMenu(menu.refresh());
             return UIEventResponse.processed();
         };
         String name = "Pickup";
@@ -112,6 +124,8 @@ public class ItemSelectMenu extends Menu{
     
     public static ItemSelectMenu createConsumableSelectMenu(Entity consumer){
         ItemSelectMenu itemSelectMenu = new ItemSelectMenu(false);
+        itemSelectMenu.type = Type.CONSUMABLE;
+        itemSelectMenu.entity = consumer;
 
         ArrayList<Item> items = new ArrayList<Item>();
         if (consumer instanceof HasInventory hasInventory){
@@ -136,8 +150,10 @@ public class ItemSelectMenu extends Menu{
         return itemSelectMenu;
     }
     
-    public static ItemSelectMenu createWeaponSelectMenu(Button button, WeaponSlot weaponSlot, Entity entity){
+    public static ItemSelectMenu createWeaponSelectMenu(WeaponSlot weaponSlot, Entity entity){
         ItemSelectMenu itemSelectMenu = new ItemSelectMenu(false);
+        itemSelectMenu.weaponSlot = weaponSlot;
+        itemSelectMenu.entity = entity;
         ArrayList<Weapon> weapons = new ArrayList<Weapon>();
         if (entity instanceof HasInventory hasInventory){
             for (Item item : hasInventory.getInventory()) {
@@ -153,7 +169,6 @@ public class ItemSelectMenu extends Menu{
         nothing.setName("Nothing");
         
         Function<Item, UIEventResponse> nothingFunction = nonItem ->{
-            button.setText("Nothing");
             if (entity instanceof HasInventory hasInventory){
                 hasInventory.addItemToInventory(weaponSlot.setEquippedWeapon(null));
             } else {
@@ -166,7 +181,6 @@ public class ItemSelectMenu extends Menu{
         Display.populateContainer(container, nothingFunction, nothing);
         
         Function<Weapon, UIEventResponse> function = newWeapon -> {
-            button.setText(newWeapon.getName());
             if (entity instanceof HasInventory hasInventory){
                 hasInventory.removeItemFromInventory(newWeapon);
                 hasInventory.addItemToInventory(weaponSlot.setEquippedWeapon(newWeapon));
@@ -183,8 +197,10 @@ public class ItemSelectMenu extends Menu{
         return itemSelectMenu;
     }
     
-    public static ItemSelectMenu createArmorSelectMenu(ArmorSlot armorSlot, Entity entity, Button button){
+    public static ItemSelectMenu createArmorSelectMenu(ArmorSlot armorSlot, Entity entity){
         ItemSelectMenu itemSelectMenu = new ItemSelectMenu(false);
+        itemSelectMenu.armorSlot = armorSlot;
+        itemSelectMenu.entity = entity;
         
         ArrayList<Armor> armors = new ArrayList<Armor>();
         if (entity instanceof HasInventory hasInventory){
@@ -203,7 +219,6 @@ public class ItemSelectMenu extends Menu{
         nothing.setName("Nothing");
         
         Function<Item, UIEventResponse> nothingFunction = nonItem ->{
-            button.setText("Nothing");
             try {
                 if (entity instanceof HasInventory hasInventory){
                     hasInventory.addItemToInventory(armorSlot.setEquippedArmor(null));
@@ -222,7 +237,6 @@ public class ItemSelectMenu extends Menu{
         Function<Armor, UIEventResponse> armorFunction = new Function<Armor,UIEventResponse>() {
             @Override
             public UIEventResponse apply(Armor armor){
-                button.setText(armor.getName());
                 try {
                     if (entity instanceof HasInventory hasInventory){
                         hasInventory.removeItemFromInventory(armor);
@@ -247,6 +261,8 @@ public class ItemSelectMenu extends Menu{
 
     public static ItemSelectMenu createThrowMenu(HasInventory hasInventory){
         ItemSelectMenu itemSelectMenu = new ItemSelectMenu();
+        itemSelectMenu.type = Type.THROW;
+        itemSelectMenu.inventories = new HasInventory[]{hasInventory};
         List<Item> aimables = new ArrayList<Item>();
         for (Item item : hasInventory.getInventory()) {
             if (item instanceof Aimable){
@@ -275,6 +291,8 @@ public class ItemSelectMenu extends Menu{
     
     public static ItemSelectMenu createInventoryMenu(PlayerEntity playerEntity){
         ItemSelectMenu itemSelectMenu = new ItemSelectMenu();
+        itemSelectMenu.entity = playerEntity;
+        itemSelectMenu.type = Type.INVENTORY;
         List<Item> list = playerEntity.getInventory();
         Container container = Display.createFittedContainer(itemSelectMenu.screen, "Inventory", list);
         Function <Item, UIEventResponse> function = (item) ->{
@@ -288,6 +306,9 @@ public class ItemSelectMenu extends Menu{
     
     public static ItemSelectMenu createUpgradeMenu(Upgrader upgrader, HasInventory hasInventory){
         ItemSelectMenu itemSelectMenu = new ItemSelectMenu();
+        itemSelectMenu.upgrader = upgrader;
+        itemSelectMenu.inventories = new HasInventory[]{hasInventory};
+        itemSelectMenu.type = Type.UPGRADE;
         List<Item> list = new ArrayList<Item>();
         for (Item item : hasInventory.getInventory()) {
             if (item instanceof Upgradable upgradable && upgradable.canUpgrade(upgrader)){
@@ -301,7 +322,7 @@ public class ItemSelectMenu extends Menu{
                     hasInventory.removeItemFromInventory((Item)upgrader);
                 }
             }
-            Display.setAndForgetMenus(Display.getFloorMenu());
+            Display.setAndForgetMenus(Display.getRootMenu());
             return UIEventResponse.processed();
         };
         Display.populateContainer(container, function, list);
@@ -309,9 +330,12 @@ public class ItemSelectMenu extends Menu{
         return itemSelectMenu;
     }
 
-    public static Menu createItemSelectMenu(Button itemButton, ItemSlot itemSlot, Entity entity) {
+    public static Menu createItemSelectMenu(ItemSlot itemSlot, Entity entity) {
 
         ItemSelectMenu itemSelectMenu = new ItemSelectMenu(false);
+        itemSelectMenu.type = Type.ITEM;
+        itemSelectMenu.itemSlot = itemSlot;
+        itemSelectMenu.entity = entity;
         
         ArrayList<Item> items = new ArrayList<>();
         if (entity instanceof HasInventory hasInventory){
@@ -325,7 +349,6 @@ public class ItemSelectMenu extends Menu{
         nothing.setName("Nothing");
         
         Function<Item, UIEventResponse> nothingFunction = nonItem ->{
-            itemButton.setText("Nothing");
             try {
                 if (entity instanceof HasInventory hasInventory){
                     hasInventory.addItemToInventory(itemSlot.setEquippedItem(null));
@@ -344,7 +367,6 @@ public class ItemSelectMenu extends Menu{
         Function<Item, UIEventResponse> itemFunction = new Function<Item,UIEventResponse>() {
             @Override
             public UIEventResponse apply(Item item){
-                itemButton.setText(item.getName());
                 try {
                     if (entity instanceof HasInventory hasInventory){
                         hasInventory.removeItemFromInventory(item);
@@ -366,4 +388,46 @@ public class ItemSelectMenu extends Menu{
 
         return itemSelectMenu;
     }
+
+    private enum Type{
+        DROP,
+        PICKUP,
+        INVENTORY_TRANSFER,
+        CONSUMABLE,
+        WEAPON,
+        ARMOR,
+        THROW,
+        INVENTORY,
+        UPGRADE,
+        ITEM;
+    }
+
+    @Override
+    public Menu refresh() {
+        switch (this.type) {
+            case ARMOR:
+                return ItemSelectMenu.createArmorSelectMenu(this.armorSlot, this.entity);
+            case CONSUMABLE:
+                return ItemSelectMenu.createConsumableSelectMenu(this.entity);
+            case DROP:
+                return ItemSelectMenu.createDropMenu(this.space, this.inventories[0]);
+            case INVENTORY:
+                return ItemSelectMenu.createInventoryMenu((PlayerEntity)this.entity);
+            case INVENTORY_TRANSFER:
+                return ItemSelectMenu.createInventoryTransferMenu(this.inventories[0],this.inventories[1]);
+            case ITEM:
+                return ItemSelectMenu.createItemSelectMenu(this.itemSlot,this.entity);
+            case PICKUP:
+                return ItemSelectMenu.createPickupMenu(this.space, this.inventories[0]);
+            case THROW:
+                return ItemSelectMenu.createThrowMenu(this.inventories[0]);
+            case UPGRADE:
+                return ItemSelectMenu.createUpgradeMenu(this.upgrader, this.inventories[0]);
+            case WEAPON:
+                return ItemSelectMenu.createWeaponSelectMenu(this.weaponSlot, this.entity);
+            default:
+                return new ItemSelectMenu();
+        }
+    }
+
 }

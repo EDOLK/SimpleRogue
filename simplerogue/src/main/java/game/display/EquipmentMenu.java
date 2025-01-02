@@ -23,6 +23,9 @@ import game.gameobjects.items.armor.Armor;
 
 public class EquipmentMenu extends Menu{
 
+    private Entity entity;
+    private boolean equip;
+
     public EquipmentMenu(Entity entity){
         super();
     }
@@ -37,7 +40,8 @@ public class EquipmentMenu extends Menu{
     
     private static EquipmentMenu equipmentExamineMenuHelper(Entity entity){
         EquipmentMenu equipmentMenu = new EquipmentMenu(entity);
-
+        equipmentMenu.entity = entity;
+        equipmentMenu.equip = false;
         Panel equipmentPanel = PanelBuilder.newBuilder()
             .withPosition(Position.create(equipmentMenu.screen.getWidth()/2 - (equipmentMenu.screen.getWidth()/3/2), equipmentMenu.screen.getHeight()/2 - (equipmentMenu.screen.getHeight()/3/2)))
             .withSize(equipmentMenu.screen.getWidth()/3, equipmentMenu.screen.getHeight()/3)
@@ -137,6 +141,8 @@ public class EquipmentMenu extends Menu{
     }
     private static EquipmentMenu equipmentEquipMenuHelper(Entity entity){
         EquipmentMenu equipmentMenu = new EquipmentMenu(entity);
+        equipmentMenu.entity = entity;
+        equipmentMenu.equip = true;
 
         Panel equipmentPanel = PanelBuilder.newBuilder()
             .withPosition(Position.create(equipmentMenu.screen.getWidth()/2 - (equipmentMenu.screen.getWidth()/3/2), equipmentMenu.screen.getHeight()/2 - (equipmentMenu.screen.getHeight()/3/2)))
@@ -163,7 +169,7 @@ public class EquipmentMenu extends Menu{
                     .withPosition(1, pos)
                     .build();
                 weaponButton.handleComponentEvents(ComponentEventType.ACTIVATED, event -> {
-                    Display.setMenu(ItemSelectMenu.createWeaponSelectMenu(weaponButton, weaponSlot, entity));
+                    Display.setMenu(ItemSelectMenu.createWeaponSelectMenu(weaponSlot, entity));
                     return UIEventResponse.processed();
                 });
                 equipmentPanel.addComponent(weaponButton);
@@ -188,7 +194,7 @@ public class EquipmentMenu extends Menu{
                 .withPosition(1,pos)
                 .build();
             itemButton.handleComponentEvents(ComponentEventType.ACTIVATED, event -> {
-                Display.setMenu(ItemSelectMenu.createItemSelectMenu(itemButton, itemSlot, entity));
+                Display.setMenu(ItemSelectMenu.createItemSelectMenu(itemSlot, entity));
                 return UIEventResponse.processed();
             });
             equipmentPanel.addComponent(itemButton);
@@ -214,7 +220,7 @@ public class EquipmentMenu extends Menu{
                     .withPosition(1, pos)
                     .build();
                 armorButton.handleComponentEvents(ComponentEventType.ACTIVATED, event -> {
-                    Display.setMenu(ItemSelectMenu.createArmorSelectMenu(armorSlot,entity,armorButton));
+                    Display.setMenu(ItemSelectMenu.createArmorSelectMenu(armorSlot,entity));
                     return UIEventResponse.processed();
                 });
                 equipmentPanel.addComponent(armorButton);
@@ -222,6 +228,15 @@ public class EquipmentMenu extends Menu{
             }
         }
         return equipmentMenu;
+    }
+
+    @Override
+    public Menu refresh() {
+        if (equip) {
+            return equipmentEquipMenuHelper(this.entity);
+        } else {
+            return equipmentExamineMenuHelper(this.entity);
+        }
     }
     
 }

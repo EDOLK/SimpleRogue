@@ -946,7 +946,7 @@ public final class FloorMenu extends Menu{
                 if (thowingItem instanceof Item item){
                     currentFloor.getPlayer().removeItemFromInventory(item);
                 }
-                Display.setAndForgetMenus(Display.getFloorMenu());
+                Display.setAndForgetMenus(Display.getRootMenu());
                 Display.update();
                 break;
             default:
@@ -964,7 +964,7 @@ public final class FloorMenu extends Menu{
     
     public UIEventResponse handleDroppingSingular(KeyboardEvent event, UIEventPhase phase){
 
-        FloorMenu floorMenu = Display.getFloorMenu();
+        FloorMenu floorMenu = Display.getRootMenu();
 
         switch (Display.getKeyMap().getAction(event.getCode())) {
             case UP: //up
@@ -1031,6 +1031,12 @@ public final class FloorMenu extends Menu{
 
     public static enum State{
         INGAME, EXAMINE, GETTING, DROPPING, DEAD, AIMING, INTERACTING, DROPPING_SINGULAR, COLLECTING_LIQUID;
+    }
+
+    @Override
+    public Menu refresh() {
+        this.update();
+        return this;
     }
  
 }
