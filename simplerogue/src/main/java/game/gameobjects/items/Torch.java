@@ -9,13 +9,16 @@ import game.gamelogic.Interactable;
 import game.gamelogic.LightSource;
 import game.gamelogic.SelfAware;
 import game.gamelogic.behavior.Behavable;
+import game.gamelogic.combat.AttackInfo;
+import game.gamelogic.combat.OnCrit;
 import game.gameobjects.DamageType;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.items.weapons.Weapon;
+import game.gameobjects.statuses.Burning;
 import game.gameobjects.terrains.Fire;
 
-public class Torch extends Weapon implements Flammable, LightSource, SelfAware, Behavable, Interactable {
+public class Torch extends Weapon implements Flammable, LightSource, SelfAware, Behavable, Interactable, OnCrit {
 
     private boolean lit = false;
     private int maxFuel = 500;
@@ -111,6 +114,12 @@ public class Torch extends Weapon implements Flammable, LightSource, SelfAware, 
             Display.log("The torch is already lit.");
         }
         Display.revertMenu();
+    }
+
+    @Override
+    public void activate(Entity self, Entity other, AttackInfo attackInfo) {
+        if (lit)
+            other.addStatus(new Burning());
     }
 
 }

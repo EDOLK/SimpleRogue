@@ -105,14 +105,22 @@ public class Space extends DisplayableTile{
         this(TileColor.create(0, 0, 0, 0), TileColor.create(60, 60, 60, 255), '.', x, y);
     }
 
-    public Space(TileColor bGColor, TileColor fGColor, char character, int x, int y) {
+    public Space(TileColor bGColor, TileColor fGColor, char character, String tileName, int x, int y) {
         super(bGColor, fGColor, character);
         this.X = x;
         this.Y = y;
         setOccupant(null);
-        setTileName("Space");
+        setTileName(tileName);
         items = new ArrayList<Item>();
         terrains = new ArrayList<Terrain>();
+    }
+
+    public Space(TileColor bGColor, TileColor fGColor, char character, int x, int y) {
+        this(bGColor, fGColor, character, "Space", x, y);
+    }
+
+    public Space(String tileName, int x, int y) {
+        this(TileColor.create(0, 0, 0, 0), TileColor.create(60, 60, 60, 255), '.', tileName, x, y);
     }
     
     public float getLight() {

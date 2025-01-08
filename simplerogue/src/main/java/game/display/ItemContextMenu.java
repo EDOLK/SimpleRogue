@@ -13,7 +13,6 @@ import org.hexworks.zircon.api.graphics.BoxType;
 import org.hexworks.zircon.api.uievent.ComponentEventType;
 import org.hexworks.zircon.api.uievent.UIEventResponse;
 
-import game.Dungeon;
 import game.display.FloorMenu.State;
 import game.gamelogic.Aimable;
 import game.gamelogic.Consumable;

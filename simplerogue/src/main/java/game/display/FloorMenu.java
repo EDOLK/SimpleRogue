@@ -4,6 +4,7 @@ import static game.App.lerp;
 import static game.gameobjects.Space.moveEntity;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.hexworks.zircon.api.ComponentDecorations;
 import org.hexworks.zircon.api.builder.component.HeaderBuilder;
@@ -931,7 +932,8 @@ public final class FloorMenu extends Menu{
                         thowingItem.onLand(currentFloor.getPlayer().getSpace());
                     }
                 } else {
-                    ArrayList<Space> path = Line.getLineAsArrayListIncludeEnd(currentFloor.getPlayer().getSpace(), aimingSpace);
+                    List<Space> path = Line.getLineAsListInclusive(currentFloor.getPlayer().getSpace(), aimingSpace);
+                    path.remove(0);
                     Space spawnSpace = path.get(0);
                     ThrownItem thrownItem = new ThrownItem(thowingItem, spawnSpace, aimingSpace, 6);
                     if (!spawnSpace.isOccupied()){

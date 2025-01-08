@@ -6,7 +6,6 @@ import java.util.function.Function;
 
 import org.hexworks.zircon.api.ComponentDecorations;
 import org.hexworks.zircon.api.builder.component.VBoxBuilder;
-import org.hexworks.zircon.api.component.Button;
 import org.hexworks.zircon.api.component.Container;
 import org.hexworks.zircon.api.component.VBox;
 import org.hexworks.zircon.api.data.Position;
@@ -111,7 +110,7 @@ public class ItemSelectMenu extends Menu{
             } else {
                 Display.log("The " + item.getName() + " is too heavy.");
             }
-            Display.setMenu(menu.refresh());
+            Display.replaceMenu(menu.refresh());
             return UIEventResponse.processed();
         };
         String name = "Pickup";

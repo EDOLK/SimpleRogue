@@ -4,6 +4,7 @@ import static game.App.randomNumber;
 
 import game.display.Display;
 import game.display.FloorMenu;
+import game.floorgeneration.DebugFloorGenerator;
 import game.floorgeneration.DefaultFloorGenerator;
 import game.floorgeneration.Pool;
 import game.floorgeneration.Pools;
@@ -64,7 +65,8 @@ public class Dungeon {
     
     public static void initialize(int sizeX, int sizeY){
         currentDepth = 1;
-        currentFloor = new Floor(sizeX, sizeY, new DefaultFloorGenerator(currentDepth));
+        // currentFloor = new Floor(sizeX, sizeY, new DefaultFloorGenerator(currentDepth));
+        currentFloor = new Floor(sizeX, sizeY, new DebugFloorGenerator(currentDepth));
     }
     
     public static void update(){
