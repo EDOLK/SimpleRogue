@@ -65,8 +65,7 @@ public class Dungeon {
     
     public static void initialize(int sizeX, int sizeY){
         currentDepth = 1;
-        // currentFloor = new Floor(sizeX, sizeY, new DefaultFloorGenerator(currentDepth));
-        currentFloor = new Floor(sizeX, sizeY, new DebugFloorGenerator(currentDepth));
+        currentFloor = new Floor(sizeX, sizeY, new DefaultFloorGenerator(currentDepth));
     }
     
     public static void update(){
