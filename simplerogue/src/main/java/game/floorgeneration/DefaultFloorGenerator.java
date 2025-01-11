@@ -2,8 +2,6 @@ package game.floorgeneration;
 
 import static game.App.randomNumber;
 
-import org.hexworks.zircon.api.color.TileColor;
-
 import game.Dungeon;
 import game.floorgeneration.builders.EntityBuilder;
 import game.gameobjects.Space;

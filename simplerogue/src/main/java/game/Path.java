@@ -1,6 +1,7 @@
 package game;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Stack;
 
@@ -45,6 +46,7 @@ public final class Path {
         int y;
         double g;
         double h;
+        double d;
         double f;
         Cords parentCords;
         boolean passable = true;
@@ -62,16 +64,25 @@ public final class Path {
         }
     }
 
-    // returns our path from startingSpace to destinationSpace, with startingSpace and destinationSpace included.
+    /** Returns our path from startingSpace to destinationSpace, with startingSpace and destinationSpace included. */
     public static Space[] getPathAsArray(Space startingSpace, Space destinationSpace) throws PathNotFoundException{
+        return getPathAsArray(startingSpace, destinationSpace, null);
+    }
+
+    /** Returns our path from startingSpace to destinationSpace, with startingSpace and destinationSpace included. */
+    public static Space[] getPathAsArray(Space startingSpace, Space destinationSpace, PathConditions conditions) throws PathNotFoundException{
         Space[][] spaces = Dungeon.getCurrentFloor().getSpaces();
         Node[][] grid = new Node[spaces.length][spaces[0].length];
         for (int x = 0; x < spaces.length; x++) {
             for (int y = 0; y < spaces[x].length; y++) {
                 grid[x][y] = new Node(x, y);
-                if (spaces[x][y].isOccupied() && spaces[x][y] != destinationSpace && spaces[x][y] != startingSpace){
-                    grid[x][y].passable = false;
+                Space space = spaces[x][y];
+                if (space != destinationSpace && space != startingSpace){
+                    if (space.isOccupied() || (conditions != null && conditions.evaluateForForbidden(space))) {
+                        grid[x][y].passable = false;
+                    }
                 }
+                grid[x][y].d = conditions != null ? conditions.evaluateForDeterrent(space) : 0;
             }
         }
         Node startingNode = grid[startingSpace.getX()][startingSpace.getY()];
@@ -90,11 +101,11 @@ public final class Path {
 
     private static Node[] getPath(Node startingNode, Node destinationNode, Node[][] grid) throws PathNotFoundException{
         PriorityQueue<Node> open = new PriorityQueue<Node>();
-        ArrayList<Node> closed = new ArrayList<Node>();
+        List<Node> closed = new ArrayList<Node>();
 
         startingNode.g = 0;
         startingNode.h = generateH(startingNode, destinationNode);
-        startingNode.f = startingNode.h + startingNode.g;
+        startingNode.f = startingNode.h + startingNode.g + startingNode.d;
 
         open.add(startingNode);
         while (!open.isEmpty()) {
@@ -103,7 +114,7 @@ public final class Path {
             if (current.x == destinationNode.x && current.y == destinationNode.y){
                 break;
             }
-            ArrayList<Node> neighbors = new ArrayList<Node>();
+            List<Node> neighbors = new ArrayList<Node>();
             for (int i = -1; i <= 1; i++) {
                 for (int j = -1; j <= 1; j++) {
                     if (i == 0 && j == 0){
@@ -127,7 +138,8 @@ public final class Path {
                 testNode.parentCords = new Cords(current.x, current.y);
                 testNode.g = generateG(testNode, grid);
                 testNode.h = generateH(testNode, destinationNode);
-                testNode.f = testNode.g + testNode.h;
+                testNode.d = neighborNode.d;
+                testNode.f = testNode.g + testNode.h + testNode.d;
 
                 boolean quitByClosed = false;
                 for (Node closedNode : closed) {
@@ -148,6 +160,7 @@ public final class Path {
 
                             openNode.g = testNode.g;
                             openNode.h = testNode.h;
+                            openNode.d = testNode.d;
                             openNode.f = testNode.f;
                             openNode.parentCords = testNode.parentCords;
 
@@ -159,6 +172,7 @@ public final class Path {
                     Node referencedNode = grid[testNode.x][testNode.y];
                     referencedNode.g = testNode.g;
                     referencedNode.h = testNode.h;
+                    referencedNode.d = testNode.d;
                     referencedNode.f = testNode.f;
                     referencedNode.parentCords = testNode.parentCords;
                     open.add(referencedNode);

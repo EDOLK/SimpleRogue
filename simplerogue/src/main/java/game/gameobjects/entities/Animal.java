@@ -5,6 +5,7 @@ import static game.Dungeon.getCurrentFloor;
 
 import org.hexworks.zircon.api.color.TileColor;
 
+import game.Path.PathNotFoundException;
 import game.PathFinder;
 import game.gamelogic.behavior.Behavior;
 import game.gamelogic.behavior.HasBehavior;
@@ -93,7 +94,7 @@ public abstract class Animal extends Entity implements HasBehavior{
             currentTarget = checkForTarget();
             if (currentTarget != null){
                 try {
-                    pathFinder = new PathFinder(getSpace(), currentTarget.getSpace());
+                    pathFinder = pathToTarget(currentTarget);
                     pathFinder.iterate();
                 } catch (Exception e) {
                     wander();
@@ -123,11 +124,19 @@ public abstract class Animal extends Entity implements HasBehavior{
         protected void wander(){
             wanderSpace = getEmptyViableSpace();
             try {
-                pathFinder = new PathFinder(getSpace(), wanderSpace);
+                pathFinder = pathToSpace(wanderSpace);
                 pathFinder.iterate();
             } catch (Exception e) {
                 wander();
             }
+        }
+
+        protected PathFinder pathToTarget(Entity target) throws PathNotFoundException {
+            return new PathFinder(getSpace(), target.getSpace());
+        }
+
+        protected PathFinder pathToSpace(Space space) throws PathNotFoundException{
+            return new PathFinder(getSpace(), space);
         }
         
     }
