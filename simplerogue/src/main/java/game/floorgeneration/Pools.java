@@ -1,9 +1,18 @@
 package game.floorgeneration;
 
+import static game.App.randomNumber;
+
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import game.floorgeneration.ItemFactory.ItemIdentifier;
+import game.gameobjects.enchantments.ArmorEnchantment;
+import game.gameobjects.enchantments.Clotting;
+import game.gameobjects.enchantments.Flaming;
+import game.gameobjects.enchantments.Lucky;
+import game.gameobjects.enchantments.Thorny;
+import game.gameobjects.enchantments.WeaponEnchantment;
 import game.gameobjects.entities.Chest;
 import game.gameobjects.entities.DireRat;
 import game.gameobjects.entities.Entity;
@@ -21,6 +30,14 @@ public class Pools {
     public final static Pool<ItemIdentifier> LAYER_ONE_TREASURE_POOL = new Pool<ItemIdentifier>();
     
     public final static Pool<Class<? extends Entity>> LAYER_ONE_CHEST_POOL = new Pool<Class<? extends Entity>>();
+
+    public final static List<WeaponEnchantment> WEAPON_ENCHANTMENT_LIST= List.of(
+        new Flaming(), new Lucky()
+    );
+
+    public final static List<ArmorEnchantment> ARMOR_ENCHANTMENT_LIST = List.of(
+        new Thorny(), new Clotting()
+    );
     
     public static void initialize(){
         
@@ -59,6 +76,7 @@ public class Pools {
         layerOneTreasureMap.put(ItemIdentifier.IRON_HELM, 7);
         layerOneTreasureMap.put(ItemIdentifier.PLATE_GAUNTLETS, 7);
         layerOneTreasureMap.put(ItemIdentifier.SCROLL_OF_UPGRADE, 10);
+        layerOneTreasureMap.put(ItemIdentifier.SCROLL_OF_ENCHANTMENT, 10);
         layerOneTreasureMap.put(ItemIdentifier.PLATE_ARMOR, 10);
         layerOneTreasureMap.put(ItemIdentifier.BO_STAFF, 5);
         layerOneTreasureMap.put(ItemIdentifier.DAGGER, 10);
@@ -66,5 +84,11 @@ public class Pools {
         layerOneTreasureMap.put(ItemIdentifier.HANDAXE, 5);
         layerOneTreasureMap.put(ItemIdentifier.TORCH, 3);
         LAYER_ONE_TREASURE_POOL.setMap(layerOneTreasureMap);
+
+
+    }
+
+    public static <T> T getRandom(List<T> list){
+        return list.get(randomNumber(0,list.size()-1));
     }
 }

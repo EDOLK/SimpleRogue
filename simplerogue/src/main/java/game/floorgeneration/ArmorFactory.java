@@ -1,5 +1,6 @@
 package game.floorgeneration;
 
+import game.gamelogic.Upgradable;
 import game.gamelogic.Upgrader;
 import game.gameobjects.enchantments.ArmorEnchantment;
 import game.gameobjects.items.armor.Armor;
@@ -14,10 +15,13 @@ public class ArmorFactory extends ItemFactory{
     
     public ArmorFactory withLevel(int level){
         Upgrader upgrader = new Upgrader() {
+
             @Override
-            public int getUpgradeValue() {
-                return level;
+            public boolean doUpgrade(Upgradable upgradable) {
+                armor.setLevel(armor.getLevel() + level);
+                return true;
             }
+
         };
         armor.upgrade(upgrader);
         return this;

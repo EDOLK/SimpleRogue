@@ -15,6 +15,7 @@ import game.gameobjects.items.armor.PlateArmor;
 import game.gameobjects.items.armor.PlateGauntlets;
 import game.gameobjects.items.potions.FirePotion;
 import game.gameobjects.items.potions.HealingPotion;
+import game.gameobjects.items.scrolls.ScrollOfEnchantment;
 import game.gameobjects.items.scrolls.ScrollOfUpgrade;
 import game.gameobjects.items.weapons.BoStaff;
 import game.gameobjects.items.weapons.Dagger;
@@ -64,6 +65,8 @@ public class ItemFactory{
                 return new ScrollOfUpgrade();
             case TORCH:
                 return new Torch(false);
+            case SCROLL_OF_ENCHANTMENT:
+                return new ScrollOfEnchantment();
             default:
                 return null;
         }
@@ -104,5 +107,6 @@ public class ItemFactory{
         PLATE_GAUNTLETS,
         SCROLL_OF_UPGRADE,
         TORCH,
+        SCROLL_OF_ENCHANTMENT,
     }
 }

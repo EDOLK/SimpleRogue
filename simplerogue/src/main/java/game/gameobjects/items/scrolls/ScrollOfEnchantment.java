@@ -4,9 +4,9 @@ import org.hexworks.zircon.api.color.TileColor;
 
 import game.display.Display;
 import game.display.ItemSelectMenu;
+import game.floorgeneration.Pools;
 import game.gamelogic.Flammable;
 import game.gamelogic.HasInventory;
-import game.gamelogic.Levelable;
 import game.gamelogic.Scrollable;
 import game.gamelogic.SelfAware;
 import game.gamelogic.Upgradable;
@@ -14,19 +14,21 @@ import game.gamelogic.Upgrader;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.items.Item;
+import game.gameobjects.items.armor.Armor;
+import game.gameobjects.items.weapons.Weapon;
 import game.gameobjects.terrains.Fire;
 
-public class ScrollOfUpgrade extends Item implements SelfAware, Scrollable, Flammable, Upgrader{
+public class ScrollOfEnchantment extends Item implements SelfAware, Scrollable, Flammable, Upgrader {
 
     private Space currentSpace;
-    
-    public ScrollOfUpgrade(){
+
+    public ScrollOfEnchantment(){
         setCharacter('\"');
         setfGColor(TileColor.create(255, 184, 133, 255));
         setbGColor(TileColor.transparent());
         setTileName("Scroll");
-        setDescription("A scroll of upgrade. Very flammable.");
-        setName("Scroll of upgrade");
+        setDescription("A scroll of enchantment. Very flammable.");
+        setName("Scroll of enchantment");
         setWeight(1);
     }
 
@@ -44,7 +46,20 @@ public class ScrollOfUpgrade extends Item implements SelfAware, Scrollable, Flam
     @Override
     public boolean read(Entity reader) {
         if (reader instanceof HasInventory hasInventory){
-            Display.setMenu(ItemSelectMenu.createUpgradeMenu(this, hasInventory));
+            Display.setMenu(ItemSelectMenu.createUpgradeMenu(this,hasInventory));
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean doUpgrade(Upgradable upgradable) {
+        if (upgradable instanceof Armor armor){
+            armor.setEnchantment(Pools.getRandom(Pools.ARMOR_ENCHANTMENT_LIST));
+            return true;
+        }
+        if (upgradable instanceof Weapon weapon){
+            weapon.setEnchantment(Pools.getRandom(Pools.WEAPON_ENCHANTMENT_LIST));
             return true;
         }
         return false;
@@ -62,16 +77,7 @@ public class ScrollOfUpgrade extends Item implements SelfAware, Scrollable, Flam
 
     @Override
     public void setSpace(Space space) {
-        currentSpace = space;
-    }
-
-    @Override
-    public boolean doUpgrade(Upgradable upgradable) {
-        if (upgradable instanceof Levelable levelable){
-            levelable.setLevel(levelable.getLevel() + 1);
-            return true;
-        }
-        return false;
+        this.currentSpace = space;
     }
     
 }

@@ -16,7 +16,7 @@ public interface HasDrops {
         setDropPoints(getDropPoints() + points);
     }
     default void subtractDropPoints(int points){
-        setDropPoints(getDropPoints() + points);
+        setDropPoints(getDropPoints() - points);
     }
     default List<Item> generateDrops(){
 
