@@ -39,38 +39,38 @@ import game.gameobjects.terrains.Terrain;
 
 public class Floor{
 
-	public final int SIZE_X;
-	public final int SIZE_Y;
+    public final int SIZE_X;
+    public final int SIZE_Y;
 
-	private Space[][] spaces;
-	private PlayerEntity player;
+    private Space[][] spaces;
+    private PlayerEntity player;
 
-	public Floor(int SIZE_X, int SIZE_Y, FloorGenerator floorGenerator){
-		this(SIZE_X, SIZE_Y, new PlayerEntity(TileColor.transparent(), TileColor.create(255, 255, 255, 255), '@'), floorGenerator);
-	}
+    public Floor(int SIZE_X, int SIZE_Y, FloorGenerator floorGenerator){
+        this(SIZE_X, SIZE_Y, new PlayerEntity(TileColor.transparent(), TileColor.create(255, 255, 255, 255), '@'), floorGenerator);
+    }
 
-	public Floor(int SIZE_X, int SIZE_Y, PlayerEntity player, FloorGenerator floorGenerator){
+    public Floor(int SIZE_X, int SIZE_Y, PlayerEntity player, FloorGenerator floorGenerator){
 
-		this.SIZE_X = SIZE_X;
-		this.SIZE_Y = SIZE_Y;
-		spaces = new Space[SIZE_X][SIZE_Y];
-		this.player = player;
-		floorGenerator.generateFloor(spaces, player);
+        this.SIZE_X = SIZE_X;
+        this.SIZE_Y = SIZE_Y;
+        spaces = new Space[SIZE_X][SIZE_Y];
+        this.player = player;
+        floorGenerator.generateFloor(spaces, player);
         doLight();
 
-	}
+    }
 
-	public PlayerEntity getPlayer() {
-		return player;
-	}
+    public PlayerEntity getPlayer() {
+        return player;
+    }
 
-	public Space[][] getSpaces() {
-		return spaces;
-	}
+    public Space[][] getSpaces() {
+        return spaces;
+    }
 
-	public Space getSpace(int x, int y){
-		return spaces[x][y];
-	}
+    public Space getSpace(int x, int y){
+        return spaces[x][y];
+    }
 
     public Space getClampedSpace(int x, int y){
         return spaces[clampX(x)][clampY(y)];
@@ -84,7 +84,7 @@ public class Floor{
         return y = y >= SIZE_Y ? SIZE_Y-1 : (y < 0 ? 0 : y);
     }
 
-	public void update(){
+    public void update(){
 
         doLight();
 
@@ -155,7 +155,7 @@ public class Floor{
         }
 
 
-	}
+    }
 
     private void doLight() {
 
@@ -182,21 +182,21 @@ public class Floor{
 
     }
 
-	public void doLightRevised(Space space){
-		LightSource strongestLightSource = null;
-		int intensity = 0;
-		for (Item item : space.getItems()) {
-			strongestLightSource = calculateLightSource(strongestLightSource, item);
-		}
-		for (Terrain terrain : space.getTerrains()) {
+    public void doLightRevised(Space space){
+        LightSource strongestLightSource = null;
+        int intensity = 0;
+        for (Item item : space.getItems()) {
+            strongestLightSource = calculateLightSource(strongestLightSource, item);
+        }
+        for (Terrain terrain : space.getTerrains()) {
             strongestLightSource = calculateLightSource(strongestLightSource, terrain);
-		}
-		if (space.isOccupied()){
-			Entity occupant = space.getOccupant();
+        }
+        if (space.isOccupied()){
+            Entity occupant = space.getOccupant();
             strongestLightSource = calculateLightSource(strongestLightSource, occupant);
-			for (Status status : occupant.getStatuses()) {
+            for (Status status : occupant.getStatuses()) {
                 strongestLightSource = calculateLightSource(strongestLightSource, status);
-			}
+            }
             if (occupant instanceof Armed armedOccupant){
                 for (Weapon weapon : armedOccupant.getWeapons()) {
                     strongestLightSource = calculateLightSource(strongestLightSource, weapon);
@@ -210,12 +210,12 @@ public class Floor{
             if (occupant instanceof HasOffHand hasOffHand && hasOffHand.getOffHandSlot().getEquippedItem() != null){
                 strongestLightSource = calculateLightSource(strongestLightSource, hasOffHand.getOffHandSlot().getEquippedItem());
             }
-		}
+        }
 
         intensity = strongestLightSource != null ? strongestLightSource.getLightSourceIntensity() : 0;
 
         doPreLineLight(space, intensity);
-	}
+    }
 
     private void doPreLineLight(Space space, int intensity) {
         int minYDiff = clampY(space.getY() - intensity);
@@ -263,16 +263,16 @@ public class Floor{
 
     private LightSource calculateLightSource(LightSource strongestLightSource, Object object) {
         if (object instanceof LightSource lightSource){
-        	if (strongestLightSource == null){
-        		strongestLightSource = lightSource;
-        	} else if (strongestLightSource.getLightSourceIntensity() < lightSource.getLightSourceIntensity()){
-        		strongestLightSource = lightSource;
-        	}
+            if (strongestLightSource == null){
+                strongestLightSource = lightSource;
+            } else if (strongestLightSource.getLightSourceIntensity() < lightSource.getLightSourceIntensity()){
+                strongestLightSource = lightSource;
+            }
         }
         return strongestLightSource;
     }
 
-	public static void doAttack(Entity attacker, Entity defender){
+    public static void doAttack(Entity attacker, Entity defender){
 
         OverridesAttack overridesAttack = (OverridesAttack)attacker.getStatusByClass(OverridesAttack.class);
         if (overridesAttack != null){
@@ -478,7 +478,7 @@ public class Floor{
                 return;
             }
         }
-	}
+    }
     
     public static List<CombatModifier> getCombatModifiers(Entity entity){
         List<CombatModifier> combatModifiers = new ArrayList<CombatModifier>();
