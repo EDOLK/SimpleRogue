@@ -1,7 +1,5 @@
 package game.floorgeneration;
 
-import java.util.function.Predicate;
-
 import game.Path.PathNotFoundException;
 import game.PathConditions;
 import game.PathFinder;
@@ -10,7 +8,6 @@ import game.gameobjects.entities.Entity;
 import game.gameobjects.entities.PlayerEntity;
 import game.gameobjects.entities.Rat;
 import game.gameobjects.entities.Wall;
-import kotlin.Pair;
 
 public class DebugFloorGenerator extends FloorGenerator {
 
