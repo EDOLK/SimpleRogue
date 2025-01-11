@@ -27,6 +27,7 @@ public class Wall extends Entity implements HasResistances{
         setSightBlocker(true);
         setGasBlocker(true);
         setLiquidBlocker(true);
+        setLightBlocker(true);
         setWeight(100);
         setCorpse(new Item(this.getbGColor().darkenByPercent(.50), this.getfGColor().darkenByPercent(.50), '░'));
         getCorpse().setName("Rubble");

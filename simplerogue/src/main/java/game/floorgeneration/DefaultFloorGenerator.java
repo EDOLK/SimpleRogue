@@ -2,8 +2,6 @@ package game.floorgeneration;
 
 import static game.App.randomNumber;
 
-import org.hexworks.zircon.api.color.TileColor;
-
 import game.Dungeon;
 import game.floorgeneration.builders.EntityBuilder;
 import game.gameobjects.Space;
@@ -22,7 +20,7 @@ public class DefaultFloorGenerator extends FloorGenerator{
     public void generateSpaces(Space[][] spaces){
         for (int x = 0; x < spaces.length; x++) {
             for (int y = 0; y < spaces[x].length; y++) {
-                spaces[x][y] = new Space(TileColor.transparent(), TileColor.create(10, 10, 10, 255), '█', x, y);
+                spaces[x][y] = new Space(x, y);
             }
         }
     }

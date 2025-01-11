@@ -2,6 +2,7 @@ package game.display;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.hexworks.zircon.api.builder.modifier.BorderBuilder;
@@ -19,7 +20,7 @@ import game.gameobjects.terrains.Terrain;
 public class Cursor extends DisplayableTile{
 
     private Space selectedSpace;
-    private ArrayList<Examinable> examinables = new ArrayList<Examinable>();
+    private List<Examinable> examinables = new ArrayList<Examinable>();
     private int examinablesIndex;
     private Examinable examined;
 
@@ -49,32 +50,28 @@ public class Cursor extends DisplayableTile{
     public void setSelectedSpace(Space selectedSpace) {
         this.selectedSpace = selectedSpace;
     }
-    public ArrayList<Examinable> getExaminables() {
+    public List<Examinable> getExaminables() {
         return examinables;
     }
 
-    public void setExaminables(ArrayList<Examinable> examinables) {
+    public void setExaminables(List<Examinable> examinables) {
         this.examinables = examinables;
     }
 
     public void collectExaminables(){
-        // if (selectedSpace.getLight() == 0){
-        //     examined = null;
-        //     return;
-        // }
         examinables = new ArrayList<Examinable>();
         if (selectedSpace.isOccupied()){
-            examinables.add((Examinable)selectedSpace.getOccupant());
+            examinables.add(selectedSpace.getOccupant());
         }
         if (selectedSpace.getItems().size() != 0){
             for (Item item : selectedSpace.getItems()) {
-                examinables.add((Examinable)item);
+                examinables.add(item);
             }
         }
         if (selectedSpace.getTerrains().size() != 0){
             for (Terrain environment : selectedSpace.getTerrains()) {
                 if (environment instanceof Examinable examinableEnvironment){
-                    examinables.add((Examinable)examinableEnvironment);
+                    examinables.add(examinableEnvironment);
                 }
             }
         }

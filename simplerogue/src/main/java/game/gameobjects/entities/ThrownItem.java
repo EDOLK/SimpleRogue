@@ -2,6 +2,7 @@ package game.gameobjects.entities;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.hexworks.zircon.api.data.Tile;
 
@@ -29,7 +30,9 @@ public class ThrownItem extends Entity implements Behavable, HasDodge, HasResist
         setSpace(spawnSpace);
         setMaxHP(1);
         setHP(1);
-        pathToTarget = Line.getLineAsArrayListIncludeEnd(getSpace(), targetSpace).iterator();
+        List<Space> l = Line.getLineAsListInclusive(getSpace(), targetSpace);
+        l.remove(0);
+        pathToTarget = l.iterator();
         setCorpse(null);
         if (aimable instanceof Examinable examinable){
             setName("Thrown " + examinable.getName());

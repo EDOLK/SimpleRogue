@@ -3,9 +3,11 @@ package game.gameobjects.entities;
 import static game.Dungeon.getCurrentFloor;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.hexworks.zircon.api.color.TileColor;
 
+import game.Dungeon;
 import game.Line;
 import game.display.Display;
 import game.gamelogic.Armed;
@@ -40,6 +42,7 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
     protected boolean sightBlocker = false;
     protected boolean gasBlocker = false;
     protected boolean liquidBlocker = false;
+    protected boolean lightBlocker = false;
     private Weapon unarmedWeapon;
     private boolean alive = true;
 
@@ -65,6 +68,14 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
 
     public void setLiquidBlocker(boolean liquidBlocker) {
         this.liquidBlocker = liquidBlocker;
+    }
+
+    public boolean isLightBlocker() {
+        return lightBlocker;
+    }
+
+    public void setLightBlocker(boolean lightBlocker) {
+        this.lightBlocker = lightBlocker;
     }
 
     public Entity(TileColor bGColor, TileColor fGColor, char character) {
@@ -234,10 +245,10 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
         return null;
     }
 
-    public ArrayList<Space> getSpacesInVision(){
+    public List<Space> getSpacesInVision(){
 
         Space[][] spaces = getCurrentFloor().getSpaces();
-        ArrayList<Space> spacesInVision = new ArrayList<Space>();
+        List<Space> spacesInVision = new ArrayList<Space>();
 
         int startX = getX() - getVisionRange();
         startX = startX < 0 ? 0 : startX;
@@ -266,11 +277,29 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
     }
 
     public boolean isWithinVision(Space space){
-        Space[][] spaces = getCurrentFloor().getSpaces();
-        if (space.getX() < getX() - visionRange || space.getX() > getX() + visionRange || space.getY() < getY() - visionRange || space.getY() > getY() + visionRange){
+        if (space.getX() < getX() - visionRange+1 || space.getX() > getX() + visionRange-1 || space.getY() < getY() - visionRange+1 || space.getY() > getY() + visionRange-1){
             return false;
         }
-        ArrayList<Space> lineSpaces = Line.getLineAsArrayList(currentSpace, space, spaces);
+        boolean b = canDrawLine(space);
+        if (!b) {
+            outer:
+            for (int x = -1; x <= 1; x++) {
+                for (int y = -1; y <= 1 ; y++) {
+                    if (x == 1 && y == 1)
+                        continue;
+                    Space p = Dungeon.getCurrentFloor().getClampedSpace(space.getX() + x, space.getY() + y);
+                    if (canDrawLine(p) && (!p.isOccupied() || !p.getOccupant().isSightBlocker())) {
+                        b = true;
+                        break outer;
+                    }
+                }
+            }
+        }
+        return b;
+    }
+
+    private boolean canDrawLine(Space space) {
+        List<Space> lineSpaces = Line.getLineAsListExclusive(currentSpace,space);
         for (Space currentSpace : lineSpaces) {
             if (currentSpace.isOccupied()){
                 Entity occupant = currentSpace.getOccupant();
@@ -412,7 +441,7 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
             }
         }
 
-        if (this instanceof Armed armed && armed.dropsEquipedWeaponsOnKill()){
+        if (this instanceof Armed armed && armed.dropsEquippedWeaponsOnKill()){
             for (Weapon weapon : armed.getWeapons()) {
                 space.addItem(weapon);
             }

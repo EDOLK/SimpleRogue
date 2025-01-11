@@ -17,5 +17,5 @@ public interface Armed{
         }
         return weapons;
     };
-    public boolean dropsEquipedWeaponsOnKill();
+    public boolean dropsEquippedWeaponsOnKill();
 }

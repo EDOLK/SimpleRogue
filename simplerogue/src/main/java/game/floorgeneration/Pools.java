@@ -39,7 +39,7 @@ public class Pools {
         new Thorny(), new Clotting()
     );
     
-    public static void inintialize(){
+    public static void initialize(){
         
         Map<Class<? extends Entity>, Integer> layerOneChestMap = new HashMap<Class<? extends Entity>, Integer>();
         layerOneChestMap.put(Chest.class, 20);
@@ -65,6 +65,7 @@ public class Pools {
         layerOneDropMap.put(ItemIdentifier.LEATHER_GLOVES, 5);
         layerOneDropMap.put(ItemIdentifier.LEATHER_PANTS, 5);
         layerOneDropMap.put(ItemIdentifier.CLOAK, 5);
+        layerOneDropMap.put(ItemIdentifier.TORCH, 3);
         LAYER_ONE_DROP_POOL.setMap(layerOneDropMap);
 
         Map<ItemIdentifier, Integer> layerOneTreasureMap = new HashMap<ItemIdentifier, Integer>();
@@ -81,6 +82,7 @@ public class Pools {
         layerOneTreasureMap.put(ItemIdentifier.DAGGER, 10);
         layerOneTreasureMap.put(ItemIdentifier.SHORTSWORD, 5);
         layerOneTreasureMap.put(ItemIdentifier.HANDAXE, 5);
+        layerOneTreasureMap.put(ItemIdentifier.TORCH, 3);
         LAYER_ONE_TREASURE_POOL.setMap(layerOneTreasureMap);
 
 

@@ -46,7 +46,6 @@ public abstract class Menu {
         });
     }
 
-
     public UIEventResponse handleKeyboardEvent(KeyboardEvent event, UIEventPhase phase){
         if (Display.getKeyMap().getAction(event.getCode()) == Action.ESCAPE){
             Display.revertMenu();
@@ -54,5 +53,9 @@ public abstract class Menu {
         }
         return UIEventResponse.pass();
     };
+
+    public Menu refresh(){
+        return this;
+    }
 
 }
