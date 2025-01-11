@@ -29,43 +29,43 @@ public class ItemFactory{
     public static final Item createItem(ItemIdentifier identifier){
         switch (identifier) {
             case BO_STAFF:
-				return new BoStaff();
+                return new BoStaff();
             case CHAINMAIL:
-				return new Chainmail();
+                return new Chainmail();
             case CLOAK:
-				return new Cloak();
+                return new Cloak();
             case DAGGER:
-				return new Dagger();
+                return new Dagger();
             case FIRE_POTION:
-				return new FirePotion();
+                return new FirePotion();
             case HANDAXE:
-				return new HandAxe();
+                return new HandAxe();
             case HEALING_POTION:
-				return new HealingPotion();
+                return new HealingPotion();
             case IRON_GREAVES:
-				return new IronGreaves();
+                return new IronGreaves();
             case IRON_HELM:
-				return new IronHelm();
+                return new IronHelm();
             case LEATHER_ARMOR:
-				return new LeatherArmor();
+                return new LeatherArmor();
             case LEATHER_CAP:
-				return new LeatherCap();
+                return new LeatherCap();
             case LEATHER_GLOVES:
-				return new LeatherGloves();
+                return new LeatherGloves();
             case LEATHER_PANTS:
-				return new LeatherPants();
+                return new LeatherPants();
             case PLATE_ARMOR:
-				return new PlateArmor();
+                return new PlateArmor();
             case PLATE_GAUNTLETS:
-				return new PlateGauntlets();
+                return new PlateGauntlets();
             case SHORTSWORD:
-				return new ShortSword();
+                return new ShortSword();
             case SCROLL_OF_UPGRADE:
                 return new ScrollOfUpgrade();
             case TORCH:
                 return new Torch(false);
             default:
-				return null;
+                return null;
         }
     }
     

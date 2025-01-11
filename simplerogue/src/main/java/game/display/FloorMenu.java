@@ -775,7 +775,7 @@ public final class FloorMenu extends Menu{
             default:
                 break;
         }
-		return UIEventResponse.processed();
+        return UIEventResponse.processed();
     }
 
     public Cursor getCursor() {
@@ -829,7 +829,7 @@ public final class FloorMenu extends Menu{
             default:
                 break;
         }
-		return UIEventResponse.processed();
+        return UIEventResponse.processed();
     }
 
     public void getAdjacent(int toX, int toY){
@@ -879,7 +879,7 @@ public final class FloorMenu extends Menu{
             default:
                 break;
         }
-		return UIEventResponse.processed();
+        return UIEventResponse.processed();
     }
 
     public void dropAdjacent(int toX, int toY){
@@ -954,7 +954,7 @@ public final class FloorMenu extends Menu{
             default:
                 break;
         }
-		return UIEventResponse.processed();
+        return UIEventResponse.processed();
     }
     
     public UIEventResponse handleDead(KeyboardEvent event, UIEventPhase phase){
