@@ -29,7 +29,7 @@ import game.gameobjects.terrains.ExposedTrap;
 import game.gameobjects.terrains.Fire;
 import game.gameobjects.terrains.HiddenTrap;
 
-public class Spider extends Animal implements HasDodge, HasInventory{
+public class Spider extends Entity implements HasDodge, HasInventory{
     
     private ArrayList<Item> inventory = new ArrayList<Item>();
     protected Space nestSpace;
@@ -386,11 +386,6 @@ public class Spider extends Animal implements HasDodge, HasInventory{
             if (turns <= 0){
                 owner.removeStatus(this);
             }
-        }
-
-        @Override
-        public boolean isActive() {
-            return true;
         }
         
     }

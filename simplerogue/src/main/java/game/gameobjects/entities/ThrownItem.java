@@ -11,14 +11,13 @@ import game.gamelogic.Aimable;
 import game.gamelogic.Examinable;
 import game.gamelogic.HasDodge;
 import game.gamelogic.HasResistances;
-import game.gamelogic.behavior.Behavable;
 import game.gamelogic.resistances.PercentageResistance;
 import game.gamelogic.resistances.Resistance;
 import game.gameobjects.DamageType;
 import game.gameobjects.DisplayableTile;
 import game.gameobjects.Space;
 
-public class ThrownItem extends Entity implements Behavable, HasDodge, HasResistances{
+public class ThrownItem extends Entity implements HasDodge, HasResistances{
 
     private Iterator<Space> pathToTarget;
     private Aimable aimable;

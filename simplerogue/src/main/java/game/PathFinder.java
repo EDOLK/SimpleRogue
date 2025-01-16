@@ -48,4 +48,9 @@ public class PathFinder{
     public boolean pathHasEnded(){
         return placeInPath == pathToDestination.length-1;
     }
+
+    public Space[] getPath() {
+        return pathToDestination;
+    }
+
 }

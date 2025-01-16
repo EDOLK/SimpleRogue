@@ -10,6 +10,7 @@ import game.floorgeneration.ItemFactory.ItemIdentifier;
 import game.gamelogic.DropsXP;
 import game.gamelogic.HasDodge;
 import game.gamelogic.HasDrops;
+import game.gamelogic.behavior.AnimalBehavior;
 import game.gamelogic.combat.AttackInfo;
 import game.gamelogic.combat.OnHit;
 import game.gameobjects.DamageType;
@@ -17,7 +18,7 @@ import game.gameobjects.items.Corpse;
 import game.gameobjects.items.weapons.Weapon;
 import game.gameobjects.statuses.Poisoned;
 
-public class Snake extends Animal implements DropsXP, HasDodge, OnHit, HasDrops{
+public class Snake extends Entity implements DropsXP, HasDodge, OnHit, HasDrops{
     
     private int dropPoints = randomNumber(3, 7);
 
@@ -30,6 +31,7 @@ public class Snake extends Animal implements DropsXP, HasDodge, OnHit, HasDrops{
         setTileName("Giant Snake");
         setDescription("A giant Snake. Fast and venomous.");
         setCorpse(new Corpse(this));
+        setBehavior(new AnimalBehavior(this));
 
         Weapon fangs = new Weapon();
         fangs.setName("fangs");
@@ -46,11 +48,6 @@ public class Snake extends Animal implements DropsXP, HasDodge, OnHit, HasDrops{
     @Override
     public int getDodge() {
         return 7;
-    }
-
-    @Override
-    public boolean isActive() {
-        return getHP() > 0;
     }
 
     @Override

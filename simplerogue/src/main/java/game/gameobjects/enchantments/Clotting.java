@@ -8,7 +8,6 @@ import java.util.List;
 import org.hexworks.zircon.api.color.TileColor;
 
 import game.Dungeon;
-import game.gamelogic.behavior.Behavable;
 import game.gamelogic.combat.AttackInfo;
 import game.gamelogic.combat.OnHitted;
 import game.gameobjects.DamageType;
@@ -19,7 +18,7 @@ import game.gameobjects.items.weapons.Weapon;
 
 public class Clotting extends ArmorEnchantment implements OnHitted {
 
-    private class BloodPolyp extends Entity implements Behavable {
+    private class BloodPolyp extends Entity{
 
         private int healthStored;
         private Entity owner;

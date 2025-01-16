@@ -10,11 +10,12 @@ import game.floorgeneration.ItemFactory.ItemIdentifier;
 import game.gamelogic.DropsXP;
 import game.gamelogic.HasDodge;
 import game.gamelogic.HasDrops;
+import game.gamelogic.behavior.AnimalBehavior;
 import game.gameobjects.DamageType;
 import game.gameobjects.items.Corpse;
 import game.gameobjects.items.weapons.Weapon;
 
-public class Rat extends Animal implements DropsXP, HasDodge, HasDrops{
+public class Rat extends Entity implements DropsXP, HasDodge, HasDrops{
     
     private int dropPoints = randomNumber(3, 10);
 
@@ -28,6 +29,7 @@ public class Rat extends Animal implements DropsXP, HasDodge, HasDrops{
         setDescription("A giant rat, made feral by the negative influence of the dungeon.");
         setWeight(5);
         setCorpse(new Corpse(this));
+        setBehavior(new AnimalBehavior(this));
 
         Weapon teeth = new Weapon();
         teeth.setName("teeth");
@@ -44,11 +46,6 @@ public class Rat extends Animal implements DropsXP, HasDodge, HasDrops{
     @Override
     public int getDodge() {
         return 5;
-    }
-
-    @Override
-    public boolean isActive() {
-        return getHP() > 0;
     }
 
     @Override

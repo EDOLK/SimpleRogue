@@ -19,8 +19,11 @@ import game.gamelogic.HasDrops;
 import game.gamelogic.HasInventory;
 import game.gamelogic.HasResistances;
 import game.gamelogic.SelfAware;
+import game.gamelogic.behavior.Behavior;
+import game.gamelogic.behavior.HasBehavior;
 import game.gameobjects.DamageType;
 import game.gameobjects.DisplayableTile;
+import game.gameobjects.Floor;
 import game.gameobjects.Space;
 import game.gameobjects.items.Item;
 import game.gameobjects.items.armor.Armor;
@@ -28,7 +31,7 @@ import game.gameobjects.items.weapons.Weapon;
 import game.gameobjects.statuses.Seperate;
 import game.gameobjects.statuses.Status;
 
-public abstract class Entity extends DisplayableTile implements Examinable, SelfAware{
+public abstract class Entity extends DisplayableTile implements Examinable, SelfAware, HasBehavior{
 
     private String name = "Placeholder Name";
     private String description = "Placeholder description.";
@@ -45,6 +48,7 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
     protected boolean lightBlocker = false;
     private Weapon unarmedWeapon;
     private boolean alive = true;
+    private Behavior behavior;
 
     public boolean isAlive() {
         return alive;
@@ -460,5 +464,25 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
     }
 
     // what this entity will do by default if another walks into it (should reference one of the other behavioral functions, perhaps after determining what the other entity is)
-    public abstract void defaultInteraction(Entity interactor);
+    public void defaultInteraction(Entity interactor){
+        Floor.doAttack(interactor, this);
+    };
+
+    @Override
+    public Behavior getBehavior() {
+        return behavior;
+    }
+
+    @Override
+    public boolean setBehavior(Behavior behavior) {
+        this.behavior = behavior;
+        return true;
+    }
+
+    @Override
+    public boolean isActive() {
+        return HasBehavior.super.isActive() && isAlive();
+    }
+
+
 }
