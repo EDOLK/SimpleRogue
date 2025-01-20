@@ -59,18 +59,18 @@ public class PathTracker {
         return generatePathFinder();
     }
 
-    private boolean entityIsPresent() {
+    public boolean entityIsPresent() {
         if (trackingEntity && entityIsMissing()){
             return false;
         }
         return true;
     }
 
-    private boolean pathIsClear(){
+    public boolean pathIsClear(){
         return currentPathFinder.pathIsClear();
     }
 
-    private boolean pathIsDone(){
+    public boolean pathIsDone(){
         return currentPathFinder.pathHasEnded();
     }
 

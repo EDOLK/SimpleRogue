@@ -16,11 +16,11 @@ import game.gameobjects.entities.PlayerEntity;
 
 public class AnimalBehavior extends Behavior {
 
-    private Entity animal;
-    private Entity target;
-    private int wanderRange = 10;
-    private PathTracker huntingPathTracker;
-    private PathTracker wanderingPathTracker;
+    protected Entity animal;
+    protected Entity target;
+    protected int wanderRange = 10;
+    protected PathTracker huntingPathTracker;
+    protected PathTracker wanderingPathTracker;
 
     public AnimalBehavior(Entity animal) {
         this.animal = animal;
@@ -64,7 +64,7 @@ public class AnimalBehavior extends Behavior {
             Space.moveEntity(animal, wanderingPathTracker.getNextSpace());
             return;
         } else {
-            Space space = getEmptyViableSpace();
+            Space space = getWanderSpace();
             if (space != null){
                 Optional<PathTracker> tracker = PathTracker.createPathTracker(animal,space,generateConditionsToSpace());
                 if (tracker.isPresent()) {
@@ -107,17 +107,35 @@ public class AnimalBehavior extends Behavior {
         return entityList;
     }
 
-    protected Space getEmptyViableSpace(){
-        Floor floor = getCurrentFloor();
-        int yMin = floor.clampY(this.animal.getY() - wanderRange);
-        int yMax = floor.clampY(this.animal.getY() + wanderRange);
-        int xMin = floor.clampX(this.animal.getX() - wanderRange);
-        int xMax = floor.clampX(this.animal.getX() + wanderRange);
+    protected int getYMin(){
+        return getCurrentFloor().clampY(this.animal.getY() - wanderRange);
+    }
+
+    protected int getYMax(){
+        return getCurrentFloor().clampY(this.animal.getY() + wanderRange);
+    }
+
+    protected int getXMin(){
+        return getCurrentFloor().clampX(this.animal.getX() - wanderRange);
+    }
+
+    protected int getXMax(){
+        return getCurrentFloor().clampX(this.animal.getX() + wanderRange);
+    }
+
+    protected boolean spaceIsInvalid(Space space){
+        return space.isOccupied();
+    }
+
+    protected Space getWanderSpace(){
         Space possibleSpace;
         do {
-            possibleSpace = floor.getSpace(randomNumber(xMin, xMax), randomNumber(yMin, yMax));
-        } while (possibleSpace.isOccupied());
-        return possibleSpace.isOccupied() ? null : possibleSpace;
+            possibleSpace = getCurrentFloor().getSpace(
+                randomNumber(getXMin(), getXMax()),
+                randomNumber(getYMin(), getYMax())
+            );
+        } while (spaceIsInvalid(possibleSpace));
+        return possibleSpace;
     }
 
 }

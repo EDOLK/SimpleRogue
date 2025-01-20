@@ -6,6 +6,7 @@ import game.gameobjects.Space;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.entities.PlayerEntity;
 import game.gameobjects.entities.Rat;
+import game.gameobjects.entities.Spider;
 import game.gameobjects.entities.Wall;
 
 public class DebugFloorGenerator extends FloorGenerator {
@@ -22,14 +23,7 @@ public class DebugFloorGenerator extends FloorGenerator {
         generateSpaces();
         generateRectangle(5,5,20,20);
         spaces[7][10].setOccupant(playerEntity);
-        // spaces[12][10].setOccupant(new DebugRat());
-        spaces[12][10].setOccupant(new Rat());
-        for (int i = 7; i <= 15; i++) {
-            spaces[9][i].setOccupant(new Wall());
-        }
-        for (int i = 7; i <= 15; i++) {
-            spaces[i][9].setOccupant(new Wall());
-        }
+        spaces[12][10].setOccupant(new Spider());
     }
 
     protected void generateSpaces(){
