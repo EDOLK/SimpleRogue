@@ -24,16 +24,24 @@ public class PathFinder{
     }
     
     public Space getNext(){
-        iterate();
+        increment();
         return getSpace();
     }
-    
-    public void iterate(){
+
+    public void increment(){
         placeInPath++;
+    }
+
+    public void decrement(){
+        placeInPath--;
     }
 
     public Space getSpace(){
         return pathToDestination[placeInPath];
+    }
+
+    public Space getNextSpace(){
+        return pathToDestination[(placeInPath+1)];
     }
 
     public boolean pathIsClear(){

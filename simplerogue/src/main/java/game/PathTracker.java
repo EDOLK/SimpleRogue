@@ -45,8 +45,35 @@ public class PathTracker {
         }
     }
 
-    public Space getNextSpace(){
+    public Space getNext(){
         return currentPathFinder.getNext();
+    }
+
+    public void increment(){
+        currentPathFinder.increment();
+    }
+
+    public void decrement() {
+        currentPathFinder.decrement();
+    }
+
+    public Space getSpace(){
+        return currentPathFinder.getSpace();
+    }
+
+    public Space getNextSpace() {
+        return currentPathFinder.getNextSpace();
+    }
+
+    public boolean moveToTarget() {
+        if (nextSpaceAvailable()) {
+            boolean moved = Space.moveEntity(fromEntity, getNextSpace());
+            if (moved) {
+                increment();
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean nextSpaceAvailable(){

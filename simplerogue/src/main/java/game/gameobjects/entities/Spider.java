@@ -199,7 +199,7 @@ public class Spider extends Entity implements HasDodge, HasInventory{
         public void behave() {
             if (Spider.this.getSpace() != Spider.this.nestSpace) {
                 if (tracker != null && tracker.nextSpaceAvailable()) {
-                    Space.moveEntity(Spider.this, tracker.getNextSpace());
+                    Space.moveEntity(Spider.this, tracker.getNext());
                 } else {
                     Optional<PathTracker> t = PathTracker.createPathTracker(Spider.this, Spider.this.nestSpace, generateConditionsToSpace());
                     if (t.isPresent()) {
@@ -239,7 +239,7 @@ public class Spider extends Entity implements HasDodge, HasInventory{
         public void behave() {
             if (getEntitiesInVision().contains(target) && getDistanceFromNest() < Spider.this.maxDistance) {
                 if (huntingPathTracker != null && huntingPathTracker.nextSpaceAvailable()) {
-                    Space nextSpace = huntingPathTracker.getNextSpace();
+                    Space nextSpace = huntingPathTracker.getNext();
                     if (!Space.moveEntity(Spider.this, nextSpace) && nextSpace.isOccupied() && nextSpace.getOccupant() == target){
                         Floor.doAttack(Spider.this,target);
                     }
@@ -409,7 +409,7 @@ public class Spider extends Entity implements HasDodge, HasInventory{
         @Override
         public void onStack(Status SameStatus) {
             if (SameStatus instanceof Webbed webbed) {
-                webbed.turns += turns;
+                webbed.turns += this.turns;
             }
         }
 

@@ -11,6 +11,7 @@ import game.PathConditions;
 import game.PathTracker;
 import game.gameobjects.Floor;
 import game.gameobjects.Space;
+import game.gameobjects.Space.MoveResult;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.entities.PlayerEntity;
 
@@ -40,7 +41,10 @@ public class AnimalBehavior extends Behavior {
         }
         if (huntingPathTracker != null && huntingPathTracker.nextSpaceAvailable()) {
             Space nextSpace = huntingPathTracker.getNextSpace();
-            if (!Space.moveEntity(animal, nextSpace) && nextSpace.isOccupied() && nextSpace.getOccupant() == target){
+            boolean moved = Space.moveEntity(animal, nextSpace);
+            if (moved) {
+                huntingPathTracker.increment();
+            } else if (nextSpace.isOccupied() && nextSpace.getOccupant() == target) {
                 Floor.doAttack(animal,target);
             }
             return;
@@ -61,7 +65,9 @@ public class AnimalBehavior extends Behavior {
 
     protected void wander() {
         if (wanderingPathTracker != null && wanderingPathTracker.nextSpaceAvailable()) {
-            Space.moveEntity(animal, wanderingPathTracker.getNextSpace());
+            if (Space.moveEntity(animal, wanderingPathTracker.getNextSpace())) {
+                wanderingPathTracker.increment();
+            }
             return;
         } else {
             Space space = getWanderSpace();
