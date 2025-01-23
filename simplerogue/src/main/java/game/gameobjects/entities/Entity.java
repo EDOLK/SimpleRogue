@@ -19,8 +19,6 @@ import game.gamelogic.HasDrops;
 import game.gamelogic.HasInventory;
 import game.gamelogic.HasResistances;
 import game.gamelogic.SelfAware;
-import game.gamelogic.behavior.Behavior;
-import game.gamelogic.behavior.HasBehavior;
 import game.gameobjects.DamageType;
 import game.gameobjects.DisplayableTile;
 import game.gameobjects.Floor;
@@ -31,7 +29,7 @@ import game.gameobjects.items.weapons.Weapon;
 import game.gameobjects.statuses.Seperate;
 import game.gameobjects.statuses.Status;
 
-public abstract class Entity extends DisplayableTile implements Examinable, SelfAware, HasBehavior{
+public abstract class Entity extends DisplayableTile implements Examinable, SelfAware{
 
     private String name = "Placeholder Name";
     private String description = "Placeholder description.";
@@ -48,7 +46,6 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
     protected boolean lightBlocker = false;
     private Weapon unarmedWeapon;
     private boolean alive = true;
-    private Behavior behavior;
 
     public boolean isAlive() {
         return alive;
@@ -467,22 +464,5 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
     public void defaultInteraction(Entity interactor){
         Floor.doAttack(interactor, this);
     };
-
-    @Override
-    public Behavior getBehavior() {
-        return behavior;
-    }
-
-    @Override
-    public boolean setBehavior(Behavior behavior) {
-        this.behavior = behavior;
-        return true;
-    }
-
-    @Override
-    public boolean isActive() {
-        return HasBehavior.super.isActive() && isAlive();
-    }
-
 
 }

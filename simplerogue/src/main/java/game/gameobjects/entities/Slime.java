@@ -26,7 +26,7 @@ import game.gameobjects.items.Corpse;
 import game.gameobjects.items.Item;
 import game.gameobjects.items.weapons.Weapon;
 
-public class Slime extends Entity implements DropsXP, HasDodge, HasResistances, HasInventory, HasDrops{
+public class Slime extends Animal implements DropsXP, HasDodge, HasResistances, HasInventory, HasDrops{
 
     private ArrayList<Resistance> resistances = new ArrayList<Resistance>();
     private ArrayList<Item> inventory = new ArrayList<Item>();

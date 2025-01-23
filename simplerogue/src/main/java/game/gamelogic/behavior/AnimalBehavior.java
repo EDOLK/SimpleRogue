@@ -11,7 +11,6 @@ import game.PathConditions;
 import game.PathTracker;
 import game.gameobjects.Floor;
 import game.gameobjects.Space;
-import game.gameobjects.Space.MoveResult;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.entities.PlayerEntity;
 

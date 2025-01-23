@@ -20,7 +20,7 @@ import game.gameobjects.statuses.Burning;
 import game.gameobjects.statuses.Flying;
 import game.gameobjects.statuses.Status;
 
-public class EvaporatedSlime extends Entity implements HasResistances, HasDodge, DropsXP {
+public class EvaporatedSlime extends Animal implements HasResistances, HasDodge, DropsXP {
     
     ArrayList<Resistance> resistances = new ArrayList<Resistance>();
 

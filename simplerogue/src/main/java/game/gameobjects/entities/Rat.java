@@ -15,7 +15,7 @@ import game.gameobjects.DamageType;
 import game.gameobjects.items.Corpse;
 import game.gameobjects.items.weapons.Weapon;
 
-public class Rat extends Entity implements DropsXP, HasDodge, HasDrops{
+public class Rat extends Animal implements DropsXP, HasDodge, HasDrops{
     
     private int dropPoints = randomNumber(3, 10);
 

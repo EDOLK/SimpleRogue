@@ -18,7 +18,7 @@ import game.gameobjects.items.Corpse;
 import game.gameobjects.items.weapons.Weapon;
 import game.gameobjects.statuses.Poisoned;
 
-public class Snake extends Entity implements DropsXP, HasDodge, OnHit, HasDrops{
+public class Snake extends Animal implements DropsXP, HasDodge, OnHit, HasDrops{
     
     private int dropPoints = randomNumber(3, 7);
 

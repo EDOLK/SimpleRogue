@@ -34,7 +34,7 @@ import game.gameobjects.terrains.Fire;
 import game.gameobjects.terrains.HiddenTrap;
 import game.gameobjects.terrains.Terrain;
 
-public class Spider extends Entity implements HasDodge, HasInventory{
+public class Spider extends Animal implements HasDodge, HasInventory{
     
     private ArrayList<Item> inventory = new ArrayList<Item>();
     protected Space nestSpace;
