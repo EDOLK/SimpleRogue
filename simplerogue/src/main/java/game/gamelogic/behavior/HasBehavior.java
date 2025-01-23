@@ -5,6 +5,10 @@ public interface HasBehavior extends Behavable{
     public Behavior getBehavior();
 
     public boolean setBehavior(Behavior behavior);
+
+    default boolean hasBehavior(){
+        return getBehavior() != null;
+    }
     
     @Override
     default void behave() {
@@ -13,7 +17,7 @@ public interface HasBehavior extends Behavable{
 
     @Override
     default boolean isActive() {
-        return getBehavior() != null;
+        return hasBehavior();
     }
 
 }

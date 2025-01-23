@@ -97,26 +97,26 @@ public class Floor{
                 if (currentSpace.isOccupied()){
                     Entity entity = currentSpace.getOccupant();
 
-                    if (entity instanceof Behavable behavableEntity){
+                    if (entity instanceof Behavable behavableEntity && behavableEntity.isActive()){
                         behavables.add(behavableEntity);
                     }
 
                     for (Status status : entity.getStatuses()) {
-                        if (status instanceof Behavable behavableStatus){
+                        if (status instanceof Behavable behavableStatus && behavableStatus.isActive()){
                             behavables.add(behavableStatus);
                         }
                     }
 
                     if (entity instanceof HasOffHand hasOffHand){
                         ItemSlot slot = hasOffHand.getOffHandSlot();
-                        if (slot.getEquippedItem() != null && slot.getEquippedItem() instanceof Behavable behavableItem){
+                        if (slot.getEquippedItem() != null && slot.getEquippedItem() instanceof Behavable behavableItem && behavableItem.isActive()){
                             behavables.add(behavableItem);
                         }
                     }
 
                     if (entity instanceof Armed armedOccupant){
                         for (Weapon weapon : armedOccupant.getWeapons()) {
-                            if (weapon instanceof Behavable behavableWeapon) {
+                            if (weapon instanceof Behavable behavableWeapon && behavableWeapon.isActive()) {
                                 behavables.add(behavableWeapon);
                             }
                         }
@@ -124,7 +124,7 @@ public class Floor{
 
                     if (entity instanceof Armored armoredOccupant){
                         for (Armor armor : armoredOccupant.getArmor()) {
-                            if (armor instanceof Behavable behavableArmor) {
+                            if (armor instanceof Behavable behavableArmor && behavableArmor.isActive()) {
                                 behavables.add(behavableArmor);
                             }
                         }
@@ -133,13 +133,13 @@ public class Floor{
                 }
 
                 for (Item item : currentSpace.getItems()) {
-                    if (item instanceof Behavable behavableItem){
+                    if (item instanceof Behavable behavableItem && behavableItem.isActive()){
                         behavables.add(behavableItem);
                     }
                 }
 
                 for (Terrain terrain : currentSpace.getTerrains()) {
-                    if (terrain instanceof Behavable behavableTerrain){
+                    if (terrain instanceof Behavable behavableTerrain && behavableTerrain.isActive()){
                         behavables.add(behavableTerrain);
                     }
                 }
@@ -148,10 +148,7 @@ public class Floor{
         }
 
         while (!behavables.isEmpty()) {
-            Behavable behavable = behavables.pop();
-            if (behavable.isActive()){
-                behavable.behave();
-            }
+            behavables.pop().behave();
         }
 
 
