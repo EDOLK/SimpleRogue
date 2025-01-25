@@ -19,7 +19,7 @@ import game.gameobjects.items.weapons.Weapon;
 
 public class Clotting extends ArmorEnchantment implements OnHitted {
 
-    private class BloodPolyp extends Entity implements Behavable {
+    private class BloodPolyp extends Entity implements Behavable{
 
         private int healthStored;
         private Entity owner;

@@ -16,6 +16,7 @@ import game.gamelogic.HasDodge;
 import game.gamelogic.HasDrops;
 import game.gamelogic.HasInventory;
 import game.gamelogic.HasResistances;
+import game.gamelogic.behavior.AnimalBehavior;
 import game.gamelogic.resistances.PercentageResistance;
 import game.gamelogic.resistances.RangeResistance;
 import game.gamelogic.resistances.Resistance;
@@ -41,6 +42,7 @@ public class Slime extends Animal implements DropsXP, HasDodge, HasResistances, 
         setTileName("Slime");
         setDescription("A giant slime.");
         setWeight(5);
+        setBehavior(new AnimalBehavior(this));
 
         Weapon mass = new Weapon();
         mass.setName("mass");
@@ -118,10 +120,6 @@ public class Slime extends Animal implements DropsXP, HasDodge, HasResistances, 
             }
         }
         return super.getDescription();
-    }
-    @Override
-    public boolean isActive() {
-        return getHP() > 0;
     }
 
     @Override

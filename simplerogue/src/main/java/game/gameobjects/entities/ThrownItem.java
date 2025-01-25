@@ -18,7 +18,7 @@ import game.gameobjects.DamageType;
 import game.gameobjects.DisplayableTile;
 import game.gameobjects.Space;
 
-public class ThrownItem extends Entity implements Behavable, HasDodge, HasResistances{
+public class ThrownItem extends Entity implements HasDodge, HasResistances, Behavable{
 
     private Iterator<Space> pathToTarget;
     private Aimable aimable;

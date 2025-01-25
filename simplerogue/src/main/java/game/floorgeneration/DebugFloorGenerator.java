@@ -1,12 +1,12 @@
 package game.floorgeneration;
 
-import game.Path.PathNotFoundException;
+import game.gamelogic.behavior.AnimalBehavior;
 import game.PathConditions;
-import game.PathFinder;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.entities.PlayerEntity;
 import game.gameobjects.entities.Rat;
+import game.gameobjects.entities.Spider;
 import game.gameobjects.entities.Wall;
 
 public class DebugFloorGenerator extends FloorGenerator {
@@ -21,12 +21,9 @@ public class DebugFloorGenerator extends FloorGenerator {
     public void generateFloor(Space[][] spaces, PlayerEntity playerEntity) {
         this.spaces = spaces;
         generateSpaces();
-        generateRectangle(5,5,10,10);
+        generateRectangle(5,5,20,20);
         spaces[7][10].setOccupant(playerEntity);
-        spaces[12][10].setOccupant(new DebugRat());
-        for (int i = 7; i <= 13; i++) {
-            spaces[9][i] = new DebugSpace(9,i,7.5,false);
-        }
+        spaces[12][10].setOccupant(new Spider());
     }
 
     protected void generateSpaces(){
@@ -94,42 +91,38 @@ public class DebugFloorGenerator extends FloorGenerator {
 
         public DebugRat(){
             super();
-            setBehavior(new DebugBehavior());
+            setBehavior(new AnimalBehavior(this));
         }
 
         private class DebugBehavior extends AnimalBehavior{
 
+            protected DebugBehavior(Entity animal) {
+                super(animal);
+            }
+
             @Override
-            protected PathFinder pathToSpace(Space space) throws PathNotFoundException {
-                return new PathFinder(
-                    getSpace(), 
-                    space, 
-                    new PathConditions().addDeterrentConditions(
-                        s -> {
-                            return s instanceof DebugSpace ds ? ds.getD() : 0;
-                        }
+            protected PathConditions generateConditionsToEntity() {
+                return new PathConditions().addDeterrentConditions(
+                    s -> {
+                        return s instanceof DebugSpace ds ? ds.getD() : 0;
+                    }
                     ).addForbiddenConditions(
-                        s -> {
-                            return s instanceof DebugSpace ds ? ds.isForbidden() : false;
-                        }
-                    )
+                    s -> {
+                        return s instanceof DebugSpace ds ? ds.isForbidden() : false;
+                    }
                 );
             }
 
             @Override
-            protected PathFinder pathToTarget(Entity target) throws PathNotFoundException {
-                return new PathFinder(
-                    getSpace(), 
-                    target.getSpace(), 
-                    new PathConditions().addDeterrentConditions(
-                        s -> {
-                            return s instanceof DebugSpace ds ? ds.getD() : 0;
-                        }
+            protected PathConditions generateConditionsToSpace() {
+                return new PathConditions().addDeterrentConditions(
+                    s -> {
+                        return s instanceof DebugSpace ds ? ds.getD() : 0;
+                    }
                     ).addForbiddenConditions(
-                        s -> {
-                            return s instanceof DebugSpace ds ? ds.isForbidden() : false;
-                        }
-                    )
+                    s -> {
+                        return s instanceof DebugSpace ds ? ds.isForbidden() : false;
+                    }
                 );
             }
 

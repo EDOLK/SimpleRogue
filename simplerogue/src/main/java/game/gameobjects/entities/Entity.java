@@ -21,6 +21,7 @@ import game.gamelogic.HasResistances;
 import game.gamelogic.SelfAware;
 import game.gameobjects.DamageType;
 import game.gameobjects.DisplayableTile;
+import game.gameobjects.Floor;
 import game.gameobjects.Space;
 import game.gameobjects.items.Item;
 import game.gameobjects.items.armor.Armor;
@@ -460,5 +461,8 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
     }
 
     // what this entity will do by default if another walks into it (should reference one of the other behavioral functions, perhaps after determining what the other entity is)
-    public abstract void defaultInteraction(Entity interactor);
+    public void defaultInteraction(Entity interactor){
+        Floor.doAttack(interactor, this);
+    };
+
 }
