@@ -19,7 +19,7 @@ public class Lucky extends WeaponEnchantment implements OnHit{
     }
 
     @Override
-    public void activate(Entity self, Entity other, AttackInfo attackInfo) {
+    public void doOnHit(Entity self, Entity other, AttackInfo attackInfo) {
         if (other instanceof HasDrops hasDrops && entities.add(other)){
             System.out.println(hasDrops.getDropPoints());
             hasDrops.addDropPoints(points);

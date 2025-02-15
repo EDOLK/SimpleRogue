@@ -14,7 +14,7 @@ public class Flaming extends WeaponEnchantment implements OnHit{
     }
 
     @Override
-    public void activate(Entity self, Entity other, AttackInfo attackInfo) {
+    public void doOnHit(Entity self, Entity other, AttackInfo attackInfo) {
         if (randomNumber(1, 4) == 4){
             Burning burning = (Burning)other.getStatusByClass(Burning.class);
             if (burning != null){
