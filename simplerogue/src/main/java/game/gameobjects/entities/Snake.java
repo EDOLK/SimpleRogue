@@ -66,7 +66,7 @@ public class Snake extends Animal implements DropsXP, HasDodge, OnHit, HasDrops{
     }
 
     @Override
-    public void activate(Entity self, Entity other, AttackInfo attackInfo) {
+    public void doOnHit(Entity self, Entity other, AttackInfo attackInfo) {
         other.addStatus(new Poisoned(1, 3, 3));
     }
 

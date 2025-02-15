@@ -95,7 +95,7 @@ public class Clotting extends ArmorEnchantment implements OnHitted {
     }
 
     @Override
-    public void activate(Entity self, Entity other, AttackInfo attackInfo) {
+    public void doOnHitted(Entity self, Entity other, AttackInfo attackInfo) {
         if (randomNumber(1,5) == 1 && attackInfo.getDamageDelt() != 0){
             int cX = self.getX();
             int cY = self.getY();

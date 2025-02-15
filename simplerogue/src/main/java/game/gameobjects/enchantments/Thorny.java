@@ -60,7 +60,7 @@ public class Thorny extends ArmorEnchantment implements OnHitted {
     }
 
     @Override
-    public void activate(Entity self, Entity other, AttackInfo attackInfo) {
+    public void doOnHitted(Entity self, Entity other, AttackInfo attackInfo) {
         if (randomNumber(1,5) == 5 && attackInfo.getDamageDelt() != 0){
             other.addStatus(new Bleeding((int)(attackInfo.getDamageDelt()*0.5),1,3));
         }

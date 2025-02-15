@@ -419,10 +419,10 @@ public class Floor{
 
             // attacker on attack and defender on attacked
             for (OnAttack onAttack : attackerOnAttack) {
-                onAttack.activate(attacker, defender, attackInfo);
+                onAttack.doOnAttack(attacker, defender, attackInfo);
             }
             for (OnAttacked onAttacked : defenderOnAttacked) {
-                onAttacked.activate(defender, attacker, attackInfo);
+                onAttacked.doOnAttacked(defender, attacker, attackInfo);
             }
             //
             
@@ -433,10 +433,10 @@ public class Floor{
                 attackInfo.setDamageDelt(damageDelt);
                 // attacker on hit and defender on hitted
                 for (OnHit onHit : attackerOnHit) {
-                    onHit.activate(attacker, defender, attackInfo);
+                    onHit.doOnHit(attacker, defender, attackInfo);
                 }
                 for (OnHitted onHitted : defenderOnHitted) {
-                    onHitted.activate(defender, attacker, attackInfo);
+                    onHitted.doOnHitted(defender, attacker, attackInfo);
                 }
                 //
                 
@@ -451,10 +451,10 @@ public class Floor{
 
                     // attacker on crit and defender on critted
                     for (OnCrit onCrit : attackerOnCrit) {
-                        onCrit.activate(attacker, defender, attackInfo);
+                        onCrit.doOnCrit(attacker, defender, attackInfo);
                     }
                     for (OnCritted onCritted : defenderOnCritted) {
-                        onCritted.activate(defender, attacker, attackInfo);
+                        onCritted.doOnCritted(defender, attacker, attackInfo);
                     }
 
                 }
@@ -469,10 +469,10 @@ public class Floor{
 
                 // attacker on miss and defender on missed
                 for (OnMiss onMiss : attackerOnMiss) {
-                    onMiss.activate(attacker, defender, attackInfo);
+                    onMiss.doOnMiss(attacker, defender, attackInfo);
                 }
                 for (OnMissed onMissed : defenderOnMissed) {
-                    onMissed.activate(defender, attacker, attackInfo);
+                    onMissed.doOnMissed(defender, attacker, attackInfo);
                 }
                 //
                 return;

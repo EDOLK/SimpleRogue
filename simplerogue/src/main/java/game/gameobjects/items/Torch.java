@@ -117,7 +117,7 @@ public class Torch extends Weapon implements Flammable, LightSource, SelfAware, 
     }
 
     @Override
-    public void activate(Entity self, Entity other, AttackInfo attackInfo) {
+    public void doOnCrit(Entity self, Entity other, AttackInfo attackInfo) {
         if (lit)
             other.addStatus(new Burning());
     }
