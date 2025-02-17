@@ -36,6 +36,7 @@ import game.gamelogic.Interactable;
 import game.gamelogic.Levelable;
 import game.gameobjects.Floor;
 import game.gameobjects.Space;
+import game.gameobjects.entities.Door;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.entities.PlayerEntity;
 import game.gameobjects.entities.ThrownItem;
@@ -61,6 +62,7 @@ public final class FloorMenu extends Menu{
     private Layer cursorLayer;
     private Layer healthBarLayer;
     private Layer darknessLayer;
+    private Layer memoryLayer;
     private Floor currentFloor;
     private LogArea logMessageArea;
     private Header hpText;
@@ -143,6 +145,7 @@ public final class FloorMenu extends Menu{
                 Space current = currentFloor.getSpace(x, y);
                 if (playerEntity.isWithinVision(current) && current.getLight() != 0){
                     visibleSpaces.add(current);
+                    memoryLayer.draw(Tile.empty(), Position.create(x,y));
                 }
                 // visibleSpaces.add(current);
             }
@@ -234,6 +237,35 @@ public final class FloorMenu extends Menu{
                 .withTileset(Display.getGraphicalTileSet())
                 .buildGraphicalTile();
             healthBarLayer.draw(healthBar, Position.create(x, y));
+        }
+        if (Display.getMode() == Mode.ASCII && (occupant instanceof Wall || occupant instanceof Door)){
+            int blue = occupant.getTile().getForegroundColor().getBlue() * 2;
+            memoryLayer.draw(
+                occupant.getTile().withForegroundColor(occupant.getTile().getForegroundColor().withBlue(blue).darkenByPercent(.80)),
+                Position.create(x,y)
+            );
+        } else if (Display.getMode() == Mode.GRAPHICAL){
+            String name = null;
+            switch (occupant) {
+                case Wall wall ->{
+                    name = "Wall Memory";
+                }
+                case Door door ->{
+                    name = "Closed Door Memory";
+                }
+                default -> {
+
+                }
+            }
+            if (name != null) {
+                memoryLayer.draw(
+                    Tile.newBuilder()
+                    .withName(name)
+                    .withTileset(Display.getGraphicalTileSet())
+                    .buildGraphicalTile(),
+                    Position.create(x,y)
+                );
+            }
         }
     }
 
@@ -396,6 +428,11 @@ public final class FloorMenu extends Menu{
             )
             .build()
         );
+
+        memoryLayer = Layer.newBuilder()
+            .withSize(currentFloor.SIZE_X, currentFloor.SIZE_Y)
+            .build();
+        screen.addLayer(memoryLayer);
 
         spaceLayer = Layer.newBuilder()
             .withSize(currentFloor.SIZE_X, currentFloor.SIZE_Y)
