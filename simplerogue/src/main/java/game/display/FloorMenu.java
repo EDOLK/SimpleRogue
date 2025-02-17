@@ -39,6 +39,7 @@ import game.gameobjects.Space;
 import game.gameobjects.entities.Door;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.entities.PlayerEntity;
+import game.gameobjects.entities.Rat;
 import game.gameobjects.entities.ThrownItem;
 import game.gameobjects.entities.Wall;
 import game.gameobjects.items.Item;
@@ -241,7 +242,7 @@ public final class FloorMenu extends Menu{
         if (Display.getMode() == Mode.ASCII && (occupant instanceof Wall || occupant instanceof Door)){
             int blue = occupant.getTile().getForegroundColor().getBlue() * 2;
             memoryLayer.draw(
-                occupant.getTile().withForegroundColor(occupant.getTile().getForegroundColor().withBlue(blue).darkenByPercent(.80)),
+                occupant.getTile().withForegroundColor(occupant.getTile().getForegroundColor().withBlue(blue).darkenByPercent(.90)),
                 Position.create(x,y)
             );
         } else if (Display.getMode() == Mode.GRAPHICAL){
