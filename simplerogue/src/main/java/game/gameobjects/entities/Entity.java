@@ -18,6 +18,7 @@ import game.gamelogic.Experiential;
 import game.gamelogic.HasDrops;
 import game.gamelogic.HasInventory;
 import game.gamelogic.HasResistances;
+import game.gamelogic.HasVulnerabilities;
 import game.gamelogic.SelfAware;
 import game.gameobjects.DamageType;
 import game.gameobjects.DisplayableTile;
@@ -357,6 +358,7 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
         }
 
         damage = doResistances(damage, damageType);
+        damage = doVulnerabilities(damage, damageType);
 
         if (attacker instanceof PlayerEntity){
             Display.log("You attack the " + getName() + " for " + damage + " " + damageType + " damage.");
@@ -378,6 +380,7 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
     public int dealDamage(int damage, DamageType damageType){
 
         damage = doResistances(damage, damageType);
+        damage = doVulnerabilities(damage, damageType);
 
         if (this instanceof PlayerEntity){
             Display.log("You take " + damage + " " + damageType + " damage.");
@@ -409,6 +412,21 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
         for (Status status : getStatuses()) {
             if (status instanceof HasResistances statusWithResistances){
                 damage = statusWithResistances.applyResistances(damage, damageType);
+            }
+        }
+
+        return damage;
+    }
+
+    public int doVulnerabilities(int damage, DamageType damageType){
+
+        if (this instanceof HasVulnerabilities hasVulnerabilities){
+            damage = hasVulnerabilities.applyVulnerabilities(damage, damageType);
+        }
+
+        for (Status status : getStatuses()) {
+            if (status instanceof HasVulnerabilities statusWithVulnerabilities){
+                damage = statusWithVulnerabilities.applyVulnerabilities(damage, damageType);
             }
         }
 
