@@ -34,6 +34,7 @@ import game.gamelogic.Aimable;
 import game.gamelogic.Experiential;
 import game.gamelogic.Interactable;
 import game.gamelogic.Levelable;
+import game.gameobjects.DisplayableTile;
 import game.gameobjects.Floor;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Door;
@@ -43,6 +44,8 @@ import game.gameobjects.entities.Rat;
 import game.gameobjects.entities.ThrownItem;
 import game.gameobjects.entities.Wall;
 import game.gameobjects.items.Item;
+import game.gameobjects.terrains.OpenDoor;
+import game.gameobjects.terrains.Staircase;
 import game.gameobjects.terrains.Terrain;
 import game.gameobjects.terrains.Trap;
 import game.gameobjects.terrains.gasses.Gas;
@@ -162,6 +165,10 @@ public final class FloorMenu extends Menu{
 
     }
 
+    public void toggleMemory(){
+        memoryLayer.setHidden(!memoryLayer.isHidden());
+    }
+
     private void addToLayers(Space current, PlayerEntity playerEntity){
         int x = current.getX();
         int y = current.getY();
@@ -224,6 +231,9 @@ public final class FloorMenu extends Menu{
         } else {
             terrainLayer.draw(terrain.getTile(darkness), Position.create(x, y));
         }
+        if (terrain instanceof OpenDoor || terrain instanceof Staircase) {
+            drawInMemory(terrain, Position.create(x,y));
+        }
     }
 
     private void drawEntity(Entity occupant, int x, int y, double darkness) {
@@ -239,32 +249,26 @@ public final class FloorMenu extends Menu{
                 .buildGraphicalTile();
             healthBarLayer.draw(healthBar, Position.create(x, y));
         }
-        if (Display.getMode() == Mode.ASCII && (occupant instanceof Wall || occupant instanceof Door)){
-            int blue = occupant.getTile().getForegroundColor().getBlue() * 2;
+        if (occupant instanceof Wall || occupant instanceof Door) {
+            drawInMemory(occupant, Position.create(x,y));
+        }
+    }
+
+    public void drawInMemory(DisplayableTile tile, Position position) {
+        if (Display.getMode() == Mode.ASCII){
+            int blue = tile.getTile().getForegroundColor().getBlue() * 2;
             memoryLayer.draw(
-                occupant.getTile().withForegroundColor(occupant.getTile().getForegroundColor().withBlue(blue).darkenByPercent(.90)),
-                Position.create(x,y)
+                tile.getTile().withForegroundColor(tile.getTile().getForegroundColor().withBlue(blue).darkenByPercent(.90)),
+                position
             );
         } else if (Display.getMode() == Mode.GRAPHICAL){
-            String name = null;
-            switch (occupant) {
-                case Wall wall ->{
-                    name = "Wall Memory";
-                }
-                case Door door ->{
-                    name = "Closed Door Memory";
-                }
-                default -> {
-
-                }
-            }
-            if (name != null) {
+            if (tile.getTileName() != null) {
                 memoryLayer.draw(
                     Tile.newBuilder()
-                    .withName(name)
+                    .withName(tile.getTileName() + " Memory")
                     .withTileset(Display.getGraphicalTileSet())
                     .buildGraphicalTile(),
-                    Position.create(x,y)
+                    position
                 );
             }
         }
@@ -434,6 +438,9 @@ public final class FloorMenu extends Menu{
             .withSize(currentFloor.SIZE_X, currentFloor.SIZE_Y)
             .build();
         screen.addLayer(memoryLayer);
+        if (Display.getMode() == Mode.GRAPHICAL) {
+            memoryLayer.setHidden(true);
+        }
 
         spaceLayer = Layer.newBuilder()
             .withSize(currentFloor.SIZE_X, currentFloor.SIZE_Y)
@@ -633,6 +640,9 @@ public final class FloorMenu extends Menu{
                 break;
             case THROWING: //throwing
                 Display.setMenu(ItemSelectMenu.createThrowMenu(currentFloor.getPlayer()));
+                break;
+            case MEMORY_TOGGLE: //toggle memory
+                toggleMemory();
                 break;
             default:
                 return UIEventResponse.pass();
