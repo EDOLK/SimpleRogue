@@ -39,8 +39,7 @@ public class Display {
 
     private static Menu currentMenu;
     private static FloorMenu rootMenu;
-    // private static Mode mode = Mode.GRAPHICAL;
-    private static Mode mode = Mode.ASCII;
+    private static Mode mode = Mode.GRAPHICAL;
 
     private static KeyMap keyMap = new KeyMap();
     
