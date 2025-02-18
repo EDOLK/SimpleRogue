@@ -13,7 +13,7 @@ public interface HasBehavior extends Behavable{
 
     @Override
     default boolean isActive() {
-        return getBehavior() != null;
+        return getBehavior() != null && getBehavior().isActive();
     }
 
 }

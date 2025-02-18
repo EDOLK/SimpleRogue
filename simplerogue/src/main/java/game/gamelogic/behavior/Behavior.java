@@ -4,4 +4,6 @@ public abstract class Behavior {
 
     public abstract void behave();
 
+    public abstract boolean isActive();
+
 }
