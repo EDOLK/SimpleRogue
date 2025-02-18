@@ -28,6 +28,7 @@ public class KeyMap {
         map.put(KeyCode.KEY_D, Action.DROP_TOGGLE);
         map.put(KeyCode.KEY_G, Action.GET_TOGGLE);
         map.put(KeyCode.KEY_X, Action.EXAMINE_TOGGLE);
+        map.put(KeyCode.KEY_M, Action.MEMORY_TOGGLE);
         map.put(KeyCode.SPACE, Action.INTERACT_TOGGLE);
         map.put(KeyCode.ESCAPE, Action.ESCAPE);
         map.put(KeyCode.KEY_T, Action.THROWING);
@@ -72,7 +73,29 @@ public class KeyMap {
     }
 
     public enum Action{
-        RIGHT, LEFT, UP, DOWN, CENTER, UP_RIGHT, UP_LEFT, DOWN_LEFT, DOWN_RIGHT, INVENTORY, CONSUME, DROP_TOGGLE, GET_TOGGLE, INTERACT_TOGGLE, ESCAPE, EXAMINE_TOGGLE, EQUIPMENT, THROWING, SUBMIT, SCROLL_LEFT, SCROLL_RIGHT, NOTHING
+        RIGHT,
+        LEFT,
+        UP,
+        DOWN,
+        CENTER,
+        UP_RIGHT,
+        UP_LEFT,
+        DOWN_LEFT,
+        DOWN_RIGHT,
+        INVENTORY,
+        CONSUME,
+        DROP_TOGGLE,
+        GET_TOGGLE,
+        INTERACT_TOGGLE,
+        ESCAPE,
+        EXAMINE_TOGGLE,
+        EQUIPMENT,
+        THROWING,
+        SUBMIT,
+        SCROLL_LEFT,
+        SCROLL_RIGHT,
+        MEMORY_TOGGLE,
+        NOTHING
     }
 
 }
