@@ -143,4 +143,9 @@ public class AnimalBehavior extends Behavior {
         return possibleSpace;
     }
 
+    @Override
+    public boolean isActive() {
+        return animal.isAlive();
+    }
+
 }

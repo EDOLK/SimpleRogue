@@ -105,6 +105,11 @@ public class Spider extends Animal implements HasDodge, HasInventory{
             }
             setBehavior(new Trapping());
         }
+
+        @Override
+        public boolean isActive() {
+            return true;
+        }
         
     }
 
