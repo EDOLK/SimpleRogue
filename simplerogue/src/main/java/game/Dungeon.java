@@ -4,7 +4,6 @@ import static game.App.randomNumber;
 
 import game.display.Display;
 import game.display.FloorMenu;
-import game.floorgeneration.DebugFloorGenerator;
 import game.floorgeneration.DefaultFloorGenerator;
 import game.floorgeneration.Pool;
 import game.floorgeneration.Pools;
