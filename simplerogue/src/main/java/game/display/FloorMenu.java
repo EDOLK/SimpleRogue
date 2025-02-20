@@ -860,12 +860,14 @@ public final class FloorMenu extends Menu{
 
             if (space.isOccupied() && space.getOccupant() instanceof Interactable interactibleEntity){
                 interactibleEntity.onInteract(playerEntity);
+                Dungeon.update();
                 return true;
             }
 
             for (Item item : space.getItems()) {
                 if (item instanceof Interactable interactibleItem){
                     interactibleItem.onInteract(playerEntity);
+                    Dungeon.update();
                     return true;
                 }
             }
@@ -873,6 +875,7 @@ public final class FloorMenu extends Menu{
             for (Terrain terrain : space.getTerrains()){
                 if (terrain instanceof Interactable interactibleTerrain){
                     interactibleTerrain.onInteract(playerEntity);
+                    Dungeon.update();
                     return true;
                 }
             }
