@@ -13,7 +13,6 @@ import org.hexworks.zircon.api.graphics.BoxType;
 import org.hexworks.zircon.api.uievent.ComponentEventType;
 import org.hexworks.zircon.api.uievent.UIEventResponse;
 
-import game.display.FloorMenu.State;
 import game.gamelogic.Aimable;
 import game.gamelogic.Consumable;
 import game.gamelogic.Interactable;
@@ -109,10 +108,8 @@ public class ItemContextMenu extends Menu{
             .build();
         
         dropButton.handleComponentEvents(ComponentEventType.ACTIVATED, (event) -> {
-            FloorMenu floorMenu = new FloorMenu();
-            floorMenu.setCurrentState(State.DROPPING_SINGULAR);
-            floorMenu.setDroppingItem(item);
-            Display.setMenu(floorMenu);
+            Display.getRootMenu().startSelecting(Display.getRootMenu().new DropDirectSelector(item));
+            Display.setAndForgetMenus(Display.getRootMenu());
             return UIEventResponse.processed();
         });
 
@@ -189,12 +186,8 @@ public class ItemContextMenu extends Menu{
                 .withPosition(2,pos)
                 .build();
             throwButton.handleComponentEvents(ComponentEventType.ACTIVATED, (event) ->{
-                FloorMenu floorMenu = new FloorMenu();
-                Display.setMenu(floorMenu);
-                floorMenu.setCurrentState(State.AIMING);
-                floorMenu.setThowingItem((Aimable)item);
-                floorMenu.toggleExamination();
-                floorMenu.update();
+                Display.getRootMenu().startSelecting(Display.getRootMenu().new AimSelector((Aimable)item));
+                Display.setAndForgetMenus(Display.getRootMenu());
                 return UIEventResponse.processed();
             });
             itemPanel.addComponent(throwButton);

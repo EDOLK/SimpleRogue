@@ -12,7 +12,6 @@ import org.hexworks.zircon.api.data.Position;
 import org.hexworks.zircon.api.graphics.BoxType;
 import org.hexworks.zircon.api.uievent.UIEventResponse;
 
-import game.display.FloorMenu.State;
 import game.gamelogic.Aimable;
 import game.gamelogic.Consumable;
 import game.gamelogic.Examinable;
@@ -272,12 +271,8 @@ public class ItemSelectMenu extends Menu{
         Container container = Display.createFittedContainer(itemSelectMenu.screen, "Throw", aimables);
 
         Function<Item, UIEventResponse> function = (item) ->{
-            FloorMenu floorMenu = new FloorMenu();
-            Display.setMenu(floorMenu);
-            floorMenu.setCurrentState(State.AIMING);
-            floorMenu.setThowingItem((Aimable)item);
-            floorMenu.toggleExamination();
-            floorMenu.update();
+            Display.getRootMenu().startSelecting(Display.getRootMenu().new AimSelector((Aimable)item));
+            Display.setAndForgetMenus(Display.getRootMenu());
             return UIEventResponse.processed();
         };
         

@@ -118,7 +118,7 @@ public class PlayerEntity extends Entity implements Armored, Armed, Levelable, E
             selfAware.setSpace(currentSpace);
         }
         Display.log("You are dead!");
-        Display.getRootMenu().setCurrentState(State.DEAD);
+        setAlive(false);
     }
 
     @Override

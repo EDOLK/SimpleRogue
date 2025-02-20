@@ -34,13 +34,14 @@ import game.gamelogic.Aimable;
 import game.gamelogic.Experiential;
 import game.gamelogic.Interactable;
 import game.gamelogic.Levelable;
+import game.gamelogic.floorinteraction.Selector;
+import game.gamelogic.floorinteraction.SimpleSelector;
 import game.gameobjects.DisplayableTile;
 import game.gameobjects.Floor;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Door;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.entities.PlayerEntity;
-import game.gameobjects.entities.Rat;
 import game.gameobjects.entities.ThrownItem;
 import game.gameobjects.entities.Wall;
 import game.gameobjects.items.Item;
@@ -78,32 +79,7 @@ public final class FloorMenu extends Menu{
     private Header depthText;
     private Cursor cursor;
     private State currentState = State.INGAME;
-    private Aimable thowingItem = null;
-    private Item droppingItem = null;
-
-    public Item getDroppingItem() {
-        return droppingItem;
-    }
-
-    public void setDroppingItem(Item droppingItem) {
-        this.droppingItem = droppingItem;
-    }
-
-    public Aimable getThowingItem() {
-        return thowingItem;
-    }
-
-    public void setThowingItem(Aimable thowingItem) {
-        this.thowingItem = thowingItem;
-    }
-
-    public State getCurrentState() {
-        return currentState;
-    }
-
-    public void setCurrentState(State currentState) {
-        this.currentState = currentState;
-    }
+    private Selector selector = null;
 
     public FloorMenu(){
         super();
@@ -527,29 +503,28 @@ public final class FloorMenu extends Menu{
 
     @Override
     public UIEventResponse handleKeyboardEvent(KeyboardEvent event, UIEventPhase phase) {
+        UIEventResponse response = UIEventResponse.pass();
         switch (currentState) {
             case INGAME:
-                return handleInGame(event, phase);
-            case INTERACTING:
-                return handleInteracting(event, phase);
-            case EXAMINE:
-                return handleExamining(event, phase);
-            case GETTING:
-                return handleGetting(event, phase);
-            case DROPPING:
-                return handleDropping(event, phase);
-            case AIMING:
-                return handleAiming(event, phase);
+                response = handleInGame(event, phase);
+                break;
             case DEAD:
-                return handleDead(event, phase);
-            case DROPPING_SINGULAR:
-                return handleDroppingSingular(event, phase);
+                response = handleDead(event, phase);
+                break;
+            case SELECTING:
+                response = handleSelecting(event, phase);
+                break;
             default:
                 break;
         }
-        return UIEventResponse.pass();
+        // gross but necessary, find better way to do this later.
+        if (!currentFloor.getPlayer().isAlive())
+            currentState = State.DEAD;
+
+        return response;
     }
     
+
     public UIEventResponse handleInGame(KeyboardEvent event, UIEventPhase phase){
         boolean actionSuccessful = false;
         switch (Display.getKeyMap().getAction(event.getCode())) {
@@ -614,23 +589,24 @@ public final class FloorMenu extends Menu{
                 actionSuccessful = true;
                 break;
             case INTERACT_TOGGLE: //Interact
-                currentState = State.INTERACTING;
+                startSelecting(new InteractSelector());
                 break;
             case ESCAPE: //pause
                 Display.setMenu(new PauseMenu());
                 break;
             case EXAMINE_TOGGLE: //examining
-                toggleExamination();
-                currentState = State.EXAMINE;
+                startSelecting(new ExamineSelector());
                 break;
             case GET_TOGGLE: //getting
-                currentState = State.GETTING;
+                // currentState = State.GETTING;
+                startSelecting(new GetSelector());
                 break;
             case EQUIPMENT: //equiping
                 Display.setMenu(EquipmentMenu.createEquipEquipmentMenu(currentFloor.getPlayer()));
                 break;
             case DROP_TOGGLE: //dropping
-                currentState = State.DROPPING;
+                // currentState = State.DROPPING;
+                startSelecting(new DropSelector());
                 break;
             case CONSUME: //consuming
                 Display.setMenu(ItemSelectMenu.createConsumableSelectMenu(currentFloor.getPlayer()));
@@ -692,120 +668,58 @@ public final class FloorMenu extends Menu{
         }
     }
 
-    public UIEventResponse handleInteracting(KeyboardEvent event, UIEventPhase phase){
-        switch (Display.getKeyMap().getAction(event.getCode())){
-            case UP: //up
-                interactAdjacent(0, -1);
-                break;
-            case DOWN: //down
-                interactAdjacent(0, 1);
-                break;
-            case LEFT: //left
-                interactAdjacent(-1, 0);
-                break;
-            case RIGHT: //right
-                interactAdjacent(1, 0);
-                break;
-            case UP_LEFT: //up-left
-                interactAdjacent(-1, -1);
-                break;
-            case UP_RIGHT: //up-right
-                interactAdjacent(1, -1);
-                break;
-            case DOWN_LEFT: //down-left
-                interactAdjacent(-1, 1);
-                break;
-            case DOWN_RIGHT: //down-right
-                interactAdjacent(1, 1);
-                break;
-            case CENTER: //center
-                interactAdjacent(0,0);
-                break;
-            case ESCAPE:
-                break;
-            default:
-                break;
-        }
-        currentState = State.INGAME;
-        Dungeon.update();
+    public void startSelecting(Selector selector){
+        this.selector = selector;
+        this.currentState = State.SELECTING;
+        toggleExamination();
         Display.update();
-        return UIEventResponse.processed();
     }
 
-    private void interactAdjacent(int toX, int toY){
-        PlayerEntity playerEntity = currentFloor.getPlayer();
-        if (toX < -1 || toX > 1 || toY < -1 || toY > 1){
-            return;
-        }
-        int x = playerEntity.getX();
-        int y = playerEntity.getY();
-        Space space = currentFloor.getSpace(x+toX, y+toY);
-
-        if (space.isOccupied() && space.getOccupant() instanceof Interactable interactibleEntity){
-            interactibleEntity.onInteract(playerEntity);
-            return;
-        }
-
-        for (Item item : space.getItems()) {
-            if (item instanceof Interactable interactibleItem){
-                interactibleItem.onInteract(playerEntity);
-                return;
-            }
-        }
-        
-        for (Terrain terrain : space.getTerrains()){
-            if (terrain instanceof Interactable interactibleTerrain){
-                interactibleTerrain.onInteract(playerEntity);
-                return;
-            }
-        }
-
+    public void startSelecting(SimpleSelector selector){
+        this.selector = selector;
+        this.currentState = State.SELECTING;
     }
-    
-    public UIEventResponse handleExamining(KeyboardEvent event, UIEventPhase phase){
+
+    private UIEventResponse handleSelecting(KeyboardEvent event, UIEventPhase phase) {
+        if (selector instanceof SimpleSelector simpleSelector) {
+            return handleSelectingSimple(event, phase, simpleSelector);
+        }
         switch (Display.getKeyMap().getAction(event.getCode())) {
-            case EXAMINE_TOGGLE:
-                toggleExamination();
-                currentState = State.INGAME;
-                Display.update();
-                break;
             case ESCAPE:
                 toggleExamination();
                 currentState = State.INGAME;
                 Display.update();
                 break;
             case UP: //up
-                moveCursor(0, -1);
+                moveCursorWithSelector(0, -1, selector);
                 break;
             case DOWN: //down
-                moveCursor(0, 1);
+                moveCursorWithSelector(0, 1, selector);
                 break;
             case LEFT: //left
-                moveCursor(-1, 0);
+                moveCursorWithSelector(-1, 0, selector);
                 break;
             case RIGHT: //right
-                moveCursor(1, 0);
+                moveCursorWithSelector(1, 0, selector);
                 break;
             case UP_LEFT: //up-left
-                moveCursor(-1, -1);
+                moveCursorWithSelector(-1, -1, selector);
                 break;
             case UP_RIGHT: //up-right
-                moveCursor(1, -1);
+                moveCursorWithSelector(1, -1, selector);
                 break;
             case DOWN_LEFT: //down-left
-                moveCursor(-1, 1);
+                moveCursorWithSelector(-1, 1, selector);
                 break;
             case DOWN_RIGHT: //down-right
-                moveCursor(1, 1);
+                moveCursorWithSelector(1, 1, selector);
                 break;
-            case SUBMIT: //examine current
-                if (getCursor().getExamined() != null){
-                    Display.setMenu(new ExamineMenu(getCursor().getExamined()));
-                }
-                break;
-            case INTERACT_TOGGLE: //examine current
-                if (getCursor().getExamined() != null){
-                    Display.setMenu(new ExamineMenu(getCursor().getExamined()));
+            case INTERACT_TOGGLE: //select current
+            case SUBMIT: //select current
+                if (selector.select(getCursor())) {
+                    toggleExamination();
+                    currentState = State.INGAME;
+                    Display.update();
                 }
                 break;
             case SCROLL_LEFT:
@@ -826,183 +740,99 @@ public final class FloorMenu extends Menu{
         return UIEventResponse.processed();
     }
 
+    private UIEventResponse handleSelectingSimple(KeyboardEvent event, UIEventPhase phase, SimpleSelector simpleSelector) {
+        switch (Display.getKeyMap().getAction(event.getCode())) {
+            case ESCAPE:
+                currentState = State.INGAME;
+                break;
+            case CENTER:
+                if (attemptSelect(0, 0, simpleSelector)) {
+                    currentState = State.INGAME;
+                    Display.update();
+                }
+                break;
+            case UP: //up
+                if (attemptSelect(0, -1, simpleSelector)) {
+                    currentState = State.INGAME;
+                    Display.update();
+                }
+                break;
+            case DOWN: //down
+                if (attemptSelect(0, 1, simpleSelector)) {
+                    currentState = State.INGAME;
+                    Display.update();
+                }
+                break;
+            case LEFT: //left
+                if (attemptSelect(-1, 0, simpleSelector)) {
+                    currentState = State.INGAME;
+                    Display.update();
+                }
+                break;
+            case RIGHT: //right
+                if (attemptSelect(1, 0, simpleSelector)) {
+                    currentState = State.INGAME;
+                    Display.update();
+                }
+                break;
+            case UP_LEFT: //up-left
+                if (attemptSelect(-1, -1, simpleSelector)) {
+                    currentState = State.INGAME;
+                    Display.update();
+                }
+                break;
+            case UP_RIGHT: //up-right
+                if (attemptSelect(1, -1, simpleSelector)) {
+                    currentState = State.INGAME;
+                    Display.update();
+                }
+                break;
+            case DOWN_LEFT: //down-left
+                if (attemptSelect(-1, 1, simpleSelector)) {
+                    currentState = State.INGAME;
+                    Display.update();
+                }
+                break;
+            case DOWN_RIGHT: //down-right
+                if (attemptSelect(1, 1, simpleSelector)) {
+                    currentState = State.INGAME;
+                    Display.update();
+                }
+                break;
+            default:
+                break;
+        }
+        return UIEventResponse.processed();
+    }
+
+    private boolean attemptSelect(int toX, int toY, SimpleSelector simpleSelector){
+        if (toX < -1 || toX > 1 || toY < -1 || toY > 1){
+            return false;
+        }
+        PlayerEntity playerEntity = currentFloor.getPlayer();
+        int x = playerEntity.getX();
+        int y = playerEntity.getY();
+        Space potentialSpace = currentFloor.getSpace(x+toX, y+toY);
+        return simpleSelector.simpleSelect(potentialSpace);
+    }
+
+
     public Cursor getCursor() {
         return cursor;
     }
 
-    public void moveCursor(int toX, int toY){
+    public void moveCursorWithSelector(int toX, int toY, Selector selector){
         if (toX < -1 || toX > 1 || toY < -1 || toY > 1){
             return;
         }
         Cursor currentCursor = getCursor();
         int cursorX = currentCursor.getSelectedSpace().getX();
         int cursorY = currentCursor.getSelectedSpace().getY();
-        Space toMove = currentFloor.getClampedSpace(cursorX+toX, cursorY+toY);
-        currentCursor.setSelectedSpace(toMove);
-        update();
-    }
-    
-    public UIEventResponse handleGetting(KeyboardEvent event, UIEventPhase phase){
-        switch (Display.getKeyMap().getAction(event.getCode())){
-            case UP: //up
-                getAdjacent(0, -1);
-                break;
-            case DOWN: //down
-                getAdjacent(0, 1);
-                break;
-            case LEFT: //left
-                getAdjacent(-1, 0);
-                break;
-            case RIGHT: //right
-                getAdjacent(1, 0);
-                break;
-            case UP_LEFT: //up-left
-                getAdjacent(-1, -1);
-                break;
-            case UP_RIGHT: //up-right
-                getAdjacent(1, -1);
-                break;
-            case DOWN_LEFT: //down-left
-                getAdjacent(-1, 1);
-                break;
-            case DOWN_RIGHT: //down-right
-                getAdjacent(1, 1);
-                break;
-            case CENTER: //center
-                getAdjacent(0,0);
-                break;
-            case ESCAPE:
-                currentState = State.INGAME;
-                break;
-            default:
-                break;
+        Space to = currentFloor.getClampedSpace(cursorX+toX, cursorY+toY);
+        if (selector.canMove(currentCursor, to)) {
+            currentCursor.setSelectedSpace(to);
+            update();
         }
-        return UIEventResponse.processed();
-    }
-
-    public void getAdjacent(int toX, int toY){
-        PlayerEntity playerEntity = currentFloor.getPlayer();
-        if (toX < -1 || toX > 1 || toY < -1 || toY > 1){
-            return;
-        }
-        int x = playerEntity.getX();
-        int y = playerEntity.getY();
-        Space potentialSpace = currentFloor.getSpace(x+toX, y+toY);
-        // Display.setMenu(new GetMenu(potentialSpace,playerEntity));
-        Display.setMenu(ItemSelectMenu.createPickupMenu(potentialSpace, playerEntity));
-        currentState = State.INGAME;
-    }
-    
-    public UIEventResponse handleDropping(KeyboardEvent event, UIEventPhase phase){
-        switch (Display.getKeyMap().getAction(event.getCode())){
-            case UP: //up
-                dropAdjacent(0, -1);
-                break;
-            case DOWN: //down
-                dropAdjacent(0, 1);
-                break;
-            case LEFT: //left
-                dropAdjacent(-1, 0);
-                break;
-            case RIGHT: //right
-                dropAdjacent(1, 0);
-                break;
-            case UP_LEFT: //up-left
-                dropAdjacent(-1, -1);
-                break;
-            case UP_RIGHT: //up-right
-                dropAdjacent(1, -1);
-                break;
-            case DOWN_LEFT: //down-left
-                dropAdjacent(-1, 1);
-                break;
-            case DOWN_RIGHT: //down-right
-                dropAdjacent(1, 1);
-                break;
-            case CENTER: //center
-                dropAdjacent(0,0);
-                break;
-            case ESCAPE:
-                currentState = State.INGAME;
-            default:
-                break;
-        }
-        return UIEventResponse.processed();
-    }
-
-    public void dropAdjacent(int toX, int toY){
-        PlayerEntity playerEntity = currentFloor.getPlayer();
-        if (toX < -1 || toX > 1 || toY < -1 || toY > 1){
-            return;
-        }
-        int x = playerEntity.getX();
-        int y = playerEntity.getY();
-        Space potentialSpace = currentFloor.getSpace(x+toX, y+toY);
-        Display.setMenu(ItemSelectMenu.createDropMenu(potentialSpace, playerEntity));
-        currentState = State.INGAME;
-    }
-    
-    public UIEventResponse handleAiming(KeyboardEvent event, UIEventPhase phase){
-        switch (Display.getKeyMap().getAction(event.getCode())) {
-            case UP: //up
-                moveCursor(0, -1);
-                break;
-            case DOWN: //down
-                moveCursor(0, 1);
-                break;
-            case LEFT: //left
-                moveCursor(-1, 0);
-                break;
-            case RIGHT: //right
-                moveCursor(1, 0);
-                break;
-            case UP_LEFT: //up-left
-                moveCursor(-1, -1);
-                break;
-            case UP_RIGHT: //up-right
-                moveCursor(1, -1);
-                break;
-            case DOWN_LEFT: //down-left
-                moveCursor(-1, 1);
-                break;
-            case DOWN_RIGHT: //down-right
-                moveCursor(1, 1);
-                break;
-            case ESCAPE:
-                Display.revertMenu();
-                break;
-            case INTERACT_TOGGLE:
-            case SUBMIT:
-                Space aimingSpace = cursor.getSelectedSpace();
-                if (currentFloor.getPlayer().getSpace() == aimingSpace){
-                    thowingItem.onHit(currentFloor.getPlayer());
-                    if (thowingItem.landsOnHit()){
-                        thowingItem.onLand(currentFloor.getPlayer().getSpace());
-                    }
-                } else {
-                    List<Space> path = Line.getLineAsListInclusive(currentFloor.getPlayer().getSpace(), aimingSpace);
-                    path.remove(0);
-                    Space spawnSpace = path.get(0);
-                    ThrownItem thrownItem = new ThrownItem(thowingItem, spawnSpace, aimingSpace, 6);
-                    if (!spawnSpace.isOccupied()){
-                        spawnSpace.setOccupant(thrownItem);
-                    } else {
-                        thowingItem.onHit(spawnSpace.getOccupant());
-                        if (thowingItem.landsOnHit()){
-                            thowingItem.onLand(spawnSpace);
-                        }
-                    }
-                }
-                if (thowingItem instanceof Item item){
-                    currentFloor.getPlayer().removeItemFromInventory(item);
-                }
-                Display.setAndForgetMenus(Display.getRootMenu());
-                Display.update();
-                break;
-            default:
-                break;
-        }
-        return UIEventResponse.processed();
     }
     
     public UIEventResponse handleDead(KeyboardEvent event, UIEventPhase phase){
@@ -1011,76 +841,9 @@ public final class FloorMenu extends Menu{
         }
         return UIEventResponse.processed();
     }
-    
-    public UIEventResponse handleDroppingSingular(KeyboardEvent event, UIEventPhase phase){
-
-        FloorMenu floorMenu = Display.getRootMenu();
-
-        switch (Display.getKeyMap().getAction(event.getCode())) {
-            case UP: //up
-                dropDirect(0, -1);
-                floorMenu.update();
-                Display.setAndForgetMenus(floorMenu);
-                break;
-            case DOWN: //down
-                dropDirect(0, 1);
-                floorMenu.update();
-                Display.setAndForgetMenus(floorMenu);
-                break;
-            case LEFT: //left
-                dropDirect(-1, 0);
-                floorMenu.update();
-                Display.setAndForgetMenus(floorMenu);
-                break;
-            case RIGHT: //right
-                dropDirect(1, 0);
-                floorMenu.update();
-                Display.setAndForgetMenus(floorMenu);
-                break;
-            case UP_LEFT: //up-left
-                dropDirect(-1, -1);
-                Display.setAndForgetMenus(floorMenu);
-                break;
-            case UP_RIGHT: //up-right
-                dropDirect(1, -1);
-                floorMenu.update();
-                Display.setAndForgetMenus(floorMenu);
-                break;
-            case DOWN_LEFT: //down-left
-                dropDirect(-1, 1);
-                floorMenu.update();
-                Display.setAndForgetMenus(floorMenu);
-                break;
-            case DOWN_RIGHT: //down-right
-                dropDirect(1, 1);
-                floorMenu.update();
-                Display.setAndForgetMenus(floorMenu);
-                break;
-            case ESCAPE:
-                Display.revertMenu();
-                break;
-            default:
-                break;
-        }
-        
-        return UIEventResponse.processed();
-    }
-    
-    private void dropDirect(int toX, int toY){
-        if (toX < -1 || toX > 1 || toY < -1 || toY > 1){
-            return;
-        }
-        PlayerEntity playerEntity = currentFloor.getPlayer();
-        int x = playerEntity.getX();
-        int y = playerEntity.getY();
-        Space space = currentFloor.getSpace(x+toX, y+toY);
-        space.addItem(droppingItem);
-        currentFloor.getPlayer().removeItemFromInventory(droppingItem);
-        update();
-    }
 
     public static enum State{
-        INGAME, EXAMINE, GETTING, DROPPING, DEAD, AIMING, INTERACTING, DROPPING_SINGULAR, COLLECTING_LIQUID;
+        INGAME, DEAD, SELECTING;
     }
 
     @Override
@@ -1088,5 +851,138 @@ public final class FloorMenu extends Menu{
         this.update();
         return this;
     }
+
+    private class InteractSelector implements SimpleSelector{
+
+        @Override
+        public boolean simpleSelect(Space space) {
+            PlayerEntity playerEntity = currentFloor.getPlayer();
+
+            if (space.isOccupied() && space.getOccupant() instanceof Interactable interactibleEntity){
+                interactibleEntity.onInteract(playerEntity);
+                Dungeon.update();
+                return true;
+            }
+
+            for (Item item : space.getItems()) {
+                if (item instanceof Interactable interactibleItem){
+                    interactibleItem.onInteract(playerEntity);
+                    Dungeon.update();
+                    return true;
+                }
+            }
+            
+            for (Terrain terrain : space.getTerrains()){
+                if (terrain instanceof Interactable interactibleTerrain){
+                    interactibleTerrain.onInteract(playerEntity);
+                    Dungeon.update();
+                    return true;
+                }
+            }
+
+            return true;
+
+        }
+
+    }
+
+    private class ExamineSelector implements Selector{
+
+        @Override
+        public boolean select(Cursor cursor) {
+            if (cursor.getExamined() != null){
+                Display.setMenu(new ExamineMenu(getCursor().getExamined()));
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        public boolean canMove(Cursor cursor, Space toSpace) {
+            return true;
+        }
+
+    }
+
+    private class GetSelector implements SimpleSelector{
+
+        @Override
+        public boolean simpleSelect(Space space) {
+            Display.setMenu(ItemSelectMenu.createPickupMenu(space, currentFloor.getPlayer()));
+            return true;
+        }
+
+    }
+
+    private class DropSelector implements SimpleSelector{
+
+        @Override
+        public boolean simpleSelect(Space space) {
+            Display.setMenu(ItemSelectMenu.createDropMenu(space, currentFloor.getPlayer()));
+            return true;
+        }
+
+    }
+
+    public class DropDirectSelector implements SimpleSelector {
+
+        private Item item;
+
+        public DropDirectSelector(Item item) {
+            this.item = item;
+        }
+
+        @Override
+        public boolean simpleSelect(Space space) {
+            space.addItem(item);
+            currentFloor.getPlayer().removeItemFromInventory(item);
+            return true;
+        }
+
+    }
+
+    public class AimSelector implements Selector {
+
+        private Aimable throwingItem;
+
+        public AimSelector(Aimable throwingItem) {
+            this.throwingItem = throwingItem;
+        }
+
+        @Override
+        public boolean select(Cursor cursor) {
+            Space aimingSpace = cursor.getSelectedSpace();
+            if (currentFloor.getPlayer().getSpace() == aimingSpace){
+                throwingItem.onHit(currentFloor.getPlayer());
+                if (throwingItem.landsOnHit()){
+                    throwingItem.onLand(currentFloor.getPlayer().getSpace());
+                }
+            } else {
+                List<Space> path = Line.getLineAsListInclusive(currentFloor.getPlayer().getSpace(), aimingSpace);
+                path.remove(0);
+                Space spawnSpace = path.get(0);
+                ThrownItem thrownItem = new ThrownItem(throwingItem, spawnSpace, aimingSpace, 6);
+                if (!spawnSpace.isOccupied()){
+                    spawnSpace.setOccupant(thrownItem);
+                } else {
+                    throwingItem.onHit(spawnSpace.getOccupant());
+                    if (throwingItem.landsOnHit()){
+                        throwingItem.onLand(spawnSpace);
+                    }
+                }
+            }
+            if (throwingItem instanceof Item item){
+                currentFloor.getPlayer().removeItemFromInventory(item);
+            }
+            return true;
+        }
+
+        @Override
+        public boolean canMove(Cursor cursor, Space toSpace) {
+            return true;
+        }
+
+    }
+    
  
 }
