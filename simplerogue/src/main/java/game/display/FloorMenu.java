@@ -81,14 +81,6 @@ public final class FloorMenu extends Menu{
     private State currentState = State.INGAME;
     private Selector selector = null;
 
-    public State getCurrentState() {
-        return currentState;
-    }
-
-    public void setCurrentState(State currentState) {
-        this.currentState = currentState;
-    }
-
     public FloorMenu(){
         super();
 
@@ -526,9 +518,9 @@ public final class FloorMenu extends Menu{
                 break;
         }
         // gross but necessary, find better way to do this later.
-        if (currentFloor.getPlayer().getHP() <= 0) {
-            setCurrentState(State.DEAD);
-        }
+        if (!currentFloor.getPlayer().isAlive())
+            currentState = State.DEAD;
+
         return response;
     }
     
