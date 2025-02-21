@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
 
+import org.hexworks.cobalt.databinding.api.property.Property;
 import org.hexworks.zircon.api.CP437TilesetResources;
 import org.hexworks.zircon.api.ColorThemes;
 import org.hexworks.zircon.api.ComponentDecorations;
@@ -27,7 +28,7 @@ import org.hexworks.zircon.api.screen.Screen;
 import org.hexworks.zircon.api.uievent.ComponentEventType;
 import org.hexworks.zircon.api.uievent.UIEventResponse;
 
-import game.gamelogic.Examinable;
+import game.gamelogic.HasName;
 import game.gameobjects.Space;
 
 public class Display {
@@ -79,6 +80,10 @@ public class Display {
 
     public static FloorMenu getRootMenu() {
         return rootMenu;
+    }
+
+    public static Menu getCurrentMenu(){
+        return currentMenu;
     }
 
     public static TilesetResource getGraphicalTileSet() {
@@ -163,7 +168,7 @@ public class Display {
     }
 
     @SafeVarargs
-    public static <L extends Examinable> void populateMenu(Menu menu, Function<L,UIEventResponse> function, String label,L... l){
+    public static <L extends HasName> void populateMenu(Menu menu, Function<L,UIEventResponse> function, String label,L... l){
         List<L> list = new ArrayList<L>();
         for (L l2 : l) {
             list.add(l2);
@@ -171,14 +176,14 @@ public class Display {
         populateMenu(menu, function, label, list);
     }
 
-    public static <L extends Examinable> void populateMenu(Menu menu, Function<L,UIEventResponse> function, String label, List<L> list){
+    public static <L extends HasName> void populateMenu(Menu menu, Function<L,UIEventResponse> function, String label, List<L> list){
         Container container = createFittedContainer(menu.screen,label,list);
         populateContainer(container, function, list);
         menu.screen.addComponent(container);
     }
     
     @SafeVarargs
-    public static <L extends Examinable> Container createFittedContainer(Screen screen, String label, L... l){
+    public static <L extends HasName> Container createFittedContainer(Screen screen, String label, L... l){
         List<L> list = new ArrayList<L>();
         for (L l2 : l) {
             list.add(l2);
@@ -186,7 +191,7 @@ public class Display {
         return createFittedContainer(screen, label, list);
     }
 
-    public static <L extends Examinable> Container createFittedContainer(Screen screen, String label, List<L> list){
+    public static <L extends HasName> Container createFittedContainer(Screen screen, String label, List<L> list){
         int height = screen.getHeight()/3;
         if (list.size() + 2 > height){
             height = list.size()+2;
@@ -215,15 +220,16 @@ public class Display {
     }
     
     @SafeVarargs
-    public static <L extends Examinable> void populateContainer(Container container, Function<L, UIEventResponse> function, L... l){
+    public static <L extends HasName> List<AttachedButton<L>> populateContainer(Container container, Function<L, UIEventResponse> function, L... l){
         List<L> list = new ArrayList<L>();
         for (L l2 : l) {
             list.add(l2);
         }
-        populateContainer(container, function, list);
+        return populateContainer(container, function, list);
     }
     
-    public static <L extends Examinable> void populateContainer(Container container,  Function<L,UIEventResponse> function, List<L> list){
+    public static <L extends HasName> List<AttachedButton<L>> populateContainer(Container container,  Function<L,UIEventResponse> function, List<L> list){
+        List<AttachedButton<L>> buttons = new ArrayList<>();
         int i = 0;
         for (L l : list) {
             i++;
@@ -263,8 +269,10 @@ public class Display {
                     return function.apply(l);
                 });
                 container.addComponent(button);
+                buttons.add(new AttachedButton<L>(button,l));
             }
         }
+        return buttons;
     }
 
     public static enum Mode{

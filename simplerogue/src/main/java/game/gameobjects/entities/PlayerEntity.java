@@ -15,6 +15,8 @@ import game.gamelogic.HasOffHand;
 import game.gamelogic.Levelable;
 import game.gamelogic.LightSource;
 import game.gamelogic.SelfAware;
+import game.gamelogic.abilities.Ability;
+import game.gamelogic.abilities.Meditate;
 import game.gameobjects.ArmorSlot;
 import game.gameobjects.DamageType;
 import game.gameobjects.ItemSlot;
@@ -75,6 +77,8 @@ public class PlayerEntity extends Entity implements Armored, Armed, Levelable, E
         weaponSlots.add(e);
         e.setEquippedWeapon(club);
         offHandSlot.setEquippedItem(new Torch(true));
+
+        addAbility(new Meditate(this));
         
     }
 

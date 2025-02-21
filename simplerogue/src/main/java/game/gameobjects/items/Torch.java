@@ -4,22 +4,27 @@ import org.hexworks.zircon.api.color.TileColor;
 
 import game.App;
 import game.display.Display;
+import game.display.ItemContextMenu;
 import game.gamelogic.Flammable;
 import game.gamelogic.Interactable;
 import game.gamelogic.LightSource;
 import game.gamelogic.SelfAware;
+import game.gamelogic.abilities.Ability;
+import game.gamelogic.abilities.HasAbility;
 import game.gamelogic.behavior.Behavable;
 import game.gamelogic.combat.AttackInfo;
 import game.gamelogic.combat.OnCrit;
+import game.gamelogic.floorinteraction.SimpleSelector;
 import game.gameobjects.DamageType;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.items.weapons.Weapon;
 import game.gameobjects.statuses.Burning;
 import game.gameobjects.terrains.Fire;
+import game.gameobjects.terrains.Terrain;
 
-public class Torch extends Weapon implements Flammable, LightSource, SelfAware, Behavable, Interactable, OnCrit {
-
+public class Torch extends Weapon implements Flammable, LightSource, SelfAware, Behavable, Interactable, OnCrit, HasAbility {
+    
     private boolean lit = false;
     private int maxFuel = 500;
     private int fuel = maxFuel;
@@ -32,7 +37,7 @@ public class Torch extends Weapon implements Flammable, LightSource, SelfAware, 
         setCharacter('t');
         setfGColor(TileColor.create(250, 134, 7, 255));
         setbGColor(TileColor.transparent());
-        setDescription("A torch.");
+        setDescription("A torch. Can light nearby tiles on fire, assuming there is kindling, of course.");
         setWeight(1);
         if (lit) {
             setMinDamage(0);
@@ -51,12 +56,11 @@ public class Torch extends Weapon implements Flammable, LightSource, SelfAware, 
 
     @Override
     public String getName() {
-        return super.getName() + (lit ? " (lit)" : "");
+        return super.getName() + (lit ? " (" + fuel + ")" : "");
     }
 
     @Override
     public int getLightSourceIntensity() {
-        // return 10;
         if (lit){
             return (int)App.lerp(0,3,maxFuel,11,fuel);
         } else {
@@ -95,6 +99,7 @@ public class Torch extends Weapon implements Flammable, LightSource, SelfAware, 
             setMinDamage(0);
             setMaxDamage(2);
             setDamageType(DamageType.BLUNT);
+            Display.log("Your torch goes out.");
         }
     }
 
@@ -113,13 +118,69 @@ public class Torch extends Weapon implements Flammable, LightSource, SelfAware, 
         } else {
             Display.log("The torch is already lit.");
         }
-        Display.revertMenu();
+        if (Display.getCurrentMenu() instanceof ItemContextMenu)
+            Display.revertMenu();
     }
 
     @Override
     public void doOnCrit(Entity self, Entity other, AttackInfo attackInfo) {
         if (lit)
             other.addStatus(new Burning());
+    }
+
+    @Override
+    public Ability getAbility() {
+        return this.new Light();
+    }
+
+    private class Light implements Ability {
+
+        @Override
+        public String getName() {
+            return "Light";
+        }
+
+        @Override
+        public void activate() {
+            Display.getRootMenu().startSelecting(Torch.this.new LightSelector());
+        }
+
+        @Override
+        public boolean isEnabled() {
+            return Torch.this.lit;
+        }
+        
+    }
+
+    private class LightSelector implements SimpleSelector{
+
+        @Override
+        public boolean simpleSelect(Space space) {
+
+            for (Terrain terrain : space.getTerrains()) {
+                if (terrain instanceof Flammable){
+                    return lightAndReturn(space);
+                }
+            }
+
+            for (Item item : space.getItems()) {
+                if (item instanceof Flammable){
+                    return lightAndReturn(space);
+                }
+            }
+
+            Display.log("No flammable material here.");
+            return true;
+
+        }
+
+        public boolean lightAndReturn(Space space){
+            space.addFire(new Fire(1));
+            Torch.this.fuel -= Torch.this.maxFuel/4;
+            return true;
+        }
+
+
     }
 
 }

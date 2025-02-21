@@ -18,6 +18,7 @@ import game.gamelogic.HasDodge;
 import game.gamelogic.HasOffHand;
 import game.gamelogic.LightSource;
 import game.gamelogic.OverridesAttack;
+import game.gamelogic.abilities.Ability;
 import game.gamelogic.behavior.Behavable;
 import game.gamelogic.combat.AttackInfo;
 import game.gamelogic.combat.CombatModifier;
@@ -105,6 +106,13 @@ public class Floor{
                         if (status instanceof Behavable behavableStatus){
                             behavables.add(behavableStatus);
                         }
+                    }
+
+                    for (Ability ability : entity.getAbilities()){
+                        if (ability instanceof Behavable behavableAbility){
+                            behavables.add(behavableAbility);
+                        }
+
                     }
 
                     if (entity instanceof HasOffHand hasOffHand){
