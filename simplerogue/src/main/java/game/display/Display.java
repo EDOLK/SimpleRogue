@@ -30,6 +30,7 @@ import org.hexworks.zircon.api.uievent.UIEventResponse;
 
 import game.gamelogic.HasName;
 import game.gameobjects.Space;
+import kotlin.Pair;
 
 public class Display {
 
@@ -220,7 +221,7 @@ public class Display {
     }
     
     @SafeVarargs
-    public static <L extends HasName> List<AttachedButton<L>> populateContainer(Container container, Function<L, UIEventResponse> function, L... l){
+    public static <L extends HasName> List<Pair<Button,L>> populateContainer(Container container, Function<L, UIEventResponse> function, L... l){
         List<L> list = new ArrayList<L>();
         for (L l2 : l) {
             list.add(l2);
@@ -228,8 +229,8 @@ public class Display {
         return populateContainer(container, function, list);
     }
     
-    public static <L extends HasName> List<AttachedButton<L>> populateContainer(Container container,  Function<L,UIEventResponse> function, List<L> list){
-        List<AttachedButton<L>> buttons = new ArrayList<>();
+    public static <L extends HasName> List<Pair<Button,L>> populateContainer(Container container,  Function<L,UIEventResponse> function, List<L> list){
+        List<Pair<Button,L>> buttons = new ArrayList<>();
         int i = 0;
         for (L l : list) {
             i++;
@@ -269,7 +270,7 @@ public class Display {
                     return function.apply(l);
                 });
                 container.addComponent(button);
-                buttons.add(new AttachedButton<L>(button,l));
+                buttons.add(new Pair<Button,L> (button,l));
             }
         }
         return buttons;

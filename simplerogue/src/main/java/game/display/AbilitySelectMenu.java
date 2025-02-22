@@ -3,6 +3,7 @@ package game.display;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hexworks.zircon.api.component.Button;
 import org.hexworks.zircon.api.component.Container;
 import org.hexworks.zircon.api.uievent.UIEventResponse;
 
@@ -15,6 +16,7 @@ import game.gameobjects.entities.Entity;
 import game.gameobjects.entities.PlayerEntity;
 import game.gameobjects.items.armor.Armor;
 import game.gameobjects.items.weapons.Weapon;
+import kotlin.Pair;
 
 public class AbilitySelectMenu extends Menu{
 
@@ -31,7 +33,7 @@ public class AbilitySelectMenu extends Menu{
             }
         }
         Container container = Display.createFittedContainer(this.screen,"Abilities",abilities);
-        List<AttachedButton<Ability>> buttons = Display.populateContainer(
+        List<Pair<Button,Ability>> buttons = Display.populateContainer(
             container,
             (Ability a) -> {
                 a.activate();
@@ -39,8 +41,8 @@ public class AbilitySelectMenu extends Menu{
             },
             abilities
         );
-        for (AttachedButton<Ability> button : buttons) {
-            button.setDisabled(!button.getAttachment().isEnabled());
+        for (Pair<Button,Ability> pair : buttons) {
+            pair.getFirst().setDisabled(!pair.getSecond().isEnabled());
         }
         this.screen.addComponent(container);
     }
