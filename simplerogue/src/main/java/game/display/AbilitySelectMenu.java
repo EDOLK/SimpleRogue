@@ -75,5 +75,9 @@ public class AbilitySelectMenu extends Menu{
         return list;
     }
 
+    @Override
+    public Menu refresh() {
+        return new AbilitySelectMenu(player);
+    }
 
 }
