@@ -4,12 +4,10 @@ import java.util.ArrayList;
 
 import org.hexworks.zircon.api.color.TileColor;
 
-import game.display.Display;
 import game.gamelogic.HasResistances;
 import game.gamelogic.resistances.PercentageResistance;
 import game.gamelogic.resistances.Resistance;
 import game.gameobjects.DamageType;
-import game.gameobjects.Space;
 import game.gameobjects.items.Item;
 import game.gameobjects.statuses.Status;
 
@@ -48,12 +46,8 @@ public class Wall extends Entity implements HasResistances{
     }
 
     @Override
-    public void onKill(Entity killer){
-        Display.log("The " + getName() + " collapses into a pile of rubble.", getSpace());
-        Space currentSpace = getSpace();
-        currentSpace.setOccupant(null);
-        currentSpace.addItem(getCorpse());
-        setSpace(null);
+    public String getDeathMessage() {
+        return "The " + getName() + " collapses into a pile of rubble.";
     }
 
     @Override

@@ -372,7 +372,7 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
 
         if (getHP() <= 0){
             setHP(0);
-            onKill(attacker);
+            kill(attacker);
         }
         return damage;
     }
@@ -392,7 +392,7 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
 
         if (getHP() <= 0){
             setHP(0);
-            onKill(null);
+            kill(null);
         }
         return damage;
     }
@@ -434,9 +434,11 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
     }
 
     // on death behavior (most will just drop a corpse, and other drops)
-    public void onKill(Entity killer){
+    public void kill(Entity killer){
 
-        Display.log("The " + getName() + " dies.", getSpace());
+        if (getDeathMessage() != null && !getDeathMessage().equals("")) {
+            Display.log(getDeathMessage(), getSpace());
+        }
 
         Space space = getSpace();
 
@@ -472,10 +474,12 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
 
         space.addItem(getCorpse());
 
-        setSpace(null);
-        
         setAlive(false);
 
+    }
+
+    public String getDeathMessage(){
+        return "The " + getName() + " dies.";
     }
 
     // what this entity will do by default if another walks into it (should reference one of the other behavioral functions, perhaps after determining what the other entity is)

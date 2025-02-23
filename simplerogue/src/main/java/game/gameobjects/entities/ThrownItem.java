@@ -57,12 +57,12 @@ public class ThrownItem extends Entity implements HasDodge, HasResistances, Beha
                     aimable.onHit(nextSpace.getOccupant());
                     if (aimable.landsOnHit())
                         aimable.onLand(nextSpace);
-                    onKill(null);
+                    kill(null);
                     break;
                 }
             } else {
                 aimable.onLand(getSpace());
-                onKill(null);
+                kill(null);
                 break;
             }
         }
@@ -86,13 +86,6 @@ public class ThrownItem extends Entity implements HasDodge, HasResistances, Beha
     @Override
     public boolean isActive() {
         return isAlive();
-    }
-
-    @Override
-    public void onKill(Entity killer) {
-        Space space = getSpace();
-        space.setOccupant(null);
-        setSpace(null);
     }
 
     @Override

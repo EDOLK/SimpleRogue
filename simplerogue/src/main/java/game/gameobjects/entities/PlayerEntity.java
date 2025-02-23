@@ -6,7 +6,6 @@ import java.util.List;
 import org.hexworks.zircon.api.color.TileColor;
 
 import game.display.Display;
-import game.display.FloorMenu.State;
 import game.gamelogic.Armed;
 import game.gamelogic.Armored;
 import game.gamelogic.Experiential;
@@ -14,7 +13,6 @@ import game.gamelogic.HasInventory;
 import game.gamelogic.HasOffHand;
 import game.gamelogic.Levelable;
 import game.gamelogic.LightSource;
-import game.gamelogic.SelfAware;
 import game.gameobjects.ArmorSlot;
 import game.gameobjects.DamageType;
 import game.gameobjects.ItemSlot;
@@ -110,15 +108,8 @@ public class PlayerEntity extends Entity implements Armored, Armed, Levelable, E
     }
 
     @Override
-    public void onKill(Entity killer) {
-        Space currentSpace = getSpace();
-        currentSpace.setOccupant(null);
-        currentSpace.addItem(getCorpse());
-        if (getCorpse() instanceof SelfAware selfAware){
-            selfAware.setSpace(currentSpace);
-        }
-        Display.log("You are dead!");
-        setAlive(false);
+    public String getDeathMessage() {
+        return "You are dead!";
     }
 
     @Override
