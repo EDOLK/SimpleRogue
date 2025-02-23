@@ -48,15 +48,6 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
     protected boolean lightBlocker = false;
     private Weapon unarmedWeapon;
     private boolean alive = true;
-    private List<Ability> abilities = new ArrayList<>();
-
-    public List<Ability> getAbilities() {
-        return abilities;
-    }
-
-    public boolean addAbility(Ability ability){
-        return abilities.add(ability);
-    }
 
     public boolean isAlive() {
         return alive;

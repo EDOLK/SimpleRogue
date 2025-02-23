@@ -16,6 +16,7 @@ import game.gamelogic.Levelable;
 import game.gamelogic.LightSource;
 import game.gamelogic.SelfAware;
 import game.gamelogic.abilities.Ability;
+import game.gamelogic.abilities.HasAbilities;
 import game.gamelogic.abilities.Meditate;
 import game.gameobjects.ArmorSlot;
 import game.gameobjects.DamageType;
@@ -29,7 +30,7 @@ import game.gameobjects.items.armor.Armor;
 import game.gameobjects.items.armor.ArmorType;
 import game.gameobjects.items.weapons.Weapon;
 
-public class PlayerEntity extends Entity implements Armored, Armed, Levelable, Experiential, HasInventory, LightSource, HasOffHand{
+public class PlayerEntity extends Entity implements Armored, Armed, Levelable, Experiential, HasInventory, LightSource, HasOffHand, HasAbilities{
 
     private int maxWeight = 50;
     private int maxMP;
@@ -37,6 +38,7 @@ public class PlayerEntity extends Entity implements Armored, Armed, Levelable, E
     private List<ArmorSlot> armorSlots = new ArrayList<ArmorSlot>();
     private List<WeaponSlot> weaponSlots = new ArrayList<WeaponSlot>();
     private List<Item> inventory = new ArrayList<Item>();
+    private List<Ability> abilities = new ArrayList<>();
     private ItemSlot offHandSlot = new ItemSlot("Offhand");
     private int level = 1;
     private int XP = 0;
@@ -80,6 +82,19 @@ public class PlayerEntity extends Entity implements Armored, Armed, Levelable, E
 
         addAbility(new Meditate(this));
         
+    }
+
+    public boolean addAbility(Ability ability){
+        return abilities.add(ability);
+    }
+
+    public boolean removeAbility(Ability ability){
+        return abilities.remove(ability);
+    }
+
+    @Override
+    public List<Ability> getAbilities() {
+        return abilities;
     }
 
     public int getMaxMP() {

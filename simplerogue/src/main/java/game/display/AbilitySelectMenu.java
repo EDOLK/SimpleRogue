@@ -11,25 +11,27 @@ import game.gamelogic.Armed;
 import game.gamelogic.Armored;
 import game.gamelogic.HasOffHand;
 import game.gamelogic.abilities.Ability;
+import game.gamelogic.abilities.HasAbilities;
 import game.gamelogic.abilities.HasAbility;
 import game.gameobjects.entities.Entity;
-import game.gameobjects.entities.PlayerEntity;
 import game.gameobjects.items.armor.Armor;
 import game.gameobjects.items.weapons.Weapon;
 import kotlin.Pair;
 
 public class AbilitySelectMenu extends Menu{
 
-    private PlayerEntity player;
+    private HasAbilities hasAbilities;
 
-    public AbilitySelectMenu(PlayerEntity player) {
+    public AbilitySelectMenu(HasAbilities hasAbilities) {
         super();
-        this.player = player;
+        this.hasAbilities = hasAbilities;
 
-        List<Ability> abilities = new ArrayList<>(player.getAbilities());
-        for (Object object : getAspects(player)) {
-            if (object instanceof HasAbility hasAbility) {
-                abilities.add(hasAbility.getAbility());
+        List<Ability> abilities = new ArrayList<>(hasAbilities.getAbilities());
+        if (hasAbilities instanceof Entity entity) {
+            for (Object object : getAspects(entity)) {
+                if (object instanceof HasAbility hasAbility) {
+                    abilities.add(hasAbility.getAbility());
+                }
             }
         }
         Container container = Display.createFittedContainer(this.screen,"Abilities",abilities);
@@ -77,7 +79,7 @@ public class AbilitySelectMenu extends Menu{
 
     @Override
     public Menu refresh() {
-        return new AbilitySelectMenu(player);
+        return new AbilitySelectMenu(hasAbilities);
     }
 
 }

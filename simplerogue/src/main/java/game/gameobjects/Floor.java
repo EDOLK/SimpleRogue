@@ -19,6 +19,7 @@ import game.gamelogic.HasOffHand;
 import game.gamelogic.LightSource;
 import game.gamelogic.OverridesAttack;
 import game.gamelogic.abilities.Ability;
+import game.gamelogic.abilities.HasAbilities;
 import game.gamelogic.behavior.Behavable;
 import game.gamelogic.combat.AttackInfo;
 import game.gamelogic.combat.CombatModifier;
@@ -108,12 +109,14 @@ public class Floor{
                         }
                     }
 
-                    for (Ability ability : entity.getAbilities()){
-                        if (ability instanceof Behavable behavableAbility){
-                            behavables.add(behavableAbility);
+                    if (entity instanceof HasAbilities hasAbilities) {
+                        for (Ability ability : hasAbilities.getAbilities()){
+                            if (ability instanceof Behavable behavableAbility){
+                                behavables.add(behavableAbility);
+                            }
                         }
-
                     }
+
 
                     if (entity instanceof HasOffHand hasOffHand){
                         ItemSlot slot = hasOffHand.getOffHandSlot();
