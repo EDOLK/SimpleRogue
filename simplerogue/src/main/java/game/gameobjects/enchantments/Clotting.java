@@ -10,6 +10,7 @@ import org.hexworks.zircon.api.color.TileColor;
 import game.Dungeon;
 import game.gamelogic.behavior.Behavable;
 import game.gamelogic.combat.AttackInfo;
+import game.gamelogic.combat.OnDeath;
 import game.gamelogic.combat.OnHitted;
 import game.gameobjects.DamageType;
 import game.gameobjects.Floor;
@@ -19,7 +20,7 @@ import game.gameobjects.items.weapons.Weapon;
 
 public class Clotting extends ArmorEnchantment implements OnHitted {
 
-    private class BloodPolyp extends Entity implements Behavable{
+    private class BloodPolyp extends Entity implements Behavable, OnDeath{
 
         private int healthStored;
         private Entity owner;
@@ -50,9 +51,8 @@ public class Clotting extends ArmorEnchantment implements OnHitted {
         }
 
         @Override
-        public void onKill(Entity killer) {
-            super.onKill(killer);
-            if (killer == owner){
+        public void doOnDeath(Entity self, Entity other, AttackInfo attackInfo) {
+            if (other == owner){
                 owner.heal(healthStored);
             }
         }

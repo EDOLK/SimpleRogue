@@ -8,8 +8,8 @@ import org.hexworks.zircon.api.color.TileColor;
 
 import game.Dungeon;
 import game.display.Display;
-import game.floorgeneration.Pool;
 import game.floorgeneration.ItemFactory.ItemIdentifier;
+import game.floorgeneration.Pool;
 import game.gamelogic.Consumable;
 import game.gamelogic.DropsXP;
 import game.gamelogic.HasDodge;
@@ -17,20 +17,20 @@ import game.gamelogic.HasDrops;
 import game.gamelogic.HasInventory;
 import game.gamelogic.HasResistances;
 import game.gamelogic.behavior.AnimalBehavior;
+import game.gamelogic.combat.AttackInfo;
+import game.gamelogic.combat.OnDeath;
 import game.gamelogic.resistances.PercentageResistance;
 import game.gamelogic.resistances.RangeResistance;
 import game.gamelogic.resistances.Resistance;
 import game.gameobjects.DamageType;
-import game.gameobjects.Space;
 import game.gameobjects.items.Corpse;
 import game.gameobjects.items.Item;
 import game.gameobjects.items.weapons.Weapon;
 
-public class Slime extends Animal implements DropsXP, HasDodge, HasResistances, HasInventory, HasDrops{
+public class Slime extends Animal implements DropsXP, HasDodge, HasResistances, HasInventory, HasDrops, OnDeath{
 
     private ArrayList<Resistance> resistances = new ArrayList<Resistance>();
     private ArrayList<Item> inventory = new ArrayList<Item>();
-    private DamageType lastDamageType = null;
     private int dropPoints = randomNumber(3, 15);
     
     public Slime(){
@@ -50,7 +50,7 @@ public class Slime extends Animal implements DropsXP, HasDodge, HasResistances, 
         mass.setDamage(1, 3);
         setUnarmedWeapon(mass);
         
-        setCorpse(new Corpse(this));
+        setCorpse(null);
 
         resistances.add(new RangeResistance(DamageType.BLUNT, 1, 4));
         resistances.add(new PercentageResistance(DamageType.POISON, 0.20));
@@ -123,27 +123,11 @@ public class Slime extends Animal implements DropsXP, HasDodge, HasResistances, 
     }
 
     @Override
-    public int dealDamage(int damage, DamageType damageType, Entity attacker) {
-        lastDamageType = damageType;
-        return super.dealDamage(damage, damageType, attacker);
-    }
-
-    @Override
-    public int dealDamage(int damage, DamageType damageType) {
-        lastDamageType = damageType;
-        return super.dealDamage(damage, damageType);
-    }
-
-    @Override
-    public void onKill(Entity killer) {
-        Space space = null;
-        if (lastDamageType == DamageType.FIRE){
-            space = getSpace();
-            setCorpse(null);
-        }
-        super.onKill(killer);
-        if (space != null){
-            space.setOccupant(new EvaporatedSlime());
+    public void doOnDeath(Entity self, Entity other, AttackInfo attackInfo) {
+        if (attackInfo.getDamageType() == DamageType.FIRE) {
+            getSpace().setOccupant(new EvaporatedSlime());
+        } else {
+            getSpace().addItem(new Corpse(this));
         }
     }
 
@@ -161,5 +145,6 @@ public class Slime extends Animal implements DropsXP, HasDodge, HasResistances, 
     public void setDropPoints(int points) {
         this.dropPoints = points;
     }
+
 
 }

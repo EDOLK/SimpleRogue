@@ -125,15 +125,8 @@ public class PlayerEntity extends Entity implements Armored, Armed, Levelable, E
     }
 
     @Override
-    public void onKill(Entity killer) {
-        Space currentSpace = getSpace();
-        currentSpace.setOccupant(null);
-        currentSpace.addItem(getCorpse());
-        if (getCorpse() instanceof SelfAware selfAware){
-            selfAware.setSpace(currentSpace);
-        }
-        Display.log("You are dead!");
-        setAlive(false);
+    public String getDeathMessage() {
+        return "You are dead!";
     }
 
     @Override

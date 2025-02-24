@@ -27,8 +27,10 @@ import game.gamelogic.combat.OnAttack;
 import game.gamelogic.combat.OnAttacked;
 import game.gamelogic.combat.OnCrit;
 import game.gamelogic.combat.OnCritted;
+import game.gamelogic.combat.OnDeath;
 import game.gamelogic.combat.OnHit;
 import game.gamelogic.combat.OnHitted;
+import game.gamelogic.combat.OnKill;
 import game.gamelogic.combat.OnMiss;
 import game.gamelogic.combat.OnMissed;
 import game.gameobjects.entities.Entity;
@@ -329,6 +331,7 @@ public class Floor{
             List<OnMissed> attackerOnMissed = new ArrayList<OnMissed>();
             List<OnCrit> attackerOnCrit = new ArrayList<OnCrit>();
             List<OnCritted> attackerOnCritted = new ArrayList<OnCritted>();
+            List<OnKill> attackerOnKill = new ArrayList<OnKill>();
             for (CombatModifier combatModifier : attackerCombatMods) {
                 if (combatModifier instanceof OnAttack onAttack){
                     attackerOnAttack.add(onAttack);
@@ -354,6 +357,9 @@ public class Floor{
                 if (combatModifier instanceof OnCritted onCritted){
                     attackerOnCritted.add(onCritted);
                 }
+                if (combatModifier instanceof OnKill onKill) {
+                    attackerOnKill.add(onKill);
+                }
             }
 
             List<CombatModifier> defenderCombatMods = getCombatModifiers(defender);
@@ -365,6 +371,7 @@ public class Floor{
             List<OnMissed> defenderOnMissed = new ArrayList<OnMissed>();
             List<OnCrit> defenderOnCrit = new ArrayList<OnCrit>();
             List<OnCritted> defenderOnCritted = new ArrayList<OnCritted>();
+            List<OnDeath> defenderOnDeath = new ArrayList<OnDeath>();
             for (CombatModifier combatModifier : defenderCombatMods) {
                 if (combatModifier instanceof OnAttack onAttack){
                     defenderOnAttack.add(onAttack);
@@ -389,6 +396,9 @@ public class Floor{
                 }
                 if (combatModifier instanceof OnCritted onCritted){
                     defenderOnCritted.add(onCritted);
+                }
+                if (combatModifier instanceof OnDeath onDeath){
+                    defenderOnDeath.add(onDeath);
                 }
             }
 
@@ -468,6 +478,14 @@ public class Floor{
                         onCritted.doOnCritted(defender, attacker, attackInfo);
                     }
 
+                }
+                if (!defender.isAlive()) {
+                    for (OnDeath onDeath : defenderOnDeath) {
+                        onDeath.doOnDeath(defender, attacker, attackInfo);
+                    }
+                    for (OnKill onKill : attackerOnKill) {
+                        onKill.doOnKill(attacker, defender, attackInfo);
+                    }
                 }
             } else {
                 if (attacker instanceof PlayerEntity){
