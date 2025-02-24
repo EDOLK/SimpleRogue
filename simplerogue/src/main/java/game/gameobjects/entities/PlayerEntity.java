@@ -6,7 +6,6 @@ import java.util.List;
 import org.hexworks.zircon.api.color.TileColor;
 
 import game.display.Display;
-import game.display.FloorMenu.State;
 import game.gamelogic.Armed;
 import game.gamelogic.Armored;
 import game.gamelogic.Experiential;
@@ -17,7 +16,6 @@ import game.gamelogic.LightSource;
 import game.gamelogic.SelfAware;
 import game.gamelogic.abilities.Ability;
 import game.gamelogic.abilities.HasAbilities;
-import game.gamelogic.abilities.Meditate;
 import game.gameobjects.ArmorSlot;
 import game.gameobjects.DamageType;
 import game.gameobjects.ItemSlot;
@@ -79,8 +77,6 @@ public class PlayerEntity extends Entity implements Armored, Armed, Levelable, E
         weaponSlots.add(e);
         e.setEquippedWeapon(club);
         offHandSlot.setEquippedItem(new Torch(true));
-
-        addAbility(new Meditate(this));
         
     }
 

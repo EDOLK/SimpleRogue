@@ -20,7 +20,6 @@ import game.gamelogic.HasInventory;
 import game.gamelogic.HasResistances;
 import game.gamelogic.HasVulnerabilities;
 import game.gamelogic.SelfAware;
-import game.gamelogic.abilities.Ability;
 import game.gameobjects.DamageType;
 import game.gameobjects.DisplayableTile;
 import game.gameobjects.Floor;

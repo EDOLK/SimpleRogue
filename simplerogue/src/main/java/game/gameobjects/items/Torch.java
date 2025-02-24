@@ -9,21 +9,17 @@ import game.gamelogic.Flammable;
 import game.gamelogic.Interactable;
 import game.gamelogic.LightSource;
 import game.gamelogic.SelfAware;
-import game.gamelogic.abilities.Ability;
-import game.gamelogic.abilities.HasAbility;
 import game.gamelogic.behavior.Behavable;
 import game.gamelogic.combat.AttackInfo;
 import game.gamelogic.combat.OnCrit;
-import game.gamelogic.floorinteraction.SimpleSelector;
 import game.gameobjects.DamageType;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.items.weapons.Weapon;
 import game.gameobjects.statuses.Burning;
 import game.gameobjects.terrains.Fire;
-import game.gameobjects.terrains.Terrain;
 
-public class Torch extends Weapon implements Flammable, LightSource, SelfAware, Behavable, Interactable, OnCrit, HasAbility {
+public class Torch extends Weapon implements Flammable, LightSource, SelfAware, Behavable, Interactable, OnCrit{
     
     private boolean lit = false;
     private int maxFuel = 500;
@@ -126,61 +122,6 @@ public class Torch extends Weapon implements Flammable, LightSource, SelfAware, 
     public void doOnCrit(Entity self, Entity other, AttackInfo attackInfo) {
         if (lit)
             other.addStatus(new Burning());
-    }
-
-    @Override
-    public Ability getAbility() {
-        return this.new Light();
-    }
-
-    private class Light implements Ability {
-
-        @Override
-        public String getName() {
-            return "Light";
-        }
-
-        @Override
-        public void activate() {
-            Display.getRootMenu().startSelecting(Torch.this.new LightSelector());
-        }
-
-        @Override
-        public boolean isEnabled() {
-            return Torch.this.lit;
-        }
-        
-    }
-
-    private class LightSelector implements SimpleSelector{
-
-        @Override
-        public boolean simpleSelect(Space space) {
-
-            for (Terrain terrain : space.getTerrains()) {
-                if (terrain instanceof Flammable){
-                    return lightAndReturn(space);
-                }
-            }
-
-            for (Item item : space.getItems()) {
-                if (item instanceof Flammable){
-                    return lightAndReturn(space);
-                }
-            }
-
-            Display.log("No flammable material here.");
-            return true;
-
-        }
-
-        public boolean lightAndReturn(Space space){
-            space.addFire(new Fire(1));
-            Torch.this.fuel -= Torch.this.maxFuel/4;
-            return true;
-        }
-
-
     }
 
 }

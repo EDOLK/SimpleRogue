@@ -2,9 +2,6 @@ package game;
 
 import game.display.Display;
 import game.floorgeneration.Pools;
-import game.gameobjects.DamageType;
-import game.gameobjects.items.Torch;
-import game.gameobjects.items.weapons.Dagger;
 
 public class App 
 {
@@ -12,7 +9,6 @@ public class App
         Pools.initialize();
         Dungeon.initialize(50, 50);
         Display.initialize(70, 61);
-        Dungeon.getCurrentFloor().getPlayer().addItemToInventory(new Torch());
     }
 
     public static int randomNumber(int min, int max){
