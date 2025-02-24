@@ -620,6 +620,9 @@ public final class FloorMenu extends Menu{
             case MEMORY_TOGGLE: //toggle memory
                 toggleMemory();
                 break;
+            case ABILITIES:
+                Display.setMenu(new AbilitySelectMenu(currentFloor.getPlayer()));
+                break;
             default:
                 return UIEventResponse.pass();
         }
@@ -672,12 +675,15 @@ public final class FloorMenu extends Menu{
         this.selector = selector;
         this.currentState = State.SELECTING;
         toggleExamination();
-        Display.update();
+        Display.setAndForgetMenus(this);
+        update();
     }
 
     public void startSelecting(SimpleSelector selector){
         this.selector = selector;
         this.currentState = State.SELECTING;
+        Display.setAndForgetMenus(this);
+        update();
     }
 
     private UIEventResponse handleSelecting(KeyboardEvent event, UIEventPhase phase) {

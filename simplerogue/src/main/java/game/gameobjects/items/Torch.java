@@ -4,6 +4,7 @@ import org.hexworks.zircon.api.color.TileColor;
 
 import game.App;
 import game.display.Display;
+import game.display.ItemContextMenu;
 import game.gamelogic.Flammable;
 import game.gamelogic.Interactable;
 import game.gamelogic.LightSource;
@@ -18,8 +19,8 @@ import game.gameobjects.items.weapons.Weapon;
 import game.gameobjects.statuses.Burning;
 import game.gameobjects.terrains.Fire;
 
-public class Torch extends Weapon implements Flammable, LightSource, SelfAware, Behavable, Interactable, OnCrit {
-
+public class Torch extends Weapon implements Flammable, LightSource, SelfAware, Behavable, Interactable, OnCrit{
+    
     private boolean lit = false;
     private int maxFuel = 500;
     private int fuel = maxFuel;
@@ -32,7 +33,7 @@ public class Torch extends Weapon implements Flammable, LightSource, SelfAware, 
         setCharacter('t');
         setfGColor(TileColor.create(250, 134, 7, 255));
         setbGColor(TileColor.transparent());
-        setDescription("A torch.");
+        setDescription("A torch. Can light nearby tiles on fire, assuming there is kindling, of course.");
         setWeight(1);
         if (lit) {
             setMinDamage(0);
@@ -51,12 +52,11 @@ public class Torch extends Weapon implements Flammable, LightSource, SelfAware, 
 
     @Override
     public String getName() {
-        return super.getName() + (lit ? " (lit)" : "");
+        return super.getName() + (lit ? " (" + fuel + ")" : "");
     }
 
     @Override
     public int getLightSourceIntensity() {
-        // return 10;
         if (lit){
             return (int)App.lerp(0,3,maxFuel,11,fuel);
         } else {
@@ -95,6 +95,7 @@ public class Torch extends Weapon implements Flammable, LightSource, SelfAware, 
             setMinDamage(0);
             setMaxDamage(2);
             setDamageType(DamageType.BLUNT);
+            Display.log("Your torch goes out.");
         }
     }
 
@@ -113,7 +114,8 @@ public class Torch extends Weapon implements Flammable, LightSource, SelfAware, 
         } else {
             Display.log("The torch is already lit.");
         }
-        Display.revertMenu();
+        if (Display.getCurrentMenu() instanceof ItemContextMenu)
+            Display.revertMenu();
     }
 
     @Override

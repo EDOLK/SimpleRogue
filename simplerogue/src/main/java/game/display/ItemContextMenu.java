@@ -1,5 +1,6 @@
 package game.display;
 
+import org.hexworks.cobalt.databinding.api.value.ValueValidationResult;
 import org.hexworks.zircon.api.ComponentDecorations;
 import org.hexworks.zircon.api.builder.component.ButtonBuilder;
 import org.hexworks.zircon.api.builder.component.HeaderBuilder;
@@ -109,7 +110,6 @@ public class ItemContextMenu extends Menu{
         
         dropButton.handleComponentEvents(ComponentEventType.ACTIVATED, (event) -> {
             Display.getRootMenu().startSelecting(Display.getRootMenu().new DropDirectSelector(item));
-            Display.setAndForgetMenus(Display.getRootMenu());
             return UIEventResponse.processed();
         });
 
@@ -187,7 +187,6 @@ public class ItemContextMenu extends Menu{
                 .build();
             throwButton.handleComponentEvents(ComponentEventType.ACTIVATED, (event) ->{
                 Display.getRootMenu().startSelecting(Display.getRootMenu().new AimSelector((Aimable)item));
-                Display.setAndForgetMenus(Display.getRootMenu());
                 return UIEventResponse.processed();
             });
             itemPanel.addComponent(throwButton);

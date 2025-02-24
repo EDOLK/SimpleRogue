@@ -272,7 +272,6 @@ public class ItemSelectMenu extends Menu{
 
         Function<Item, UIEventResponse> function = (item) ->{
             Display.getRootMenu().startSelecting(Display.getRootMenu().new AimSelector((Aimable)item));
-            Display.setAndForgetMenus(Display.getRootMenu());
             return UIEventResponse.processed();
         };
         
