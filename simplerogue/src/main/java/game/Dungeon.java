@@ -21,6 +21,10 @@ public class Dungeon {
     private static Floor currentFloor;
 
     private static int currentDepth;
+
+    private static int sX;
+
+    private static int sY;
     
     private static Pool<Class<? extends Entity>> currentMonsterPool = Pools.LAYER_ONE_MONSTER_POOL;
     
@@ -64,8 +68,9 @@ public class Dungeon {
     
     public static void initialize(int sizeX, int sizeY){
         currentDepth = 1;
-        currentFloor = new Floor(sizeX, sizeY, new DefaultFloorGenerator(currentDepth));
-        // currentFloor = new Floor(sizeX, sizeY, new DebugFloorGenerator(currentDepth));
+        sX = sizeX;
+        sY = sizeY;
+        currentFloor = new Floor(sX, sY, new DefaultFloorGenerator(currentDepth));
     }
     
     public static void update(){
@@ -76,7 +81,7 @@ public class Dungeon {
         PlayerEntity playerEntity = currentFloor.getPlayer();
         if (playerEntity.isAdjacent(staircase)){
             currentDepth++;
-            currentFloor = generateFloor(currentDepth, playerEntity);
+            currentFloor = generateFloor(playerEntity);
             FloorMenu floorMenu = new FloorMenu();
             Display.setRootMenu(floorMenu);
             Display.replaceMenu(floorMenu);
@@ -84,8 +89,8 @@ public class Dungeon {
         }
     }
     
-    public static Floor generateFloor(int depth, PlayerEntity playerEntity){
-        return new Floor(50, 50, playerEntity, new DefaultFloorGenerator(currentDepth));
+    public static Floor generateFloor(PlayerEntity playerEntity){
+        return new Floor(sX, sY, playerEntity, new DefaultFloorGenerator(currentDepth));
     }
     
     public static void addItem(Item item, int x, int y){
