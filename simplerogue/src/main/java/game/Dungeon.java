@@ -2,14 +2,16 @@ package game;
 
 import static game.App.randomNumber;
 
+import java.util.function.Supplier;
+
 import game.display.Display;
 import game.display.FloorMenu;
 import game.floorgeneration.DefaultFloorGenerator;
 import game.floorgeneration.Pool;
 import game.floorgeneration.Pools;
-import game.floorgeneration.ItemFactory.ItemIdentifier;
 import game.gameobjects.Floor;
 import game.gameobjects.Space;
+import game.gameobjects.entities.Chest;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.entities.PlayerEntity;
 import game.gameobjects.entities.Wall;
@@ -26,27 +28,27 @@ public class Dungeon {
 
     private static int sY;
     
-    private static Pool<Class<? extends Entity>> currentMonsterPool = Pools.LAYER_ONE_MONSTER_POOL;
+    private static Pool<Supplier<Entity>> currentMonsterPool = Pools.LAYER_ONE_MONSTER_POOL;
     
-    private static Pool<ItemIdentifier> currentDropPool = Pools.LAYER_ONE_DROP_POOL;
+    private static Pool<Supplier<Item>> currentDropPool = Pools.LAYER_ONE_DROP_POOL;
     
-    private static Pool<ItemIdentifier> currentTreasurePool = Pools.LAYER_ONE_TREASURE_POOL;
+    private static Pool<Supplier<Item>> currentTreasurePool = Pools.LAYER_ONE_TREASURE_POOL;
     
-    private static Pool<Class<? extends Entity>> currentChestPool = Pools.LAYER_ONE_CHEST_POOL;
+    private static Pool<Supplier<Chest>> currentChestPool = Pools.LAYER_ONE_CHEST_POOL;
 
-    public static Pool<Class<? extends Entity>> getCurrentChestPool() {
+    public static Pool<Supplier<Chest>> getCurrentChestPool() {
         return currentChestPool;
     }
 
-    public static Pool<Class<? extends Entity>> getCurrentMonsterPool() {
+    public static Pool<Supplier<Entity>> getCurrentMonsterPool() {
         return currentMonsterPool;
     }
 
-    public static Pool<ItemIdentifier> getCurrentDropPool() {
+    public static Pool<Supplier<Item>> getCurrentDropPool() {
         return currentDropPool;
     }
 
-    public static Pool<ItemIdentifier> getCurrentTreasurePool() {
+    public static Pool<Supplier<Item>> getCurrentTreasurePool() {
         return currentTreasurePool;
     }
 

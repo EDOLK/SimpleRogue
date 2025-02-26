@@ -2,14 +2,13 @@ package game.gamelogic;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
-import game.floorgeneration.ItemFactory;
 import game.floorgeneration.Pool;
-import game.floorgeneration.ItemFactory.ItemIdentifier;
 import game.gameobjects.items.Item;
 
 public interface HasDrops {
-    public Pool<ItemIdentifier> getItemPool();
+    public Pool<Supplier<Item>> getItemPool();
     public int getDropPoints();
     public void setDropPoints(int points);
     default void addDropPoints(int points){
@@ -25,9 +24,9 @@ public interface HasDrops {
         int t = getDropPoints();
 
         while (t >= getItemPool().getLowestPrice()) {
-            ItemIdentifier identifier = getItemPool().getRandom(t);
-            drops.add(ItemFactory.createItem(identifier));
-            t -= getItemPool().getPrice(identifier);
+            Supplier<Item> itemSupplier = getItemPool().getRandom(t);
+            drops.add(itemSupplier.get());
+            t -= getItemPool().getPrice(itemSupplier);
         }
         return drops;
     }

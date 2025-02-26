@@ -2,9 +2,11 @@ package game.floorgeneration;
 
 import static game.App.randomNumber;
 
+import java.util.function.Supplier;
+
 import game.Dungeon;
-import game.floorgeneration.builders.EntityBuilder;
 import game.gameobjects.Space;
+import game.gameobjects.entities.Chest;
 import game.gameobjects.entities.Door;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.entities.PlayerEntity;
@@ -153,18 +155,14 @@ public class DefaultFloorGenerator extends FloorGenerator{
 
     protected void spawnEntites(Space[][] spaces, PlayerEntity playerEntity) {
         int points = 20 + depth * 10;
-        Pool<Class<? extends Entity>> monsterPool = Dungeon.getCurrentMonsterPool();
-        while (points >= monsterPool.getLowestPrice()) {
-            Class<? extends Entity> entityClass = monsterPool.getRandom(points);
-            points -= monsterPool.getPrice(entityClass);
-            getRandomUnoccupiedSpace(spaces).setOccupant(new EntityBuilder(entityClass).build());
+        Shopper<Entity> entityShopper = new Shopper<Entity>(points, Dungeon.getCurrentMonsterPool());
+        while (entityShopper.hasPoints()) {
+            getRandomUnoccupiedSpace(spaces).setOccupant(entityShopper.generate());
         }
         int chestPoints = (depth*10) + ((playerEntity.getMaxHP() - playerEntity.getHP()));
-        Pool<Class<? extends Entity>> chestPool = Dungeon.getCurrentChestPool();
-        while (chestPoints >= chestPool.getLowestPrice()) {
-            Class<? extends Entity> chestClass = chestPool.getRandom(chestPoints);
-            chestPoints -= chestPool.getPrice(chestClass);
-            getRandomUnoccupiedSpace(spaces).setOccupant(new EntityBuilder(chestClass, Dungeon.getCurrentTreasurePool(), Dungeon.getCurrentDepth() * 5).build());
+        Shopper<Chest> chestShopper = new Shopper<Chest>(chestPoints, Dungeon.getCurrentChestPool());
+        while (chestShopper.hasPoints()) {
+            getRandomUnoccupiedSpace(spaces).setOccupant(chestShopper.generate());
         }
         getRandomUnoccupiedSpace(spaces).addTerrain(new Staircase());
     }

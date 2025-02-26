@@ -1,6 +1,5 @@
 package game.display;
 
-import org.hexworks.cobalt.databinding.api.value.ValueValidationResult;
 import org.hexworks.zircon.api.ComponentDecorations;
 import org.hexworks.zircon.api.builder.component.ButtonBuilder;
 import org.hexworks.zircon.api.builder.component.HeaderBuilder;

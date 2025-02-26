@@ -2,13 +2,14 @@ package game.gameobjects.entities;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 import org.hexworks.zircon.api.color.TileColor;
 
+import game.Dungeon;
 import game.display.Display;
 import game.display.ItemSelectMenu;
 import game.floorgeneration.Pool;
-import game.floorgeneration.ItemFactory.ItemIdentifier;
 import game.gamelogic.HasDrops;
 import game.gamelogic.HasInventory;
 import game.gamelogic.Interactable;
@@ -18,7 +19,7 @@ public class Chest extends Entity implements HasInventory, Interactable{
 
     private List<Item> inventory = new ArrayList<Item>();
     
-    public Chest(Pool<ItemIdentifier> treasurePool, int points){
+    public Chest(Pool<Supplier<Item>> treasurePool, int points){
         super(TileColor.transparent(), TileColor.create(230, 188, 64, 255), 'c');
         setMaxHP(5);
         setHP(5);
@@ -30,7 +31,7 @@ public class Chest extends Entity implements HasInventory, Interactable{
         HasDrops hasDrops = new HasDrops() {
 
             @Override
-            public Pool<ItemIdentifier> getItemPool() {
+            public Pool<Supplier<Item>> getItemPool() {
                 return treasurePool;
             }
 
@@ -49,6 +50,10 @@ public class Chest extends Entity implements HasInventory, Interactable{
         for (Item item : itemList) {
             addItemToInventory(item);
         }
+    }
+
+    public Chest() {
+        this(Dungeon.getCurrentTreasurePool(), Dungeon.getCurrentDepth() * 5);
     }
 
     @Override

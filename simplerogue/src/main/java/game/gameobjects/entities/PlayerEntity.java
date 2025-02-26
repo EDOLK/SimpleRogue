@@ -13,7 +13,6 @@ import game.gamelogic.HasInventory;
 import game.gamelogic.HasOffHand;
 import game.gamelogic.Levelable;
 import game.gamelogic.LightSource;
-import game.gamelogic.SelfAware;
 import game.gamelogic.abilities.Ability;
 import game.gamelogic.abilities.HasAbilities;
 import game.gameobjects.ArmorSlot;
