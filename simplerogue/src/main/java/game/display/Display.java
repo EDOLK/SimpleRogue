@@ -106,6 +106,8 @@ public class Display {
         Display.tileGrid = SwingApplications.startTileGrid(
             AppConfig.newBuilder()
                 .withSize(screenX,screenY)
+                .withDefaultTileset(getCharacterTileSet())
+                .withDefaultGraphicalTileset(getGraphicalTileSet())
                 .build()
         );
         FloorMenu floorMenu = new FloorMenu();
