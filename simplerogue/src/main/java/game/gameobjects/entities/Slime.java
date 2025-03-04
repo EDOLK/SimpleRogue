@@ -3,12 +3,12 @@ package game.gameobjects.entities;
 import static game.App.randomNumber;
 
 import java.util.ArrayList;
+import java.util.function.Supplier;
 
 import org.hexworks.zircon.api.color.TileColor;
 
 import game.Dungeon;
 import game.display.Display;
-import game.floorgeneration.ItemFactory.ItemIdentifier;
 import game.floorgeneration.Pool;
 import game.gamelogic.Consumable;
 import game.gamelogic.DropsXP;
@@ -132,7 +132,7 @@ public class Slime extends Animal implements DropsXP, HasDodge, HasResistances, 
     }
 
     @Override
-    public Pool<ItemIdentifier> getItemPool() {
+    public Pool<Supplier<Item>> getItemPool() {
         return Dungeon.getCurrentDropPool();
     }
 

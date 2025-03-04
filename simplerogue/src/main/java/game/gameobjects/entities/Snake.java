@@ -2,11 +2,12 @@ package game.gameobjects.entities;
 
 import static game.App.randomNumber;
 
+import java.util.function.Supplier;
+
 import org.hexworks.zircon.api.color.TileColor;
 
 import game.Dungeon;
 import game.floorgeneration.Pool;
-import game.floorgeneration.ItemFactory.ItemIdentifier;
 import game.gamelogic.DropsXP;
 import game.gamelogic.HasDodge;
 import game.gamelogic.HasDrops;
@@ -15,6 +16,7 @@ import game.gamelogic.combat.AttackInfo;
 import game.gamelogic.combat.OnHit;
 import game.gameobjects.DamageType;
 import game.gameobjects.items.Corpse;
+import game.gameobjects.items.Item;
 import game.gameobjects.items.weapons.Weapon;
 import game.gameobjects.statuses.Poisoned;
 
@@ -51,7 +53,7 @@ public class Snake extends Animal implements DropsXP, HasDodge, OnHit, HasDrops{
     }
 
     @Override
-    public Pool<ItemIdentifier> getItemPool() {
+    public Pool<Supplier<Item>> getItemPool() {
         return Dungeon.getCurrentDropPool();
     }
 

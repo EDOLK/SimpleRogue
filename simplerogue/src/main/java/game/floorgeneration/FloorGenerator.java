@@ -19,7 +19,10 @@ public abstract class FloorGenerator {
     
     
     protected Space getRandomSpace(Space[][] spaces){
-        return spaces[randomNumber(0, spaces.length-1)][randomNumber(0, spaces.length-1)];
+        int rX = randomNumber(0, spaces.length-1);
+        int rY = randomNumber(0, spaces[rX].length-1);
+        return spaces[rX][rY];
+        // return spaces[randomNumber(0, spaces.length-1)][randomNumber(0, spaces.length-1)];
     }
     
     protected Space getRandomUnoccupiedSpace(Space[][] spaces){

@@ -2,17 +2,19 @@ package game.gameobjects.entities;
 
 import static game.App.randomNumber;
 
+import java.util.function.Supplier;
+
 import org.hexworks.zircon.api.color.TileColor;
 
 import game.Dungeon;
 import game.floorgeneration.Pool;
-import game.floorgeneration.ItemFactory.ItemIdentifier;
 import game.gamelogic.DropsXP;
 import game.gamelogic.HasDodge;
 import game.gamelogic.HasDrops;
 import game.gamelogic.behavior.AnimalBehavior;
 import game.gameobjects.DamageType;
 import game.gameobjects.items.Corpse;
+import game.gameobjects.items.Item;
 import game.gameobjects.items.weapons.Weapon;
 
 public class Rat extends Animal implements DropsXP, HasDodge, HasDrops{
@@ -49,7 +51,7 @@ public class Rat extends Animal implements DropsXP, HasDodge, HasDrops{
     }
 
     @Override
-    public Pool<ItemIdentifier> getItemPool() {
+    public Pool<Supplier<Item>> getItemPool() {
         return Dungeon.getCurrentDropPool();
     }
 
