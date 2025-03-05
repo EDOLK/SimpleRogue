@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.hexworks.zircon.api.color.TileColor;
 
+import game.Dungeon;
 import game.gamelogic.OverridesMovement;
 import game.gamelogic.SelfAware;
 import game.gamelogic.Triggerable;
@@ -259,5 +260,20 @@ public class Space extends DisplayableTile{
         }
     }
     
+    public static List<Space> getAdjacentSpaces(Space space){
+        List<Space> list = new ArrayList<>();
+        for (int x = -1; x <= 1; x++) {
+            for (int y = -1; y <= 1 ; y++) {
+                if (x == 1 && y == 1) {
+                    continue;
+                }
+                Space potentialSpace = Dungeon.getCurrentFloor().getSpace(space.getX() + x, space.getY() + y);
+                list.add(potentialSpace);
+            }
+        }
+        return list;
+    }
+
+
 }
     
