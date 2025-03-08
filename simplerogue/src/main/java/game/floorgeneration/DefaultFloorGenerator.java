@@ -2,8 +2,6 @@ package game.floorgeneration;
 
 import static game.App.randomNumber;
 
-import java.util.function.Supplier;
-
 import game.Dungeon;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Chest;
