@@ -17,6 +17,7 @@ import game.gameobjects.entities.PlayerEntity;
 import game.gameobjects.entities.Wall;
 import game.gameobjects.items.Item;
 import game.gameobjects.terrains.Staircase;
+import game.floorgeneration.DefaultFloorGeneratorImproved;
 
 public class Dungeon {
 
@@ -72,7 +73,7 @@ public class Dungeon {
         currentDepth = 1;
         sX = sizeX;
         sY = sizeY;
-        currentFloor = new Floor(sX, sY, new DefaultFloorGenerator(currentDepth));
+        currentFloor = new Floor(sX, sY, new DefaultFloorGeneratorImproved(currentDepth));
     }
     
     public static void update(){
