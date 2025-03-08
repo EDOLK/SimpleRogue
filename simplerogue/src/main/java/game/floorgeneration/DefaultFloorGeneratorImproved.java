@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Set;
 
 import game.Dungeon;
+import game.Path;
+import game.PathConditions;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Chest;
 import game.gameobjects.entities.Door;
@@ -44,6 +46,7 @@ public class DefaultFloorGeneratorImproved extends FloorGenerator {
         }
 
         int roomNumber = 10 + (depth * 5);
+        //int roomNumber = 10;
         int prevx1 = 0;
         int prevy1 = 0;
         int prevx2 = 0;
@@ -93,9 +96,44 @@ public class DefaultFloorGeneratorImproved extends FloorGenerator {
                 // prevX1, prevX2
                 // prevY1, prevY2
 
-                Space current = getRandomPerimeterSpace(spaces, x1, y1, x2, y2);
+                List<Space> activeSpaces = getPerimeterSpacesWithCorners(spaces, x1, y1, x2, y2); 
 
-                Space previous = getRandomPerimeterSpace(spaces, prevx1, prevy1, prevx2, prevy2);
+                List<Space> currentActiveSpaces = getPerimeterSpaces(spaces, x1, y1, x2, y2); 
+
+                List<Space> previousSpaces = getPerimeterSpacesWithCorners(spaces, prevx1, prevy1, prevx2, prevy2);
+
+                List<Space> previousActiveSpaces = getPerimeterSpaces(spaces, prevx1, prevy1, prevx2, prevy2);
+
+                Space[] path = null;
+
+                while (path == null && !currentActiveSpaces.isEmpty() && !previousActiveSpaces.isEmpty()){
+                    Space current = Pools.getRandom(currentActiveSpaces);
+                    Space previous = Pools.getRandom(previousActiveSpaces);
+                    try {
+                        path = Path.getPathAsArray(
+                            current,
+                            previous,
+                            spaces,
+                            new PathConditions()
+                                .removeForbiddenCondition(0)
+                                .addForbiddenConditions(
+                                    (space) -> {
+                                        return activeSpaces.contains(space) || previousSpaces.contains(space) || space.getX() <= 0 || space.getY() <= 0 || space.getX() >= spaces.length-1 || space.getY() >= spaces[space.getX()].length-1;
+                                    }
+                                )
+                                .setDiagonal(false)
+                        );
+                    } catch (Exception e) {
+                        currentActiveSpaces.remove(current);
+                        previousActiveSpaces.remove(previous);
+                    }
+                }
+
+                if (path != null) {
+                    dig(path);
+                } else { 
+                    System.out.println("FUCK");
+                }
 
             }
 
@@ -107,8 +145,13 @@ public class DefaultFloorGeneratorImproved extends FloorGenerator {
         
     }
 
-    public void dig(Space from, Space to){
-
+    public void dig(Space[] path){
+        for (Space space : path) {
+            if (!space.isOccupied()) {
+                return;
+            }
+            space.setOccupant(null);
+        }
     }
 
     public boolean validateRoomability(Space[][] spaces, int x1, int y1, int x2, int y2){
@@ -122,8 +165,7 @@ public class DefaultFloorGeneratorImproved extends FloorGenerator {
         return true;
     }
 
-    public Space getRandomPerimeterSpace(Space[][] spaces, int x1, int y1, int x2, int y2){
-
+    public List<Space> getPerimeterSpaces(Space[][] spaces, int x1, int y1, int x2, int y2){
         List<Space> potentialSpaces = new ArrayList<>();
 
         for (int x = x1; x < x2; x++) {
@@ -139,7 +181,31 @@ public class DefaultFloorGeneratorImproved extends FloorGenerator {
                 potentialSpaces.add(spaces[x2][y]);
         }
 
-        return Pools.getRandom(potentialSpaces);
+        return potentialSpaces;
+    }
+
+    public List<Space> getPerimeterSpacesWithCorners(Space[][] spaces, int x1, int y1, int x2, int y2){
+        List<Space> potentialSpaces = new ArrayList<>();
+
+        for (int x = x1-1; x <= x2; x++) {
+            if (spaces[x][y1-1].isOccupied())
+                potentialSpaces.add(spaces[x][y1-1]);
+            if (spaces[x][y2].isOccupied())
+                potentialSpaces.add(spaces[x][y2]);
+        }
+        for (int y = y1-1; y <= y2; y++) {
+            if (spaces[x1-1][y].isOccupied())
+                potentialSpaces.add(spaces[x1-1][y]);
+            if (spaces[x2][y].isOccupied())
+                potentialSpaces.add(spaces[x2][y]);
+        }
+
+        return potentialSpaces;
+    }
+
+    public Space getRandomPerimeterSpace(Space[][] spaces, int x1, int y1, int x2, int y2){
+
+        return Pools.getRandom(getPerimeterSpaces(spaces, x1, y1, x2, y2));
 
     }
 
