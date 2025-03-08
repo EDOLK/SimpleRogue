@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Stack;
+import java.util.function.BiFunction;
 
 import game.gameobjects.Space;
 
@@ -41,7 +42,7 @@ public final class Path {
         }
     }
 
-    private static class Node implements Comparable<Node>{
+    public static class Node implements Comparable<Node>{
         int x;
         int y;
         double g;
@@ -53,6 +54,12 @@ public final class Path {
         public Node(int x, int y){
             this.x = x;
             this.y = y;
+        }
+        public int getX() {
+            return x;
+        }
+        public int getY() {
+            return y;
         }
         @Override
         public int compareTo(Node o) {
@@ -92,7 +99,7 @@ public final class Path {
         Node startingNode = grid[startingSpace.getX()][startingSpace.getY()];
         Node destinationNode = grid[destinationSpace.getX()][destinationSpace.getY()];
         try {
-            Node[] nodePath = getPath(startingNode, destinationNode, grid, conditions.isDiagonal());
+            Node[] nodePath = getPath(startingNode, destinationNode, grid, conditions.isDiagonal(), conditions.getHFunction());
             Space[] spacePath = new Space[nodePath.length];
             for (int i = 0; i < nodePath.length; i++) {
                 spacePath[i] = spaces[nodePath[i].x][nodePath[i].y];
@@ -103,12 +110,12 @@ public final class Path {
         }
     }
 
-    private static Node[] getPath(Node startingNode, Node destinationNode, Node[][] grid, boolean diagonal) throws PathNotFoundException{
+    private static Node[] getPath(Node startingNode, Node destinationNode, Node[][] grid, boolean diagonal, BiFunction<Node,Node,Double> hFunction) throws PathNotFoundException{
         PriorityQueue<Node> open = new PriorityQueue<Node>();
         List<Node> closed = new ArrayList<Node>();
 
         startingNode.g = 0;
-        startingNode.h = generateH(startingNode, destinationNode);
+        startingNode.h = hFunction.apply(startingNode, destinationNode);
         startingNode.f = startingNode.h + startingNode.g + startingNode.d;
 
         open.add(startingNode);
@@ -136,7 +143,7 @@ public final class Path {
                 Node testNode = new Node(neighborNode.x, neighborNode.y);
                 testNode.parentCords = new Cords(current.x, current.y);
                 testNode.g = generateG(testNode, grid);
-                testNode.h = generateH(testNode, destinationNode);
+                testNode.h = hFunction.apply(testNode, destinationNode);
                 testNode.d = neighborNode.d;
                 testNode.f = testNode.g + testNode.h + testNode.d;
 
