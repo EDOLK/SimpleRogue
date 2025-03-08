@@ -9,8 +9,15 @@ import game.gameobjects.Space;
 
 public class PathConditions {
 
-    private List<Predicate<Space>> forbiddenConditions = new ArrayList<Predicate<Space>>();
+    private List<Predicate<Space>> forbiddenConditions = new ArrayList<Predicate<Space>>(
+        List.of((space) -> {
+            return space.isOccupied();
+        })
+    );
+
     private List<Function<Space,Double>> deterrentConditions = new ArrayList<Function<Space,Double>>();
+
+    private boolean diagonal = true;
 
     public PathConditions() {
         super();
@@ -42,6 +49,37 @@ public class PathConditions {
     @SafeVarargs
     public final PathConditions addDeterrentConditions(Function<Space,Double>... conditions){
         deterrentConditions.addAll(List.of(conditions));
+        return this;
+    }
+
+    @SafeVarargs
+    public final PathConditions removeForbiddenConditions(Predicate<Space>... conditions){
+        forbiddenConditions.removeAll(List.of(conditions));
+        return this;
+    }
+
+    public final PathConditions removeForbiddenCondition(int condition){
+        forbiddenConditions.remove(condition);
+        return this;
+    }
+
+    @SafeVarargs
+    public final PathConditions removeDeterrentConditions(Function<Space,Double>... conditions){
+        deterrentConditions.removeAll(List.of(conditions));
+        return this;
+    }
+
+    public final PathConditions removeDeterrentCondition(int condition){
+        deterrentConditions.remove(condition);
+        return this;
+    }
+
+    public boolean isDiagonal(){
+        return this.diagonal;
+    }
+
+    public PathConditions setDiagonal(Boolean diagonal){
+        this.diagonal = diagonal;
         return this;
     }
 }
