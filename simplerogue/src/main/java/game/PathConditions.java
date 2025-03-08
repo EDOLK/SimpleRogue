@@ -2,11 +2,9 @@ package game;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import game.Path.Node;
 import game.gameobjects.Space;
 
 public class PathConditions {
@@ -20,11 +18,7 @@ public class PathConditions {
     private List<Function<Space,Double>> deterrentConditions = new ArrayList<Function<Space,Double>>();
 
     private boolean diagonal = true;
-  
-    private BiFunction<Node,Node,Double> hFunction = (from, to) -> {
-        return (double)Math.abs(to.x - from.x) + Math.abs(to.y - from.y);
-    };
-  
+
     public PathConditions() {
         super();
     }
@@ -88,14 +82,4 @@ public class PathConditions {
         this.diagonal = diagonal;
         return this;
     }
-  
-    public BiFunction<Node,Node,Double> getHFunction(){
-        return this.hFunction;
-    }
-
-    public PathConditions setHFunction(BiFunction<Node,Node,Double> hFunction){
-        this.hFunction = hFunction;
-        return this;
-    }
-  
 }
