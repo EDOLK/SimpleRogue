@@ -17,6 +17,9 @@ public abstract class FloorGenerator {
 
     public abstract void generateFloor(Space[][] spaces, PlayerEntity playerEntity);
     
+    protected int getRoomNumber(int depth){
+        return 10 + (depth * 5) <= 35 ? 10 + (depth * 5) : 35;
+    }
     
     protected Space getRandomSpace(Space[][] spaces){
         int rX = randomNumber(0, spaces.length-1);
