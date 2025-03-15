@@ -139,8 +139,6 @@ public class DefaultFloorGenerator extends FloorGenerator {
 
                 if (path != null) {
                     dig(path, spaces);
-                } else { 
-                    System.out.println("FUCK");
                 }
 
                 if (i == roomNumber-1){
