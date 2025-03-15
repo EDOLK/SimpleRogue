@@ -20,11 +20,11 @@ public class PathConditions {
     private List<Function<Space,Double>> deterrentConditions = new ArrayList<Function<Space,Double>>();
 
     private boolean diagonal = true;
-  
+
     private BiFunction<Node,Node,Double> hFunction = (from, to) -> {
         return (double)Math.abs(to.x - from.x) + Math.abs(to.y - from.y);
-    }
-  
+    };
+
     public PathConditions() {
         super();
     }
