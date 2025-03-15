@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Stack;
+import java.util.function.BiFunction;
 
 import game.gameobjects.Space;
 
@@ -41,7 +42,7 @@ public final class Path {
         }
     }
 
-    private static class Node implements Comparable<Node>{
+    public static class Node implements Comparable<Node>{
         int x;
         int y;
         double g;
@@ -53,6 +54,12 @@ public final class Path {
         public Node(int x, int y){
             this.x = x;
             this.y = y;
+        }
+        public int getX() {
+            return x;
+        }
+        public int getY() {
+            return y;
         }
         @Override
         public int compareTo(Node o) {
@@ -66,19 +73,23 @@ public final class Path {
 
     /** Returns our path from startingSpace to destinationSpace, with startingSpace and destinationSpace included. */
     public static Space[] getPathAsArray(Space startingSpace, Space destinationSpace) throws PathNotFoundException{
-        return getPathAsArray(startingSpace, destinationSpace, null);
+        return getPathAsArray(startingSpace, destinationSpace, new PathConditions());
     }
 
     /** Returns our path from startingSpace to destinationSpace, with startingSpace and destinationSpace included. */
     public static Space[] getPathAsArray(Space startingSpace, Space destinationSpace, PathConditions conditions) throws PathNotFoundException{
-        Space[][] spaces = Dungeon.getCurrentFloor().getSpaces();
+        return getPathAsArray(startingSpace, destinationSpace, Dungeon.getCurrentFloor().getSpaces(), conditions);
+    }
+
+    /** Returns our path from startingSpace to destinationSpace, with startingSpace and destinationSpace included. */
+    public static Space[] getPathAsArray(Space startingSpace, Space destinationSpace, Space[][] spaces, PathConditions conditions) throws PathNotFoundException{
         Node[][] grid = new Node[spaces.length][spaces[0].length];
         for (int x = 0; x < spaces.length; x++) {
             for (int y = 0; y < spaces[x].length; y++) {
                 grid[x][y] = new Node(x, y);
                 Space space = spaces[x][y];
                 if (space != destinationSpace && space != startingSpace){
-                    if (space.isOccupied() || (conditions != null && conditions.evaluateForForbidden(space))) {
+                    if (conditions.evaluateForForbidden(space)) {
                         grid[x][y].passable = false;
                     }
                 }
@@ -88,7 +99,7 @@ public final class Path {
         Node startingNode = grid[startingSpace.getX()][startingSpace.getY()];
         Node destinationNode = grid[destinationSpace.getX()][destinationSpace.getY()];
         try {
-            Node[] nodePath = getPath(startingNode, destinationNode, grid);
+            Node[] nodePath = getPath(startingNode, destinationNode, grid, conditions.isDiagonal(), conditions.getHFunction());
             Space[] spacePath = new Space[nodePath.length];
             for (int i = 0; i < nodePath.length; i++) {
                 spacePath[i] = spaces[nodePath[i].x][nodePath[i].y];
@@ -99,12 +110,12 @@ public final class Path {
         }
     }
 
-    private static Node[] getPath(Node startingNode, Node destinationNode, Node[][] grid) throws PathNotFoundException{
+    private static Node[] getPath(Node startingNode, Node destinationNode, Node[][] grid, boolean diagonal, BiFunction<Node,Node,Double> hFunction) throws PathNotFoundException{
         PriorityQueue<Node> open = new PriorityQueue<Node>();
         List<Node> closed = new ArrayList<Node>();
 
         startingNode.g = 0;
-        startingNode.h = generateH(startingNode, destinationNode);
+        startingNode.h = hFunction.apply(startingNode, destinationNode);
         startingNode.f = startingNode.h + startingNode.g + startingNode.d;
 
         open.add(startingNode);
@@ -115,29 +126,24 @@ public final class Path {
                 break;
             }
             List<Node> neighbors = new ArrayList<Node>();
-            for (int i = -1; i <= 1; i++) {
-                for (int j = -1; j <= 1; j++) {
-                    if (i == 0 && j == 0){
-                        continue;
+            if (diagonal) {
+                for (int i = -1; i <= 1; i++) {
+                    for (int j = -1; j <= 1; j++) {
+                        getNeighbor(grid, current, neighbors, i, j);
                     }
-                    int dx = current.x + i;
-                    int dy = current.y + j;
-                    if (dx < 0 || dx >= grid.length || dy < 0 || dy >= grid[dx].length){
-                        continue;
-                    }
-                    Node neighbor = grid[dx][dy];
-                    if (!neighbor.passable){
-                        continue;
-                    }
-                    neighbors.add(neighbor);
                 }
+            } else {
+                getNeighbor(grid, current, neighbors, 0, -1);
+                getNeighbor(grid, current, neighbors, -1, 0);
+                getNeighbor(grid, current, neighbors, 1, 0);
+                getNeighbor(grid, current, neighbors, 0, 1);
             }
             for (Node neighborNode : neighbors) {
 
                 Node testNode = new Node(neighborNode.x, neighborNode.y);
                 testNode.parentCords = new Cords(current.x, current.y);
                 testNode.g = generateG(testNode, grid);
-                testNode.h = generateH(testNode, destinationNode);
+                testNode.h = hFunction.apply(testNode, destinationNode);
                 testNode.d = neighborNode.d;
                 testNode.f = testNode.g + testNode.h + testNode.d;
 
@@ -197,8 +203,20 @@ public final class Path {
         return path;
     }
 
-    private static double generateH(Node from, Node to){
-        return Math.abs(to.x - from.x) + Math.abs(to.y - from.y);
+    private static void getNeighbor(Node[][] grid, Node current, List<Node> neighbors, int i, int j) {
+        if (i == 0 && j == 0){
+            return;
+        }
+        int dx = current.x + i;
+        int dy = current.y + j;
+        if (dx < 0 || dx >= grid.length || dy < 0 || dy >= grid[dx].length){
+            return;
+        }
+        Node neighbor = grid[dx][dy];
+        if (!neighbor.passable){
+            return;
+        }
+        neighbors.add(neighbor);
     }
 
     private static double generateG(Node current, Node[][] grid){

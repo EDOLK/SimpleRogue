@@ -6,7 +6,6 @@ import java.util.function.Supplier;
 
 import game.display.Display;
 import game.display.FloorMenu;
-import game.floorgeneration.DefaultFloorGenerator;
 import game.floorgeneration.Pool;
 import game.floorgeneration.Pools;
 import game.gameobjects.Floor;
@@ -17,6 +16,7 @@ import game.gameobjects.entities.PlayerEntity;
 import game.gameobjects.entities.Wall;
 import game.gameobjects.items.Item;
 import game.gameobjects.terrains.Staircase;
+import game.floorgeneration.DefaultFloorGenerator;
 
 public class Dungeon {
 
