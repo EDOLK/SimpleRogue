@@ -130,4 +130,16 @@ public class DebugFloorGenerator extends FloorGenerator {
 
     }
 
+    @Override
+    protected RoomBlueprint generateRoom() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'generateRoom'");
+    }
+
+    @Override
+    protected int getRoomNumber(int depth) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getRoomNumber'");
+    }
+
 }

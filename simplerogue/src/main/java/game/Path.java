@@ -219,10 +219,6 @@ public final class Path {
         neighbors.add(neighbor);
     }
 
-    private static double generateH(Node from, Node to){
-        return Math.abs(to.x - from.x) + Math.abs(to.y - from.y);
-    }
-
     private static double generateG(Node current, Node[][] grid){
         return grid[current.parentCords.x][current.parentCords.y].g + 1;
     }
