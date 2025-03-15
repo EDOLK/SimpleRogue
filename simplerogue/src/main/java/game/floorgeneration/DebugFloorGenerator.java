@@ -1,13 +1,16 @@
 package game.floorgeneration;
 
-import game.gamelogic.behavior.AnimalBehavior;
 import game.PathConditions;
+import game.gamelogic.behavior.AnimalBehavior;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.entities.PlayerEntity;
 import game.gameobjects.entities.Rat;
-import game.gameobjects.entities.Spider;
 import game.gameobjects.entities.Wall;
+import game.gameobjects.entities.bosses.RatKing;
+import game.gameobjects.items.armor.LeatherArmor;
+import game.gameobjects.items.armor.PlateArmor;
+import game.gameobjects.items.weapons.ShortSword;
 
 public class DebugFloorGenerator extends FloorGenerator {
 
@@ -23,7 +26,10 @@ public class DebugFloorGenerator extends FloorGenerator {
         generateSpaces();
         generateRectangle(5,5,20,20);
         spaces[7][10].setOccupant(playerEntity);
-        spaces[12][10].setOccupant(new Spider());
+        playerEntity.addItemToInventory(new PlateArmor());
+        playerEntity.addItemToInventory(new ShortSword());
+        playerEntity.addItemToInventory(new LeatherArmor());
+        spaces[12][10].setOccupant(new RatKing());
     }
 
     protected void generateSpaces(){

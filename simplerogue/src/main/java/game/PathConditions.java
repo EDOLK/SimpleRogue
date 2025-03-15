@@ -88,7 +88,7 @@ public class PathConditions {
         this.diagonal = diagonal;
         return this;
     }
-
+  
     public BiFunction<Node,Node,Double> getHFunction(){
         return this.hFunction;
     }
@@ -97,5 +97,5 @@ public class PathConditions {
         this.hFunction = hFunction;
         return this;
     }
-
+  
 }

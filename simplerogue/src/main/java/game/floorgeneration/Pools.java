@@ -20,6 +20,7 @@ import game.gameobjects.entities.Rat;
 import game.gameobjects.entities.Slime;
 import game.gameobjects.entities.Snake;
 import game.gameobjects.entities.Spider;
+import game.gameobjects.entities.bosses.RatKing;
 import game.gameobjects.items.Item;
 import game.gameobjects.items.Torch;
 import game.gameobjects.items.armor.Chainmail;
@@ -50,6 +51,8 @@ public class Pools {
     public final static Pool<Supplier<Item>> LAYER_ONE_TREASURE_POOL = new Pool<Supplier<Item>>();
     
     public final static Pool<Supplier<Chest>> LAYER_ONE_CHEST_POOL = new Pool<Supplier<Chest>>();
+
+    public final static Pool<Supplier<Entity>> LAYER_ONE_BOSS_POOL = new Pool<Supplier<Entity>>();
 
     public final static List<WeaponEnchantment> WEAPON_ENCHANTMENT_LIST= List.of(
         new Flaming(), new Lucky()
@@ -104,6 +107,10 @@ public class Pools {
         layerOneTreasureMap.put(()->{return new HandAxe();}, 5);
         layerOneTreasureMap.put(()->{return new Torch();}, 3);
         LAYER_ONE_TREASURE_POOL.setMap(layerOneTreasureMap);
+
+        Map<Supplier<Entity>, Integer> layerOneBossMap = new HashMap<Supplier<Entity>, Integer>();
+        layerOneBossMap.put(()->{return new RatKing();}, 1);
+        LAYER_ONE_BOSS_POOL.setMap(layerOneBossMap);
 
     }
 
