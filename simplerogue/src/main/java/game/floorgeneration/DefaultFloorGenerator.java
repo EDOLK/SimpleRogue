@@ -1,6 +1,9 @@
 package game.floorgeneration;
 
+import static game.floorgeneration.Pools.getRandom;
+
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import game.Dungeon;
@@ -13,6 +16,7 @@ import game.gameobjects.entities.Entity;
 import game.gameobjects.entities.PlayerEntity;
 import game.gameobjects.entities.Wall;
 import game.gameobjects.terrains.Staircase;
+import kotlin.Pair;
 
 public class DefaultFloorGenerator extends FloorGenerator {
 
@@ -25,7 +29,18 @@ public class DefaultFloorGenerator extends FloorGenerator {
         super(depth);
     }
 
-    public void generateSpaces(){
+    @Override
+    public void generateFloor(Space[][] spaces, PlayerEntity playerEntity) {
+        this.spaces = spaces;
+        this.player = playerEntity;
+        this.SIZE_X = spaces.length;
+        this.SIZE_Y = spaces[0].length;
+        generateSpaces();
+        generateWalls();
+        spawnEntites(generateRooms());
+    }
+
+    protected void generateSpaces(){
         for (int x = 0; x < spaces.length; x++) {
             for (int y = 0; y < spaces[x].length; y++) {
                 spaces[x][y] = new Space(x, y);
@@ -33,7 +48,7 @@ public class DefaultFloorGenerator extends FloorGenerator {
         }
     }
 
-    public void generateWalls() {
+    protected void generateWalls() {
         for (int x = 0; x < spaces.length; x++){
             for (int y = 0; y < spaces[x].length; y++){
                 Wall wall = new Wall();
@@ -41,15 +56,20 @@ public class DefaultFloorGenerator extends FloorGenerator {
                 wall.setSpace(spaces[x][y]);
             }
         }
+    }
 
+    protected Pair<List<Room>,List<Space[]>> generateRooms() {
         int roomNumber = getRoomNumber(depth);
-        RoomBlueprint previousRoom = null;
+        Room previousRoom = null;
         int checks = 0;
+        
+        List<Room> rooms = new ArrayList<>();
+        List<Space[]> paths = new ArrayList<>();
 
         for (int i = 0; i < roomNumber; i ++){
 
             boolean valid;
-            RoomBlueprint currentRoom = null;
+            Room currentRoom = null;
 
             do {
                 currentRoom = generateRoom();
@@ -57,88 +77,94 @@ public class DefaultFloorGenerator extends FloorGenerator {
                 checks += valid ? 1 : 0;
             } while (checks < 100 && !valid);
 
-            if (checks >= 100) {
+            if (checks >= 100 && !valid) {
                 checks = 0;
                 continue;
             }
 
-
-            for (Space space : currentRoom.getInteriorSpaces()) {
-                space.setOccupant(null);
-            }
+            digOutRoom(currentRoom);
 
             if (i != 0){
 
                 List<Space> currentSpaces = currentRoom.getRoomSpaces();
 
-                List<Space> currentConnectorSpaces = currentRoom.getConnectorSpaces();
+                List<Space> currentConnectorSpaces = new ArrayList<>(currentRoom.getConnectorSpaces());
+                Collections.shuffle(currentConnectorSpaces);
 
                 List<Space> previousSpaces = previousRoom.getRoomSpaces();
 
-                List<Space> previousConnectorSpaces = previousRoom.getConnectorSpaces();
+                List<Space> previousConnectorSpaces = new ArrayList<>(previousRoom.getConnectorSpaces());
+                Collections.shuffle(previousConnectorSpaces);
 
                 Space[] path = null;
 
-                while (path == null && !currentConnectorSpaces.isEmpty() && !previousConnectorSpaces.isEmpty()){
-                    Space current = Pools.getRandom(currentConnectorSpaces);
-                    Space previous = Pools.getRandom(previousConnectorSpaces);
-                    try {
-                        path = Path.getPathAsArray(
-                            current,
-                            previous,
-                            spaces,
-                            new PathConditions()
-                                .removeForbiddenCondition(0)
-                                .addForbiddenConditions(
-                                    (space) -> {
-                                        return
-                                            currentSpaces.contains(space) ||
-                                            previousSpaces.contains(space) ||
-                                            space.getX() <= 0 ||
-                                            space.getY() <= 0 ||
-                                            space.getX() >= spaces.length-1 ||
-                                            space.getY() >= spaces[space.getX()].length-1;
-                                    }
-                                )
-                                .setDiagonal(false)
-                                .setHFunction((from, to) -> {
-                                    return (double) Math.min(Math.abs(from.getX() - to.getX()), Math.abs(from.getY() - to.getY()));
-                                })
-                        );
-                    } catch (Exception e) {
+                outer:
+                for (Space cspace : currentConnectorSpaces) {
+                    for (Space pspace : previousConnectorSpaces) {
+                        try {
+                            path = Path.getPathAsArray(
+                                cspace,
+                                pspace,
+                                spaces,
+                                new PathConditions()
+                                    .removeForbiddenCondition(0)
+                                    .addForbiddenConditions(
+                                        (space) -> {
+                                            return
+                                                currentSpaces.contains(space) ||
+                                                previousSpaces.contains(space) ||
+                                                space.getX() <= 0 ||
+                                                space.getY() <= 0 ||
+                                                space.getX() >= spaces.length-1 ||
+                                                space.getY() >= spaces[space.getX()].length-1;
+                                        }
+                                    )
+                                    .setDiagonal(false)
+                                    .setHFunction((from, to) -> {
+                                        return (double) Math.min(Math.abs(from.getX() - to.getX()), Math.abs(from.getY() - to.getY()));
+                                    })
+                            );
+                            break outer;
+                        } catch (Exception e) {
 
+                        }
                     }
                 }
 
                 if (path != null) {
-                    dig(path);
-                }
-
-                if (i == roomNumber-1){
-                    Pools.getRandom(currentRoom.getInteriorSpaces()).addTerrain(new Staircase());
+                    digOutPath(path);
+                    paths.add(path);
                 }
 
             }
 
+            if (previousRoom != null) {
+                rooms.add(previousRoom);
+            }
+            rooms.add(currentRoom);
+
             previousRoom = currentRoom;
 
         }
-        
+        return new Pair<List<Room>,List<Space[]>>(rooms,paths);
     }
 
-    @Override
+    private void digOutRoom(Room room) {
+        for (Space space : room.getInteriorSpaces()) {
+            space.setOccupant(null);
+        }
+    }
+
     protected int getRoomNumber(int depth){
         return 10 + (depth * 5) <= 35 ? 10 + (depth * 5) : 35;
     }
 
-    @Override
-    protected RoomBlueprint generateRoom() {
+    protected Room generateRoom() {
         return new SimpleRectRoom(spaces, SIZE_X, SIZE_Y);
     }
 
-    public void dig(Space[] path){
-        Space doorSpace = path[0];
-        generateDoor(spaces, doorSpace);
+    protected void digOutPath(Space[] path){
+        generateDoor(spaces, path[0]);
         for (int i = 1; i < path.length; i++) {
             Space prevSpace = path[i-1];
             Space space = path[i];
@@ -156,6 +182,7 @@ public class DefaultFloorGenerator extends FloorGenerator {
             }
             space.setOccupant(null);
         }
+        generateDoor(spaces, path[path.length-1]);
     }
 
     private void generateDoor(Space[][] spaces, Space doorSpace) {
@@ -166,7 +193,7 @@ public class DefaultFloorGenerator extends FloorGenerator {
         }
     }
 
-    public boolean validateRoomability(RoomBlueprint room){
+    protected boolean validateRoomability(Room room){
         for (Space space : room.getRoomSpaces()) {
             if (!space.isOccupied()) {
                 return false;
@@ -175,37 +202,20 @@ public class DefaultFloorGenerator extends FloorGenerator {
         return true;
     }
 
-    protected void spawnEntites() {
-        int points = 20 + depth * 10;
-        Shopper<Entity> entityShopper = new Shopper<Entity>(points, Dungeon.getCurrentMonsterPool());
+    protected void spawnEntites(Pair<List<Room>,List<Space[]>> pair) {
+        Shopper<Entity> entityShopper = new Shopper<Entity>(20 + depth * 10, Dungeon.getCurrentMonsterPool());
         while (entityShopper.hasPoints()) {
-            getRandomUnoccupiedSpace(spaces).setOccupant(entityShopper.generate());
+            getRandom(getRandom(pair.getFirst()).getInteriorSpaces()).setOccupant(entityShopper.generate());
         }
-        int chestPoints = (depth*10) + ((player.getMaxHP() - player.getHP()));
-        Shopper<Chest> chestShopper = new Shopper<Chest>(chestPoints, Dungeon.getCurrentChestPool());
-        while (chestShopper.hasPoints()) {
-            getRandomUnoccupiedSpace(spaces).setOccupant(chestShopper.generate());
-        }
-    }
-    
-    protected void spawnPlayer(){
-        Space rSpace = getRandomUnoccupiedSpace(spaces);
-        while (rSpace == null){
-            rSpace = getRandomUnoccupiedSpace(spaces);
-        }
-        rSpace.setOccupant(this.player);
-    }
 
-    @Override
-    public void generateFloor(Space[][] spaces, PlayerEntity playerEntity) {
-        this.spaces = spaces;
-        this.player = playerEntity;
-        this.SIZE_X = spaces.length;
-        this.SIZE_Y = spaces[0].length;
-        generateSpaces();
-        generateWalls();
-        spawnEntites();
-        spawnPlayer();
+        Shopper<Chest> chestShopper = new Shopper<Chest>((depth*10) + ((player.getMaxHP() - player.getHP())), Dungeon.getCurrentChestPool());
+        while (chestShopper.hasPoints()) {
+            getRandom(getRandom(pair.getFirst()).getInteriorSpaces()).setOccupant(chestShopper.generate());
+        }
+
+        getRandom(pair.getFirst().get(0).getInteriorSpaces()).setOccupant(player);
+        getRandom(pair.getFirst().get(pair.getFirst().size()-1).getInteriorSpaces()).addTerrain(new Staircase());
+
     }
 
 }

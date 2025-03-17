@@ -1,12 +1,11 @@
 package game.gameobjects.entities.bosses;
 
-import java.util.ArrayList;
+import static game.App.randomNumber;
+
 import java.util.List;
 
 import org.hexworks.zircon.api.color.TileColor;
 
-import static game.App.randomNumber;
-import game.Dungeon;
 import game.floorgeneration.Pools;
 import game.gamelogic.HasInventory;
 import game.gamelogic.HasResistances;
