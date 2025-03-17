@@ -7,7 +7,7 @@ import java.util.List;
 
 import game.gameobjects.Space;
 
-class SimpleRectRoom implements RoomBlueprint{
+class SimpleRectRoom implements Room{
 
     private int x1;
     private int y1;
