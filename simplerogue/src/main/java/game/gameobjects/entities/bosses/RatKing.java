@@ -2,15 +2,20 @@ package game.gameobjects.entities.bosses;
 
 import static game.App.randomNumber;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hexworks.zircon.api.color.TileColor;
 
+import game.Dungeon;
 import game.floorgeneration.Pools;
+import game.gamelogic.DropsXP;
 import game.gamelogic.HasInventory;
 import game.gamelogic.HasResistances;
 import game.gamelogic.Levelable;
 import game.gamelogic.behavior.AnimalBehavior;
+import game.gamelogic.combat.AttackInfo;
+import game.gamelogic.combat.OnDeath;
 import game.gamelogic.resistances.RangeResistance;
 import game.gamelogic.resistances.Resistance;
 import game.gameobjects.DamageType;
@@ -22,22 +27,27 @@ import game.gameobjects.items.Corpse;
 import game.gameobjects.items.Item;
 import game.gameobjects.items.weapons.Weapon;
 
-public class RatKing extends Animal implements HasInventory{
+public class RatKing extends Animal implements HasInventory, DropsXP{
+
+    private List<Item> inventory = new ArrayList<>();
+    private int ratCount = 0;
+    private int RAT_MAX = 10;
+    private int RAT_PREP = 3;
 
     public RatKing() {
-        super(TileColor.transparent(), TileColor.create(41,17,9,255),'R');
-        setMaxHP(15);
-        setHP(15);
+        super(TileColor.transparent(), TileColor.create(125, 76, 36, 255),'R');
+        setMaxHP(17);
+        setHP(17);
         setWeight(12);
         setName("Rat King");
-        setDescription("A mass of rats, bound together by a strange gelatinous substance. Every once in a while, a rat will free itself from the heap.");
+        setDescription("A mass of rats, bound together by a strange gelatinous substance. Every once in a while, a rat will free itself from the pile.");
         setCorpse(new Corpse(new Rat()));
         setBehavior(new RatKingBehavior(this));
 
         Weapon fangs = new Weapon();
-        fangs.setName("fangs");
+        fangs.setName("Fangs");
         fangs.setDamageType(DamageType.PIERCING);
-        fangs.setDamage(1, 3);
+        fangs.setDamage(1, 4);
         setUnarmedWeapon(fangs);
     }
 
@@ -57,9 +67,10 @@ public class RatKing extends Animal implements HasInventory{
             } else {
                 super.behave();
             }
-            if (randomNumber(0,2) == 2) {
+            if (randomNumber(0,2) == 2 && (ratCount < RAT_MAX && animal.isWithinVision(Dungeon.getCurrentFloor().getPlayer()) || ratCount < RAT_PREP)) {
                 Space space = getRandomSpace();
                 if (space != null) {
+                    ratCount++;
                     space.setOccupant(RatKing.this.new SummonedRat());
                 }
             }
@@ -84,7 +95,7 @@ public class RatKing extends Animal implements HasInventory{
 
     @Override
     public List<Item> getInventory() {
-        return List.of();
+        return inventory;
     }
 
     @Override
@@ -92,13 +103,13 @@ public class RatKing extends Animal implements HasInventory{
         return 20;
     }
 
-    public class SummonedRat extends Rat implements Levelable, HasResistances {
+    public class SummonedRat extends Rat implements Levelable, HasResistances, OnDeath {
 
-        private List<Resistance> resistances = List.of(
+        private List<Resistance> resistances = new ArrayList<>(List.of(
             new RangeResistance(DamageType.BLUNT, this, 0,1),
             new RangeResistance(DamageType.PIERCING, this, 0,1),
             new RangeResistance(DamageType.SLASHING, this, 0,1)
-        );
+        ));
 
         public SummonedRat() {
             super();
@@ -107,7 +118,6 @@ public class RatKing extends Animal implements HasInventory{
             setMaxHP(hp);
             setHP(hp);
             setCorpse(null);
-            setDropPoints(0);
 
             Weapon fangs = new Weapon();
             fangs.setName("fangs");
@@ -147,7 +157,21 @@ public class RatKing extends Animal implements HasInventory{
         public List<Resistance> getResistances() {
             return resistances;
         }
-        
+
+        @Override
+        public void doOnDeath(Entity self, Entity other, AttackInfo attackInfo) {
+            RatKing.this.ratCount--;
+        }
+
+        @Override
+        public int getDropPoints() {
+            return 0;
+        }
+    }
+
+    @Override
+    public int dropXP() {
+        return 25;
     }
 
 }

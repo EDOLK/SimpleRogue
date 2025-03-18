@@ -108,8 +108,10 @@ public class Burning extends Status implements Behavable, LightSource, Seperate{
     }
 
     @Override
-    public void onStack(Status SameStatus) {
-
+    public void onStack(Status sameStatus) {
+        if (sameStatus instanceof Burning burning) {
+            burning.turns += this.turns;
+        }
     }
 
     @Override

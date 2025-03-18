@@ -20,10 +20,10 @@ import kotlin.Pair;
 
 public class DefaultFloorGenerator extends FloorGenerator {
 
-    private Space[][] spaces;
-    private PlayerEntity player;
-    private int SIZE_X;
-    private int SIZE_Y;
+    protected Space[][] spaces;
+    protected PlayerEntity player;
+    protected int SIZE_X;
+    protected int SIZE_Y;
 
     public DefaultFloorGenerator(int depth) {
         super(depth);
@@ -37,7 +37,7 @@ public class DefaultFloorGenerator extends FloorGenerator {
         this.SIZE_Y = spaces[0].length;
         generateSpaces();
         generateWalls();
-        spawnEntites(generateRooms());
+        spawnEntities(generateRooms());
     }
 
     protected void generateSpaces(){
@@ -136,11 +136,11 @@ public class DefaultFloorGenerator extends FloorGenerator {
                     paths.add(path);
                 }
 
-            }
-
             if (previousRoom != null) {
                 rooms.add(previousRoom);
             }
+            rooms.add(currentRoom);
+
             rooms.add(currentRoom);
 
             previousRoom = currentRoom;
@@ -202,18 +202,27 @@ public class DefaultFloorGenerator extends FloorGenerator {
         return true;
     }
 
-    protected void spawnEntites(Pair<List<Room>,List<Space[]>> pair) {
+    protected void spawnEntities(Pair<List<Room>,List<Space[]>> pair) {
+        List<Room> rooms = new ArrayList<>(pair.getFirst());
+
+        Room spawnRoom = rooms.get(0);
+
+        getRandom(spawnRoom.getInteriorSpaces()).setOccupant(player);
+
         Shopper<Entity> entityShopper = new Shopper<Entity>(20 + depth * 10, Dungeon.getCurrentMonsterPool());
+
+        rooms.remove(spawnRoom);
+
         while (entityShopper.hasPoints()) {
-            getRandom(getRandom(pair.getFirst()).getInteriorSpaces()).setOccupant(entityShopper.generate());
+            getRandom(getRandom(rooms).getInteriorSpaces()).setOccupant(entityShopper.generate());
         }
 
         Shopper<Chest> chestShopper = new Shopper<Chest>((depth*10) + ((player.getMaxHP() - player.getHP())), Dungeon.getCurrentChestPool());
-        while (chestShopper.hasPoints()) {
-            getRandom(getRandom(pair.getFirst()).getInteriorSpaces()).setOccupant(chestShopper.generate());
-        }
 
-        getRandom(pair.getFirst().get(0).getInteriorSpaces()).setOccupant(player);
+        while (chestShopper.hasPoints()) {
+            getRandom(getRandom(rooms).getInteriorSpaces()).setOccupant(chestShopper.generate());
+        }
+      
         getRandom(pair.getFirst().get(pair.getFirst().size()-1).getInteriorSpaces()).addTerrain(new Staircase());
 
     }

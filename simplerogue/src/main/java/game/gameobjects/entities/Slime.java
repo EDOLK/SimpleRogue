@@ -52,7 +52,7 @@ public class Slime extends Animal implements DropsXP, HasDodge, HasResistances, 
         
         setCorpse(null);
 
-        resistances.add(new RangeResistance(DamageType.BLUNT, 1, 4));
+        resistances.add(new RangeResistance(DamageType.BLUNT, 0, 3));
         resistances.add(new PercentageResistance(DamageType.POISON, 0.20));
 
     }
@@ -92,7 +92,7 @@ public class Slime extends Animal implements DropsXP, HasDodge, HasResistances, 
 
     @Override
     public int getDodge() {
-        return 5;
+        return 3;
     }
 
     @Override
