@@ -11,6 +11,7 @@ import org.hexworks.zircon.api.builder.component.HeaderBuilder;
 import org.hexworks.zircon.api.builder.component.LabelBuilder;
 import org.hexworks.zircon.api.builder.component.LogAreaBuilder;
 import org.hexworks.zircon.api.builder.component.PanelBuilder;
+import org.hexworks.zircon.api.builder.component.ProgressBarBuilder;
 import org.hexworks.zircon.api.builder.graphics.LayerBuilder;
 import org.hexworks.zircon.api.builder.graphics.TileGraphicsBuilder;
 import org.hexworks.zircon.api.color.TileColor;
@@ -18,6 +19,7 @@ import org.hexworks.zircon.api.component.Header;
 import org.hexworks.zircon.api.component.Label;
 import org.hexworks.zircon.api.component.LogArea;
 import org.hexworks.zircon.api.component.Panel;
+import org.hexworks.zircon.api.component.ProgressBar;
 import org.hexworks.zircon.api.data.Position;
 import org.hexworks.zircon.api.data.Tile;
 import org.hexworks.zircon.api.graphics.BoxType;
@@ -26,6 +28,7 @@ import org.hexworks.zircon.api.uievent.KeyboardEvent;
 import org.hexworks.zircon.api.uievent.UIEventPhase;
 import org.hexworks.zircon.api.uievent.UIEventResponse;
 
+import game.App;
 import game.Dungeon;
 import game.Line;
 import game.display.Display.Mode;
@@ -77,9 +80,11 @@ public final class FloorMenu extends Menu{
     private Header weightText;
     private Header examineName;
     private Header depthText;
+    private ProgressBar enemyHealthBar;
     private Cursor cursor;
     private State currentState = State.INGAME;
     private Selector selector = null;
+    private Panel statusPanel;
 
     public FloorMenu(){
         super();
@@ -298,7 +303,7 @@ public final class FloorMenu extends Menu{
 
     private void initializeStatusPanel(){
 
-        Panel statusPanel = PanelBuilder.newBuilder()
+        statusPanel = PanelBuilder.newBuilder()
             .withDecorations(
                 ComponentDecorations.box(BoxType.SINGLE, "status")
             )
@@ -395,6 +400,19 @@ public final class FloorMenu extends Menu{
         statusPanel.addComponent(weightText);
 
         screen.addComponent(statusPanel);
+
+        this.enemyHealthBar = ProgressBarBuilder.newBuilder()
+            .withNumberOfSteps(20)
+            .withRange(20)
+            .withDisplayPercentValueOfProgress(true)
+            .withPosition(Position.bottomLeftOf(statusPanel))
+            .withSize(20,1)
+            .build();
+
+        screen.addComponent(this.enemyHealthBar);
+
+        this.enemyHealthBar.setHidden(true);
+
     }
 
     private void initializeFloorLayers(){
@@ -668,6 +686,17 @@ public final class FloorMenu extends Menu{
         } else {
             addToLog("You swing at the air.");
             return false;
+        }
+    }
+
+    public void generateHpBar(Entity entity){
+        if (entity.isAlive()) {
+            if (this.enemyHealthBar.isHidden()) {
+                this.enemyHealthBar.setHidden(false);
+            }
+            this.enemyHealthBar.setProgress(App.lerp(0,0,entity.getMaxHP(),20,entity.getHP()));
+        } else {
+            this.enemyHealthBar.setHidden(true);
         }
     }
 

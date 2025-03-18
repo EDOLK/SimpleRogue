@@ -507,6 +507,9 @@ public class Floor{
                 return;
             }
         }
+        if (attacker instanceof PlayerEntity) {
+            Display.getRootMenu().generateHpBar(defender);
+        }
     }
     
     public static List<CombatModifier> getCombatModifiers(Entity entity){
