@@ -3,6 +3,6 @@ package game.gameobjects.statuses;
 import java.util.List;
 
 public interface Seperate{
-    public void onStack(Status SameStatus);
-    public Status validateSameness(List<Status> Statuses);
+    public void onStack(Status sameStatus);
+    public Status validateSameness(List<Status> statuses);
 }

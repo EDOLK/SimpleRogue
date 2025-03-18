@@ -382,11 +382,14 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
         damage = doResistances(damage, damageType);
         damage = doVulnerabilities(damage, damageType);
 
-        if (this instanceof PlayerEntity){
-            Display.log("You take " + damage + " " + damageType + " damage.");
-        } else {
-            Display.log(getName() + " takes " + damage + " " + damageType + " damage.", getSpace());
+        if (damage > 0) {
+            if (this instanceof PlayerEntity){
+                Display.log("You take " + damage + " " + damageType + " damage.");
+            } else {
+                Display.log(getName() + " takes " + damage + " " + damageType + " damage.", getSpace());
+            }
         }
+
 
         HP -= damage;
 

@@ -20,6 +20,7 @@ import game.gameobjects.entities.Rat;
 import game.gameobjects.entities.Slime;
 import game.gameobjects.entities.Snake;
 import game.gameobjects.entities.Spider;
+import game.gameobjects.entities.bosses.Ghast;
 import game.gameobjects.entities.bosses.RatKing;
 import game.gameobjects.items.Item;
 import game.gameobjects.items.Torch;
@@ -110,6 +111,7 @@ public class Pools {
 
         Map<Supplier<Entity>, Integer> layerOneBossMap = new HashMap<Supplier<Entity>, Integer>();
         layerOneBossMap.put(()->{return new RatKing();}, 1);
+        layerOneBossMap.put(()->{return new Ghast();}, 1);
         LAYER_ONE_BOSS_POOL.setMap(layerOneBossMap);
 
     }

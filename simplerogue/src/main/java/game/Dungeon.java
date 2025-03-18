@@ -16,6 +16,7 @@ import game.gameobjects.entities.PlayerEntity;
 import game.gameobjects.entities.Wall;
 import game.gameobjects.items.Item;
 import game.gameobjects.terrains.Staircase;
+import game.floorgeneration.BossFloorGenerator;
 import game.floorgeneration.DefaultFloorGenerator;
 
 public class Dungeon {
@@ -35,6 +36,12 @@ public class Dungeon {
     private static Pool<Supplier<Item>> currentTreasurePool = Pools.LAYER_ONE_TREASURE_POOL;
     
     private static Pool<Supplier<Chest>> currentChestPool = Pools.LAYER_ONE_CHEST_POOL;
+
+    private static Pool<Supplier<Entity>> currentBossPool = Pools.LAYER_ONE_BOSS_POOL;
+
+    public static Pool<Supplier<Entity>> getCurrentBossPool() {
+        return currentBossPool;
+    }
 
     public static Pool<Supplier<Chest>> getCurrentChestPool() {
         return currentChestPool;
@@ -92,7 +99,11 @@ public class Dungeon {
     }
     
     public static Floor generateFloor(PlayerEntity playerEntity){
-        return new Floor(sX, sY, playerEntity, new DefaultFloorGenerator(currentDepth));
+        if (currentDepth % 5 == 0) {
+            return new Floor(sX, sY, playerEntity, new BossFloorGenerator(currentDepth));
+        } else {
+            return new Floor(sX, sY, playerEntity, new DefaultFloorGenerator(currentDepth));
+        }
     }
     
     public static void addItem(Item item, int x, int y){
