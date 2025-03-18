@@ -15,6 +15,7 @@ import game.gamelogic.Armed;
 import game.gamelogic.Armored;
 import game.gamelogic.HasAccuracy;
 import game.gamelogic.HasDodge;
+import game.gamelogic.HasInventory;
 import game.gamelogic.HasOffHand;
 import game.gamelogic.LightSource;
 import game.gamelogic.OverridesAttack;
@@ -139,6 +140,18 @@ public class Floor{
                         for (Armor armor : armoredOccupant.getArmor()) {
                             if (armor instanceof Behavable behavableArmor) {
                                 behavables.add(behavableArmor);
+                            }
+                        }
+                    }
+
+                    if (entity.getUnarmedWeapon() instanceof Behavable behavable) {
+                        behavables.add(behavable);
+                    }
+
+                    if (entity instanceof HasInventory hasInventory) {
+                        for (Item item : hasInventory.getInventory()) {
+                            if (item instanceof Behavable behavable) {
+                                behavables.add(behavable);
                             }
                         }
                     }

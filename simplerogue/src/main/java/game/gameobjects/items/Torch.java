@@ -95,7 +95,7 @@ public class Torch extends Weapon implements Flammable, LightSource, SelfAware, 
             setMinDamage(0);
             setMaxDamage(2);
             setDamageType(DamageType.BLUNT);
-            Display.log("Your torch goes out.");
+            Display.log("Your torch goes out.", getSpace());
         }
     }
 
@@ -112,7 +112,7 @@ public class Torch extends Weapon implements Flammable, LightSource, SelfAware, 
             setMaxDamage(3);
             setDamageType(DamageType.FIRE);
         } else {
-            Display.log("The torch is already lit.");
+            Display.log("The torch is already lit.", getSpace());
         }
         if (Display.getCurrentMenu() instanceof ItemContextMenu)
             Display.revertMenu();

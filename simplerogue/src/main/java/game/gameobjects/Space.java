@@ -6,11 +6,17 @@ import java.util.List;
 import org.hexworks.zircon.api.color.TileColor;
 
 import game.Dungeon;
+import game.gamelogic.Armed;
+import game.gamelogic.Armored;
+import game.gamelogic.HasInventory;
+import game.gamelogic.HasOffHand;
 import game.gamelogic.OverridesMovement;
 import game.gamelogic.SelfAware;
 import game.gamelogic.Triggerable;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.items.Item;
+import game.gameobjects.items.armor.Armor;
+import game.gameobjects.items.weapons.Weapon;
 import game.gameobjects.terrains.Fire;
 import game.gameobjects.terrains.Terrain;
 import game.gameobjects.terrains.gasses.Gas;
@@ -210,6 +216,35 @@ public class Space extends DisplayableTile{
         this.occupant = occupant;
         if (occupant instanceof SelfAware selfAware){
             selfAware.setSpace(this);
+        }
+        if (occupant instanceof HasInventory hasInventory) {
+            for (Item item : hasInventory.getInventory()) {
+                if (item instanceof SelfAware selfAware) {
+                    selfAware.setSpace(this);
+                }
+            }
+        }
+        if (occupant != null && occupant.getUnarmedWeapon() instanceof SelfAware selfAware) {
+            selfAware.setSpace(this);
+        }
+        if (occupant instanceof HasOffHand hasOffHand) {
+            if (hasOffHand.getOffHandSlot().getEquippedItem() != null && hasOffHand.getOffHandSlot().getEquippedItem() instanceof SelfAware selfAware) {
+                selfAware.setSpace(this);
+            }
+        }
+        if (occupant instanceof Armed armed) {
+            for (Weapon weapon : armed.getWeapons()) {
+                if (weapon instanceof SelfAware selfAware) {
+                    selfAware.setSpace(this);
+                }
+            }
+        }
+        if (occupant instanceof Armored armored) {
+            for (Armor armor : armored.getArmor()) {
+                if (armor instanceof SelfAware selfAware) {
+                    selfAware.setSpace(this);
+                }
+            }
         }
     }
 
