@@ -135,6 +135,7 @@ public class DefaultFloorGenerator extends FloorGenerator {
                     digOutPath(path);
                     paths.add(path);
                 }
+            }
 
             if (previousRoom != null) {
                 rooms.add(previousRoom);
