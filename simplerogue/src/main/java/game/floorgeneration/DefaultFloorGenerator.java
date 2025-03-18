@@ -136,7 +136,10 @@ public class DefaultFloorGenerator extends FloorGenerator {
                     paths.add(path);
                 }
 
+            if (previousRoom != null) {
+                rooms.add(previousRoom);
             }
+            rooms.add(currentRoom);
 
             rooms.add(currentRoom);
 
@@ -219,7 +222,7 @@ public class DefaultFloorGenerator extends FloorGenerator {
         while (chestShopper.hasPoints()) {
             getRandom(getRandom(rooms).getInteriorSpaces()).setOccupant(chestShopper.generate());
         }
-
+      
         getRandom(pair.getFirst().get(pair.getFirst().size()-1).getInteriorSpaces()).addTerrain(new Staircase());
 
     }
