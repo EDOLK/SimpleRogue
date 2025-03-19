@@ -137,11 +137,6 @@ public class DefaultFloorGenerator extends FloorGenerator {
                 }
             }
 
-            if (previousRoom != null) {
-                rooms.add(previousRoom);
-            }
-            rooms.add(currentRoom);
-
             rooms.add(currentRoom);
 
             previousRoom = currentRoom;
