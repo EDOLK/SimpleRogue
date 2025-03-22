@@ -406,18 +406,6 @@ public final class FloorMenu extends Menu{
 
         screen.addComponent(statusPanel);
 
-        //this.enemyHealthBar = ProgressBarBuilder.newBuilder()
-        //    .withNumberOfSteps(20)
-        //    .withRange(20)
-        //    .withDisplayPercentValueOfProgress(true)
-        //    .withPosition(Position.bottomLeftOf(statusPanel))
-        //    .withSize(20,1)
-        //    .build();
-        //
-        //screen.addComponent(this.enemyHealthBar);
-        //
-        //this.enemyHealthBar.setHidden(true);
-
     }
 
     private void initializeEnemyPanel() {
