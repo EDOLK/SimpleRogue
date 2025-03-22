@@ -63,12 +63,10 @@ public class ExamineMenu extends Menu{
 
         String weightString = null;
         
-        int descriptionHeight = panel.getHeight() - 4;
+        int descriptionHeight = panel.getHeight() - 5;
 
         Button equipmentButton = null;
 
-        Component equipmentButtonReference = null;
-        
         List<Component> infoComponents = new ArrayList<>();
         
         if (examinable instanceof Entity entity){
@@ -77,17 +75,6 @@ public class ExamineMenu extends Menu{
             weightString = "Weight: " + Integer.toString(entity.getWeight()) + " (" + Integer.toString(entity.getBaseWeight()) + ")";
             descriptionHeight -= 3;
             
-            if (entity instanceof Armored || entity instanceof Armed){
-                descriptionHeight -= 2;
-                equipmentButton = ButtonBuilder.newBuilder()
-                    .withText("Equipment")
-                    .build();
-                equipmentButton.handleComponentEvents(ComponentEventType.ACTIVATED, (event) -> {
-                    Display.setMenu(EquipmentMenu.createExamineEquipmentMenu(entity));
-                    return UIEventResponse.processed();
-                });
-            }
-
             panelWidthOffset = -7;
             
             int pos = 1;
@@ -139,6 +126,23 @@ public class ExamineMenu extends Menu{
                 pos += 2;
 
             }
+
+            if (entity instanceof Armored || entity instanceof Armed){
+
+                equipmentButton = ButtonBuilder.newBuilder()
+                    .withText("Equipment")
+                    .withPosition(1, pos)
+                    .build();
+                equipmentButton.handleComponentEvents(ComponentEventType.ACTIVATED, (event) -> {
+                    Display.setMenu(EquipmentMenu.createExamineEquipmentMenu(entity));
+                    return UIEventResponse.processed();
+                });
+
+                infoComponents.add(equipmentButton);
+
+                pos += 2;
+            }
+
             
             if (entity instanceof HasResistances hasResistances){
 
@@ -173,8 +177,6 @@ public class ExamineMenu extends Menu{
 
         panel.addComponent(descriptionParagraph);
         
-        equipmentButtonReference = descriptionParagraph;
-        
         if (weightString != null){
             Header weightHeader = HeaderBuilder.newBuilder()
                 .withText(weightString)            
@@ -182,12 +184,6 @@ public class ExamineMenu extends Menu{
                 .withPosition(Position.bottomLeftOf(descriptionParagraph).minus(Position.create(1,0)))
                 .build();
             panel.addComponent(weightHeader);
-            equipmentButtonReference = weightHeader;
-        }
-        
-        if (equipmentButton != null){
-            equipmentButton.moveTo(Position.bottomLeftOf(equipmentButtonReference));
-            panel.addComponent(equipmentButton);
         }
         
         panel.moveTo(Position.create((screen.getWidth()/2 - panel.getWidth()/2)+panelWidthOffset, (screen.getHeight()/2 - panel.getHeight()/2)+panelHeightOffset));
