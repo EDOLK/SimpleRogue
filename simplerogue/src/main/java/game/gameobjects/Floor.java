@@ -504,12 +504,13 @@ public class Floor{
                     onMissed.doOnMissed(defender, attacker, attackInfo);
                 }
                 //
-                return;
             }
         }
+
         if (attacker instanceof PlayerEntity) {
-            Display.getRootMenu().generateHpBar(defender);
+            Display.getRootMenu().writeEnemyInfo(defender);
         }
+
     }
     
     public static List<CombatModifier> getCombatModifiers(Entity entity){

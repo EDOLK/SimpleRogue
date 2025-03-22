@@ -35,7 +35,7 @@ public class Display {
 
     private static TilesetResource characterTileSet = CP437TilesetResources.rexPaint16x16();
     private static TilesetResource graphicalTileSet = GraphicalTilesetResources.loadTilesetFromJar(16, 16, "/Testing_Tileset_Final.zip");
-    private static ColorTheme theme = ColorThemes.linuxMintDark();
+    private static ColorTheme theme = ColorThemes.discord();
     private static TileGrid tileGrid;
 
     private static Menu currentMenu;

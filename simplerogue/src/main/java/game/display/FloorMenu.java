@@ -80,11 +80,14 @@ public final class FloorMenu extends Menu{
     private Header weightText;
     private Header examineName;
     private Header depthText;
-    private ProgressBar enemyHealthBar;
     private Cursor cursor;
     private State currentState = State.INGAME;
     private Selector selector = null;
     private Panel statusPanel;
+    private Panel enemyPanel;
+    private Header nameHeader;
+    private ProgressBar enemyBar;
+    private Header enemyHpHeader;
 
     public FloorMenu(){
         super();
@@ -94,6 +97,8 @@ public final class FloorMenu extends Menu{
         initializeLog();
 
         initializeStatusPanel();
+
+        initializeEnemyPanel();
 
         initializeFloorLayers();
 
@@ -305,7 +310,7 @@ public final class FloorMenu extends Menu{
 
         statusPanel = PanelBuilder.newBuilder()
             .withDecorations(
-                ComponentDecorations.box(BoxType.SINGLE, "status")
+                ComponentDecorations.box(BoxType.SINGLE, "Status")
             )
             .withPosition(50, 0)
             .withSize(20,20)
@@ -401,18 +406,51 @@ public final class FloorMenu extends Menu{
 
         screen.addComponent(statusPanel);
 
-        this.enemyHealthBar = ProgressBarBuilder.newBuilder()
-            .withNumberOfSteps(20)
-            .withRange(20)
-            .withDisplayPercentValueOfProgress(true)
-            .withPosition(Position.bottomLeftOf(statusPanel))
-            .withSize(20,1)
+        //this.enemyHealthBar = ProgressBarBuilder.newBuilder()
+        //    .withNumberOfSteps(20)
+        //    .withRange(20)
+        //    .withDisplayPercentValueOfProgress(true)
+        //    .withPosition(Position.bottomLeftOf(statusPanel))
+        //    .withSize(20,1)
+        //    .build();
+        //
+        //screen.addComponent(this.enemyHealthBar);
+        //
+        //this.enemyHealthBar.setHidden(true);
+
+    }
+
+    private void initializeEnemyPanel() {
+
+        this.enemyPanel = PanelBuilder.newBuilder()
+            .withDecorations(
+                ComponentDecorations.box(BoxType.SINGLE, "Enemy")
+            )
+            .withPosition(Position.bottomLeftOf(this.statusPanel))
+            .withSize(20,20)
             .build();
 
-        screen.addComponent(this.enemyHealthBar);
+        this.nameHeader = HeaderBuilder.newBuilder()
+            .withSize(this.enemyPanel.getWidth()-2,1)
+            .withPosition(0,3)
+            .build();
+        this.enemyPanel.addComponent(this.nameHeader);
 
-        this.enemyHealthBar.setHidden(true);
+        this.enemyBar = ProgressBarBuilder.newBuilder()
+            .withPosition(3,1)
+            .withSize(this.enemyPanel.getWidth()-5,1)
+            .withNumberOfSteps(this.enemyPanel.getWidth()-5)
+            .build();
+        this.enemyPanel.addComponent(this.enemyBar);
 
+        this.enemyHpHeader = HeaderBuilder.newBuilder()
+            .withSize(this.enemyBar.getWidth(),1)
+            .withPosition(3,0)
+            .build();
+        this.enemyPanel.addComponent(this.enemyHpHeader);
+
+        this.screen.addComponent(this.enemyPanel);
+        this.enemyPanel.setHidden(true);
     }
 
     private void initializeFloorLayers(){
@@ -689,14 +727,16 @@ public final class FloorMenu extends Menu{
         }
     }
 
-    public void generateHpBar(Entity entity){
+    public void writeEnemyInfo(Entity entity){
         if (entity.isAlive()) {
-            if (this.enemyHealthBar.isHidden()) {
-                this.enemyHealthBar.setHidden(false);
-            }
-            this.enemyHealthBar.setProgress(App.lerp(0,0,entity.getMaxHP(),20,entity.getHP()));
+            this.enemyPanel.setHidden(false);
+            this.nameHeader.setText(entity.getName());
+            this.screen.draw(entity.getTile(),Position.topLeftOf(this.enemyPanel).plus(Position.create(2,2)));
+            this.enemyBar.setProgress(App.lerp(0,0,entity.getMaxHP(),100,entity.getHP()));
+            this.enemyHpHeader.setText(entity.getHP() + "/" + entity.getMaxHP());
         } else {
-            this.enemyHealthBar.setHidden(true);
+            this.screen.draw(Tile.empty(),Position.topLeftOf(this.enemyPanel).plus(Position.create(2,2)));
+            this.enemyPanel.setHidden(true);
         }
     }
 

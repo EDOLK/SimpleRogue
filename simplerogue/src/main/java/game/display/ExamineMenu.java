@@ -1,5 +1,9 @@
 package game.display;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.hexworks.zircon.api.ComponentDecorations;
 import org.hexworks.zircon.api.builder.component.ButtonBuilder;
 import org.hexworks.zircon.api.builder.component.HeaderBuilder;
 import org.hexworks.zircon.api.builder.component.PanelBuilder;
@@ -9,8 +13,10 @@ import org.hexworks.zircon.api.component.Component;
 import org.hexworks.zircon.api.component.Header;
 import org.hexworks.zircon.api.component.Panel;
 import org.hexworks.zircon.api.component.Paragraph;
+import org.hexworks.zircon.api.component.renderer.ComponentDecorationRenderer;
 import org.hexworks.zircon.api.data.Position;
 import org.hexworks.zircon.api.data.Tile;
+import org.hexworks.zircon.api.graphics.BoxType;
 import org.hexworks.zircon.api.uievent.ComponentEventType;
 import org.hexworks.zircon.api.uievent.UIEventResponse;
 
@@ -34,10 +40,14 @@ public class ExamineMenu extends Menu{
 
         String description = examinable.getDescription();
         String name = examinable.getName();
+        String type = null;
         Tile tile = examinable.getTile();
 
         Panel panel = PanelBuilder.newBuilder()
-            .withSize(screen.getWidth()/3, screen.getHeight()/3)
+            .withSize((int)(screen.getWidth()/2.5), (int)(screen.getHeight()/2.5))
+            .withDecorations(
+                ComponentDecorations.box(BoxType.SINGLE, "Examine")
+            )
             .build();
 
         int panelWidthOffset = 0;
@@ -45,7 +55,7 @@ public class ExamineMenu extends Menu{
 
         Header nameHeader = HeaderBuilder.newBuilder()
             .withText(name)
-            .withSize(panel.getWidth()-4, 1)
+            .withSize(panel.getWidth()-5, 1)
             .withPosition(3,1)
             .build();
 
@@ -53,15 +63,16 @@ public class ExamineMenu extends Menu{
 
         String weightString = null;
         
-        int descriptionHeight = panel.getHeight() - 3;
+        int descriptionHeight = panel.getHeight() - 4;
 
         Button equipmentButton = null;
 
         Component equipmentButtonReference = null;
         
-        Panel InfoPanel = null;
+        List<Component> infoComponents = new ArrayList<>();
         
         if (examinable instanceof Entity entity){
+            type = "Entity";
             name = entity.getName();
             weightString = "Weight: " + Integer.toString(entity.getWeight()) + " (" + Integer.toString(entity.getBaseWeight()) + ")";
             descriptionHeight -= 3;
@@ -76,11 +87,7 @@ public class ExamineMenu extends Menu{
                     return UIEventResponse.processed();
                 });
             }
-            
-            InfoPanel = PanelBuilder.newBuilder()
-                .withSize(15, panel.getHeight())
-                .build();
-            
+
             panelWidthOffset = -7;
             
             int pos = 1;
@@ -90,7 +97,7 @@ public class ExamineMenu extends Menu{
                 .withPosition(1, pos)
                 .build();
 
-            InfoPanel.addComponent(hpHeader);
+            infoComponents.add(hpHeader);
             
             pos += 2;
             
@@ -101,7 +108,7 @@ public class ExamineMenu extends Menu{
                     .withPosition(1, pos)
                     .build();
                 
-                InfoPanel.addComponent(accuracyHeader);
+                infoComponents.add(accuracyHeader);
 
                 pos += 2;
 
@@ -114,7 +121,7 @@ public class ExamineMenu extends Menu{
                     .withPosition(1, pos)
                     .build();
                 
-                InfoPanel.addComponent(dodgeHeader);
+                infoComponents.add(dodgeHeader);
 
                 pos += 2;
 
@@ -127,7 +134,7 @@ public class ExamineMenu extends Menu{
                     .withPosition(1, pos)
                     .build();
                 
-                InfoPanel.addComponent(xpHeader);
+                infoComponents.add(xpHeader);
 
                 pos += 2;
 
@@ -140,7 +147,7 @@ public class ExamineMenu extends Menu{
                     .withPosition(1, pos)
                     .build();
                 
-                InfoPanel.addComponent(resistancesButton);
+                infoComponents.add(resistancesButton);
                 
                 resistancesButton.handleComponentEvents(ComponentEventType.ACTIVATED, (event) -> {
                     Display.setMenu(new ResistanceMenu(hasResistances));
@@ -153,13 +160,14 @@ public class ExamineMenu extends Menu{
         }
         
         if (examinable instanceof Item item){
+            type = "Item";
             weightString = "Weight: " + Integer.toString(item.getWeight());
             descriptionHeight -= 3;
         }
 
         Paragraph descriptionParagraph = ParagraphBuilder.newBuilder()
             .withText(description)
-            .withSize(panel.getWidth()-2, descriptionHeight)
+            .withSize(panel.getWidth()-4, descriptionHeight)
             .withPosition(1, 3)
             .build();
 
@@ -171,26 +179,35 @@ public class ExamineMenu extends Menu{
             Header weightHeader = HeaderBuilder.newBuilder()
                 .withText(weightString)            
                 .withSize(weightString.length(), 1)
-                .withPosition(Position.bottomLeftOf(descriptionParagraph).plus(Position.create(0, 1)))
+                .withPosition(Position.bottomLeftOf(descriptionParagraph).minus(Position.create(1,0)))
                 .build();
             panel.addComponent(weightHeader);
             equipmentButtonReference = weightHeader;
         }
         
         if (equipmentButton != null){
-            equipmentButton.moveTo(Position.bottomLeftOf(equipmentButtonReference).plus(Position.create(0, 1)));
+            equipmentButton.moveTo(Position.bottomLeftOf(equipmentButtonReference));
             panel.addComponent(equipmentButton);
         }
         
         panel.moveTo(Position.create((screen.getWidth()/2 - panel.getWidth()/2)+panelWidthOffset, (screen.getHeight()/2 - panel.getHeight()/2)+panelHeightOffset));
         screen.addComponent(panel);
         
-        if (InfoPanel != null){
-            InfoPanel.moveTo(Position.topRightOf(panel).plus(Position.create(1, 0)));
-            screen.addComponent(InfoPanel);
+        if (!infoComponents.isEmpty()) {
+            Panel infoPanel = PanelBuilder.newBuilder()
+                .withSize(15, panel.getHeight())
+                .withDecorations(
+                    type != null ? ComponentDecorations.box(BoxType.SINGLE,type) : null
+                )
+                .build();
+            infoPanel.moveTo(Position.topRightOf(panel).plus(Position.create(1, 0)));
+            for (Component component : infoComponents) {
+                infoPanel.addComponent(component);
+            }
+            screen.addComponent(infoPanel);
         }
 
-        screen.draw(tile, Position.topLeftOf(panel).plus(Position.create(1, 1)));
+        screen.draw(tile, Position.topLeftOf(panel).plus(Position.create(2, 2)));
     }
 
     @Override

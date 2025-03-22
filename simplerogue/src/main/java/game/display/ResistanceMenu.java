@@ -21,6 +21,8 @@ public class ResistanceMenu extends Menu{
     public ResistanceMenu(HasResistances hasResistances){
         List<Header> headers = new ArrayList<Header>();
         List<Examinable> examinables = new ArrayList<Examinable>();
+        List<String> resistanceStrings = new ArrayList<>();
+        int longestOffset = 0;
         for (DamageType damageType : DamageType.values()) {
             String finalString = damageType.toString().toUpperCase() + ": ";
             int min = 0;
@@ -46,21 +48,37 @@ public class ResistanceMenu extends Menu{
                     }
                     percent += (int)p;
                 }
-                if (min != 0 || max != 0){
+                if (max != 0) {
                     finalString += min + " - " + max;
+                } else if (min != 0){
+                    finalString += min;
                 }
                 if (percent != 0){
-                    finalString += ", " + percent + "%";
+                    if (min != 0 || max != 0) {
+                        finalString += ", ";
+                    }
+                    finalString += percent + "%";
                 }
             }
             if (min != 0 || max != 0 || percent != 0){
-                headers.add(
-                    new HeaderBuilder()
-                        .withText(finalString)
-                        .build()
-                );
-                examinables.add(toExaminable(finalString));
+                int offset = finalString.indexOf(":");
+                if (offset > longestOffset) {
+                    longestOffset = offset;
+                }
+                resistanceStrings.add(finalString);
             }
+        }
+        for (String string : resistanceStrings) {
+            String finalString = string;
+            for (int i = 0; i < (longestOffset - string.indexOf(":")); i++) {
+                finalString = " " + finalString;
+            }
+            headers.add(
+                new HeaderBuilder()
+                    .withText(finalString)
+                    .build()
+            );
+            examinables.add(toExaminable(finalString));
         }
         Container container = Display.createFittedContainer(screen, "Resistances", examinables);
         for (Header header : headers) {
