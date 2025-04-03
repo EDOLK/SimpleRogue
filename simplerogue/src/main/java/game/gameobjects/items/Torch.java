@@ -31,18 +31,15 @@ public class Torch extends Weapon implements Flammable, LightSource, SelfAware, 
         this.lit = lit;
         setName("Torch");
         setCharacter('t');
-        setfGColor(TileColor.create(250, 134, 7, 255));
+        setfGColor(TileColor.create(138, 64, 22, 255));
         setbGColor(TileColor.transparent());
         setDescription("A torch. Can light nearby tiles on fire, assuming there is kindling, of course.");
         setWeight(1);
+        setMinDamage(0);
+        setMaxDamage(2);
+        setDamageType(DamageType.BLUNT);
         if (lit) {
-            setMinDamage(0);
-            setMaxDamage(3);
-            setDamageType(DamageType.FIRE);
-        } else {
-            setMinDamage(0);
-            setMaxDamage(2);
-            setDamageType(DamageType.BLUNT);
+            setLit();
         }
     }
 
@@ -90,12 +87,7 @@ public class Torch extends Weapon implements Flammable, LightSource, SelfAware, 
             fuel--;
         }
         if (fuel <= 0) {
-            lit = false;
-            this.setName("Burnt Torch");
-            setMinDamage(0);
-            setMaxDamage(2);
-            setDamageType(DamageType.BLUNT);
-            Display.log("Your torch goes out.");
+            setBurnt();
         }
     }
 
@@ -107,15 +99,31 @@ public class Torch extends Weapon implements Flammable, LightSource, SelfAware, 
     @Override
     public void onInteract(Entity interactor) {
         if (!lit){
-            lit = true;
-            setMinDamage(0);
-            setMaxDamage(3);
-            setDamageType(DamageType.FIRE);
+            setLit();
         } else {
             Display.log("The torch is already lit.");
         }
         if (Display.getCurrentMenu() instanceof ItemContextMenu)
             Display.revertMenu();
+    }
+
+    private void setLit(){
+        lit = true;
+        setMinDamage(0);
+        setMaxDamage(3);
+        setDamageType(DamageType.FIRE);
+        setfGColor(TileColor.create(227, 118, 16, 255));
+    }
+
+    private void setBurnt(){
+        lit = false;
+        Display.log("The " + getName() + " goes out.");
+        setName("Burnt Torch");
+        setMinDamage(0);
+        setMaxDamage(2);
+        setDamageType(DamageType.BLUNT);
+        setDescription("A torch. This one's all spent.");
+        setfGColor(TileColor.create(87, 57, 29, 255));
     }
 
     @Override

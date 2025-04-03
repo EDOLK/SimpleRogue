@@ -449,9 +449,20 @@ public class Floor{
             
             if (hit){
 
+                if (crit) {
+                    if (attacker instanceof PlayerEntity){
+                        Display.log("Critical hit!");
+                    } else if (defender instanceof PlayerEntity){
+                        Display.log("The " + attacker.getName() + " scores a critical hit on you.");
+                    } else {
+                        Display.log("The " + attacker.getName() + " scores a critical hit on the " + defender.getName() + ".", attacker.getSpace());
+                    }
+                }
+
                 damageDelt = defender.dealDamage(damage, attackerDamageType, attacker);
 
                 attackInfo.setDamageDelt(damageDelt);
+
                 // attacker on hit and defender on hitted
                 for (OnHit onHit : attackerOnHit) {
                     onHit.doOnHit(attacker, defender, attackInfo);
@@ -462,13 +473,6 @@ public class Floor{
                 //
                 
                 if (crit){
-                    if (attacker instanceof PlayerEntity){
-                        Display.log("Critical hit!");
-                    } else if (defender instanceof PlayerEntity){
-                        Display.log("The " + attacker.getName() + " scores a critical hit on you.");
-                    } else {
-                        Display.log("The " + attacker.getName() + " scores a critical hit on the " + defender.getName() + ".", attacker.getSpace());
-                    }
 
                     // attacker on crit and defender on critted
                     for (OnCrit onCrit : attackerOnCrit) {
@@ -479,6 +483,7 @@ public class Floor{
                     }
 
                 }
+
                 if (!defender.isAlive()) {
                     for (OnDeath onDeath : defenderOnDeath) {
                         onDeath.doOnDeath(defender, attacker, attackInfo);
@@ -487,6 +492,7 @@ public class Floor{
                         onKill.doOnKill(attacker, defender, attackInfo);
                     }
                 }
+
             } else {
                 if (attacker instanceof PlayerEntity){
                     Display.log("You miss the " + defender.getName() + ".");
@@ -504,9 +510,13 @@ public class Floor{
                     onMissed.doOnMissed(defender, attacker, attackInfo);
                 }
                 //
-                return;
             }
         }
+
+        if (attacker instanceof PlayerEntity) {
+            Display.getRootMenu().writeEnemyInfo(defender);
+        }
+
     }
     
     public static List<CombatModifier> getCombatModifiers(Entity entity){

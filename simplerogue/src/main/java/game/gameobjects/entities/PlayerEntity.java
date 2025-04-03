@@ -9,6 +9,7 @@ import game.display.Display;
 import game.gamelogic.Armed;
 import game.gamelogic.Armored;
 import game.gamelogic.Experiential;
+import game.gamelogic.HasDodge;
 import game.gamelogic.HasInventory;
 import game.gamelogic.HasOffHand;
 import game.gamelogic.Levelable;
@@ -27,7 +28,7 @@ import game.gameobjects.items.armor.Armor;
 import game.gameobjects.items.armor.ArmorType;
 import game.gameobjects.items.weapons.Weapon;
 
-public class PlayerEntity extends Entity implements Armored, Armed, Levelable, Experiential, HasInventory, LightSource, HasOffHand, HasAbilities{
+public class PlayerEntity extends Entity implements Armored, Armed, Levelable, Experiential, HasInventory, LightSource, HasOffHand, HasAbilities, HasDodge{
 
     private int maxWeight = 50;
     private int maxMP;
@@ -207,6 +208,12 @@ public class PlayerEntity extends Entity implements Armored, Armed, Levelable, E
     @Override
     public ItemSlot getOffHandSlot() {
         return offHandSlot;
+    }
+
+    @Override
+    public int getDodge() {
+        // TODO change when implementing stats
+        return 5;
     }
 
 }

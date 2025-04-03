@@ -35,13 +35,13 @@ public class Display {
 
     private static TilesetResource characterTileSet = CP437TilesetResources.rexPaint16x16();
     private static TilesetResource graphicalTileSet = GraphicalTilesetResources.loadTilesetFromJar(16, 16, "/Testing_Tileset_Final.zip");
-    private static ColorTheme theme = ColorThemes.linuxMintDark();
+    private static ColorTheme theme = ColorThemes.discord();
     private static TileGrid tileGrid;
 
     private static Menu currentMenu;
     private static FloorMenu rootMenu;
-    private static Mode mode = Mode.GRAPHICAL;
-    //private static Mode mode = Mode.ASCII;
+    //private static Mode mode = Mode.GRAPHICAL;
+    private static Mode mode = Mode.ASCII;
 
     private static KeyMap keyMap = new KeyMap();
     
@@ -123,6 +123,14 @@ public class Display {
 
     public static void log(String message, Space space){
         rootMenu.addToLog(message, space);
+    }
+
+    public static void logHeader(String message){
+        rootMenu.addHeaderToLog(message);
+    }
+
+    public static void logHeader(String message, Space space){
+        rootMenu.addHeaderToLog(message, space);
     }
     
     public static void update(){

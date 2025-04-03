@@ -11,6 +11,7 @@ import org.hexworks.zircon.api.builder.component.HeaderBuilder;
 import org.hexworks.zircon.api.builder.component.LabelBuilder;
 import org.hexworks.zircon.api.builder.component.LogAreaBuilder;
 import org.hexworks.zircon.api.builder.component.PanelBuilder;
+import org.hexworks.zircon.api.builder.component.ProgressBarBuilder;
 import org.hexworks.zircon.api.builder.graphics.LayerBuilder;
 import org.hexworks.zircon.api.builder.graphics.TileGraphicsBuilder;
 import org.hexworks.zircon.api.color.TileColor;
@@ -18,6 +19,7 @@ import org.hexworks.zircon.api.component.Header;
 import org.hexworks.zircon.api.component.Label;
 import org.hexworks.zircon.api.component.LogArea;
 import org.hexworks.zircon.api.component.Panel;
+import org.hexworks.zircon.api.component.ProgressBar;
 import org.hexworks.zircon.api.data.Position;
 import org.hexworks.zircon.api.data.Tile;
 import org.hexworks.zircon.api.graphics.BoxType;
@@ -26,6 +28,7 @@ import org.hexworks.zircon.api.uievent.KeyboardEvent;
 import org.hexworks.zircon.api.uievent.UIEventPhase;
 import org.hexworks.zircon.api.uievent.UIEventResponse;
 
+import game.App;
 import game.Dungeon;
 import game.Line;
 import game.display.Display.Mode;
@@ -80,6 +83,12 @@ public final class FloorMenu extends Menu{
     private Cursor cursor;
     private State currentState = State.INGAME;
     private Selector selector = null;
+    private Panel statusPanel;
+    private Panel enemyPanel;
+    private Header nameHeader;
+    private ProgressBar enemyBar;
+    private Header enemyHpHeader;
+    private int timer = 10;
 
     public FloorMenu(){
         super();
@@ -89,6 +98,8 @@ public final class FloorMenu extends Menu{
         initializeLog();
 
         initializeStatusPanel();
+
+        initializeEnemyPanel();
 
         initializeFloorLayers();
 
@@ -104,6 +115,14 @@ public final class FloorMenu extends Menu{
     }
 
     public void update(){
+        if (!enemyPanel.isHidden()) {
+            if (timer <= 0) {
+                hideEnemyPanel();
+                timer = 10;
+            } else {
+                timer --;
+            }
+        }
         PlayerEntity playerEntity = currentFloor.getPlayer();
         spaceLayer.clear();
         terrainLayer.clear();
@@ -116,9 +135,10 @@ public final class FloorMenu extends Menu{
         highLiquidLayer.clear();
         gasLayer.clear();
         cursorLayer.clear();
-        healthBarLayer.clear();
-        if (Display.getMode() == Mode.GRAPHICAL)
+        if (Display.getMode() == Mode.GRAPHICAL){
+            healthBarLayer.clear();
             darknessLayer.clear();
+        }
         ArrayList<Space> visibleSpaces = new ArrayList<Space>();
         for (int x = 0; x < currentFloor.SIZE_X; x++) {
             for (int y = 0; y < currentFloor.SIZE_Y; y++){
@@ -268,6 +288,24 @@ public final class FloorMenu extends Menu{
         }
     }
 
+    public void addHeaderToLog(String message){
+        addHeaderToLog(message, false);
+    }
+    
+    public void addHeaderToLog(String message, Space space){
+        addHeaderToLog(message, false, space);
+    }
+
+    public void addHeaderToLog(String message, Boolean b, Space space){
+        if (currentFloor.getPlayer().isWithinVision(space)){
+            addHeaderToLog(message, b);
+        }
+    }
+
+    public void addHeaderToLog(String message, boolean b){
+        logMessageArea.addHeader(message, b);
+    }
+    
     public void toggleExamination(){
         if (cursor == null){
             cursor = new Cursor(currentFloor.getPlayer().getSpace());
@@ -298,9 +336,9 @@ public final class FloorMenu extends Menu{
 
     private void initializeStatusPanel(){
 
-        Panel statusPanel = PanelBuilder.newBuilder()
+        statusPanel = PanelBuilder.newBuilder()
             .withDecorations(
-                ComponentDecorations.box(BoxType.SINGLE, "status")
+                ComponentDecorations.box(BoxType.SINGLE, "Status")
             )
             .withPosition(50, 0)
             .withSize(20,20)
@@ -395,6 +433,40 @@ public final class FloorMenu extends Menu{
         statusPanel.addComponent(weightText);
 
         screen.addComponent(statusPanel);
+
+    }
+
+    private void initializeEnemyPanel() {
+
+        this.enemyPanel = PanelBuilder.newBuilder()
+            .withDecorations(
+                ComponentDecorations.box(BoxType.SINGLE, "Enemy")
+            )
+            .withPosition(Position.bottomLeftOf(this.statusPanel))
+            .withSize(20,20)
+            .build();
+
+        this.nameHeader = HeaderBuilder.newBuilder()
+            .withSize(this.enemyPanel.getWidth()-2,1)
+            .withPosition(0,3)
+            .build();
+        this.enemyPanel.addComponent(this.nameHeader);
+
+        this.enemyBar = ProgressBarBuilder.newBuilder()
+            .withPosition(3,1)
+            .withSize(this.enemyPanel.getWidth()-5,1)
+            .withNumberOfSteps(this.enemyPanel.getWidth()-5)
+            .build();
+        this.enemyPanel.addComponent(this.enemyBar);
+
+        this.enemyHpHeader = HeaderBuilder.newBuilder()
+            .withSize(this.enemyBar.getWidth(),1)
+            .withPosition(3,0)
+            .build();
+        this.enemyPanel.addComponent(this.enemyHpHeader);
+
+        this.screen.addComponent(this.enemyPanel);
+        this.enemyPanel.setHidden(true);
     }
 
     private void initializeFloorLayers(){
@@ -457,11 +529,13 @@ public final class FloorMenu extends Menu{
             .withSize(currentFloor.SIZE_X, currentFloor.SIZE_Y)
             .build();
         screen.addLayer(statusLayer);
-        
-        healthBarLayer = Layer.newBuilder()
-            .withSize(currentFloor.SIZE_X, currentFloor.SIZE_Y)
-            .build();
-        screen.addLayer(healthBarLayer);
+
+        if (Display.getMode() == Mode.GRAPHICAL) {
+            healthBarLayer = Layer.newBuilder()
+                .withSize(currentFloor.SIZE_X, currentFloor.SIZE_Y)
+                .build();
+            screen.addLayer(healthBarLayer);
+        }
         
         highLiquidLayer = Layer.newBuilder()
             .withSize(currentFloor.SIZE_X, currentFloor.SIZE_Y)
@@ -598,14 +672,12 @@ public final class FloorMenu extends Menu{
                 startSelecting(new ExamineSelector());
                 break;
             case GET_TOGGLE: //getting
-                // currentState = State.GETTING;
                 startSelecting(new GetSelector());
                 break;
             case EQUIPMENT: //equiping
                 Display.setMenu(EquipmentMenu.createEquipEquipmentMenu(currentFloor.getPlayer()));
                 break;
             case DROP_TOGGLE: //dropping
-                // currentState = State.DROPPING;
                 startSelecting(new DropSelector());
                 break;
             case CONSUME: //consuming
@@ -669,6 +741,28 @@ public final class FloorMenu extends Menu{
             addToLog("You swing at the air.");
             return false;
         }
+    }
+
+    public void writeEnemyInfo(Entity entity){
+        timer = 10;
+        if (entity.isAlive()) {
+            writeEnemyPanel(entity);
+        } else {
+            hideEnemyPanel();
+        }
+    }
+
+    private void writeEnemyPanel(Entity entity){
+        this.enemyPanel.setHidden(false);
+        this.nameHeader.setText(entity.getName());
+        this.screen.draw(entity.getTile(),Position.topLeftOf(this.enemyPanel).plus(Position.create(2,2)));
+        this.enemyBar.setProgress(App.lerp(0,0,entity.getMaxHP(),100,entity.getHP()));
+        this.enemyHpHeader.setText(entity.getHP() + "/" + entity.getMaxHP());
+    }
+
+    private void hideEnemyPanel(){
+        this.screen.draw(Tile.empty(),Position.topLeftOf(this.enemyPanel).plus(Position.create(2,2)));
+        this.enemyPanel.setHidden(true);
     }
 
     public void startSelecting(Selector selector){
@@ -898,7 +992,6 @@ public final class FloorMenu extends Menu{
         public boolean select(Cursor cursor) {
             if (cursor.getExamined() != null){
                 Display.setMenu(new ExamineMenu(getCursor().getExamined()));
-                return true;
             }
             return false;
         }

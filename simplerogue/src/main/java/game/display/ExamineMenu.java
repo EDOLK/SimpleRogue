@@ -1,5 +1,9 @@
 package game.display;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.hexworks.zircon.api.ComponentDecorations;
 import org.hexworks.zircon.api.builder.component.ButtonBuilder;
 import org.hexworks.zircon.api.builder.component.HeaderBuilder;
 import org.hexworks.zircon.api.builder.component.PanelBuilder;
@@ -11,6 +15,7 @@ import org.hexworks.zircon.api.component.Panel;
 import org.hexworks.zircon.api.component.Paragraph;
 import org.hexworks.zircon.api.data.Position;
 import org.hexworks.zircon.api.data.Tile;
+import org.hexworks.zircon.api.graphics.BoxType;
 import org.hexworks.zircon.api.uievent.ComponentEventType;
 import org.hexworks.zircon.api.uievent.UIEventResponse;
 
@@ -21,8 +26,13 @@ import game.gamelogic.Examinable;
 import game.gamelogic.HasAccuracy;
 import game.gamelogic.HasDodge;
 import game.gamelogic.HasResistances;
+import game.gamelogic.HasVulnerabilities;
+import game.gameobjects.enchantments.Enchantment;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.items.Item;
+import game.gameobjects.items.armor.Armor;
+import game.gameobjects.items.weapons.Weapon;
+import game.gameobjects.terrains.Terrain;
 
 public class ExamineMenu extends Menu{
 
@@ -34,10 +44,14 @@ public class ExamineMenu extends Menu{
 
         String description = examinable.getDescription();
         String name = examinable.getName();
+        String type = null;
         Tile tile = examinable.getTile();
 
         Panel panel = PanelBuilder.newBuilder()
-            .withSize(screen.getWidth()/3, screen.getHeight()/3)
+            .withSize((int)(screen.getWidth()/2.5), (int)(screen.getHeight()/2.5))
+            .withDecorations(
+                ComponentDecorations.box(BoxType.SINGLE, "Examine")
+            )
             .build();
 
         int panelWidthOffset = 0;
@@ -45,152 +59,238 @@ public class ExamineMenu extends Menu{
 
         Header nameHeader = HeaderBuilder.newBuilder()
             .withText(name)
-            .withSize(panel.getWidth()-4, 1)
+            .withSize(panel.getWidth()-5, 1)
             .withPosition(3,1)
             .build();
-
         panel.addComponent(nameHeader);
 
         String weightString = null;
         
-        int descriptionHeight = panel.getHeight() - 3;
+        int descriptionHeight = panel.getHeight() - 5;
 
-        Button equipmentButton = null;
-
-        Component equipmentButtonReference = null;
+        List<Component> infoComponents = new ArrayList<>();
         
-        Panel InfoPanel = null;
-        
-        if (examinable instanceof Entity entity){
-            name = entity.getName();
-            weightString = "Weight: " + Integer.toString(entity.getWeight()) + " (" + Integer.toString(entity.getBaseWeight()) + ")";
-            descriptionHeight -= 3;
-            
-            if (entity instanceof Armored || entity instanceof Armed){
-                descriptionHeight -= 2;
-                equipmentButton = ButtonBuilder.newBuilder()
-                    .withText("Equipment")
-                    .build();
-                equipmentButton.handleComponentEvents(ComponentEventType.ACTIVATED, (event) -> {
-                    Display.setMenu(EquipmentMenu.createExamineEquipmentMenu(entity));
-                    return UIEventResponse.processed();
-                });
-            }
-            
-            InfoPanel = PanelBuilder.newBuilder()
-                .withSize(15, panel.getHeight())
-                .build();
-            
-            panelWidthOffset = -7;
-            
-            int pos = 1;
-            
-            Header hpHeader = HeaderBuilder.newBuilder()
-                .withText("HP: " + entity.getHP() + "/" + entity.getMaxHP())
-                .withPosition(1, pos)
-                .build();
+        int pos = 1;
 
-            InfoPanel.addComponent(hpHeader);
-            
-            pos += 2;
-            
-            if (entity instanceof HasAccuracy hasAccuracy){
+        int infoWidth = 15;
 
-                Header accuracyHeader = HeaderBuilder.newBuilder()
-                    .withText("ACCURACY: " + (hasAccuracy.getAccuracy() > 0 ? "+" : "-") + hasAccuracy.getAccuracy())
+        switch (examinable) {
+            case Entity entity ->{
+                type = "Entity";
+                weightString = "Weight: " + Integer.toString(entity.getWeight()) + " (" + Integer.toString(entity.getBaseWeight()) + ")";
+                descriptionHeight -= 3;
+                
+                Header hpHeader = HeaderBuilder.newBuilder()
+                    .withText("HP: " + entity.getHP() + "/" + entity.getMaxHP())
                     .withPosition(1, pos)
                     .build();
-                
-                InfoPanel.addComponent(accuracyHeader);
 
+                infoWidth = compare(hpHeader, infoWidth);
+
+                infoComponents.add(hpHeader);
+                
                 pos += 2;
 
             }
-            
-            if (entity instanceof HasDodge hasDodge){
-
-                Header dodgeHeader = HeaderBuilder.newBuilder()
-                    .withText("DODGE: " + (hasDodge.getDodge() > 0 ? "+" : "-") + hasDodge.getDodge())
-                    .withPosition(1, pos)
-                    .build();
-                
-                InfoPanel.addComponent(dodgeHeader);
-
-                pos += 2;
+            case Terrain terrain ->{
+                type = "Terrain";
+            }
+            case Item item ->{
+                weightString = "Weight: " + Integer.toString(item.getWeight());
+                descriptionHeight -= 3;
+                switch (item) {
+                    case Weapon weapon -> {
+                        type = "Weapon";
+                        Header damageHeader = HeaderBuilder.newBuilder()
+                            .withText("DAMAGE: " + weapon.getMinDamage() + " - " + weapon.getMaxDamage())
+                            .withPosition(1,pos)
+                            .build();
+                        infoWidth = compare(damageHeader, infoWidth);
+                        infoComponents.add(damageHeader);
+                        pos += 2;
+                        Header damageTypeHeader = HeaderBuilder.newBuilder()
+                            .withText("TYPE: " + weapon.getDamageType())
+                            .withPosition(1,pos)
+                            .build();
+                        infoWidth = compare(damageTypeHeader, infoWidth);
+                        infoComponents.add(damageTypeHeader);
+                        pos += 2;
+                        if (weapon.getEnchantment() != null) {
+                            Button enchantmentButton = ButtonBuilder.newBuilder()
+                                .withText("Enchantment")
+                                .withPosition(1,pos)
+                                .build();
+                            enchantmentButton.handleComponentEvents(ComponentEventType.ACTIVATED, (event) ->{
+                                Display.setMenu(new ExamineMenu(weapon.getEnchantment()));
+                                return UIEventResponse.processed();
+                            });
+                            infoWidth = compare(enchantmentButton, infoWidth);
+                            infoComponents.add(enchantmentButton);
+                            pos += 2;
+                        }
+                    }
+                    case Armor armor -> {
+                        type = "Armor";
+                        if (armor.getEnchantment() != null) {
+                            Button enchantmentButton = ButtonBuilder.newBuilder()
+                                .withText("Enchantment")
+                                .withPosition(1,pos)
+                                .build();
+                            enchantmentButton.handleComponentEvents(ComponentEventType.ACTIVATED, (event) ->{
+                                Display.setMenu(new ExamineMenu(armor.getEnchantment()));
+                                return UIEventResponse.processed();
+                            });
+                            infoWidth = compare(enchantmentButton, infoWidth);
+                            infoComponents.add(enchantmentButton);
+                            pos += 2;
+                        }
+                    }
+                    default -> {
+                        type = "Item";
+                    }
+                }
+            }
+            case Enchantment<?> enchantment -> {
+                type = "Enchantment";
+            }
+            default -> {
 
             }
-            
-            if (entity instanceof DropsXP dropsXP){
-                
-                Header xpHeader = HeaderBuilder.newBuilder()
-                    .withText("XP: " + dropsXP.dropXP())
-                    .withPosition(1, pos)
-                    .build();
-                
-                InfoPanel.addComponent(xpHeader);
-
-                pos += 2;
-
-            }
-            
-            if (entity instanceof HasResistances hasResistances){
-
-                Button resistancesButton = ButtonBuilder.newBuilder()
-                    .withText("Resistance")
-                    .withPosition(1, pos)
-                    .build();
-                
-                InfoPanel.addComponent(resistancesButton);
-                
-                resistancesButton.handleComponentEvents(ComponentEventType.ACTIVATED, (event) -> {
-                    Display.setMenu(new ResistanceMenu(hasResistances));
-                    return UIEventResponse.processed();
-                });
-                
-                pos += 2;
-            }
-
         }
         
-        if (examinable instanceof Item item){
-            weightString = "Weight: " + Integer.toString(item.getWeight());
-            descriptionHeight -= 3;
+        if (examinable instanceof HasAccuracy hasAccuracy && hasAccuracy.getAccuracy() != 0){
+            Header accuracyHeader = HeaderBuilder.newBuilder()
+                .withText("ACCURACY: " + (hasAccuracy.getAccuracy() > 0 ? "+" : "") + hasAccuracy.getAccuracy())
+                .withPosition(1, pos)
+                .build();
+            infoWidth = compare(accuracyHeader, infoWidth);
+            infoComponents.add(accuracyHeader);
+            pos += 2;
+        }
+        
+        if (examinable instanceof HasDodge hasDodge && hasDodge.getDodge() != 0){
+            Header dodgeHeader = HeaderBuilder.newBuilder()
+                .withText("DODGE: " + (hasDodge.getDodge() > 0 ? "+" : "") + hasDodge.getDodge())
+                .withPosition(1, pos)
+                .build();
+            infoWidth = compare(dodgeHeader, infoWidth);
+            infoComponents.add(dodgeHeader);
+            pos += 2;
+        }
+        
+        if (examinable instanceof DropsXP dropsXP && dropsXP.dropXP() != 0){
+            Header xpHeader = HeaderBuilder.newBuilder()
+                .withText("XP: " + dropsXP.dropXP())
+                .withPosition(1, pos)
+                .build();
+            infoWidth = compare(xpHeader, infoWidth);
+            infoComponents.add(xpHeader);
+            pos += 2;
+        }
+
+        if (examinable instanceof Entity entity && (entity instanceof Armored || entity instanceof Armed)){
+
+            Button equipmentButton = ButtonBuilder.newBuilder()
+                .withText("Equipment")
+                .withPosition(1, pos)
+                .build();
+            equipmentButton.handleComponentEvents(ComponentEventType.ACTIVATED, (event) -> {
+                Display.setMenu(EquipmentMenu.createExamineEquipmentMenu(entity));
+                return UIEventResponse.processed();
+            });
+            infoWidth = compare(equipmentButton, infoWidth);
+            infoComponents.add(equipmentButton);
+            pos += 2;
+        }
+        
+        if (examinable instanceof HasResistances hasResistances && !hasResistances.getResistances().isEmpty()){
+
+            Button resistancesButton = ButtonBuilder.newBuilder()
+                .withText("Resistance")
+                .withPosition(1, pos)
+                .build();
+            
+            infoWidth = compare(resistancesButton, infoWidth);
+
+            infoComponents.add(resistancesButton);
+            
+            resistancesButton.handleComponentEvents(ComponentEventType.ACTIVATED, (event) -> {
+                Display.setMenu(new ResistanceMenu(hasResistances));
+                return UIEventResponse.processed();
+            });
+            
+            pos += 2;
+        }
+
+        if (examinable instanceof HasVulnerabilities hasVulnerabilities && !hasVulnerabilities.getVulnerabilities().isEmpty()){
+
+            Button vulnerabilitiesButton = ButtonBuilder.newBuilder()
+                .withText("Vulnerability")
+                .withPosition(1, pos)
+                .build();
+            
+            infoWidth = compare(vulnerabilitiesButton, infoWidth);
+
+            infoComponents.add(vulnerabilitiesButton);
+            
+            vulnerabilitiesButton.handleComponentEvents(ComponentEventType.ACTIVATED, (event) -> {
+                Display.setMenu(new VulnerabilityMenu(hasVulnerabilities));
+                return UIEventResponse.processed();
+            });
+            
+            pos += 2;
         }
 
         Paragraph descriptionParagraph = ParagraphBuilder.newBuilder()
             .withText(description)
-            .withSize(panel.getWidth()-2, descriptionHeight)
+            .withSize(panel.getWidth()-4, descriptionHeight)
             .withPosition(1, 3)
             .build();
 
         panel.addComponent(descriptionParagraph);
         
-        equipmentButtonReference = descriptionParagraph;
-        
         if (weightString != null){
             Header weightHeader = HeaderBuilder.newBuilder()
                 .withText(weightString)            
                 .withSize(weightString.length(), 1)
-                .withPosition(Position.bottomLeftOf(descriptionParagraph).plus(Position.create(0, 1)))
+                .withPosition(Position.bottomLeftOf(descriptionParagraph).minus(Position.create(1,0)))
                 .build();
             panel.addComponent(weightHeader);
-            equipmentButtonReference = weightHeader;
-        }
-        
-        if (equipmentButton != null){
-            equipmentButton.moveTo(Position.bottomLeftOf(equipmentButtonReference).plus(Position.create(0, 1)));
-            panel.addComponent(equipmentButton);
-        }
-        
-        panel.moveTo(Position.create((screen.getWidth()/2 - panel.getWidth()/2)+panelWidthOffset, (screen.getHeight()/2 - panel.getHeight()/2)+panelHeightOffset));
-        screen.addComponent(panel);
-        
-        if (InfoPanel != null){
-            InfoPanel.moveTo(Position.topRightOf(panel).plus(Position.create(1, 0)));
-            screen.addComponent(InfoPanel);
         }
 
-        screen.draw(tile, Position.topLeftOf(panel).plus(Position.create(1, 1)));
+        Panel infoPanel = null;
+        
+        if (!infoComponents.isEmpty()) {
+
+            panelWidthOffset = -(int)Math.ceil(infoWidth/2);
+
+            infoPanel = PanelBuilder.newBuilder()
+                .withSize(infoWidth, panel.getHeight())
+                .withDecorations(
+                    type != null ? ComponentDecorations.box(BoxType.SINGLE,type) : null
+                )
+                .build();
+            for (Component component : infoComponents) {
+                infoPanel.addComponent(component);
+            }
+        }
+
+        panel.moveTo(Position.create((screen.getWidth()/2 - panel.getWidth()/2)+panelWidthOffset, (screen.getHeight()/2 - panel.getHeight()/2)+panelHeightOffset));
+        screen.addComponent(panel);
+
+        if (infoPanel != null) {
+            infoPanel.moveTo(Position.topRightOf(panel).plus(Position.create(1, 0)));
+            screen.addComponent(infoPanel);
+        }
+
+        screen.draw(tile, Position.topLeftOf(panel).plus(Position.create(2, 2)));
+    }
+
+    private int compare(Component component, int compareTo){
+        if (component.getWidth() + 4 > compareTo) {
+            return component.getWidth() + 4;
+        }
+        return compareTo;
     }
 
     @Override

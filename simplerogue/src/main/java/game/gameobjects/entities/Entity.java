@@ -20,6 +20,7 @@ import game.gamelogic.HasInventory;
 import game.gamelogic.HasResistances;
 import game.gamelogic.HasVulnerabilities;
 import game.gamelogic.SelfAware;
+import game.gamelogic.resistances.Resistance;
 import game.gameobjects.DamageType;
 import game.gameobjects.DisplayableTile;
 import game.gameobjects.Floor;
@@ -402,23 +403,45 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
     
     public int doResistances(int damage, DamageType damageType){
 
-        if (this instanceof HasResistances hasResistances){
+        List<HasResistances> hasResistancesList = collectHasResistances();
+
+        for (HasResistances hasResistances : hasResistancesList) {
             damage = hasResistances.applyResistances(damage, damageType);
+        }
+
+        return damage;
+
+    }
+
+    public List<Resistance> collectResistances(){
+        List<HasResistances> hasResistancesList = collectHasResistances();
+        List<Resistance> resistances = new ArrayList<>();
+        for (HasResistances hasResistances : hasResistancesList) {
+            resistances.addAll(hasResistances.getResistances());
+        }
+        return resistances;
+    }
+
+    public List<HasResistances> collectHasResistances(){
+
+        List<HasResistances> resistances = new ArrayList<>();
+
+        if (this instanceof HasResistances hasResistances){
+            resistances.add(hasResistances);
         }
 
         if (this instanceof Armored armored){
             for (Armor armor : armored.getArmor()) {
-                damage = armor.applyResistances(damage, damageType);
+                resistances.add(armor);
             }
         }
         
         for (Status status : getStatuses()) {
             if (status instanceof HasResistances statusWithResistances){
-                damage = statusWithResistances.applyResistances(damage, damageType);
+                resistances.add(statusWithResistances);
             }
         }
-
-        return damage;
+        return resistances;
     }
 
     public int doVulnerabilities(int damage, DamageType damageType){
@@ -482,7 +505,7 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
     }
 
     public String getDeathMessage(){
-        return "The " + getName() + " dies.";
+        return null;
     }
 
     // what this entity will do by default if another walks into it (should reference one of the other behavioral functions, perhaps after determining what the other entity is)
