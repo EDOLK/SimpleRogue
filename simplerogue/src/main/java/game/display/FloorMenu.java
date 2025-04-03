@@ -88,6 +88,7 @@ public final class FloorMenu extends Menu{
     private Header nameHeader;
     private ProgressBar enemyBar;
     private Header enemyHpHeader;
+    private int timer = 10;
 
     public FloorMenu(){
         super();
@@ -114,6 +115,14 @@ public final class FloorMenu extends Menu{
     }
 
     public void update(){
+        if (!enemyPanel.isHidden()) {
+            if (timer <= 0) {
+                hideEnemyPanel();
+                timer = 10;
+            } else {
+                timer --;
+            }
+        }
         PlayerEntity playerEntity = currentFloor.getPlayer();
         spaceLayer.clear();
         terrainLayer.clear();
@@ -126,9 +135,10 @@ public final class FloorMenu extends Menu{
         highLiquidLayer.clear();
         gasLayer.clear();
         cursorLayer.clear();
-        healthBarLayer.clear();
-        if (Display.getMode() == Mode.GRAPHICAL)
+        if (Display.getMode() == Mode.GRAPHICAL){
+            healthBarLayer.clear();
             darknessLayer.clear();
+        }
         ArrayList<Space> visibleSpaces = new ArrayList<Space>();
         for (int x = 0; x < currentFloor.SIZE_X; x++) {
             for (int y = 0; y < currentFloor.SIZE_Y; y++){
@@ -278,6 +288,24 @@ public final class FloorMenu extends Menu{
         }
     }
 
+    public void addHeaderToLog(String message){
+        addHeaderToLog(message, false);
+    }
+    
+    public void addHeaderToLog(String message, Space space){
+        addHeaderToLog(message, false, space);
+    }
+
+    public void addHeaderToLog(String message, Boolean b, Space space){
+        if (currentFloor.getPlayer().isWithinVision(space)){
+            addHeaderToLog(message, b);
+        }
+    }
+
+    public void addHeaderToLog(String message, boolean b){
+        logMessageArea.addHeader(message, b);
+    }
+    
     public void toggleExamination(){
         if (cursor == null){
             cursor = new Cursor(currentFloor.getPlayer().getSpace());
@@ -501,11 +529,13 @@ public final class FloorMenu extends Menu{
             .withSize(currentFloor.SIZE_X, currentFloor.SIZE_Y)
             .build();
         screen.addLayer(statusLayer);
-        
-        healthBarLayer = Layer.newBuilder()
-            .withSize(currentFloor.SIZE_X, currentFloor.SIZE_Y)
-            .build();
-        screen.addLayer(healthBarLayer);
+
+        if (Display.getMode() == Mode.GRAPHICAL) {
+            healthBarLayer = Layer.newBuilder()
+                .withSize(currentFloor.SIZE_X, currentFloor.SIZE_Y)
+                .build();
+            screen.addLayer(healthBarLayer);
+        }
         
         highLiquidLayer = Layer.newBuilder()
             .withSize(currentFloor.SIZE_X, currentFloor.SIZE_Y)
@@ -642,14 +672,12 @@ public final class FloorMenu extends Menu{
                 startSelecting(new ExamineSelector());
                 break;
             case GET_TOGGLE: //getting
-                // currentState = State.GETTING;
                 startSelecting(new GetSelector());
                 break;
             case EQUIPMENT: //equiping
                 Display.setMenu(EquipmentMenu.createEquipEquipmentMenu(currentFloor.getPlayer()));
                 break;
             case DROP_TOGGLE: //dropping
-                // currentState = State.DROPPING;
                 startSelecting(new DropSelector());
                 break;
             case CONSUME: //consuming
@@ -716,16 +744,25 @@ public final class FloorMenu extends Menu{
     }
 
     public void writeEnemyInfo(Entity entity){
+        timer = 10;
         if (entity.isAlive()) {
-            this.enemyPanel.setHidden(false);
-            this.nameHeader.setText(entity.getName());
-            this.screen.draw(entity.getTile(),Position.topLeftOf(this.enemyPanel).plus(Position.create(2,2)));
-            this.enemyBar.setProgress(App.lerp(0,0,entity.getMaxHP(),100,entity.getHP()));
-            this.enemyHpHeader.setText(entity.getHP() + "/" + entity.getMaxHP());
+            writeEnemyPanel(entity);
         } else {
-            this.screen.draw(Tile.empty(),Position.topLeftOf(this.enemyPanel).plus(Position.create(2,2)));
-            this.enemyPanel.setHidden(true);
+            hideEnemyPanel();
         }
+    }
+
+    private void writeEnemyPanel(Entity entity){
+        this.enemyPanel.setHidden(false);
+        this.nameHeader.setText(entity.getName());
+        this.screen.draw(entity.getTile(),Position.topLeftOf(this.enemyPanel).plus(Position.create(2,2)));
+        this.enemyBar.setProgress(App.lerp(0,0,entity.getMaxHP(),100,entity.getHP()));
+        this.enemyHpHeader.setText(entity.getHP() + "/" + entity.getMaxHP());
+    }
+
+    private void hideEnemyPanel(){
+        this.screen.draw(Tile.empty(),Position.topLeftOf(this.enemyPanel).plus(Position.create(2,2)));
+        this.enemyPanel.setHidden(true);
     }
 
     public void startSelecting(Selector selector){
@@ -955,7 +992,6 @@ public final class FloorMenu extends Menu{
         public boolean select(Cursor cursor) {
             if (cursor.getExamined() != null){
                 Display.setMenu(new ExamineMenu(getCursor().getExamined()));
-                return true;
             }
             return false;
         }

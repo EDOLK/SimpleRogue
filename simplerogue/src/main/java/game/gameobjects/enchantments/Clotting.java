@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.hexworks.zircon.api.color.TileColor;
+import org.hexworks.zircon.api.data.Tile;
 
 import game.Dungeon;
 import game.gamelogic.behavior.Behavable;
@@ -122,6 +123,21 @@ public class Clotting extends ArmorEnchantment implements OnHitted {
                 );
             }
         }
+    }
+
+    @Override
+    public String getDescription() {
+        return "This enchantment instills the users blood with a strange energy. When attacked, the users blood has a small chance to coagulate into a floating blood polyp, which will heal the user when destroyed.";
+    }
+
+    @Override
+    public Tile getTile() {
+        return new BloodPolyp(0,null).getTile();
+    }
+
+    @Override
+    public String getName() {
+        return "Clotting";
     }
     
 }

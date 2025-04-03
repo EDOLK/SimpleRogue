@@ -77,5 +77,11 @@ public class Chest extends Entity implements HasInventory, Interactable{
     public void defaultInteraction(Entity interactor) {
         Display.log("There is a " + getName() + " in the way");
     }
+
+    @Override
+    public String getDeathMessage() {
+        return "The " + getName() + " breaks.";
+    }
+
     
 }

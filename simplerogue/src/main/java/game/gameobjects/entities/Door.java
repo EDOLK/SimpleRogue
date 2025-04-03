@@ -58,5 +58,12 @@ public class Door extends Entity implements Interactable, HasResistances{
         return resistances;
     }
 
+    @Override
+    public String getDeathMessage() {
+        return "The " + getName() + " breaks.";
+    }
+
+
+
     
 }

@@ -1,6 +1,8 @@
 package game.gameobjects.enchantments;
 
-public abstract class Enchantment<T>{
+import game.gamelogic.Examinable;
+
+public abstract class Enchantment<T> implements Examinable{
 
     protected String prefix;
     protected String suffix;

@@ -124,6 +124,14 @@ public class Display {
     public static void log(String message, Space space){
         rootMenu.addToLog(message, space);
     }
+
+    public static void logHeader(String message){
+        rootMenu.addHeaderToLog(message);
+    }
+
+    public static void logHeader(String message, Space space){
+        rootMenu.addHeaderToLog(message, space);
+    }
     
     public static void update(){
         rootMenu.update();

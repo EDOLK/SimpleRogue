@@ -4,6 +4,7 @@ import org.hexworks.zircon.api.ComponentDecorations;
 import org.hexworks.zircon.api.builder.component.ButtonBuilder;
 import org.hexworks.zircon.api.builder.component.PanelBuilder;
 import org.hexworks.zircon.api.component.Button;
+import org.hexworks.zircon.api.component.Container;
 import org.hexworks.zircon.api.component.Panel;
 import org.hexworks.zircon.api.data.Position;
 import org.hexworks.zircon.api.graphics.BoxType;
@@ -20,8 +21,8 @@ public class PauseMenu extends Menu{
         super();
 
         this.pausePanel = PanelBuilder.newBuilder()
-            .withPosition(screen.getWidth()/2 - 8, screen.getHeight()/2 - 8)
-            .withSize(15,17)
+            .withPosition(screen.getWidth()/2 - 6, screen.getHeight()/2 - 5)
+            .withSize(12,11)
             .withDecorations(
                 ComponentDecorations.box(BoxType.SINGLE, "Paused")
             )
@@ -60,22 +61,22 @@ public class PauseMenu extends Menu{
             return UIEventResponse.processed();
         });
 
-        attachButtons(continueButton, restartButton, quitButton);
+        attachButtons(pausePanel, continueButton, restartButton, quitButton);
 
     }
 
-    private void attachButtons(Button... buttons){
+    private void attachButtons(Container container, Button... buttons){
         int divisor = buttons.length+1;
-        int yOffset = (pausePanel.getHeight()-2) / divisor;
+        int yOffset = (container.getHeight()-2) / divisor;
         for (int i = 0; i < buttons.length; i++) {
             Button button = buttons[i];
             button.moveTo(
                 Position.create(
-                    ((pausePanel.getWidth()-2)/2)-(button.getWidth()/2),
+                    0,
                     (yOffset)*(i+1)
                 )
             );
-            pausePanel.addComponent(button);
+            container.addComponent(button);
         }
     }
     
