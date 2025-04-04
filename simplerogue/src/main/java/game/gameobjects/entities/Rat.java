@@ -60,9 +60,4 @@ public class Rat extends Animal implements DropsXP, HasDodge, HasDrops{
         return dropPoints;
     }
 
-    @Override
-    public void setDropPoints(int points) {
-        dropPoints = points;
-    }
-
 }

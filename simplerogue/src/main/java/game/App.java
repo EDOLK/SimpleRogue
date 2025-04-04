@@ -15,6 +15,10 @@ public class App
         return (int)Math.floor(Math.random() * (max - min + 1) + min);
     }
 
+    public static double randomNumber(double min, double max){
+        return Math.random() * (max - min) + min;
+    }
+
     public static double lerp (double x1, double y1, double x2, double y2, double x){
         return y1 + (x - x1) * ((y2-y1)/(x2-x1));
     }

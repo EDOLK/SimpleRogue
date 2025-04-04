@@ -39,11 +39,6 @@ public class Chest extends Entity implements HasInventory, Interactable{
             public int getDropPoints() {
                 return points;
             }
-
-            @Override
-            public void setDropPoints(int points) {
-                return;
-            }
             
         };
         List<Item> itemList = hasDrops.generateDrops();

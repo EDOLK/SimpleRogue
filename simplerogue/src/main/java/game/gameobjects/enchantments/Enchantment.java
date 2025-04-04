@@ -23,4 +23,9 @@ public abstract class Enchantment<T> implements Examinable{
         return suffix;
     }
 
+    @Override
+    public String getName() {
+        return hasPrefix() ? getPrefix() : hasSuffix() ? getSuffix() : "Enchantment";
+    }
+
 }

@@ -17,6 +17,7 @@ import game.gameobjects.entities.Wall;
 import game.gameobjects.items.Item;
 import game.gameobjects.terrains.Staircase;
 import game.floorgeneration.BossFloorGenerator;
+import game.floorgeneration.DebugFloorGenerator;
 import game.floorgeneration.DefaultFloorGenerator;
 
 public class Dungeon {
