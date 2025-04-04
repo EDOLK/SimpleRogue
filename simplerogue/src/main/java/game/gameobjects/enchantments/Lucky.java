@@ -4,7 +4,6 @@ import static game.App.randomNumber;
 
 import org.hexworks.zircon.api.data.Tile;
 
-import game.display.Display;
 import game.floorgeneration.Shopper;
 import game.gamelogic.HasDrops;
 import game.gamelogic.combat.AttackInfo;
@@ -37,16 +36,13 @@ public class Lucky extends WeaponEnchantment implements OnKill{
     public void doOnKill(Entity self, Entity other, AttackInfo attackInfo) {
 
         if (other instanceof HasDrops hasDrops) {
-            double d = randomNumber(0,1.5);
             Shopper<Item> shopper = new Shopper<Item>(
-                (int)Math.floor(hasDrops.getDropPoints() * d),
+                (int)Math.floor(hasDrops.getDropPoints() * randomNumber(0,1.5)),
                 hasDrops.getItemPool()
             );
-            Display.log(Double.toString(d));
             while (shopper.hasPoints()) {
                 Item generated = shopper.generate();
                 if (generated != null) {
-                    Display.log(generated.getName(), other.getSpace());
                     other.getSpace().addItem(generated);
                 }
             }
