@@ -141,10 +141,4 @@ public class Slime extends Animal implements DropsXP, HasDodge, HasResistances, 
         return dropPoints;
     }
 
-    @Override
-    public void setDropPoints(int points) {
-        this.dropPoints = points;
-    }
-
-
 }

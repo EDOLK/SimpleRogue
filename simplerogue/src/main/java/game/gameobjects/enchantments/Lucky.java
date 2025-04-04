@@ -1,35 +1,25 @@
 package game.gameobjects.enchantments;
 
-import java.util.HashSet;
-import java.util.Set;
+import static game.App.randomNumber;
 
 import org.hexworks.zircon.api.data.Tile;
 
+import game.floorgeneration.Shopper;
 import game.gamelogic.HasDrops;
 import game.gamelogic.combat.AttackInfo;
-import game.gamelogic.combat.OnHit;
+import game.gamelogic.combat.OnKill;
 import game.gameobjects.entities.Entity;
+import game.gameobjects.items.Item;
 
-public class Lucky extends WeaponEnchantment implements OnHit{
-
-    private int points;
-    private Set<Entity> entities = new HashSet<Entity>();
+public class Lucky extends WeaponEnchantment implements OnKill{
 
     public Lucky(){
-        this.points = 10;
         this.prefix = "Lucky";
     }
 
     @Override
-    public void doOnHit(Entity self, Entity other, AttackInfo attackInfo) {
-        if (other instanceof HasDrops hasDrops && entities.add(other)){
-            hasDrops.addDropPoints(points);
-        }
-    }
-
-    @Override
     public String getDescription() {
-        return "This enchantment improves the user's luck, causing slain enemies to drop higher quality and more numerous goods.";
+        return "This enchantment improves the user's luck, causing slain enemies to drop higher quality and more numerous loot.";
     }
 
     @Override
@@ -41,4 +31,23 @@ public class Lucky extends WeaponEnchantment implements OnHit{
     public String getName() {
         return "Lucky";
     }
+
+    @Override
+    public void doOnKill(Entity self, Entity other, AttackInfo attackInfo) {
+
+        if (other instanceof HasDrops hasDrops) {
+            Shopper<Item> shopper = new Shopper<Item>(
+                (int)Math.floor(hasDrops.getDropPoints() * randomNumber(0,1.5)),
+                hasDrops.getItemPool()
+            );
+            while (shopper.hasPoints()) {
+                Item generated = shopper.generate();
+                if (generated != null) {
+                    other.getSpace().addItem(generated);
+                }
+            }
+        }
+
+    }
+
 }

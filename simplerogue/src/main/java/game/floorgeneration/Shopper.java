@@ -13,8 +13,11 @@ public class Shopper<T> {
 
     public T generate(){
         Supplier<T> supplier = pool.getRandom(points);
-        points -= pool.getPrice(supplier);
-        return supplier.get();
+        if (supplier != null) {
+            points -= pool.getPrice(supplier);
+            return supplier.get();
+        }
+        return null;
     }
 
     public boolean hasPoints(){

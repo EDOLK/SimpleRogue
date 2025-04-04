@@ -210,13 +210,19 @@ public class DefaultFloorGenerator extends FloorGenerator {
         rooms.remove(spawnRoom);
 
         while (entityShopper.hasPoints()) {
-            getRandom(getRandom(rooms).getInteriorSpaces()).setOccupant(entityShopper.generate());
+            Entity generated = entityShopper.generate();
+            if (generated != null) {
+                getRandom(getRandom(rooms).getInteriorSpaces()).setOccupant(generated);
+            }
         }
 
         Shopper<Chest> chestShopper = new Shopper<Chest>((depth*10) + ((player.getMaxHP() - player.getHP())), Dungeon.getCurrentChestPool());
 
         while (chestShopper.hasPoints()) {
-            getRandom(getRandom(rooms).getInteriorSpaces()).setOccupant(chestShopper.generate());
+            Chest generated = chestShopper.generate();
+            if (generated != null) {
+                getRandom(getRandom(rooms).getInteriorSpaces()).setOccupant(generated);
+            }
         }
       
         getRandom(pair.getFirst().get(pair.getFirst().size()-1).getInteriorSpaces()).addTerrain(new Staircase());

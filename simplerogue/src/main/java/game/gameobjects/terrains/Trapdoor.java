@@ -3,10 +3,7 @@ package game.gameobjects.terrains;
 import org.hexworks.zircon.api.color.TileColor;
 
 import game.display.Display;
-import game.gamelogic.Examinable;
 import game.gamelogic.HasInventory;
-import game.gamelogic.Interactable;
-import game.gamelogic.SelfAware;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.items.Item;
