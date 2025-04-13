@@ -23,14 +23,12 @@ public class FreezingPotion extends Item implements Aimable, Consumable {
 
     @Override
     public boolean consume(Entity consumer) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'consume'");
+        return false;
     }
 
     @Override
     public void onHit(Entity target) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'onHit'");
+
     }
 
     @Override

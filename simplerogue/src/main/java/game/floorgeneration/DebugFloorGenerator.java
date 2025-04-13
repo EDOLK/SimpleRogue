@@ -13,6 +13,8 @@ import game.gameobjects.entities.Entity;
 import game.gameobjects.entities.PlayerEntity;
 import game.gameobjects.entities.Rat;
 import game.gameobjects.entities.Wall;
+import game.gameobjects.items.armor.PlateArmor;
+import game.gameobjects.items.potions.FreezingPotion;
 import game.gameobjects.terrains.Terrain;
 
 public class DebugFloorGenerator extends FloorGenerator {
@@ -29,7 +31,11 @@ public class DebugFloorGenerator extends FloorGenerator {
         generateSpaces();
         generateRectangle(5,5,20,20);
         spaces[7][10].setOccupant(playerEntity);
-        spaces[12][10].addTerrain(new DebugSpawner(()->{return new DebugRat();},15));
+        playerEntity.addItemToInventory(new FreezingPotion());
+        playerEntity.addItemToInventory(new FreezingPotion());
+        playerEntity.addItemToInventory(new PlateArmor());
+        //spaces[12][10].addTerrain(new DebugSpawner(()->{return new DebugRat();},30));
+        spaces[12][10].setOccupant(new DebugRat());
     }
 
     protected void generateSpaces(){
@@ -97,10 +103,15 @@ public class DebugFloorGenerator extends FloorGenerator {
 
         public DebugRat(){
             super();
-            setBehavior(new AnimalBehavior(this));
+            setBehavior(new DebugBehavior(this));
         }
 
         private class DebugBehavior extends AnimalBehavior{
+
+            @Override
+            public int getDelay(){
+                return 0;
+            }
 
             protected DebugBehavior(Entity animal) {
                 super(animal);

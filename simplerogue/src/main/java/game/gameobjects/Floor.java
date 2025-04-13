@@ -2,7 +2,12 @@ package game.gameobjects;
 import static game.App.lerp;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.Stack;
 
 import org.hexworks.zircon.api.color.TileColor;
@@ -48,6 +53,8 @@ public class Floor{
 
     private Space[][] spaces;
     private PlayerEntity player;
+    private Map<Behavable, Integer> delayedBehaviors = new HashMap<>();
+    private int freeActions = 0;
 
     public Floor(int SIZE_X, int SIZE_Y, FloorGenerator floorGenerator){
         this(SIZE_X, SIZE_Y, new PlayerEntity(TileColor.transparent(), TileColor.create(255, 255, 255, 255), '@'), floorGenerator);
@@ -89,8 +96,27 @@ public class Floor{
     }
 
     public void update(){
+        update(0);
+    }
 
+    public void update(int delay){
         doLight();
+
+        if (freeActions > 0) {
+            freeActions--;
+            return;
+        }
+        if (delay < 0) {
+            freeActions = delay*-1;
+            innerUpdate();
+            return;
+        }
+        for (int i = delay; i >= 0; i--) {
+            innerUpdate();
+        }
+    }
+
+    public void innerUpdate(){
 
         Stack<Behavable> behavables = new Stack<Behavable>();
 
@@ -162,9 +188,42 @@ public class Floor{
 
         while (!behavables.isEmpty()) {
             Behavable behavable = behavables.pop();
-            if (behavable.isActive()){
-                behavable.behave();
+            if (!delayedBehaviors.containsKey(behavable)) {
+                if (behavable.getDelay() > 0) {
+                    delayedBehaviors.put(behavable, behavable.getDelay());
+                } else {
+                    for (int i = behavable.getDelay(); i <= 0; i++) {
+                        if (behavable.isActive()) {
+                            behavable.behave();
+                        } else {
+                            break;
+                        }
+                    }
+                }
             }
+        }
+
+        Set<Behavable> keySet = delayedBehaviors.keySet();
+
+        Stack<Behavable> toBeRemoved = new Stack<>();
+        Stack<Behavable> toBeDecremented = new Stack<>();
+
+        for (Behavable behavable : keySet) {
+            int delay = delayedBehaviors.get(behavable);
+            if (delay <= 0) {
+                if (behavable.isActive()) {
+                    behavable.behave();
+                }
+                toBeRemoved.add(behavable);
+            } else {
+                toBeDecremented.add(behavable);
+            }
+        }
+        while(!toBeRemoved.isEmpty()){
+            delayedBehaviors.remove(toBeRemoved.pop());
+        }
+        while (!toBeDecremented.isEmpty()) {
+            delayedBehaviors.compute(toBeDecremented.pop(), (b,i) -> {return --i;});
         }
 
 

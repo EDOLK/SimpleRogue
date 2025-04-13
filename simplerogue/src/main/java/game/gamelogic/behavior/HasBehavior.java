@@ -16,4 +16,9 @@ public interface HasBehavior extends Behavable{
         return getBehavior() != null && getBehavior().isActive();
     }
 
+    @Override
+    default int getDelay() {
+        return getBehavior().getDelay();
+    }
+
 }

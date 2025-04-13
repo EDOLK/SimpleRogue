@@ -6,4 +6,8 @@ public interface Behavable {
 
     public boolean isActive();
 
+    default int getDelay(){
+        return 0;
+    };
+
 }
