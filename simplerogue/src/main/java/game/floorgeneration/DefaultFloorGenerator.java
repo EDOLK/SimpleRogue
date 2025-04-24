@@ -1,6 +1,7 @@
 package game.floorgeneration;
 
 import static game.floorgeneration.Pools.getRandom;
+import static game.App.randomNumber;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,6 +25,7 @@ public class DefaultFloorGenerator extends FloorGenerator {
     protected PlayerEntity player;
     protected int SIZE_X;
     protected int SIZE_Y;
+    protected Room lastRoom = null;
 
     public DefaultFloorGenerator(int depth) {
         super(depth);
@@ -83,6 +85,8 @@ public class DefaultFloorGenerator extends FloorGenerator {
             }
 
             digOutRoom(currentRoom);
+
+            lastRoom = currentRoom;
 
             if (i != 0){
 
@@ -152,11 +156,11 @@ public class DefaultFloorGenerator extends FloorGenerator {
     }
 
     protected int getRoomNumber(int depth){
-        return 10 + (depth * 5) <= 35 ? 10 + (depth * 5) : 35;
+        return Math.min(depth * 5, 35);
     }
 
     protected Room generateRoom() {
-        return new SimpleRectRoom(spaces, SIZE_X, SIZE_Y);
+        return new SimpleRectRoom(spaces, lastRoom);
     }
 
     protected void digOutPath(Space[] path){
@@ -205,7 +209,7 @@ public class DefaultFloorGenerator extends FloorGenerator {
 
         getRandom(spawnRoom.getInteriorSpaces()).setOccupant(player);
 
-        Shopper<Entity> entityShopper = new Shopper<Entity>(20 + depth * 10, Dungeon.getCurrentMonsterPool());
+        Shopper<Entity> entityShopper = new Shopper<Entity>(20 + (depth * 10), Dungeon.getCurrentMonsterPool());
 
         rooms.remove(spawnRoom);
 
@@ -216,7 +220,7 @@ public class DefaultFloorGenerator extends FloorGenerator {
             }
         }
 
-        Shopper<Chest> chestShopper = new Shopper<Chest>((depth*10) + ((player.getMaxHP() - player.getHP())), Dungeon.getCurrentChestPool());
+        Shopper<Chest> chestShopper = new Shopper<Chest>(randomNumber(5,10)*depth, Dungeon.getCurrentChestPool());
 
         while (chestShopper.hasPoints()) {
             Chest generated = chestShopper.generate();

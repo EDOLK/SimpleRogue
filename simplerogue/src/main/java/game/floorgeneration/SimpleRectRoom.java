@@ -15,11 +15,27 @@ class SimpleRectRoom implements Room{
     private int y2;
     private Space[][] spaces;
 
-    public SimpleRectRoom(Space[][] spaces, int SIZE_X, int SIZE_Y) {
+    public SimpleRectRoom(Space[][] spaces, Room relativeRoom) {
+        int relativeX = spaces.length/2;
+        int relativeY = spaces.length/2;
+        if (relativeRoom != null) {
+            List<Space> roomSpaces = relativeRoom.getRoomSpaces();
+            int tx = 0;
+            for (Space space : roomSpaces) {
+                tx += space.getX();
+            }
+            int ty = 0;
+            for (Space space : roomSpaces) {
+                ty += space.getY();
+            }
+            relativeX = tx/roomSpaces.size();
+            relativeY = ty/roomSpaces.size();
+        }
+        spaces[relativeX][relativeY].setCharacter('!');
         int roomWidth = randomNumber(3,10);
         int roomHeight = randomNumber(3,10);
-        this.x1 = randomNumber(1, SIZE_X-1-roomWidth);
-        this.y1 = randomNumber(1, SIZE_Y-1-roomHeight);
+        this.x1 = randomNumber(1, spaces.length-1-roomWidth);
+        this.y1 = randomNumber(1, spaces[x1].length-1-roomHeight);
         this.x2 = x1+roomWidth;
         this.y2 = y1+roomHeight;
         this.spaces = spaces;
