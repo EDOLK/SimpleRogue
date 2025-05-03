@@ -9,7 +9,7 @@ import org.hexworks.zircon.api.color.TileColor;
 import game.Dungeon;
 import game.display.Display;
 import game.display.ItemSelectMenu;
-import game.floorgeneration.Pool;
+import game.floorgeneration.pools.Pool;
 import game.gamelogic.HasDrops;
 import game.gamelogic.HasInventory;
 import game.gamelogic.Interactable;

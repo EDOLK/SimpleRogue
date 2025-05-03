@@ -1,4 +1,4 @@
-package game.floorgeneration;
+package game.floorgeneration.pools;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,6 +10,14 @@ public class Pool<T> {
 
     private Map<T, Integer> map;
     private int lowestPrice;
+
+    public Pool(Map<T, Integer> map){
+        this.map = map;
+    }
+
+    public Pool() {
+        super();
+    }
 
     public Map<T, Integer> getMap() {
         return map;
