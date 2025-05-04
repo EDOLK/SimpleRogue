@@ -4,6 +4,7 @@ import static game.App.getRandom;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import game.Dungeon;
@@ -152,7 +153,9 @@ public class DefaultFloorGenerator extends FloorGenerator {
     }
 
     protected int getRoomNumber(int depth){
-        return 10 + (depth * 5) <= 35 ? 10 + (depth * 5) : 35;
+        int i = 5 + ((depth-1) * 3);
+        i = Math.min(i, 35);
+        return i;
     }
 
     protected Room generateRoom() {
@@ -205,14 +208,20 @@ public class DefaultFloorGenerator extends FloorGenerator {
 
         getRandom(spawnRoom.getInteriorSpaces()).setOccupant(player);
 
-        Shopper<Entity> entityShopper = new Shopper<Entity>(20 + depth * 10, Dungeon.getCurrentMonsterPool());
+        Shopper<Entity> entityShopper = new Shopper<Entity>(20 + (depth * 10), Dungeon.getCurrentMonsterPool());
 
         rooms.remove(spawnRoom);
 
         while (entityShopper.hasPoints()) {
+            if (rooms.size() == 0) {
+                rooms.addAll(pair.getFirst());
+                rooms.remove(spawnRoom);
+            }
+            Room room = getRandom(rooms);
             Entity generated = entityShopper.generate();
             if (generated != null) {
-                getRandom(getRandom(rooms).getInteriorSpaces()).setOccupant(generated);
+                rooms.remove(room);
+                getRandom(room.getInteriorSpaces()).setOccupant(generated);
             }
         }
 

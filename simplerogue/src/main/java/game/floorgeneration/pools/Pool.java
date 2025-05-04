@@ -2,6 +2,7 @@ package game.floorgeneration.pools;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -12,11 +13,11 @@ public class Pool<T> {
     private int lowestPrice;
 
     public Pool(Map<T, Integer> map){
-        this.map = map;
+        setMap(map);
     }
 
     public Pool() {
-        super();
+        setMap(new HashMap<>());
     }
 
     public Map<T, Integer> getMap() {
