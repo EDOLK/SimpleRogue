@@ -1,10 +1,13 @@
 package game.gameobjects.items.scrolls;
 
+import java.util.List;
+
 import org.hexworks.zircon.api.color.TileColor;
+
+import static game.App.getRandom;
 
 import game.display.Display;
 import game.display.ItemSelectMenu;
-import game.floorgeneration.Pools;
 import game.gamelogic.Flammable;
 import game.gamelogic.HasInventory;
 import game.gamelogic.Scrollable;
@@ -12,6 +15,12 @@ import game.gamelogic.SelfAware;
 import game.gamelogic.Upgradable;
 import game.gamelogic.Upgrader;
 import game.gameobjects.Space;
+import game.gameobjects.enchantments.ArmorEnchantment;
+import game.gameobjects.enchantments.Clotting;
+import game.gameobjects.enchantments.Flaming;
+import game.gameobjects.enchantments.Lucky;
+import game.gameobjects.enchantments.Thorny;
+import game.gameobjects.enchantments.WeaponEnchantment;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.items.Item;
 import game.gameobjects.items.armor.Armor;
@@ -22,6 +31,14 @@ public class ScrollOfEnchantment extends Item implements SelfAware, Scrollable, 
 
     private Space currentSpace;
 
+    private final static List<WeaponEnchantment> WEAPON_ENCHANTMENT_LIST= List.of(
+        new Flaming(), new Lucky()
+    );
+
+    private final static List<ArmorEnchantment> ARMOR_ENCHANTMENT_LIST = List.of(
+        new Thorny(), new Clotting()
+    );
+    
     public ScrollOfEnchantment(){
         setCharacter('\"');
         setfGColor(TileColor.create(255, 184, 133, 255));
@@ -55,11 +72,11 @@ public class ScrollOfEnchantment extends Item implements SelfAware, Scrollable, 
     @Override
     public boolean doUpgrade(Upgradable upgradable) {
         if (upgradable instanceof Armor armor){
-            armor.setEnchantment(Pools.getRandom(Pools.ARMOR_ENCHANTMENT_LIST));
+            armor.setEnchantment(getRandom(ARMOR_ENCHANTMENT_LIST));
             return true;
         }
         if (upgradable instanceof Weapon weapon){
-            weapon.setEnchantment(Pools.getRandom(Pools.WEAPON_ENCHANTMENT_LIST));
+            weapon.setEnchantment(getRandom(WEAPON_ENCHANTMENT_LIST));
             return true;
         }
         return false;

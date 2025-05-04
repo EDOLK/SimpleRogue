@@ -1,6 +1,7 @@
 package game.gameobjects.entities.bosses;
 
 import static game.App.randomNumber;
+import static game.App.getRandom;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +9,6 @@ import java.util.List;
 import org.hexworks.zircon.api.color.TileColor;
 
 import game.Dungeon;
-import game.floorgeneration.Pools;
 import game.gamelogic.DropsXP;
 import game.gamelogic.HasInventory;
 import game.gamelogic.HasResistances;
@@ -86,7 +86,7 @@ public class RatKing extends Animal implements HasInventory, DropsXP{
                 }
             }
             if (list.size() > 0) {
-                return Pools.getRandom(list);
+                return getRandom(list);
             }
             return null;
         }

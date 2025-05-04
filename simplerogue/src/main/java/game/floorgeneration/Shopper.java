@@ -2,6 +2,8 @@ package game.floorgeneration;
 
 import java.util.function.Supplier;
 
+import game.floorgeneration.pools.Pool;
+
 public class Shopper<T> {
     private int points;
     private Pool<Supplier<T>> pool;

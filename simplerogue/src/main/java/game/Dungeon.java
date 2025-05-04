@@ -8,8 +8,9 @@ import game.display.Display;
 import game.display.FloorMenu;
 import game.floorgeneration.BossFloorGenerator;
 import game.floorgeneration.DefaultFloorGenerator;
-import game.floorgeneration.Pool;
-import game.floorgeneration.Pools;
+import game.floorgeneration.pools.LayerPool;
+import game.floorgeneration.pools.Pool;
+import game.floorgeneration.pools.layers.LayerOnePool;
 import game.gameobjects.Floor;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Chest;
@@ -29,34 +30,26 @@ public class Dungeon {
 
     private static int sY;
     
-    private static Pool<Supplier<Entity>> currentMonsterPool = Pools.LAYER_ONE_MONSTER_POOL;
+    private static LayerPool currentLayerPool = new LayerOnePool();
     
-    private static Pool<Supplier<Item>> currentDropPool = Pools.LAYER_ONE_DROP_POOL;
-    
-    private static Pool<Supplier<Item>> currentTreasurePool = Pools.LAYER_ONE_TREASURE_POOL;
-    
-    private static Pool<Supplier<Chest>> currentChestPool = Pools.LAYER_ONE_CHEST_POOL;
-
-    private static Pool<Supplier<Entity>> currentBossPool = Pools.LAYER_ONE_BOSS_POOL;
-
     public static Pool<Supplier<Entity>> getCurrentBossPool() {
-        return currentBossPool;
+        return currentLayerPool.BOSS_POOL;
     }
 
     public static Pool<Supplier<Chest>> getCurrentChestPool() {
-        return currentChestPool;
+        return currentLayerPool.CHEST_POOL;
     }
 
     public static Pool<Supplier<Entity>> getCurrentMonsterPool() {
-        return currentMonsterPool;
+        return currentLayerPool.MONSTER_POOL;
     }
 
     public static Pool<Supplier<Item>> getCurrentDropPool() {
-        return currentDropPool;
+        return currentLayerPool.DROP_POOL;
     }
 
     public static Pool<Supplier<Item>> getCurrentTreasurePool() {
-        return currentTreasurePool;
+        return currentLayerPool.TREASURE_POOL;
     }
 
     public static void setCurrentFloor(Floor currentFloor) {
@@ -90,6 +83,13 @@ public class Dungeon {
         PlayerEntity playerEntity = currentFloor.getPlayer();
         if (playerEntity.isAdjacent(staircase)){
             currentDepth++;
+            if (currentDepth > 5 && currentDepth <= 10) {
+                //currentLayerPool = new LayerTwoPool();
+            } else if (currentDepth > 10 && currentDepth <= 15){
+                //this.currentLayerPool = new LayerThreePool();
+            } else if (currentDepth > 15 && currentDepth <= 20){
+                //this.currentLayerPool = new LayerFourPool();
+            }
             currentFloor = generateFloor(playerEntity);
             FloorMenu floorMenu = new FloorMenu();
             Display.setRootMenu(floorMenu);

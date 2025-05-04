@@ -1,6 +1,6 @@
 package game.floorgeneration;
 
-import static game.floorgeneration.Pools.getRandom;
+import static game.App.getRandom;
 
 import java.util.List;
 
