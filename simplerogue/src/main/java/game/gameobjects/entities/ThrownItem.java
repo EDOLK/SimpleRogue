@@ -49,7 +49,7 @@ public class ThrownItem extends Entity implements HasDodge, HasResistances, Beha
     }
 
     @Override
-    public void behave() {
+    public int behave() {
         for (int i = 0; i < speed; i++) {
             if (pathToTarget.hasNext()){
                 Space nextSpace = pathToTarget.next();
@@ -66,6 +66,7 @@ public class ThrownItem extends Entity implements HasDodge, HasResistances, Beha
                 break;
             }
         }
+        return this.getTimeToMove();
     }
 
     @Override

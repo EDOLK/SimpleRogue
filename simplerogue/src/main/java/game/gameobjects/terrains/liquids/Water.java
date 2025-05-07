@@ -32,8 +32,8 @@ public class Water extends Liquid{
     }
 
     @Override
-    public void behave() {
-        super.behave();
+    public int behave() {
+        return super.behave();
     }
 
     @Override

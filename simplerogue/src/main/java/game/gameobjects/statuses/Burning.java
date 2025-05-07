@@ -46,7 +46,7 @@ public class Burning extends Status implements Behavable, LightSource, Seperate{
     }
 
     @Override
-    public void behave() {
+    public int behave() {
         Space currentSpace = null;
         currentSpace = owner.getSpace();
         if (owner.getHP() > 0){
@@ -81,6 +81,7 @@ public class Burning extends Status implements Behavable, LightSource, Seperate{
         if (turns <= 0){
             owner.removeStatus(this);
         }
+        return 100;
     }
 
     public int getTurns() {

@@ -513,4 +513,16 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
         Floor.doAttack(interactor, this);
     };
 
+    public int getTimeToMove(){
+        return 100;
+    }
+
+    public int getTimeToAttack(){
+        return 100;
+    }
+
+    public int getTimeToWait(){
+        return 100;
+    }
+
 }

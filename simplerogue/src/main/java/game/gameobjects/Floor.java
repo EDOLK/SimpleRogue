@@ -2,8 +2,11 @@ package game.gameobjects;
 import static game.App.lerp;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
+import java.util.WeakHashMap;
 
 import org.hexworks.zircon.api.color.TileColor;
 
@@ -49,6 +52,8 @@ public class Floor{
     private Space[][] spaces;
     private PlayerEntity player;
 
+    private Map<Behavable, Integer> timeMap = new WeakHashMap<>();
+
     public Floor(int SIZE_X, int SIZE_Y, FloorGenerator floorGenerator){
         this(SIZE_X, SIZE_Y, new PlayerEntity(TileColor.transparent(), TileColor.create(255, 255, 255, 255), '@'), floorGenerator);
     }
@@ -89,6 +94,10 @@ public class Floor{
     }
 
     public void update(){
+        update(100);
+    }
+
+    public void update(int time){
 
         doLight();
 
@@ -161,10 +170,31 @@ public class Floor{
         }
 
         while (!behavables.isEmpty()) {
+
             Behavable behavable = behavables.pop();
-            if (behavable.isActive()){
-                behavable.behave();
+
+            if (!behavable.isActive()) {
+                return;
             }
+
+            int timeToBehave = time;
+
+            if (timeMap.containsKey(behavable)) {
+                timeToBehave -= timeMap.get(behavable);
+            }
+
+            while (timeToBehave > 0) {
+                timeToBehave -= behavable.behave();
+            }
+
+            if (timeToBehave < 0) {
+                timeMap.put(behavable, Math.abs(timeToBehave));
+            }
+
+            if (timeToBehave == 0){
+                timeMap.remove(behavable);
+            }
+
         }
 
 

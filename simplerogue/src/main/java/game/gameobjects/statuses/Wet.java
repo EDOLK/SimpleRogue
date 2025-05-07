@@ -71,7 +71,7 @@ public class Wet extends Status implements Behavable, Seperate{
     }
 
     @Override
-    public void behave() {
+    public int behave() {
         Burning burning = (Burning)owner.getStatusByClass(Burning.class);
         if (burning != null){
             int t = burning.getTurns();
@@ -91,6 +91,8 @@ public class Wet extends Status implements Behavable, Seperate{
         if (wetness <= 0){
             owner.removeStatus(this);
         }
+
+        return 100;
 
     }
 

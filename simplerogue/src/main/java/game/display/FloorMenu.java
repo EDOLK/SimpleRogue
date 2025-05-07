@@ -54,6 +54,7 @@ import game.gameobjects.terrains.Terrain;
 import game.gameobjects.terrains.Trap;
 import game.gameobjects.terrains.gasses.Gas;
 import game.gameobjects.terrains.liquids.Liquid;
+import kotlin.Pair;
 
 public final class FloorMenu extends Menu{
 
@@ -601,62 +602,80 @@ public final class FloorMenu extends Menu{
 
     public UIEventResponse handleInGame(KeyboardEvent event, UIEventPhase phase){
         boolean actionSuccessful = false;
+        boolean attack = false;
+        boolean move = false;
         switch (Display.getKeyMap().getAction(event.getCode())) {
             case UP: //up
                 if (event.getCtrlDown()){
                     actionSuccessful = forceHit(0, -1);
+                    attack = actionSuccessful;
                     break;
                 }
                 actionSuccessful = tryMoveToAdjecent(0, -1);
+                move = actionSuccessful;
                 break;
             case DOWN: //down
                 if (event.getCtrlDown()){
                     actionSuccessful = forceHit(0, 1);
+                    attack = actionSuccessful;
                     break;
                 }
                 actionSuccessful = tryMoveToAdjecent(0, 1);
+                move = actionSuccessful;
                 break;
             case LEFT: //left
                 if (event.getCtrlDown()){
                     actionSuccessful = forceHit(-1, 0);
+                    attack = actionSuccessful;
                     break;
                 }
                 actionSuccessful = tryMoveToAdjecent(-1, 0);
+                move = actionSuccessful;
                 break;
             case RIGHT: //right
                 if (event.getCtrlDown()){
                     actionSuccessful = forceHit(1, 0);
+                    attack = actionSuccessful;
                     break;
                 }
                 actionSuccessful = tryMoveToAdjecent(1, 0);
+                move = actionSuccessful;
                 break;
             case UP_LEFT: //up-left
                 if (event.getCtrlDown()){
                     actionSuccessful = forceHit(-1, -1);
+                    attack = actionSuccessful;
                     break;
                 }
                 actionSuccessful = tryMoveToAdjecent(-1, -1);
+                move = actionSuccessful;
                 break;
             case UP_RIGHT: //up-right
                 if (event.getCtrlDown()){
                     actionSuccessful = forceHit(1, -1);
+                    attack = actionSuccessful;
                     break;
                 }
                 actionSuccessful = tryMoveToAdjecent(1, -1);
+                move = actionSuccessful;
                 break;
             case DOWN_LEFT: //down-left
                 if (event.getCtrlDown()){
                     actionSuccessful = forceHit(-1, 1);
+                    attack = actionSuccessful;
                     break;
                 }
                 actionSuccessful = tryMoveToAdjecent(-1, 1);
+                move = actionSuccessful;
                 break;
             case DOWN_RIGHT: //down-right
                 if (event.getCtrlDown()){
                     actionSuccessful = forceHit(1, 1);
+                    attack = actionSuccessful;
                     break;
                 }
                 actionSuccessful = tryMoveToAdjecent(1, 1);
+                move = actionSuccessful;
                 break;
             case CENTER: //wait
                 addToLog("waiting...");
@@ -699,7 +718,13 @@ public final class FloorMenu extends Menu{
                 return UIEventResponse.pass();
         }
         if (actionSuccessful){
-            Dungeon.update();
+            if (attack) {
+                Dungeon.update(Dungeon.getCurrentFloor().getPlayer().getTimeToAttack());
+            } else if (move){
+                Dungeon.update(Dungeon.getCurrentFloor().getPlayer().getTimeToMove());
+            } else {
+                Dungeon.update(Dungeon.getCurrentFloor().getPlayer().getTimeToWait());
+            }
         }
         update();
         return UIEventResponse.processed();
@@ -960,14 +985,14 @@ public final class FloorMenu extends Menu{
 
             if (space.isOccupied() && space.getOccupant() instanceof Interactable interactibleEntity){
                 interactibleEntity.onInteract(playerEntity);
-                Dungeon.update();
+                Dungeon.update(50);
                 return true;
             }
 
             for (Item item : space.getItems()) {
                 if (item instanceof Interactable interactibleItem){
                     interactibleItem.onInteract(playerEntity);
-                    Dungeon.update();
+                    Dungeon.update(50);
                     return true;
                 }
             }
@@ -975,7 +1000,7 @@ public final class FloorMenu extends Menu{
             for (Terrain terrain : space.getTerrains()){
                 if (terrain instanceof Interactable interactibleTerrain){
                     interactibleTerrain.onInteract(playerEntity);
-                    Dungeon.update();
+                    Dungeon.update(50);
                     return true;
                 }
             }

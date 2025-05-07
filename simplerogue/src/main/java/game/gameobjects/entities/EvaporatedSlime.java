@@ -64,7 +64,7 @@ public class EvaporatedSlime extends Animal implements HasResistances, HasDodge,
     }
 
     @Override
-    public void behave() {
+    public int behave() {
         if (randomNumber(1, 4) == 1){
             for (Item item : getSpace().getItems()) {
                 if (item instanceof Consumable consumable){
@@ -73,7 +73,7 @@ public class EvaporatedSlime extends Animal implements HasResistances, HasDodge,
                 }
             }
         }
-        super.behave();
+        return super.behave();
     }
 
     @Override

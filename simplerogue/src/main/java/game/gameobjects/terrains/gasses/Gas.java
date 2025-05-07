@@ -132,7 +132,7 @@ public abstract class Gas extends Terrain implements Examinable, SelfAware, Beha
     }
 
     @Override
-    public void behave() {
+    public int behave() {
 
         if (turns >= disapparationRate){
             density--;
@@ -144,7 +144,7 @@ public abstract class Gas extends Terrain implements Examinable, SelfAware, Beha
         if (density <= 0){
             getSpace().removeTerrain(this);
             setSpace(null);
-            return;
+            return 100;
         }
 
         ArrayList<Space> viableSpaces = getViableSpaces();
@@ -165,7 +165,7 @@ public abstract class Gas extends Terrain implements Examinable, SelfAware, Beha
                     if (density <= 0){
                         getSpace().removeTerrain(this);
                         setSpace(null);
-                        return;
+                        return 100;
                     }
                 }
             }
@@ -175,6 +175,8 @@ public abstract class Gas extends Terrain implements Examinable, SelfAware, Beha
             }
 
         }
+
+        return 100;
         
     }
 

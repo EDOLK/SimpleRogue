@@ -38,7 +38,7 @@ public class Thorny extends ArmorEnchantment implements OnHitted {
         }
 
         @Override
-        public void behave() {
+        public int behave() {
             int damageToBeDelt = randomNumber(Math.min(minDamage,remainingDamage), Math.min(maxDamage,remainingDamage));
             if (owner.isAlive()){
                 owner.dealDamage(damageToBeDelt, DamageType.BLEED);
@@ -47,6 +47,7 @@ public class Thorny extends ArmorEnchantment implements OnHitted {
             if (remainingDamage <= 0){
                 owner.removeStatus(this);
             }
+            return 100;
         }
 
         @Override

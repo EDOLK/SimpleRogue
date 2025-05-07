@@ -7,8 +7,8 @@ public interface HasBehavior extends Behavable{
     public boolean setBehavior(Behavior behavior);
     
     @Override
-    default void behave() {
-        getBehavior().behave();
+    default int behave() {
+        return getBehavior().behave();
     }
 
     @Override

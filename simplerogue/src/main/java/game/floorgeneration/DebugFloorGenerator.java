@@ -156,7 +156,7 @@ public class DebugFloorGenerator extends FloorGenerator {
         }
 
         @Override
-        public void behave() {
+        public int behave() {
             if (timer <= 0) {
                 if (!getSpace().isOccupied()) {
                     getSpace().setOccupant(generator.get());
@@ -165,6 +165,7 @@ public class DebugFloorGenerator extends FloorGenerator {
             } else {
                 timer --;
             }
+            return 100;
         }
 
         @Override

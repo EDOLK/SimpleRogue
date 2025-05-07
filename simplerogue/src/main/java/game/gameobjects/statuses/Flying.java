@@ -47,11 +47,12 @@ public class Flying extends Status implements Behavable, HasDodge, Seperate{
     }
 
     @Override
-    public void behave() {
+    public int behave() {
         turns--;
         if (turns <= 0 && !perminent){
             owner.removeStatus(this);
         }
+        return 100;
     }
 
     @Override

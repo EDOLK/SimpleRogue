@@ -7,6 +7,7 @@ import java.util.function.Supplier;
 import game.display.Display;
 import game.display.FloorMenu;
 import game.floorgeneration.BossFloorGenerator;
+import game.floorgeneration.DebugFloorGenerator;
 import game.floorgeneration.DefaultFloorGenerator;
 import game.floorgeneration.pools.LayerPool;
 import game.floorgeneration.pools.Pool;
@@ -73,6 +74,10 @@ public class Dungeon {
         sX = sizeX;
         sY = sizeY;
         currentFloor = new Floor(sX, sY, new DefaultFloorGenerator(currentDepth));
+    }
+
+    public static void update(int time){
+        currentFloor.update(time);
     }
     
     public static void update(){

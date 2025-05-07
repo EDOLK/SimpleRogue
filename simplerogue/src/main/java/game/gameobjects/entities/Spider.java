@@ -93,7 +93,7 @@ public class Spider extends Animal implements HasDodge, HasInventory{
         protected Nesting(){}
 
         @Override
-        public void behave() {
+        public int behave() {
             nestSpace = getSpace();
             for (int i = -1; i <= 1; i++) {
                 for (int j = -1; j <= 1; j++) {
@@ -104,6 +104,7 @@ public class Spider extends Animal implements HasDodge, HasInventory{
                 }
             }
             setBehavior(new Trapping());
+            return Spider.this.getTimeToWait();
         }
 
         @Override
@@ -145,8 +146,8 @@ public class Spider extends Animal implements HasDodge, HasInventory{
         }
 
         @Override
-        public void behave() {
-            wander();
+        public int behave() {
+            return wander();
         }
 
         @Override
@@ -155,16 +156,19 @@ public class Spider extends Animal implements HasDodge, HasInventory{
         }
 
         @Override
-        protected void wander() {
+        protected int wander() {
             if (Spider.this.traps < Spider.this.maxTraps) {
-                super.wander();
+                int t = super.wander();
                 if (wanderingPathTracker != null && wanderingPathTracker.pathIsDone()) {
                     Spider.this.getSpace().addTerrain(new Web());
                     Spider.this.traps++;
+                    wanderingPathTracker = null;
                 }
+                return t;
             } else {
                 setBehavior(new Waiting());
             }
+            return Spider.this.getTimeToWait();
         }
 
         @Override
@@ -201,26 +205,28 @@ public class Spider extends Animal implements HasDodge, HasInventory{
         }
 
         @Override
-        public void behave() {
+        public int behave() {
             if (Spider.this.getSpace() != Spider.this.nestSpace) {
                 if (tracker != null && tracker.nextSpaceAvailable()) {
                     Space.moveEntity(Spider.this, tracker.getNext());
+                    return Spider.this.getTimeToMove();
                 } else {
                     Optional<PathTracker> t = PathTracker.createPathTracker(Spider.this, Spider.this.nestSpace, generateConditionsToSpace());
                     if (t.isPresent()) {
                         tracker = t.get();
-                        behave();
-                        return;
+                        return behave();
                     }
+                    System.err.println("err: path tracker to spider nest space for spider " + Spider.this + " could not be generated");
+                    return Spider.this.getTimeToWait();
                 }
             } else {
                 Entity prey = checkForTarget();
                 if (prey != null && isAdjacent(prey)) {
                     Hunting h = new Hunting(prey);
                     Spider.this.setBehavior(h);
-                    h.behave();
-                    return;
+                    return h.behave();
                 }
+                return Spider.this.getTimeToWait();
             }
         }
     
@@ -241,35 +247,37 @@ public class Spider extends Animal implements HasDodge, HasInventory{
         }
 
         @Override
-        public void behave() {
+        public int behave() {
             if (getEntitiesInVision().contains(target) && getDistanceFromNest() < Spider.this.maxDistance) {
                 if (huntingPathTracker != null && huntingPathTracker.nextSpaceAvailable()) {
                     Space nextSpace = huntingPathTracker.getNext();
-                    if (!Space.moveEntity(Spider.this, nextSpace) && nextSpace.isOccupied() && nextSpace.getOccupant() == target){
-                        Floor.doAttack(Spider.this,target);
+                    if (Space.moveEntity(Spider.this, nextSpace)) {
+                        return Spider.this.getTimeToMove();
+                    } else if (nextSpace.isOccupied() && nextSpace.getOccupant() == target) {
+                        Floor.doAttack(Spider.this, target);
+                        return Spider.this.getTimeToAttack();
                     }
-                    return;
+                    return Spider.this.getTimeToWait();
                 } else {
                     Optional<PathTracker> tracker = PathTracker.createPathTracker(Spider.this, target, generateConditionsToEntity());
                     if (tracker.isPresent()) {
                         this.huntingPathTracker = tracker.get();
-                        behave();
-                        return;
+                        return behave();
                     }
                 }
             }
-            wander();
+            return wander();
         }
 
         
 
         @Override
-        public void wander() {
+        public int wander() {
             Behavior behavior = new Waiting();
             if (Spider.this.traps < Spider.this.maxTraps)
                 behavior = new Trapping();
             setBehavior(behavior);
-            behavior.behave();
+            return behavior.behave();
         }
 
     }
@@ -399,11 +407,12 @@ public class Spider extends Animal implements HasDodge, HasInventory{
         }
 
         @Override
-        public void behave() {
+        public int behave() {
             turns--;
             if (turns <= 0){
                 owner.removeStatus(this);
             }
+            return 100;
         }
 
         @Override

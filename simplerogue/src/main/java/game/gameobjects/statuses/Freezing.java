@@ -52,13 +52,14 @@ public class Freezing extends Status implements Seperate, Behavable, OverridesMo
     }
 
     @Override
-    public void behave() {
+    public int behave() {
         if (turns >= limit){
             turns = 0;
             enabled = !enabled;
         } else {
             turns ++;
         }
+        return 100;
     }
 
     @Override
