@@ -572,7 +572,7 @@ public final class FloorMenu extends Menu{
             xpText.setText(Integer.toString(experiential.getXP()) + "/" + Integer.toString(experiential.getXPToNextLevel()));
         }
         depthText.setText(Integer.toString(Dungeon.getCurrentDepth()));
-        weightText.setText(Integer.toString(player.getInventoryWeight()) + "/" + Integer.toString(player.getMaxWeight()));
+        weightText.setText(Integer.toString(player.getInventoryWeight()) + "/" + Integer.toString(player.getHardWeightLimit()));
     }
 
 

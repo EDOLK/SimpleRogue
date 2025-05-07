@@ -102,7 +102,7 @@ public class RatKing extends Animal implements HasInventory, DropsXP{
     }
 
     @Override
-    public int getMaxWeight() {
+    public int getHardWeightLimit() {
         return 20;
     }
 

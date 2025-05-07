@@ -64,7 +64,7 @@ public class Chest extends Entity implements HasInventory, Interactable{
     }
 
     @Override
-    public int getMaxWeight() {
+    public int getHardWeightLimit() {
         return 999;
     }
 

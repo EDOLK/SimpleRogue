@@ -1,5 +1,6 @@
 package game.gameobjects.entities;
 
+import static game.App.getRandom;
 import static game.App.randomNumber;
 
 import java.util.ArrayList;
@@ -60,12 +61,13 @@ public class Slime extends Animal implements DropsXP, HasDodge, HasResistances, 
     @Override
     public int behave(){
         if (!getSpace().getItems().isEmpty()){
-            Item item = getSpace().getItems().get(randomNumber(0, getSpace().getItems().size()-1));
-            addItemToInventory(item);
-            getSpace().remove(item);
-            Display.log("The " + item.getName() + " becomes suspended in the " + getName(), getSpace());
-            setMaxHP(getMaxHP() + 1);
-            setHP(getHP()+1);
+            Item item = getRandom(getSpace().getItems());
+            if (addItemToInventory(item)){
+                getSpace().remove(item);
+                Display.log("The " + item.getName() + " becomes suspended in the " + getName(), getSpace());
+                setMaxHP(getMaxHP() + 1);
+                setHP(getHP()+1);
+            }
         }
         if (randomNumber(1, 4) == 1){
             Item consumableItem = null;
@@ -106,8 +108,8 @@ public class Slime extends Animal implements DropsXP, HasDodge, HasResistances, 
     }
 
     @Override
-    public int getMaxWeight() {
-        return 999;
+    public int getHardWeightLimit() {
+        return 50;
     }
 
     @Override

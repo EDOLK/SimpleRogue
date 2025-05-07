@@ -10,11 +10,15 @@ public interface HasInventory {
 
     public List<Item> getInventory();
 
-    public int getMaxWeight();
+    public int getHardWeightLimit();
+
+    default int getSoftWeightLimit(){
+        return getHardWeightLimit()/2;
+    };
 
     default boolean addItemToInventory(Item item){
         if (item != null){
-            if (getInventoryWeight() + item.getWeight() <= getMaxWeight()){
+            if (getInventoryWeight() + item.getWeight() <= getHardWeightLimit()){
                 return getInventory().add(item);
             }
             return false;
@@ -40,6 +44,11 @@ public interface HasInventory {
         if (this instanceof Armed armed){
             for (Weapon weapon : armed.getWeapons()) {
                 w += weapon.getWeight();
+            }
+        }
+        if (this instanceof HasOffHand hasOffHand) {
+            if (hasOffHand.getOffHandSlot().getEquippedItem() != null) {
+                w += hasOffHand.getOffHandSlot().getEquippedItem().getWeight();
             }
         }
         return w;

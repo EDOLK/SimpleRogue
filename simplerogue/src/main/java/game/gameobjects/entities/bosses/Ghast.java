@@ -35,7 +35,7 @@ public class Ghast extends Animal implements HasInventory, DropsXP, HasResistanc
     }
 
     @Override
-    public int getMaxWeight() {
+    public int getHardWeightLimit() {
         return 20;
     }
 

@@ -175,7 +175,7 @@ public class PlayerEntity extends Entity implements Armored, Armed, Levelable, E
     }
 
     @Override
-    public int getMaxWeight() {
+    public int getHardWeightLimit() {
         return maxWeight;
     }
 

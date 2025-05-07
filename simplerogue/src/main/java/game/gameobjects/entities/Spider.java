@@ -71,7 +71,7 @@ public class Spider extends Animal implements HasDodge, HasInventory{
     }
 
     @Override
-    public int getMaxWeight() {
+    public int getHardWeightLimit() {
         return 50;
     }
 
