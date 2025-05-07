@@ -41,8 +41,8 @@ public class Wall extends Entity implements HasResistances{
     }
 
     @Override
-    public void defaultInteraction(Entity entity) {
-
+    public int defaultInteraction(Entity entity) {
+        return entity.getTimeToWait();
     }
 
     @Override

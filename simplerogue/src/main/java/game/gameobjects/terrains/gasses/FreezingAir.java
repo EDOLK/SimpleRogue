@@ -48,7 +48,7 @@ public class FreezingAir extends Gas{
     }
 
     @Override
-    public void behave() {
+    public int behave() {
         List<Terrain> terrains = getSpace().getTerrains();
         Stack<Terrain> terrainsToBeAdded = new Stack<Terrain>();
         for (Terrain terrain : terrains) {
@@ -68,7 +68,7 @@ public class FreezingAir extends Gas{
             Entity occupant = getSpace().getOccupant();
             occupant.addStatus(new Freezing());
         }
-        super.behave();
+        return super.behave();
     }
 
     @Override

@@ -1,5 +1,6 @@
 package game.gameobjects.entities;
 
+import static game.App.lerp;
 import static game.Dungeon.getCurrentFloor;
 
 import java.util.ArrayList;
@@ -21,6 +22,8 @@ import game.gamelogic.HasResistances;
 import game.gamelogic.HasVulnerabilities;
 import game.gamelogic.SelfAware;
 import game.gamelogic.resistances.Resistance;
+import game.gamelogic.time.ModifiesMoveTime;
+import game.gamelogic.time.ModifiesAttackTime;
 import game.gameobjects.DamageType;
 import game.gameobjects.DisplayableTile;
 import game.gameobjects.Floor;
@@ -509,8 +512,57 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
     }
 
     // what this entity will do by default if another walks into it (should reference one of the other behavioral functions, perhaps after determining what the other entity is)
-    public void defaultInteraction(Entity interactor){
+    public int defaultInteraction(Entity interactor){
         Floor.doAttack(interactor, this);
+        return interactor.getTimeToAttack();
     };
+
+    public int getBaseMoveTime(){
+        return 100;
+    }
+
+    public int getTimeToMove(){
+        int t = getBaseMoveTime();
+        if (this instanceof HasInventory hasInventory) {
+            int diff = hasInventory.getInventoryWeight() - hasInventory.getSoftWeightLimit();
+            if (diff > 0) {
+                t += lerp(
+                    0,
+                    0,
+                    hasInventory.getHardWeightLimit()-hasInventory.getSoftWeightLimit(),
+                    getBaseMoveTime(),
+                    diff
+                );
+            }
+        }
+        for (Status status : statuses) {
+            if (status instanceof ModifiesMoveTime mmt){
+                t = mmt.modifyTime(t);
+            }
+        }
+        return t;
+    }
+
+    public int getBaseAttackTime(){
+        return 100;
+    }
+
+    public int getTimeToAttack(){
+        int t = getBaseAttackTime();
+        for (Status status : statuses) {
+            if (status instanceof ModifiesAttackTime mat){
+                t = mat.modifyTime(t);
+            }
+        }
+        return t;
+    }
+
+    public int getBaseWaitTime(){
+        return 100;
+    }
+
+    public int getTimeToWait(){
+        return getBaseWaitTime();
+    }
 
 }

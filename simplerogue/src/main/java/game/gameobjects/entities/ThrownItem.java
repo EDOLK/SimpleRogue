@@ -49,28 +49,30 @@ public class ThrownItem extends Entity implements HasDodge, HasResistances, Beha
     }
 
     @Override
-    public void behave() {
-        for (int i = 0; i < speed; i++) {
-            if (pathToTarget.hasNext()){
-                Space nextSpace = pathToTarget.next();
-                if(!Space.moveEntity(this, nextSpace)){
-                    aimable.onHit(nextSpace.getOccupant());
-                    if (aimable.landsOnHit())
-                        aimable.onLand(nextSpace);
-                    kill(null);
-                    break;
-                }
-            } else {
-                aimable.onLand(getSpace());
+    public int behave() {
+        if (pathToTarget.hasNext()){
+            Space nextSpace = pathToTarget.next();
+            if(!Space.moveEntity(this, nextSpace) && nextSpace.isOccupied()){
+                aimable.onHit(nextSpace.getOccupant());
+                if (aimable.landsOnHit())
+                    aimable.onLand(nextSpace);
                 kill(null);
-                break;
             }
+        } else {
+            aimable.onLand(getSpace());
+            kill(null);
         }
+        return this.getTimeToMove();
     }
 
     @Override
-    public void defaultInteraction(Entity entity) {
+    public int getBaseMoveTime() {
+        return 100/speed;
+    }
 
+    @Override
+    public int defaultInteraction(Entity entity) {
+        return entity.getTimeToWait();
     }
 
     @Override

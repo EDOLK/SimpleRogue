@@ -24,7 +24,7 @@ public class App
     }
     
     public static <T> T getRandom(List<T> list){
-        return list.get(randomNumber(0,list.size()-1));
+        return list.isEmpty() ? null : list.get(randomNumber(0,list.size()-1));
     }
 
 }

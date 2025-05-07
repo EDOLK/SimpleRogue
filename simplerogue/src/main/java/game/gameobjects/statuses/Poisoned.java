@@ -32,7 +32,7 @@ public class Poisoned extends Status implements Behavable, Seperate{
     }
 
     @Override
-    public void behave() {
+    public int behave() {
         if (owner.getHP() > 0){
             owner.dealDamage(randomNumber(minDamage, maxDamage), DamageType.POISON);
         }
@@ -40,6 +40,7 @@ public class Poisoned extends Status implements Behavable, Seperate{
         if (turns <= 0){
             owner.removeStatus(this);
         }
+        return 100;
     }
 
     @Override

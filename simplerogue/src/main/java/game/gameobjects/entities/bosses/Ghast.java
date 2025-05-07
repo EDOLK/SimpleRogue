@@ -35,7 +35,7 @@ public class Ghast extends Animal implements HasInventory, DropsXP, HasResistanc
     }
 
     @Override
-    public int getMaxWeight() {
+    public int getHardWeightLimit() {
         return 20;
     }
 
@@ -71,11 +71,11 @@ public class Ghast extends Animal implements HasInventory, DropsXP, HasResistanc
         }
 
         @Override
-        public void behave() {
+        public int behave() {
             if (randomNumber(0,1) == 1) {
                 animal.getSpace().addGas(new Miasma(randomNumber(1,5)));
             }
-            super.behave();
+            return super.behave();
         }
 
         @Override

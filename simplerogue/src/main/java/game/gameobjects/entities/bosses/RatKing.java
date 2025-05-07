@@ -58,14 +58,16 @@ public class RatKing extends Animal implements HasInventory, DropsXP{
         }
 
         @Override
-        public void behave() {
+        public int behave() {
+            int t = 100;
             if (randomNumber(0,1) == 1) {
                 Space space = getRandomSpace();
                 if (space != null) {
                     Space.moveEntity(animal,space);
+                    t = animal.getTimeToMove();
                 }
             } else {
-                super.behave();
+                t = super.behave();
             }
             if (randomNumber(0,2) == 2 && (ratCount < RAT_MAX && animal.isWithinVision(Dungeon.getCurrentFloor().getPlayer()) || ratCount < RAT_PREP)) {
                 Space space = getRandomSpace();
@@ -74,6 +76,7 @@ public class RatKing extends Animal implements HasInventory, DropsXP{
                     space.setOccupant(RatKing.this.new SummonedRat());
                 }
             }
+            return t;
         }
 
         private Space getRandomSpace(){
@@ -99,7 +102,7 @@ public class RatKing extends Animal implements HasInventory, DropsXP{
     }
 
     @Override
-    public int getMaxWeight() {
+    public int getHardWeightLimit() {
         return 20;
     }
 
@@ -127,9 +130,9 @@ public class RatKing extends Animal implements HasInventory, DropsXP{
         }
 
         @Override
-        public void behave() {
+        public int behave() {
             getUnarmedWeapon().setLevel(getLevel());
-            super.behave();
+            return super.behave();
         }
 
         @Override

@@ -71,11 +71,11 @@ public class Corpse extends Item implements Behavable, Consumable, SelfAware, Fl
 
 
     @Override
-    public void behave() {
+    public int behave() {
         
         if (decay >= decayLimit){
             deleteSelf();
-            return;
+            return 100;
         }
 
         double pos = lerp(0, 0, decayLimit, 1, decay);
@@ -85,6 +85,7 @@ public class Corpse extends Item implements Behavable, Consumable, SelfAware, Fl
             currentSpace.addGas(new Miasma(randomNumber(1, 10)));
         }
         decay++;
+        return 100;
     }
 
     private void deleteSelf(){

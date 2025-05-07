@@ -82,13 +82,14 @@ public class Torch extends Weapon implements Flammable, LightSource, SelfAware, 
     }
 
     @Override
-    public void behave() {
+    public int behave() {
         if (lit) {
             fuel--;
         }
         if (fuel <= 0) {
             setBurnt();
         }
+        return 100;
     }
 
     @Override

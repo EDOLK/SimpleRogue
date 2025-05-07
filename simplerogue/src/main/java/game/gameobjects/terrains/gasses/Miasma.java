@@ -28,11 +28,11 @@ public class Miasma extends Gas implements Flammable{
 
 
     @Override
-    public void behave() {
+    public int behave() {
         if (getSpace().isOccupied()){
             getSpace().getOccupant().dealDamage(randomNumber(0,getDensity()), DamageType.SUFFICATION);
         }
-        super.behave();
+        return super.behave();
     }
 
 

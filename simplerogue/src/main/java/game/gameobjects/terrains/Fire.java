@@ -91,12 +91,12 @@ public class Fire extends Terrain implements Behavable, SelfAware, Examinable, L
     }
 
     @Override
-    public void behave() {
+    public int behave() {
 
         if (fuel <= 0){
             getSpace().removeTerrain(this);
             setSpace(null);
-            return;
+            return 100;
         }
 
         Flammable flammable = null;
@@ -172,7 +172,7 @@ public class Fire extends Terrain implements Behavable, SelfAware, Examinable, L
 
         fuel--;
 
-
+        return 100;
     }
 
     public String getName() {

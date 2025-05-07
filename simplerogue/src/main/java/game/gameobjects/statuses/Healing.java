@@ -30,13 +30,14 @@ public class Healing extends Status implements Behavable{
     }
 
     @Override
-    public void behave() {
+    public int behave() {
         int r = randomNumber(minHeal, maxHeal);
         owner.heal(r);
         healAmount -= r;
         if (healAmount <= 0){
             owner.removeStatus(this);
         }
+        return 100;
     }
     
     @Override

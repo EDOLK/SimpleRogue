@@ -47,11 +47,6 @@ public class Clotting extends ArmorEnchantment implements OnHitted {
         }
 
         @Override
-        public void defaultInteraction(Entity interactor) {
-            Floor.doAttack(interactor, this);
-        }
-
-        @Override
         public void doOnDeath(Entity self, Entity other, AttackInfo attackInfo) {
             if (other == owner){
                 owner.heal(healthStored);
@@ -59,7 +54,7 @@ public class Clotting extends ArmorEnchantment implements OnHitted {
         }
 
         @Override
-        public void behave() {
+        public int behave() {
             if (randomNumber(1,10) <= 5){
                 int cX = this.getX();
                 int cY = this.getY();
@@ -82,6 +77,7 @@ public class Clotting extends ArmorEnchantment implements OnHitted {
                     Space.moveEntity(this,adjacentSpaces.get(randomNumber(0,adjacentSpaces.size()-1)));
                 }
             }
+            return this.getTimeToMove();
         }
 
         @Override

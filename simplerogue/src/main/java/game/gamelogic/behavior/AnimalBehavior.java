@@ -27,7 +27,7 @@ public class AnimalBehavior extends Behavior {
     }
 
     @Override
-    public void behave() {
+    public int behave() {
         if (target != null && !getEntitiesInVision().contains(target)) {
             Optional<PathTracker> tracker = PathTracker.createPathTracker(animal, target.getSpace(), generateConditionsToEntity());
             if (tracker.isPresent()) {
@@ -35,18 +35,20 @@ public class AnimalBehavior extends Behavior {
                 this.huntingPathTracker = null;
                 this.target = null;
             }
-            wander();
-            return;
+            return wander();
         }
         if (huntingPathTracker != null && huntingPathTracker.nextSpaceAvailable()) {
             Space nextSpace = huntingPathTracker.getNextSpace();
             boolean moved = Space.moveEntity(animal, nextSpace);
             if (moved) {
                 huntingPathTracker.increment();
+                return animal.getTimeToMove();
             } else if (nextSpace.isOccupied() && nextSpace.getOccupant() == target) {
                 Floor.doAttack(animal,target);
+                return animal.getTimeToAttack();
             }
-            return;
+            System.err.println("next move space for " + animal + " is occupied by " + nextSpace.getOccupant());
+            return animal.getTimeToWait();
         } else {
             Entity prey = checkForTarget();
             if (prey != null) {
@@ -54,31 +56,37 @@ public class AnimalBehavior extends Behavior {
                 Optional<PathTracker> tracker = PathTracker.createPathTracker(animal, prey, generateConditionsToEntity());
                 if (tracker.isPresent()) {
                     this.huntingPathTracker = tracker.get();
-                    behave();
-                    return;
+                    return behave();
                 }
             }
-            wander();
+            return wander();
         }
     }
 
-    protected void wander() {
+    protected int wander() {
         if (wanderingPathTracker != null && wanderingPathTracker.nextSpaceAvailable()) {
             if (Space.moveEntity(animal, wanderingPathTracker.getNextSpace())) {
                 wanderingPathTracker.increment();
+                return animal.getTimeToMove();
             }
-            return;
         } else {
-            Space space = getWanderSpace();
-            if (space != null){
-                Optional<PathTracker> tracker = PathTracker.createPathTracker(animal,space,generateConditionsToSpace());
-                if (tracker.isPresent()) {
-                    this.wanderingPathTracker = tracker.get();
-                    wander();
-                    return;
+            Optional<PathTracker> tracker = null;
+            Space space = null;
+            int t = 0;
+            do {
+                space = getWanderSpace();
+                if (space == null) {
+                    break;
                 }
+                tracker = PathTracker.createPathTracker(animal,space,generateConditionsToSpace());
+                t++;
+            } while (tracker.isEmpty() && t < 100);
+            if (tracker.isPresent()) {
+                this.wanderingPathTracker = tracker.get();
+                return wander();
             }
         }
+        return animal.getTimeToWait();
     }
 
     protected PathConditions generateConditionsToSpace(){

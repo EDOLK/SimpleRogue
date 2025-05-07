@@ -54,6 +54,7 @@ import game.gameobjects.terrains.Terrain;
 import game.gameobjects.terrains.Trap;
 import game.gameobjects.terrains.gasses.Gas;
 import game.gameobjects.terrains.liquids.Liquid;
+import kotlin.Pair;
 
 public final class FloorMenu extends Menu{
 
@@ -89,6 +90,7 @@ public final class FloorMenu extends Menu{
     private ProgressBar enemyBar;
     private Header enemyHpHeader;
     private int timer = 10;
+    private Header timeText;
 
     public FloorMenu(){
         super();
@@ -432,6 +434,13 @@ public final class FloorMenu extends Menu{
 
         statusPanel.addComponent(weightText);
 
+        timeText = HeaderBuilder.newBuilder()
+            .withPosition(0,6)
+            .withSize(7,1)
+            .build();
+
+        statusPanel.addComponent(timeText);
+
         screen.addComponent(statusPanel);
 
     }
@@ -571,7 +580,8 @@ public final class FloorMenu extends Menu{
             xpText.setText(Integer.toString(experiential.getXP()) + "/" + Integer.toString(experiential.getXPToNextLevel()));
         }
         depthText.setText(Integer.toString(Dungeon.getCurrentDepth()));
-        weightText.setText(Integer.toString(player.getInventoryWeight()) + "/" + Integer.toString(player.getMaxWeight()));
+        weightText.setText(Integer.toString(player.getInventoryWeight()) + "/" + Integer.toString(player.getHardWeightLimit()));
+        timeText.setText(Integer.toString(currentFloor.getLastTime()));
     }
 
 
@@ -600,67 +610,67 @@ public final class FloorMenu extends Menu{
     
 
     public UIEventResponse handleInGame(KeyboardEvent event, UIEventPhase phase){
-        boolean actionSuccessful = false;
+        int time = -1;
         switch (Display.getKeyMap().getAction(event.getCode())) {
             case UP: //up
                 if (event.getCtrlDown()){
-                    actionSuccessful = forceHit(0, -1);
+                    time = forceHit(0, -1);
                     break;
                 }
-                actionSuccessful = tryMoveToAdjecent(0, -1);
+                time = tryMoveToAdjecent(0, -1);
                 break;
             case DOWN: //down
                 if (event.getCtrlDown()){
-                    actionSuccessful = forceHit(0, 1);
+                    time = forceHit(0, 1);
                     break;
                 }
-                actionSuccessful = tryMoveToAdjecent(0, 1);
+                time = tryMoveToAdjecent(0, 1);
                 break;
             case LEFT: //left
                 if (event.getCtrlDown()){
-                    actionSuccessful = forceHit(-1, 0);
+                    time = forceHit(-1, 0);
                     break;
                 }
-                actionSuccessful = tryMoveToAdjecent(-1, 0);
+                time = tryMoveToAdjecent(-1, 0);
                 break;
             case RIGHT: //right
                 if (event.getCtrlDown()){
-                    actionSuccessful = forceHit(1, 0);
+                    time = forceHit(1, 0);
                     break;
                 }
-                actionSuccessful = tryMoveToAdjecent(1, 0);
+                time = tryMoveToAdjecent(1, 0);
                 break;
             case UP_LEFT: //up-left
                 if (event.getCtrlDown()){
-                    actionSuccessful = forceHit(-1, -1);
+                    time = forceHit(-1, -1);
                     break;
                 }
-                actionSuccessful = tryMoveToAdjecent(-1, -1);
+                time = tryMoveToAdjecent(-1, -1);
                 break;
             case UP_RIGHT: //up-right
                 if (event.getCtrlDown()){
-                    actionSuccessful = forceHit(1, -1);
+                    time = forceHit(1, -1);
                     break;
                 }
-                actionSuccessful = tryMoveToAdjecent(1, -1);
+                time = tryMoveToAdjecent(1, -1);
                 break;
             case DOWN_LEFT: //down-left
                 if (event.getCtrlDown()){
-                    actionSuccessful = forceHit(-1, 1);
+                    time = forceHit(-1, 1);
                     break;
                 }
-                actionSuccessful = tryMoveToAdjecent(-1, 1);
+                time = tryMoveToAdjecent(-1, 1);
                 break;
             case DOWN_RIGHT: //down-right
                 if (event.getCtrlDown()){
-                    actionSuccessful = forceHit(1, 1);
+                    time = forceHit(1, 1);
                     break;
                 }
-                actionSuccessful = tryMoveToAdjecent(1, 1);
+                time = tryMoveToAdjecent(1, 1);
                 break;
             case CENTER: //wait
                 addToLog("waiting...");
-                actionSuccessful = true;
+                time = Dungeon.getCurrentFloor().getPlayer().getTimeToWait();
                 break;
             case INTERACT_TOGGLE: //Interact
                 startSelecting(new InteractSelector());
@@ -698,16 +708,16 @@ public final class FloorMenu extends Menu{
             default:
                 return UIEventResponse.pass();
         }
-        if (actionSuccessful){
-            Dungeon.update();
+        if (time != -1) {
+            Dungeon.update(time);
         }
         update();
         return UIEventResponse.processed();
     }
 
-    public boolean tryMoveToAdjecent(int toX, int toY){
+    public int tryMoveToAdjecent(int toX, int toY){
         if (toX < -1 || toX > 1 || toY < -1 || toY > 1){
-            return false;
+            return -1;
         }
         PlayerEntity playerEntity = currentFloor.getPlayer();
         int x = playerEntity.getX();
@@ -715,19 +725,16 @@ public final class FloorMenu extends Menu{
         Space potentialSpace = currentFloor.getSpace(x+toX, y+toY);
         if (potentialSpace.isOccupied()){
             Entity occupant = potentialSpace.getOccupant();
-            occupant.defaultInteraction(playerEntity);
-            if (occupant instanceof Wall){
-                return false;
-            }
+            return occupant.defaultInteraction(playerEntity);
         } else {
             moveEntity(playerEntity, potentialSpace);
+            return playerEntity.getTimeToMove();
         }
-        return true;
     }
 
-    public boolean forceHit(int toX, int toY){
+    public int forceHit(int toX, int toY){
         if (toX < -1 || toX > 1 || toY < -1 || toY > 1){
-            return false;
+            return -1;
         }
         PlayerEntity playerEntity = currentFloor.getPlayer();
         int x = playerEntity.getX();
@@ -736,11 +743,10 @@ public final class FloorMenu extends Menu{
         if (potentialSpace.isOccupied()){
             Entity entity = potentialSpace.getOccupant();
             Floor.doAttack(playerEntity, entity);
-            return true;
         } else {
             addToLog("You swing at the air.");
-            return false;
         }
+        return playerEntity.getTimeToAttack();
     }
 
     public void writeEnemyInfo(Entity entity){
@@ -960,14 +966,14 @@ public final class FloorMenu extends Menu{
 
             if (space.isOccupied() && space.getOccupant() instanceof Interactable interactibleEntity){
                 interactibleEntity.onInteract(playerEntity);
-                Dungeon.update();
+                Dungeon.update(50);
                 return true;
             }
 
             for (Item item : space.getItems()) {
                 if (item instanceof Interactable interactibleItem){
                     interactibleItem.onInteract(playerEntity);
-                    Dungeon.update();
+                    Dungeon.update(50);
                     return true;
                 }
             }
@@ -975,7 +981,7 @@ public final class FloorMenu extends Menu{
             for (Terrain terrain : space.getTerrains()){
                 if (terrain instanceof Interactable interactibleTerrain){
                     interactibleTerrain.onInteract(playerEntity);
-                    Dungeon.update();
+                    Dungeon.update(50);
                     return true;
                 }
             }

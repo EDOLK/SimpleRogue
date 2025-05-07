@@ -49,8 +49,9 @@ public class Door extends Entity implements Interactable, HasResistances{
     }
 
     @Override
-    public void defaultInteraction(Entity interactor) {
+    public int defaultInteraction(Entity interactor) {
         onInteract(interactor);
+        return interactor.getTimeToMove();
     }
 
     @Override

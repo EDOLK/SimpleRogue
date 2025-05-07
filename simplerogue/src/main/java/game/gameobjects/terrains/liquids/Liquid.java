@@ -87,12 +87,12 @@ public abstract class Liquid extends Terrain implements Examinable, SelfAware, B
     }
     
     @Override
-    public void behave() {
+    public int behave() {
         
         if (depth <= 0){
             getSpace().removeTerrain(this);
             setSpace(null);
-            return;
+            return 100;
         }
 
         ArrayList<Space> viableSpaces = getViableSpaces();
@@ -113,7 +113,7 @@ public abstract class Liquid extends Terrain implements Examinable, SelfAware, B
                     if (depth <= 0){
                         getSpace().removeTerrain(this);
                         setSpace(null);
-                        return;
+                        return 100;
                     }
                 }
             }
@@ -130,6 +130,8 @@ public abstract class Liquid extends Terrain implements Examinable, SelfAware, B
         } else {
             turns ++;
         }
+
+        return 100;
 
     }
 

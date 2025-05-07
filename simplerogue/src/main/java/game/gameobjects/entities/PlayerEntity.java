@@ -30,7 +30,7 @@ import game.gameobjects.items.weapons.Weapon;
 
 public class PlayerEntity extends Entity implements Armored, Armed, Levelable, Experiential, HasInventory, LightSource, HasOffHand, HasAbilities, HasDodge{
 
-    private int maxWeight = 50;
+    private int maxWeight = 60;
     private int maxMP;
     private int MP;
     private List<ArmorSlot> armorSlots = new ArrayList<ArmorSlot>();
@@ -130,8 +130,8 @@ public class PlayerEntity extends Entity implements Armored, Armed, Levelable, E
     }
 
     @Override
-    public void defaultInteraction(Entity entity) {
-
+    public int defaultInteraction(Entity entity) {
+        return 100;
     }
 
     @Override
@@ -175,7 +175,7 @@ public class PlayerEntity extends Entity implements Armored, Armed, Levelable, E
     }
 
     @Override
-    public int getMaxWeight() {
+    public int getHardWeightLimit() {
         return maxWeight;
     }
 
