@@ -109,7 +109,7 @@ public class Slime extends Animal implements DropsXP, HasDodge, HasResistances, 
 
     @Override
     public int getHardWeightLimit() {
-        return 50;
+        return 20;
     }
 
     @Override

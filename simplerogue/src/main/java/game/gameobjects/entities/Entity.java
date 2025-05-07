@@ -512,8 +512,9 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
     }
 
     // what this entity will do by default if another walks into it (should reference one of the other behavioral functions, perhaps after determining what the other entity is)
-    public void defaultInteraction(Entity interactor){
+    public int defaultInteraction(Entity interactor){
         Floor.doAttack(interactor, this);
+        return interactor.getTimeToAttack();
     };
 
     public int getBaseMoveTime(){

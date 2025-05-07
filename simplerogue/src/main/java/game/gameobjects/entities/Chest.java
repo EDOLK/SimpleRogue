@@ -69,8 +69,9 @@ public class Chest extends Entity implements HasInventory, Interactable{
     }
 
     @Override
-    public void defaultInteraction(Entity interactor) {
+    public int defaultInteraction(Entity interactor) {
         Display.log("There is a " + getName() + " in the way");
+        return interactor.getTimeToWait();
     }
 
     @Override

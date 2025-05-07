@@ -53,6 +53,7 @@ public class Floor{
     private PlayerEntity player;
 
     private Map<Behavable, Integer> timeMap = new WeakHashMap<>();
+    private int lastTime = 0;
 
     public Floor(int SIZE_X, int SIZE_Y, FloorGenerator floorGenerator){
         this(SIZE_X, SIZE_Y, new PlayerEntity(TileColor.transparent(), TileColor.create(255, 255, 255, 255), '@'), floorGenerator);
@@ -93,11 +94,17 @@ public class Floor{
         return y = y >= SIZE_Y ? SIZE_Y-1 : (y < 0 ? 0 : y);
     }
 
+    public int getLastTime() {
+        return lastTime;
+    }
+
     public void update(){
         update(100);
     }
 
     public void update(int time){
+
+        this.lastTime = time;
 
         doLight();
 
@@ -173,10 +180,6 @@ public class Floor{
 
             Behavable behavable = behavables.pop();
 
-            if (!behavable.isActive()) {
-                return;
-            }
-
             int timeToBehave = time;
 
             if (timeMap.containsKey(behavable)) {
@@ -184,6 +187,9 @@ public class Floor{
             }
 
             while (timeToBehave > 0) {
+                if (!behavable.isActive()) {
+                    break;
+                }
                 timeToBehave -= behavable.behave();
             }
 

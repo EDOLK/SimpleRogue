@@ -61,11 +61,6 @@ public class Spider extends Animal implements HasDodge, HasInventory{
     }
 
     @Override
-    public void defaultInteraction(Entity interactor) {
-        Floor.doAttack(interactor, this);
-    }
-
-    @Override
     public List<Item> getInventory() {
         return inventory;
     }

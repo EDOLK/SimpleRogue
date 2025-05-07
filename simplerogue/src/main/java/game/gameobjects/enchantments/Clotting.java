@@ -47,11 +47,6 @@ public class Clotting extends ArmorEnchantment implements OnHitted {
         }
 
         @Override
-        public void defaultInteraction(Entity interactor) {
-            Floor.doAttack(interactor, this);
-        }
-
-        @Override
         public void doOnDeath(Entity self, Entity other, AttackInfo attackInfo) {
             if (other == owner){
                 owner.heal(healthStored);
