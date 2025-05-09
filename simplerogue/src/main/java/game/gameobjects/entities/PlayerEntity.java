@@ -52,7 +52,10 @@ public class PlayerEntity extends Entity implements Armored, Armed, Levelable, E
         setWeight(0);
         setCorpse(new Corpse(this));
         setTileName("Player");
+
         Weapon fists = new Weapon();
+        fists.setDamageType(DamageType.BLUNT);
+        fists.setDamage(1,3);
         setUnarmedWeapon(fists);
 
         Weapon club = new Weapon();
