@@ -705,6 +705,9 @@ public final class FloorMenu extends Menu{
             case ABILITIES:
                 Display.setMenu(new AbilitySelectMenu(currentFloor.getPlayer()));
                 break;
+            case ATTRIBUTES:
+                Display.setMenu(new AttributeMenu(currentFloor.getPlayer()));
+                break;
             default:
                 return UIEventResponse.pass();
         }

@@ -16,7 +16,9 @@ import game.display.Display;
 import game.floorgeneration.FloorGenerator;
 import game.gamelogic.Armed;
 import game.gamelogic.Armored;
+import game.gamelogic.AttributeMap.Attribute;
 import game.gamelogic.HasAccuracy;
+import game.gamelogic.HasAttributes;
 import game.gamelogic.HasDodge;
 import game.gamelogic.HasOffHand;
 import game.gamelogic.LightSource;
@@ -457,6 +459,10 @@ public class Floor{
             attackInfo.setModifiedRoll(modifiedAttackerRoll);
             
             int damage = weapon.generateDamage();
+
+            if (attacker instanceof HasAttributes hasAttributes) {
+                damage += hasAttributes.getAttribute(Attribute.STRENGTH);
+            }
             
             damage = crit ? damage * 2 : damage;
 
