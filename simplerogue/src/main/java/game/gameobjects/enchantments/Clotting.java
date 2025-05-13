@@ -14,7 +14,6 @@ import game.gamelogic.combat.AttackInfo;
 import game.gamelogic.combat.OnDeath;
 import game.gamelogic.combat.OnHitted;
 import game.gameobjects.DamageType;
-import game.gameobjects.Floor;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.items.weapons.Weapon;

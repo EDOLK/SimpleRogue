@@ -15,8 +15,11 @@ import game.gamelogic.HasAttributes;
 import game.gamelogic.HasDodge;
 import game.gamelogic.HasInventory;
 import game.gamelogic.HasOffHand;
+import game.gamelogic.HasSkills;
 import game.gamelogic.Levelable;
 import game.gamelogic.LightSource;
+import game.gamelogic.SkillMap;
+import game.gamelogic.SkillMap.Skill;
 import game.gamelogic.abilities.Ability;
 import game.gamelogic.abilities.HasAbilities;
 import game.gameobjects.ArmorSlot;
@@ -31,7 +34,7 @@ import game.gameobjects.items.armor.Armor;
 import game.gameobjects.items.armor.ArmorType;
 import game.gameobjects.items.weapons.Weapon;
 
-public class PlayerEntity extends Entity implements Armored, Armed, Levelable, Experiential, HasInventory, LightSource, HasOffHand, HasAbilities, HasDodge, HasAttributes{
+public class PlayerEntity extends Entity implements Armored, Armed, Levelable, Experiential, HasInventory, LightSource, HasOffHand, HasAbilities, HasDodge, HasAttributes, HasSkills{
 
     private int maxWeight = 60;
     private int maxMP;
@@ -45,6 +48,7 @@ public class PlayerEntity extends Entity implements Armored, Armed, Levelable, E
     private int XP = 0;
     private int XPToNextLevel = 15;
     private AttributeMap aMap = new AttributeMap();
+    private SkillMap sMap = new SkillMap();
     private int attributePoints = 0;
 
     @Override
@@ -231,12 +235,17 @@ public class PlayerEntity extends Entity implements Armored, Armed, Levelable, E
 
     @Override
     public int getDodge() {
-        return this.getAttribute(Attribute.DEXTERITY);
+        return this.getAttribute(Attribute.DEXTERITY) + (this.getSkill(Skill.ATHLETICS) * 3);
     }
 
     @Override
-    public AttributeMap getMap() {
+    public AttributeMap getAttributeMap() {
         return this.aMap;
+    }
+
+    @Override
+    public SkillMap getSkillMap() {
+        return this.sMap;
     }
 
 }

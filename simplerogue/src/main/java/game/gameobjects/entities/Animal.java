@@ -32,7 +32,7 @@ public abstract class Animal extends Entity implements HasBehavior, HasAttribute
     }
 
     @Override
-    public AttributeMap getMap() {
+    public AttributeMap getAttributeMap() {
         return this.aMap;
     }
 

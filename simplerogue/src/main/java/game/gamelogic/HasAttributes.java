@@ -4,14 +4,14 @@ import game.gamelogic.AttributeMap.Attribute;
 
 public interface HasAttributes {
 
-    public AttributeMap getMap();
+    public AttributeMap getAttributeMap();
 
     default int getAttribute(Attribute attribute){
-        return getMap().get(attribute);
+        return getAttributeMap().get(attribute);
     }
 
     default void setAttribute(Attribute attribute, int amount){
-        getMap().set(attribute,amount);
+        getAttributeMap().set(attribute,amount);
     }
 
     default int getAttributePoints(){

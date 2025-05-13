@@ -54,7 +54,6 @@ import game.gameobjects.terrains.Terrain;
 import game.gameobjects.terrains.Trap;
 import game.gameobjects.terrains.gasses.Gas;
 import game.gameobjects.terrains.liquids.Liquid;
-import kotlin.Pair;
 
 public final class FloorMenu extends Menu{
 
