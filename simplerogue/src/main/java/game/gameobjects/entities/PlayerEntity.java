@@ -8,12 +8,18 @@ import org.hexworks.zircon.api.color.TileColor;
 import game.display.Display;
 import game.gamelogic.Armed;
 import game.gamelogic.Armored;
+import game.gamelogic.AttributeMap;
+import game.gamelogic.AttributeMap.Attribute;
 import game.gamelogic.Experiential;
+import game.gamelogic.HasAttributes;
 import game.gamelogic.HasDodge;
 import game.gamelogic.HasInventory;
 import game.gamelogic.HasOffHand;
+import game.gamelogic.HasSkills;
 import game.gamelogic.Levelable;
 import game.gamelogic.LightSource;
+import game.gamelogic.SkillMap;
+import game.gamelogic.SkillMap.Skill;
 import game.gamelogic.abilities.Ability;
 import game.gamelogic.abilities.HasAbilities;
 import game.gameobjects.ArmorSlot;
@@ -28,7 +34,7 @@ import game.gameobjects.items.armor.Armor;
 import game.gameobjects.items.armor.ArmorType;
 import game.gameobjects.items.weapons.Weapon;
 
-public class PlayerEntity extends Entity implements Armored, Armed, Levelable, Experiential, HasInventory, LightSource, HasOffHand, HasAbilities, HasDodge{
+public class PlayerEntity extends Entity implements Armored, Armed, Levelable, Experiential, HasInventory, LightSource, HasOffHand, HasAbilities, HasDodge, HasAttributes, HasSkills{
 
     private int maxWeight = 60;
     private int maxMP;
@@ -41,6 +47,19 @@ public class PlayerEntity extends Entity implements Armored, Armed, Levelable, E
     private int level = 1;
     private int XP = 0;
     private int XPToNextLevel = 15;
+    private AttributeMap aMap = new AttributeMap();
+    private SkillMap sMap = new SkillMap();
+    private int attributePoints = 0;
+
+    @Override
+    public int getAttributePoints() {
+        return this.attributePoints;
+    }
+
+    @Override
+    public void setAttributePoints(int att) {
+        this.attributePoints = att;
+    }
 
     public PlayerEntity(TileColor bGColor, TileColor fGColor, char character) {
         super(bGColor, fGColor, character);
@@ -68,19 +87,19 @@ public class PlayerEntity extends Entity implements Armored, Armed, Levelable, E
         club.setDescription("A simple wooden club.");
         club.setWeight(5);
         club.setTileName("Club");
-        
+
         armorSlots.add(new ArmorSlot(ArmorType.HEAD));
         armorSlots.add(new ArmorSlot(ArmorType.CHEST_OUTER));
         armorSlots.add(new ArmorSlot(ArmorType.CHEST_INNER));
         armorSlots.add(new ArmorSlot(ArmorType.LEGS));
         armorSlots.add(new ArmorSlot(ArmorType.HANDS));
         armorSlots.add(new ArmorSlot(ArmorType.FEET));
-        
+
         WeaponSlot e = new WeaponSlot("Primary Weapon", 1.0);
         weaponSlots.add(e);
         e.setEquippedWeapon(club);
         offHandSlot.setEquippedItem(new Torch(true));
-        
+
     }
 
     public boolean addAbility(Ability ability){
@@ -152,12 +171,13 @@ public class PlayerEntity extends Entity implements Armored, Armed, Levelable, E
         this.XP += XP;
         while (this.XP >= XPToNextLevel) {
             level++;
+            attributePoints++;
             this.XP -= XPToNextLevel;
             XPToNextLevel = 10 + (level * 5);
-            setMaxHP(getMaxHP() + 5);
-            setHP(getHP() + 5);
-            setMaxMP(getMaxMP() + 5);
-            setMP(getMP() + 5);
+            setMaxHP(getMaxHP() + 5 + (getAttribute(Attribute.ENDURANCE) * 3));
+            heal(5 + (getAttribute(Attribute.ENDURANCE) * 3));
+            setMaxMP(getMaxMP() + 5 + (getAttribute(Attribute.INTELLIGENCE) * 3));
+            setMP(getMP() + 5 + (getAttribute(Attribute.INTELLIGENCE) * 3));
             Display.log("Level up!");
         }
     }
@@ -179,7 +199,7 @@ public class PlayerEntity extends Entity implements Armored, Armed, Levelable, E
 
     @Override
     public int getHardWeightLimit() {
-        return maxWeight;
+        return maxWeight + (this.getAttribute(Attribute.STRENGTH) * 5);
     }
 
     @Override
@@ -215,8 +235,17 @@ public class PlayerEntity extends Entity implements Armored, Armed, Levelable, E
 
     @Override
     public int getDodge() {
-        // TODO change when implementing stats
-        return 5;
+        return this.getAttribute(Attribute.DEXTERITY) + (this.getSkill(Skill.ATHLETICS) * 3);
+    }
+
+    @Override
+    public AttributeMap getAttributeMap() {
+        return this.aMap;
+    }
+
+    @Override
+    public SkillMap getSkillMap() {
+        return this.sMap;
     }
 
 }

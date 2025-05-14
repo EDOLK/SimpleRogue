@@ -54,7 +54,6 @@ import game.gameobjects.terrains.Terrain;
 import game.gameobjects.terrains.Trap;
 import game.gameobjects.terrains.gasses.Gas;
 import game.gameobjects.terrains.liquids.Liquid;
-import kotlin.Pair;
 
 public final class FloorMenu extends Menu{
 
@@ -704,6 +703,9 @@ public final class FloorMenu extends Menu{
                 break;
             case ABILITIES:
                 Display.setMenu(new AbilitySelectMenu(currentFloor.getPlayer()));
+                break;
+            case ATTRIBUTES:
+                Display.setMenu(new AttributeMenu(currentFloor.getPlayer()));
                 break;
             default:
                 return UIEventResponse.pass();

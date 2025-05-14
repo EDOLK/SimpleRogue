@@ -37,6 +37,7 @@ public class KeyMap {
         map.put(KeyCode.COMMA, Action.SCROLL_LEFT);
         map.put(KeyCode.PERIOD, Action.SCROLL_RIGHT);
         map.put(KeyCode.KEY_A, Action.ABILITIES);
+        map.put(KeyCode.KEY_L, Action.ATTRIBUTES);
     }
     
     public KeyMap(File keyMapFile){
@@ -97,6 +98,7 @@ public class KeyMap {
         SCROLL_RIGHT,
         MEMORY_TOGGLE,
         ABILITIES,
+        ATTRIBUTES,
         NOTHING
     }
 
