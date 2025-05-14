@@ -29,14 +29,13 @@ public class AttributeMenu extends Menu {
 
     private Label pointLabel;
     private List<AttributeEntry> entries = new ArrayList<>();
-    private WrappedInteger po;
-    private HasAttributes ha;
+    private WrappedInteger points;
+    private HasAttributes hasAttributes;
 
     public AttributeMenu(HasAttributes hasAttributes){
         super();
-        WrappedInteger p = new WrappedInteger(hasAttributes.getAttributePoints());
-        po = p;
-        ha = hasAttributes;
+        this.points = new WrappedInteger(hasAttributes.getAttributePoints());
+        this.hasAttributes = hasAttributes;
         int y = 0;
         Panel panel = PanelBuilder.newBuilder()
             .withPosition(Position.create(this.screen.getWidth()/2 - (this.screen.getWidth()/3/2), this.screen.getHeight()/2 - (this.screen.getHeight()/3/2)))
@@ -48,16 +47,16 @@ public class AttributeMenu extends Menu {
             .withText("Points: ")
             .build();
         pointLabel = LabelBuilder.newBuilder()
-            .withText(String.valueOf(p.getValue()))
+            .withText(String.valueOf(points.getValue()))
             .withPosition(Position.bottomRightOf(pointHeader).minus(Position.create(0,1)))
             .build();
         panel.addComponent(pointHeader);
         panel.addComponent(pointLabel);
         y += 2;
-        for (Attribute attr : Attribute.values()) {
-            AttributeEntry ae = new AttributeEntry(attr, hasAttributes.getAttribute(attr), y, p);
-            entries.add(ae);
-            ae.addComponents(panel);
+        for (Attribute attribute : Attribute.values()) {
+            AttributeEntry attributeEntry = new AttributeEntry(attribute, hasAttributes.getAttribute(attribute), y);
+            entries.add(attributeEntry);
+            attributeEntry.addComponents(panel);
             y += 2;
         }
 
@@ -68,7 +67,7 @@ public class AttributeMenu extends Menu {
 
         resetButton.handleComponentEvents(ComponentEventType.ACTIVATED, (event) -> {
             for (AttributeEntry entry : entries) {
-                p.setValue(p.getValue() + entry.addedValue);
+                points.setValue(points.getValue() + entry.addedValue);
                 entry.addedValue = 0;
             }
             this.updateLabelsAndToggleButtons();
@@ -82,7 +81,7 @@ public class AttributeMenu extends Menu {
             .build();
 
         applyButton.handleComponentEvents(ComponentEventType.ACTIVATED, (event) -> {
-            doApply(hasAttributes, p);
+            doApply(hasAttributes, points);
             return UIEventResponse.processed();
         });
 
@@ -97,20 +96,20 @@ public class AttributeMenu extends Menu {
         }
     }
 
-    public void doApply(HasAttributes hasAttributes, WrappedInteger p){
+    public void doApply(HasAttributes hasAttributes, WrappedInteger points){
         for (AttributeEntry entry : entries) {
             hasAttributes.setAttribute(entry.attribute, (entry.value + entry.addedValue));
             entry.addedValue = 0;
             entry.value = hasAttributes.getAttribute(entry.attribute);
         }
-        hasAttributes.setAttributePoints(p.getValue());
+        hasAttributes.setAttributePoints(points.getValue());
         this.updateLabelsAndToggleButtons();
     }
 
     @Override
     public UIEventResponse handleKeyboardEvent(KeyboardEvent event, UIEventPhase phase){
         if (Display.getKeyMap().getAction(event.getCode()) == Action.ESCAPE){
-            doApply(ha, po);
+            doApply(hasAttributes, points);
         }
         return super.handleKeyboardEvent(event, phase);
     };
@@ -122,14 +121,11 @@ public class AttributeMenu extends Menu {
         private Label attributeLabel;
         private int value;
         private int addedValue = 0;
-        private WrappedInteger points;
         private Attribute attribute;
 
-        public AttributeEntry(Attribute attribute, int value, int yOffset, WrappedInteger points){
+        public AttributeEntry(Attribute attribute, int value, int yOffset){
 
             this.value = value;
-
-            this.points = points;
 
             this.attribute = attribute;
 
@@ -181,10 +177,10 @@ public class AttributeMenu extends Menu {
         }
 
         public void updateSelf(){
-            this.attributeLabel.setText(String.valueOf(this.value + this.addedValue));
-            AttributeMenu.this.pointLabel.setText(String.valueOf(this.points.getValue()));
-            this.decrementButton.setDisabled(this.addedValue <= 0);
-            this.incrementButton.setDisabled(this.points.getValue() <= 0);
+            attributeLabel.setText(String.valueOf(value + addedValue));
+            AttributeMenu.this.pointLabel.setText(String.valueOf(AttributeMenu.this.points.getValue()));
+            decrementButton.setDisabled(addedValue <= 0);
+            incrementButton.setDisabled(AttributeMenu.this.points.getValue() <= 0);
         }
 
         public AttachedComponent[] addComponents(Container containter){
