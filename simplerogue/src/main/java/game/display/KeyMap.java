@@ -38,6 +38,7 @@ public class KeyMap {
         map.put(KeyCode.PERIOD, Action.SCROLL_RIGHT);
         map.put(KeyCode.KEY_A, Action.ABILITIES);
         map.put(KeyCode.KEY_L, Action.ATTRIBUTES);
+        map.put(KeyCode.KEY_S, Action.SKILL_TREES);
     }
     
     public KeyMap(File keyMapFile){
@@ -99,6 +100,7 @@ public class KeyMap {
         MEMORY_TOGGLE,
         ABILITIES,
         ATTRIBUTES,
+        SKILL_TREES,
         NOTHING
     }
 

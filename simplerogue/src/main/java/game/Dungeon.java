@@ -2,6 +2,8 @@ package game;
 
 import static game.App.randomNumber;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
 
 import game.display.Display;
@@ -11,6 +13,9 @@ import game.floorgeneration.DefaultFloorGenerator;
 import game.floorgeneration.pools.LayerPool;
 import game.floorgeneration.pools.Pool;
 import game.floorgeneration.pools.layers.LayerOnePool;
+import game.gamelogic.skilltrees.SkillTree;
+import game.gamelogic.skilltrees.rogue.RogueSkillTree;
+import game.gamelogic.skilltrees.warrior.WarriorSkillTree;
 import game.gameobjects.Floor;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Chest;
@@ -31,7 +36,13 @@ public class Dungeon {
     private static int sY;
     
     private static LayerPool currentLayerPool = new LayerOnePool();
-    
+
+    private static List<SkillTree> availableSkillTrees = new ArrayList<>();
+
+    public static List<SkillTree> getAvailableSkillTrees() {
+        return availableSkillTrees;
+    }
+
     public static Pool<Supplier<Entity>> getCurrentBossPool() {
         return currentLayerPool.BOSS_POOL;
     }
@@ -73,6 +84,9 @@ public class Dungeon {
         sX = sizeX;
         sY = sizeY;
         currentFloor = new Floor(sX, sY, new DefaultFloorGenerator(currentDepth));
+        availableSkillTrees.clear();
+        availableSkillTrees.add(new WarriorSkillTree());
+        availableSkillTrees.add(new RogueSkillTree());
     }
 
     public static void update(int time){
