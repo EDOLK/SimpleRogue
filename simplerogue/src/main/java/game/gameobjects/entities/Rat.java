@@ -31,7 +31,7 @@ public class Rat extends Animal implements DropsXP, HasDodge, HasDrops{
         setDescription("A giant rat, made feral by the negative influence of the dungeon.");
         setWeight(5);
         setCorpse(new Corpse(this));
-        setBehavior(new AnimalBehavior(this));
+        //setBehavior(new AnimalBehavior(this));
 
         Weapon teeth = new Weapon();
         teeth.setName("teeth");

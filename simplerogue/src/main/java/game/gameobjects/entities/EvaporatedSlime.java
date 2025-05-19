@@ -33,7 +33,7 @@ public class EvaporatedSlime extends Animal implements HasResistances, HasDodge,
         setDescription("A cloud of green vapor, still somehow keeping itself together.");
         setWeight(0);
         setCorpse(null);
-        setBehavior(new AnimalBehavior(this));
+        //setBehavior(new AnimalBehavior(this));
 
         Weapon mass = new Weapon();
         mass.setName("mass");
