@@ -115,7 +115,7 @@ public class Clobber implements Ability, Behavable{
 
                 AttackResult result = Floor.doAttack(owner, clobberee, weaponToUse);
 
-                if (result.hit()) {
+                if (result.hit() && result.defender().isAlive()) {
                     if (nextSpace.isOccupied()) {
                         clobberee.dealDamage(2, DamageType.BLUNT);
                     } else {
@@ -161,35 +161,33 @@ public class Clobber implements Ability, Behavable{
 
         @Override
         public int overrideBehave(Behavable behavable) {
-            return behavable.behave();
-            //if (randNum == 1) {
-            //    return behavable.behave();
-            //} else {
-            //    List<Space> adjacentSpaces = Space.getAdjacentSpaces(this.owner.getSpace());
-            //    Iterator<Space> it = adjacentSpaces.iterator();
-            //    while (it.hasNext()) {
-            //        Space space = it.next();
-            //        if (space.isOccupied()) {
-            //            it.remove();
-            //        }
-            //    }
-            //    if (!adjacentSpaces.isEmpty() && App.randomNumber(0,1) == 0) {
-            //        Space.moveEntity(this.owner, App.getRandom(adjacentSpaces));
-            //        return this.owner.getTimeToMove();
-            //    }
-            //    Display.log("The " + this.owner.getName() + " sways arround dizzily.", owner.getSpace());
-            //    return this.owner.getTimeToWait();
-            //}
+            if (randNum == 1) {
+                return behavable.behave();
+            } else {
+                List<Space> adjacentSpaces = Space.getAdjacentSpaces(this.owner.getSpace());
+                Iterator<Space> it = adjacentSpaces.iterator();
+                while (it.hasNext()) {
+                    Space space = it.next();
+                    if (space.isOccupied()) {
+                        it.remove();
+                    }
+                }
+                if (!adjacentSpaces.isEmpty() && App.randomNumber(0,1) == 0) {
+                    Space.moveEntity(this.owner, App.getRandom(adjacentSpaces));
+                    return this.owner.getTimeToMove();
+                }
+                Display.log("The " + this.owner.getName() + " sways arround dizzily.", owner.getSpace());
+                return this.owner.getTimeToWait();
+            }
         }
 
         @Override
         public boolean overrideIsActive(Behavable behavable) {
-            return behavable.isActive();
-            //randNum = App.randomNumber(1,5);
-            //if (randNum == 1) {
-            //    return behavable.isActive();
-            //}
-            //return true;
+            randNum = App.randomNumber(1,5);
+            if (randNum == 1) {
+                return behavable.isActive();
+            }
+            return true;
         }
 
     }
