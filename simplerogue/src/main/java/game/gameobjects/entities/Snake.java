@@ -33,7 +33,7 @@ public class Snake extends Animal implements DropsXP, HasDodge, OnHit, HasDrops{
         setTileName("Giant Snake");
         setDescription("A giant Snake. Fast and venomous.");
         setCorpse(new Corpse(this));
-        setBehavior(new AnimalBehavior(this));
+        //setBehavior(new AnimalBehavior(this));
 
         Weapon fangs = new Weapon();
         fangs.setName("fangs");

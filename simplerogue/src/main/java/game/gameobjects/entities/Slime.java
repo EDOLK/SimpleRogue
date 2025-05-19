@@ -43,7 +43,7 @@ public class Slime extends Animal implements DropsXP, HasDodge, HasResistances, 
         setTileName("Slime");
         setDescription("A giant slime.");
         setWeight(5);
-        setBehavior(new AnimalBehavior(this));
+        //setBehavior(new AnimalBehavior(this));
 
         Weapon mass = new Weapon();
         mass.setName("mass");

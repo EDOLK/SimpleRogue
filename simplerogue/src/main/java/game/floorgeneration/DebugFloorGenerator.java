@@ -7,6 +7,7 @@ import game.gamelogic.Examinable;
 import game.gamelogic.Interactable;
 import game.gamelogic.SelfAware;
 import game.gamelogic.behavior.AnimalBehavior;
+import game.gamelogic.behavior.AnimalWandering;
 import game.gamelogic.behavior.Behavable;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Entity;
@@ -29,7 +30,8 @@ public class DebugFloorGenerator extends FloorGenerator {
         generateSpaces();
         generateRectangle(5,5,20,20);
         spaces[7][10].setOccupant(playerEntity);
-        spaces[12][10].addTerrain(new DebugSpawner(()->{return new DebugRat();},15));
+        //spaces[12][10].addTerrain(new DebugSpawner(()->{return new DebugRat();},15));
+        spaces[12][10].setOccupant(new DebugRat());
     }
 
     protected void generateSpaces(){
@@ -97,7 +99,8 @@ public class DebugFloorGenerator extends FloorGenerator {
 
         public DebugRat(){
             super();
-            setBehavior(new AnimalBehavior(this));
+            //setBehavior(new AnimalBehavior(this));
+            setBehavior(new AnimalWandering(this));
         }
 
         private class DebugBehavior extends AnimalBehavior{
