@@ -21,6 +21,7 @@ import game.gamelogic.SelfAware;
 import game.gamelogic.behavior.AnimalBehavior;
 import game.gamelogic.behavior.Behavable;
 import game.gamelogic.behavior.Behavior;
+import game.gameobjects.AttackResult;
 import game.gameobjects.DamageType;
 import game.gameobjects.Floor;
 import game.gameobjects.Space;
@@ -397,8 +398,18 @@ public class Spider extends Animal implements HasDodge, HasInventory{
         }
 
         @Override
-        public void overrideAttack(Entity attacker, Entity attackee) {
-            overrideMovement(attacker, null);
+        public AttackResult overrideAttack(Entity attacker, Entity attackee, Weapon attackerWeapon) {
+            if (attacker instanceof PlayerEntity){
+                Display.log("You struggle against the webs.");
+            } else {
+                Display.log("The " + attacker.getName() + " struggles against the webs", attacker.getSpace());
+            }
+            return new AttackResult(false, false, 0, null, attacker, attackee);
+        }
+
+        @Override
+        public List<AttackResult> overrideAttack(Entity attacker, Entity attackee) {
+            return List.of(overrideAttack(attacker,attackee,null));
         }
 
         @Override
@@ -431,7 +442,6 @@ public class Spider extends Animal implements HasDodge, HasInventory{
             }
             return null;
         }
-        
     }
 
     

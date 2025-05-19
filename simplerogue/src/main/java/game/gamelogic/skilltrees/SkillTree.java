@@ -50,7 +50,7 @@ public abstract class SkillTree implements HasName {
         private Map<Skill, Integer> skillRequirements;
         private String name = "Placeholder name";
         private int levelRequirement = -1;
-        private int cost = -1;
+        private int cost = 0;
 
         private SkillEntry(){}
 
@@ -80,7 +80,7 @@ public abstract class SkillTree implements HasName {
         }
 
         public boolean checkForCost(Entity entity){
-            if (cost != -1) {
+            if (cost != 0) {
                 if (!(entity instanceof UsesSkillTrees ust)) {
                     return false;
                 }
@@ -196,7 +196,7 @@ public abstract class SkillTree implements HasName {
                 }
             }
 
-            if (cost != -1) {
+            if (cost != 0) {
                 String e = "Cost: " + cost;
                 if (checkForCost(entity)) {
                     fulfilled.add(e);
