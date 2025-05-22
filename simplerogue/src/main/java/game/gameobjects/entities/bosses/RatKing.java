@@ -1,7 +1,7 @@
 package game.gameobjects.entities.bosses;
 
-import static game.App.randomNumber;
 import static game.App.getRandom;
+import static game.App.randomNumber;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +13,6 @@ import game.gamelogic.DropsXP;
 import game.gamelogic.HasInventory;
 import game.gamelogic.HasResistances;
 import game.gamelogic.Levelable;
-import game.gamelogic.behavior.AnimalBehavior;
 import game.gamelogic.combat.AttackInfo;
 import game.gamelogic.combat.OnDeath;
 import game.gamelogic.resistances.RangeResistance;
@@ -42,7 +41,6 @@ public class RatKing extends Animal implements HasInventory, DropsXP{
         setName("Rat King");
         setDescription("A mass of rats, bound together by a strange gelatinous substance. Every once in a while, a rat will free itself from the pile.");
         setCorpse(new Corpse(new Rat()));
-        setBehavior(new RatKingBehavior(this));
 
         Weapon fangs = new Weapon();
         fangs.setName("Fangs");
@@ -51,49 +49,40 @@ public class RatKing extends Animal implements HasInventory, DropsXP{
         setUnarmedWeapon(fangs);
     }
 
-    public class RatKingBehavior extends AnimalBehavior {
-
-        public RatKingBehavior(Entity animal) {
-            super(animal);
+    @Override
+    public int behave(){
+        if (randomNumber(0,2) == 2 && (ratCount < RAT_MAX && this.isWithinVision(Dungeon.getCurrentFloor().getPlayer()) || ratCount < RAT_PREP)) {
+            Space space = getRandomSpace();
+            if (space != null) {
+                space.setOccupant(RatKing.this.new SummonedRat());
+                ratCount++;
+            }
         }
-
-        @Override
-        public int behave() {
-            int t = 100;
-            if (randomNumber(0,1) == 1) {
-                Space space = getRandomSpace();
-                if (space != null) {
-                    Space.moveEntity(animal,space);
-                    t = animal.getTimeToMove();
-                }
-            } else {
-                t = super.behave();
+        if (randomNumber(0,1) == 1) {
+            Space space = getRandomSpace();
+            if (space != null) {
+                Space.moveEntity(this,space);
+                return this.getTimeToMove();
             }
-            if (randomNumber(0,2) == 2 && (ratCount < RAT_MAX && animal.isWithinVision(Dungeon.getCurrentFloor().getPlayer()) || ratCount < RAT_PREP)) {
-                Space space = getRandomSpace();
-                if (space != null) {
-                    ratCount++;
-                    space.setOccupant(RatKing.this.new SummonedRat());
-                }
-            }
-            return t;
+        } else {
+            return super.behave();
         }
+        return this.getTimeToWait();
+    }
 
-        private Space getRandomSpace(){
-            List<Space> list = Space.getAdjacentSpaces(animal.getSpace());
-            for (int i = 0; i < list.size(); i++) {
-                Space space = list.get(i);
-                if (space.isOccupied()) {
-                    list.remove(space);
-                    i--;
-                }
+    private Space getRandomSpace(){
+        List<Space> list = Space.getAdjacentSpaces(this.getSpace());
+        for (int i = 0; i < list.size(); i++) {
+            Space space = list.get(i);
+            if (space.isOccupied()) {
+                list.remove(space);
+                i--;
             }
-            if (list.size() > 0) {
-                return getRandom(list);
-            }
-            return null;
         }
-        
+        if (list.size() > 0) {
+            return getRandom(list);
+        }
+        return null;
     }
 
     @Override

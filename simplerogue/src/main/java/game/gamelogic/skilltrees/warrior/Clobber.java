@@ -93,16 +93,15 @@ public class Clobber implements Ability, Behavable{
                 }
             }
 
-            if (validWeapons.isEmpty() && owner.getUnarmedWeapon() != null && owner.getUnarmedWeapon().getDamageType() == DamageType.BLUNT) {
-                validWeapons.add(owner.getUnarmedWeapon());
-            }
+            Weapon weaponToUse = null;
 
-            if (validWeapons.isEmpty()) {
-                Display.log("No valid weapons!");
+            if (!validWeapons.isEmpty()) {
+                weaponToUse = App.getRandom(validWeapons);
+            } else if (owner.getUnarmedWeapon() != null && owner.getUnarmedWeapon().getDamageType() == DamageType.BLUNT) {
+                weaponToUse = owner.getUnarmedWeapon();
+            } else {
                 return true;
             }
-
-            Weapon weaponToUse = App.getRandom(validWeapons);
 
             if (space.isOccupied() && space.getOccupant() instanceof Animal) {
                 Entity clobberee = space.getOccupant();

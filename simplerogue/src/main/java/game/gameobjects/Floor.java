@@ -503,7 +503,7 @@ public class Floor{
 
         defenderDodge += getDodge(defender);
 
-        attackInfo.setDefenderDogdge(defenderDodge);
+        attackInfo.setDefenderDodge(defenderDodge);
 
         int naturalAttackerRoll = App.randomNumber(1, 20);
 

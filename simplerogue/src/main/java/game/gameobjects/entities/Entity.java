@@ -251,6 +251,16 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
         return null;
     }
 
+    public List<Entity> getEntitiesInVision(){
+        List<Entity> list = new ArrayList<>();
+        for (Space space : this.getSpacesInVision()) {
+            if (space.isOccupied()) {
+                list.add(space.getOccupant());
+            }
+        }
+        return list;
+    }
+
     public List<Space> getSpacesInVision(){
 
         Space[][] spaces = getCurrentFloor().getSpaces();

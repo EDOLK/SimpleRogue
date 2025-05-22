@@ -8,7 +8,7 @@ public class AttackInfo{
     private Entity attacker;
     private Entity defender;
     private Weapon activeWeapon;
-    private int defenderDogdge;
+    private int defenderDodge;
     private int baseRoll;
     private int modifiedRoll;
     private boolean crit;
@@ -52,10 +52,10 @@ public class AttackInfo{
         this.activeWeapon = activeWeapon;
     }
     public int getDefenderDodge() {
-        return defenderDogdge;
+        return defenderDodge;
     }
-    public void setDefenderDogdge(int defenderDogdge) {
-        this.defenderDogdge = defenderDogdge;
+    public void setDefenderDodge(int defenderDodge) {
+        this.defenderDodge = defenderDodge;
     }
     public int getBaseRoll() {
         return baseRoll;

@@ -10,7 +10,6 @@ import game.gamelogic.Consumable;
 import game.gamelogic.DropsXP;
 import game.gamelogic.HasDodge;
 import game.gamelogic.HasResistances;
-import game.gamelogic.behavior.AnimalBehavior;
 import game.gamelogic.resistances.PercentageResistance;
 import game.gamelogic.resistances.Resistance;
 import game.gameobjects.DamageType;
@@ -33,7 +32,6 @@ public class EvaporatedSlime extends Animal implements HasResistances, HasDodge,
         setDescription("A cloud of green vapor, still somehow keeping itself together.");
         setWeight(0);
         setCorpse(null);
-        //setBehavior(new AnimalBehavior(this));
 
         Weapon mass = new Weapon();
         mass.setName("mass");

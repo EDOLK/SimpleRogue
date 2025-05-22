@@ -28,7 +28,7 @@ public class Burning extends Status implements Behavable, LightSource, Seperate{
     
     
     public Burning(){
-        this(1, 3, 5, 0, 1);
+        this(1, 3, 3, 0, 1);
     }
 
     public Burning(int minDamage, int maxDamage, int turns, int minIntensity, int maxIntensity) {

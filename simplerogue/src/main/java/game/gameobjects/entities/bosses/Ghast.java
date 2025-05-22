@@ -12,7 +12,6 @@ import game.gamelogic.DropsXP;
 import game.gamelogic.HasDodge;
 import game.gamelogic.HasInventory;
 import game.gamelogic.HasResistances;
-import game.gamelogic.behavior.AnimalBehavior;
 import game.gamelogic.combat.AttackInfo;
 import game.gamelogic.combat.OnHitted;
 import game.gamelogic.resistances.PercentageResistance;
@@ -47,7 +46,6 @@ public class Ghast extends Animal implements HasInventory, DropsXP, HasResistanc
         setName("Ghast");
         setDescription("A shambling, bloated undead. It stinks.");
         setCorpse(null);
-        setBehavior(new GhastBehavior(this));
 
         Weapon claws = new Weapon();
         claws.setName("Claws");
@@ -64,34 +62,12 @@ public class Ghast extends Animal implements HasInventory, DropsXP, HasResistanc
         return 25;
     }
 
-    public class GhastBehavior extends AnimalBehavior {
-
-        public GhastBehavior(Entity animal) {
-            super(animal);
+    @Override
+    public int behave(){
+        if (randomNumber(0,1) == 1) {
+            this.getSpace().addGas(new Miasma(randomNumber(1,5)));
         }
-
-        @Override
-        public int behave() {
-            if (randomNumber(0,1) == 1) {
-                animal.getSpace().addGas(new Miasma(randomNumber(1,5)));
-            }
-            return super.behave();
-        }
-
-        @Override
-        protected PathConditions generateConditionsToSpace() {
-            return new PathConditions()
-                .addDeterrentConditions((space) -> {
-                    if (space.getTerrains().size() == 1 && space.getTerrains().get(0) instanceof Miasma) {
-                        return 0d;
-                    } else if (!space.getTerrains().isEmpty()) {
-                        return 10d;
-                    }
-                    return 0d;
-                }
-            );
-        }
-        
+        return super.behave();
     }
 
     @Override
@@ -107,5 +83,19 @@ public class Ghast extends Animal implements HasInventory, DropsXP, HasResistanc
     @Override
     public int getDodge() {
         return 2;
+    }
+
+    @Override
+    public PathConditions getConditionsToSpace() {
+        return new PathConditions()
+            .addDeterrentConditions((space) -> {
+                if (space.getTerrains().size() == 1 && space.getTerrains().get(0) instanceof Miasma) {
+                    return 0d;
+                } else if (!space.getTerrains().isEmpty()) {
+                    return 10d;
+                }
+                return 0d;
+            }
+        );
     }
 }

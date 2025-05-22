@@ -3,7 +3,7 @@ package game.gamelogic.behavior;
 import java.util.Optional;
 
 import game.Path;
-import game.PathConditions;
+import game.Path.PathNotFoundException;
 import game.gameobjects.Floor;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Animal;
@@ -16,69 +16,38 @@ public class AnimalHunting extends Behavior {
     private Space[] path;
     private int locationInPath = 0;
 
-    private AnimalHunting(Animal animal, Entity target) {
+    public AnimalHunting(Animal animal, Entity target) throws PathNotFoundException {
         this.animal = animal;
         this.target = target;
+        this.path = Path.getPathAsArray(animal.getSpace(), target.getSpace(), animal.getConditionsToEntity());
     }
 
-    public static Optional<AnimalHunting> createHunting(Animal animal, Entity target){
-        try {
-            AnimalHunting h = new AnimalHunting(animal, target);
-            Space[] path = Path.getPathAsArray(animal.getSpace(), target.getSpace(), h.generateConditionsToEntity());
-            h.path = path;
-            return Optional.of(h);
-        } catch (Exception e) {
-            return Optional.empty();
-        }
+    public Space[] getPath() {
+        return path;
     }
 
     @Override
     public int behave() {
-        if (this.path == null) {
-            try {
-                this.path = Path.getPathAsArray(animal.getSpace(), target.getSpace(), generateConditionsToEntity());
-            } catch (Exception e) {
-                return setAndReturn(new AnimalWandering(this.animal));
-            }
-        }
-        if (path[locationInPath].getOccupant() == animal && path[path.length-1].getOccupant() == target && !pathIsBlocked()) 
-        {
+        if (path[locationInPath].getOccupant() == animal && path[path.length-1].getOccupant() == target && !pathIsBlocked()) {
             Space possibleSpace = path[locationInPath+1];
             if (Space.moveEntity(animal, possibleSpace)) {
                 locationInPath++;
                 return animal.getTimeToMove();
             }
-            Floor.doAttack(this.animal, this.target);
-            return animal.getTimeToAttack();
-        }
-        Optional<AnimalHunting> hunting = createHunting(this.animal, this.target);
-        if (hunting.isPresent()) {
-            animal.setBehavior(hunting.get());
-        } else {
-            animal.setBehavior(new AnimalWandering(this.animal));
-        }
-        if (animal.isActive()) {
-            return animal.behave();
-        }
-        return animal.getTimeToWait();
-    }
-
-    private int setAndReturn(Behavior newBehavior){
-        this.animal.setBehavior(newBehavior);
-        if (animal.isActive()) {
-            return animal.behave();
-        }
-        return animal.getTimeToWait();
-    }
-
-    private boolean pathIsBlocked(){
-        for (int i = locationInPath+1; i < path.length-1; i++) {
-            Space space = path[i];
-            if (generateConditionsToSpace().evaluateForForbidden(space)) {
-                return true;
+            if (possibleSpace.isOccupied() && possibleSpace.getOccupant() == target) {
+                Floor.doAttack(animal, target);
+                return animal.getTimeToAttack();
             }
         }
-        return false;
+        Optional<? extends Behavior> hunting = getHuntingBehavior(target);
+        if (hunting.isPresent()) {
+            return animal.setAndBehave(hunting.get());
+        }
+        Optional<? extends Behavior> wandering = getWanderingBehavior();
+        if (wandering.isPresent()) {
+            return animal.setAndBehave(wandering.get());
+        }
+        return animal.getTimeToWait();
     }
 
     @Override
@@ -86,16 +55,32 @@ public class AnimalHunting extends Behavior {
         return this.animal.isAlive();
     }
 
-    protected PathConditions generateConditionsToSpace(){
-        return new PathConditions().addDeterrentConditions(
-            (space) -> {
-                return !space.getTerrains().isEmpty() ? 10d : 0d;
-            }
-        );
+    protected Optional<? extends Behavior> getWanderingBehavior(){
+        return Optional.of(new AnimalWandering(animal));
     }
 
-    protected PathConditions generateConditionsToEntity(){
-        return generateConditionsToSpace();
+    protected Optional<? extends Behavior> getHuntingBehavior(Entity target){
+        try {
+            AnimalHunting h = new AnimalHunting(animal, target);
+            //TODO: Bandaid fix. Fix properly later.
+            if (!h.path[h.path.length-1].isOccupied() || h.path[h.path.length-1].getOccupant() != target) {
+                return Optional.empty();
+            }
+            return Optional.of(h);
+        } catch (Exception e) {
+
+        }
+        return Optional.empty();
+    }
+
+    private boolean pathIsBlocked(){
+        for (int i = locationInPath+1; i < path.length-1; i++) {
+            Space space = path[i];
+            if (this.animal.getConditionsToSpace().evaluateForForbidden(space)) {
+                return true;
+            }
+        }
+        return false;
     }
     
 }

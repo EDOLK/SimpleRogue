@@ -2,6 +2,7 @@ package game.gameobjects.entities;
 
 import org.hexworks.zircon.api.color.TileColor;
 
+import game.PathConditions;
 import game.gamelogic.AttributeMap;
 import game.gamelogic.HasAttributes;
 import game.gamelogic.behavior.AnimalWandering;
@@ -42,6 +43,26 @@ public abstract class Animal extends Entity implements HasBehavior, HasAttribute
     @Override
     public boolean isEnemy(Entity entity){
         return entity instanceof PlayerEntity;
+    }
+
+    public PathConditions getConditionsToSpace(){
+        return new PathConditions().addDeterrentConditions(
+            (space) -> {
+                return !space.getTerrains().isEmpty() ? 10d : 0d;
+            }
+        );
+    }
+
+    public PathConditions getConditionsToEntity(){
+        return this.getConditionsToSpace();
+    }
+    
+    public int setAndBehave(Behavior newBehavior){
+        this.setBehavior(newBehavior);
+        if (this.isActive()) {
+            return this.behave();
+        }
+        return this.getTimeToWait();
     }
 
 }
