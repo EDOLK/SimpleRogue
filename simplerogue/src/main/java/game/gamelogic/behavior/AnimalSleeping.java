@@ -1,16 +1,11 @@
 package game.gamelogic.behavior;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import game.App;
 import game.display.Display;
 import game.gamelogic.HasSkills;
 import game.gamelogic.SkillMap.Skill;
-import game.gameobjects.Space;
 import game.gameobjects.entities.Animal;
 import game.gameobjects.entities.Entity;
-import game.gameobjects.entities.PlayerEntity;
 
 public class AnimalSleeping extends Behavior{
 
@@ -53,22 +48,12 @@ public class AnimalSleeping extends Behavior{
     }
 
     protected Entity checkForTarget(){
-        for (Entity entity : getEntitiesInVision()) {
-            if (entity instanceof PlayerEntity playerEntity){
-                return playerEntity;
+        for (Entity entity : this.animal.getEntitiesInVision()) {
+            if (this.animal.isEnemy(entity)) {
+                return entity;
             }
         }
         return null;
     }
 
-    protected List<Entity> getEntitiesInVision(){
-        List<Entity> entityList = new ArrayList<Entity>();
-        for (Space space : this.animal.getSpacesInVision()) {
-            if (space.isOccupied()){
-                entityList.add(space.getOccupant());
-            }
-        }
-        return entityList;
-    }
-    
 }

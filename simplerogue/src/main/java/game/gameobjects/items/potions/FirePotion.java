@@ -27,7 +27,7 @@ public class FirePotion extends Item implements Aimable, Consumable{
 
     @Override
     public void onHit(Entity target) {
-        target.addStatus(new Burning(1, 3, 5, 0, 1));
+        target.addStatus(new Burning());
     }
 
     @Override

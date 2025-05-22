@@ -707,6 +707,9 @@ public final class FloorMenu extends Menu{
             case ATTRIBUTES:
                 Display.setMenu(new AttributeMenu(currentFloor.getPlayer()));
                 break;
+            case SKILL_TREES:
+                Display.setMenu(new SkillTreesMenu(currentFloor.getPlayer()));
+                break;
             default:
                 return UIEventResponse.pass();
         }

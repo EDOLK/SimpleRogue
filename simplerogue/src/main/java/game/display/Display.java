@@ -171,6 +171,13 @@ public class Display {
             }
         }
     }
+
+    public static void refreshMenu(){
+        Menu prevMenu = currentMenu.getPreviousMenu();
+        currentMenu = currentMenu.refresh();
+        currentMenu.setPreviousMenu(prevMenu);
+        currentMenu.getScreen().display();
+    }
     
     public static void revertMenu(int amount){
         for (int i = 0; i < amount; i++) {

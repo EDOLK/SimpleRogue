@@ -22,6 +22,7 @@ import game.gamelogic.HasDodge;
 import game.gamelogic.HasOffHand;
 import game.gamelogic.LightSource;
 import game.gamelogic.OverridesAttack;
+import game.gamelogic.OverridesBehavable;
 import game.gamelogic.abilities.Ability;
 import game.gamelogic.abilities.HasAbilities;
 import game.gamelogic.behavior.Behavable;
@@ -103,6 +104,30 @@ public class Floor{
         update(100);
     }
 
+    public static class PreppedOverride implements Behavable{
+        private OverridesBehavable override;
+        private Behavable original;
+        private PreppedOverride(OverridesBehavable override, Behavable original){
+            this.override = override;
+            this.original = original;
+        }
+        private PreppedOverride(){}
+        public OverridesBehavable getOverride() {
+            return override;
+        }
+        public Behavable getOriginal() {
+            return original;
+        }
+        @Override
+        public int behave() {
+            return override.overrideBehave(original);
+        }
+        @Override
+        public boolean isActive() {
+            return override.overrideIsActive(original);
+        }
+    }
+
     public void update(int time){
 
         this.lastTime = time;
@@ -118,14 +143,23 @@ public class Floor{
                 if (currentSpace.isOccupied()){
                     Entity entity = currentSpace.getOccupant();
 
+                    Behavable bEntity = null;
+
                     if (entity instanceof Behavable behavableEntity){
-                        behavables.add(behavableEntity);
+                        bEntity = behavableEntity;
                     }
 
                     for (Status status : entity.getStatuses()) {
                         if (status instanceof Behavable behavableStatus){
                             behavables.add(behavableStatus);
                         }
+                        if (status instanceof OverridesBehavable ovBehavable && bEntity != null){
+                            bEntity = new PreppedOverride(ovBehavable, bEntity);
+                        }
+                    }
+
+                    if (bEntity != null) {
+                        behavables.add(bEntity);
                     }
 
                     if (entity instanceof HasAbilities hasAbilities) {
@@ -322,12 +356,11 @@ public class Floor{
         return strongestLightSource;
     }
 
-    public static void doAttack(Entity attacker, Entity defender){
+    public static List<AttackResult> doAttack(Entity attacker, Entity defender){
 
         OverridesAttack overridesAttack = (OverridesAttack)attacker.getStatusByClass(OverridesAttack.class);
         if (overridesAttack != null){
-            overridesAttack.overrideAttack(attacker, defender);
-            return;
+            return overridesAttack.overrideAttack(attacker, defender);
         }
 
         List<Weapon> attackerActiveWeapons = new ArrayList<Weapon>();
@@ -349,216 +382,241 @@ public class Floor{
                 } else {
                     Display.log(attacker.getName() + " tries to attack the " + defender.getName() + ".", defender.getSpace());
                 }
-                return;
+                return List.of(new AttackResult(false, false, 0, null, attacker, defender));
             } else {
                 attackerActiveWeapons.add(attacker.getUnarmedWeapon());
             }
         }
 
+        List<AttackResult> results = new ArrayList<>();
+
         for (Weapon weapon : attackerActiveWeapons) {
-            AttackInfo attackInfo = new AttackInfo(attacker, defender, weapon);
-            int defenderDodge = 0;
-            
-            List<CombatModifier> attackerCombatMods = getCombatModifiers(attacker);
-            List<OnAttack> attackerOnAttack = new ArrayList<OnAttack>();
-            List<OnAttacked> attackerOnAttacked = new ArrayList<OnAttacked>();
-            List<OnHit> attackerOnHit = new ArrayList<OnHit>();
-            List<OnHitted> attackerOnHitted = new ArrayList<OnHitted>();
-            List<OnMiss> attackerOnMiss = new ArrayList<OnMiss>();
-            List<OnMissed> attackerOnMissed = new ArrayList<OnMissed>();
-            List<OnCrit> attackerOnCrit = new ArrayList<OnCrit>();
-            List<OnCritted> attackerOnCritted = new ArrayList<OnCritted>();
-            List<OnKill> attackerOnKill = new ArrayList<OnKill>();
-            for (CombatModifier combatModifier : attackerCombatMods) {
-                if (combatModifier instanceof OnAttack onAttack){
-                    attackerOnAttack.add(onAttack);
-                }
-                if (combatModifier instanceof OnAttacked onAttacked){
-                    attackerOnAttacked.add(onAttacked);
-                }
-                if (combatModifier instanceof OnHit onHit){
-                    attackerOnHit.add(onHit);
-                }
-                if (combatModifier instanceof OnHitted onHitted){
-                    attackerOnHitted.add(onHitted);
-                }
-                if (combatModifier instanceof OnMiss onMiss){
-                    attackerOnMiss.add(onMiss);
-                }
-                if (combatModifier instanceof OnMissed onMissed){
-                    attackerOnMissed.add(onMissed);
-                }
-                if (combatModifier instanceof OnCrit onCrit){
-                    attackerOnCrit.add(onCrit);
-                }
-                if (combatModifier instanceof OnCritted onCritted){
-                    attackerOnCritted.add(onCritted);
-                }
-                if (combatModifier instanceof OnKill onKill) {
-                    attackerOnKill.add(onKill);
-                }
-            }
-
-            List<CombatModifier> defenderCombatMods = getCombatModifiers(defender);
-            List<OnAttack> defenderOnAttack = new ArrayList<OnAttack>();
-            List<OnAttacked> defenderOnAttacked = new ArrayList<OnAttacked>();
-            List<OnHit> defenderOnHit = new ArrayList<OnHit>();
-            List<OnHitted> defenderOnHitted = new ArrayList<OnHitted>();
-            List<OnMiss> defenderOnMiss = new ArrayList<OnMiss>();
-            List<OnMissed> defenderOnMissed = new ArrayList<OnMissed>();
-            List<OnCrit> defenderOnCrit = new ArrayList<OnCrit>();
-            List<OnCritted> defenderOnCritted = new ArrayList<OnCritted>();
-            List<OnDeath> defenderOnDeath = new ArrayList<OnDeath>();
-            for (CombatModifier combatModifier : defenderCombatMods) {
-                if (combatModifier instanceof OnAttack onAttack){
-                    defenderOnAttack.add(onAttack);
-                }
-                if (combatModifier instanceof OnAttacked onAttacked){
-                    defenderOnAttacked.add(onAttacked);
-                }
-                if (combatModifier instanceof OnHit onHit){
-                    defenderOnHit.add(onHit);
-                }
-                if (combatModifier instanceof OnHitted onHitted){
-                    defenderOnHitted.add(onHitted);
-                }
-                if (combatModifier instanceof OnMiss onMiss){
-                    defenderOnMiss.add(onMiss);
-                }
-                if (combatModifier instanceof OnMissed onMissed){
-                    defenderOnMissed.add(onMissed);
-                }
-                if (combatModifier instanceof OnCrit onCrit){
-                    defenderOnCrit.add(onCrit);
-                }
-                if (combatModifier instanceof OnCritted onCritted){
-                    defenderOnCritted.add(onCritted);
-                }
-                if (combatModifier instanceof OnDeath onDeath){
-                    defenderOnDeath.add(onDeath);
-                }
-            }
-
-            defenderDodge += getDodge(defender);
-
-            attackInfo.setDefenderDogdge(defenderDodge);
-
-            int naturalAttackerRoll = App.randomNumber(1, 20);
-
-            attackInfo.setBaseRoll(naturalAttackerRoll);
-
-            boolean crit = naturalAttackerRoll == 20;
-
-            attackInfo.setCrit(crit);
-
-            int modifiedAttackerRoll = naturalAttackerRoll;
-
-            modifiedAttackerRoll += getAccuracy(attacker, weapon);
-
-            attackInfo.setModifiedRoll(modifiedAttackerRoll);
-            
-            int damage = weapon.generateDamage();
-
-            if (attacker instanceof HasAttributes hasAttributes) {
-                damage += hasAttributes.getAttribute(Attribute.STRENGTH);
-            }
-            
-            damage = crit ? damage * 2 : damage;
-
-            attackInfo.setDamage(damage);
-
-            DamageType attackerDamageType = weapon.getDamageType();
-            
-            attackInfo.setDamageType(attackerDamageType);
-
-            boolean hit = modifiedAttackerRoll >= defenderDodge;
-
-            attackInfo.setHit(hit);
-            
-            int damageDelt = 0;
-
-            attackInfo.setDamageDelt(damageDelt);
-
-            // attacker on attack and defender on attacked
-            for (OnAttack onAttack : attackerOnAttack) {
-                onAttack.doOnAttack(attacker, defender, attackInfo);
-            }
-            for (OnAttacked onAttacked : defenderOnAttacked) {
-                onAttacked.doOnAttacked(defender, attacker, attackInfo);
-            }
-            //
-            
-            if (hit){
-
-                if (crit) {
-                    if (attacker instanceof PlayerEntity){
-                        Display.log("Critical hit!");
-                    } else if (defender instanceof PlayerEntity){
-                        Display.log("The " + attacker.getName() + " scores a critical hit on you.");
-                    } else {
-                        Display.log("The " + attacker.getName() + " scores a critical hit on the " + defender.getName() + ".", attacker.getSpace());
-                    }
-                }
-
-                damageDelt = defender.dealDamage(damage, attackerDamageType, attacker);
-
-                attackInfo.setDamageDelt(damageDelt);
-
-                // attacker on hit and defender on hitted
-                for (OnHit onHit : attackerOnHit) {
-                    onHit.doOnHit(attacker, defender, attackInfo);
-                }
-                for (OnHitted onHitted : defenderOnHitted) {
-                    onHitted.doOnHitted(defender, attacker, attackInfo);
-                }
-                //
-                
-                if (crit){
-
-                    // attacker on crit and defender on critted
-                    for (OnCrit onCrit : attackerOnCrit) {
-                        onCrit.doOnCrit(attacker, defender, attackInfo);
-                    }
-                    for (OnCritted onCritted : defenderOnCritted) {
-                        onCritted.doOnCritted(defender, attacker, attackInfo);
-                    }
-
-                }
-
-                if (!defender.isAlive()) {
-                    for (OnDeath onDeath : defenderOnDeath) {
-                        onDeath.doOnDeath(defender, attacker, attackInfo);
-                    }
-                    for (OnKill onKill : attackerOnKill) {
-                        onKill.doOnKill(attacker, defender, attackInfo);
-                    }
-                }
-
-            } else {
-                if (attacker instanceof PlayerEntity){
-                    Display.log("You miss the " + defender.getName() + ".");
-                } else if (defender instanceof PlayerEntity){
-                    Display.log("The " + attacker.getName() + " misses you.");
-                } else {
-                    Display.log(attacker.getName() + " misses the " + defender.getName() + ".", defender.getSpace());
-                }
-
-                // attacker on miss and defender on missed
-                for (OnMiss onMiss : attackerOnMiss) {
-                    onMiss.doOnMiss(attacker, defender, attackInfo);
-                }
-                for (OnMissed onMissed : defenderOnMissed) {
-                    onMissed.doOnMissed(defender, attacker, attackInfo);
-                }
-                //
-            }
+            results.add(attackWithWeapon(attacker, defender, weapon));
         }
 
         if (attacker instanceof PlayerEntity) {
             Display.getRootMenu().writeEnemyInfo(defender);
         }
 
+        return results;
+
     }
+
+    public static AttackResult doAttack(Entity attacker, Entity defender, Weapon attackerWeapon){
+        OverridesAttack overridesAttack = (OverridesAttack)attacker.getStatusByClass(OverridesAttack.class);
+        if (overridesAttack != null){
+            return overridesAttack.overrideAttack(attacker, defender, attackerWeapon);
+        }
+
+        AttackResult result = attackWithWeapon(attacker, defender, attackerWeapon);
+
+        if (attacker instanceof PlayerEntity && result.hit()) {
+            Display.getRootMenu().writeEnemyInfo(defender);
+        }
+
+        return result;
+    }
+
+    private static AttackResult attackWithWeapon(Entity attacker, Entity defender, Weapon attackerWeapon){
+        AttackInfo attackInfo = new AttackInfo(attacker, defender, attackerWeapon);
+        int defenderDodge = 0;
+        
+        List<CombatModifier> attackerCombatMods = getCombatModifiers(attacker);
+        List<OnAttack> attackerOnAttack = new ArrayList<OnAttack>();
+        List<OnAttacked> attackerOnAttacked = new ArrayList<OnAttacked>();
+        List<OnHit> attackerOnHit = new ArrayList<OnHit>();
+        List<OnHitted> attackerOnHitted = new ArrayList<OnHitted>();
+        List<OnMiss> attackerOnMiss = new ArrayList<OnMiss>();
+        List<OnMissed> attackerOnMissed = new ArrayList<OnMissed>();
+        List<OnCrit> attackerOnCrit = new ArrayList<OnCrit>();
+        List<OnCritted> attackerOnCritted = new ArrayList<OnCritted>();
+        List<OnKill> attackerOnKill = new ArrayList<OnKill>();
+        for (CombatModifier combatModifier : attackerCombatMods) {
+            if (combatModifier instanceof OnAttack onAttack){
+                attackerOnAttack.add(onAttack);
+            }
+            if (combatModifier instanceof OnAttacked onAttacked){
+                attackerOnAttacked.add(onAttacked);
+            }
+            if (combatModifier instanceof OnHit onHit){
+                attackerOnHit.add(onHit);
+            }
+            if (combatModifier instanceof OnHitted onHitted){
+                attackerOnHitted.add(onHitted);
+            }
+            if (combatModifier instanceof OnMiss onMiss){
+                attackerOnMiss.add(onMiss);
+            }
+            if (combatModifier instanceof OnMissed onMissed){
+                attackerOnMissed.add(onMissed);
+            }
+            if (combatModifier instanceof OnCrit onCrit){
+                attackerOnCrit.add(onCrit);
+            }
+            if (combatModifier instanceof OnCritted onCritted){
+                attackerOnCritted.add(onCritted);
+            }
+            if (combatModifier instanceof OnKill onKill) {
+                attackerOnKill.add(onKill);
+            }
+        }
+
+        List<CombatModifier> defenderCombatMods = getCombatModifiers(defender);
+        List<OnAttack> defenderOnAttack = new ArrayList<OnAttack>();
+        List<OnAttacked> defenderOnAttacked = new ArrayList<OnAttacked>();
+        List<OnHit> defenderOnHit = new ArrayList<OnHit>();
+        List<OnHitted> defenderOnHitted = new ArrayList<OnHitted>();
+        List<OnMiss> defenderOnMiss = new ArrayList<OnMiss>();
+        List<OnMissed> defenderOnMissed = new ArrayList<OnMissed>();
+        List<OnCrit> defenderOnCrit = new ArrayList<OnCrit>();
+        List<OnCritted> defenderOnCritted = new ArrayList<OnCritted>();
+        List<OnDeath> defenderOnDeath = new ArrayList<OnDeath>();
+        for (CombatModifier combatModifier : defenderCombatMods) {
+            if (combatModifier instanceof OnAttack onAttack){
+                defenderOnAttack.add(onAttack);
+            }
+            if (combatModifier instanceof OnAttacked onAttacked){
+                defenderOnAttacked.add(onAttacked);
+            }
+            if (combatModifier instanceof OnHit onHit){
+                defenderOnHit.add(onHit);
+            }
+            if (combatModifier instanceof OnHitted onHitted){
+                defenderOnHitted.add(onHitted);
+            }
+            if (combatModifier instanceof OnMiss onMiss){
+                defenderOnMiss.add(onMiss);
+            }
+            if (combatModifier instanceof OnMissed onMissed){
+                defenderOnMissed.add(onMissed);
+            }
+            if (combatModifier instanceof OnCrit onCrit){
+                defenderOnCrit.add(onCrit);
+            }
+            if (combatModifier instanceof OnCritted onCritted){
+                defenderOnCritted.add(onCritted);
+            }
+            if (combatModifier instanceof OnDeath onDeath){
+                defenderOnDeath.add(onDeath);
+            }
+        }
+
+        defenderDodge += getDodge(defender);
+
+        attackInfo.setDefenderDodge(defenderDodge);
+
+        int naturalAttackerRoll = App.randomNumber(1, 20);
+
+        attackInfo.setBaseRoll(naturalAttackerRoll);
+
+        boolean crit = naturalAttackerRoll == 20;
+
+        attackInfo.setCrit(crit);
+
+        int modifiedAttackerRoll = naturalAttackerRoll;
+
+        modifiedAttackerRoll += getAccuracy(attacker, attackerWeapon);
+
+        attackInfo.setModifiedRoll(modifiedAttackerRoll);
+        
+        int damage = attackerWeapon.generateDamage();
+
+        if (attacker instanceof HasAttributes hasAttributes) {
+            damage += hasAttributes.getAttribute(Attribute.STRENGTH);
+        }
+        
+        damage = crit ? damage * 2 : damage;
+
+        attackInfo.setDamage(damage);
+
+        DamageType attackerDamageType = attackerWeapon.getDamageType();
+        
+        attackInfo.setDamageType(attackerDamageType);
+
+        boolean hit = modifiedAttackerRoll >= defenderDodge;
+
+        attackInfo.setHit(hit);
+        
+        int damageDelt = 0;
+
+        attackInfo.setDamageDelt(damageDelt);
+
+        // attacker on attack and defender on attacked
+        for (OnAttack onAttack : attackerOnAttack) {
+            onAttack.doOnAttack(attacker, defender, attackInfo);
+        }
+        for (OnAttacked onAttacked : defenderOnAttacked) {
+            onAttacked.doOnAttacked(defender, attacker, attackInfo);
+        }
+        //
+        
+        if (hit){
+
+            if (crit) {
+                if (attacker instanceof PlayerEntity){
+                    Display.log("Critical hit!");
+                } else if (defender instanceof PlayerEntity){
+                    Display.log("The " + attacker.getName() + " scores a critical hit on you.");
+                } else {
+                    Display.log("The " + attacker.getName() + " scores a critical hit on the " + defender.getName() + ".", attacker.getSpace());
+                }
+            }
+
+            damageDelt = defender.dealDamage(damage, attackerDamageType, attacker);
+
+            attackInfo.setDamageDelt(damageDelt);
+
+            // attacker on hit and defender on hitted
+            for (OnHit onHit : attackerOnHit) {
+                onHit.doOnHit(attacker, defender, attackInfo);
+            }
+            for (OnHitted onHitted : defenderOnHitted) {
+                onHitted.doOnHitted(defender, attacker, attackInfo);
+            }
+            //
+            
+            if (crit){
+
+                // attacker on crit and defender on critted
+                for (OnCrit onCrit : attackerOnCrit) {
+                    onCrit.doOnCrit(attacker, defender, attackInfo);
+                }
+                for (OnCritted onCritted : defenderOnCritted) {
+                    onCritted.doOnCritted(defender, attacker, attackInfo);
+                }
+
+            }
+
+            if (!defender.isAlive()) {
+                for (OnDeath onDeath : defenderOnDeath) {
+                    onDeath.doOnDeath(defender, attacker, attackInfo);
+                }
+                for (OnKill onKill : attackerOnKill) {
+                    onKill.doOnKill(attacker, defender, attackInfo);
+                }
+            }
+
+        } else {
+            if (attacker instanceof PlayerEntity){
+                Display.log("You miss the " + defender.getName() + ".");
+            } else if (defender instanceof PlayerEntity){
+                Display.log("The " + attacker.getName() + " misses you.");
+            } else {
+                Display.log(attacker.getName() + " misses the " + defender.getName() + ".", defender.getSpace());
+            }
+
+            // attacker on miss and defender on missed
+            for (OnMiss onMiss : attackerOnMiss) {
+                onMiss.doOnMiss(attacker, defender, attackInfo);
+            }
+            for (OnMissed onMissed : defenderOnMissed) {
+                onMissed.doOnMissed(defender, attacker, attackInfo);
+            }
+            //
+        }
+        return new AttackResult(hit, crit, damageDelt, attackerDamageType, attacker, defender);
+    }
+
     
     public static List<CombatModifier> getCombatModifiers(Entity entity){
         List<CombatModifier> combatModifiers = new ArrayList<CombatModifier>();

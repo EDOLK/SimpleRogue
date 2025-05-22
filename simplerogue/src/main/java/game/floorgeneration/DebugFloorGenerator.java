@@ -6,12 +6,12 @@ import game.PathConditions;
 import game.gamelogic.Examinable;
 import game.gamelogic.Interactable;
 import game.gamelogic.SelfAware;
-import game.gamelogic.behavior.AnimalBehavior;
 import game.gamelogic.behavior.Behavable;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.entities.PlayerEntity;
 import game.gameobjects.entities.Rat;
+import game.gameobjects.entities.Spider;
 import game.gameobjects.entities.Wall;
 import game.gameobjects.terrains.Terrain;
 
@@ -29,7 +29,8 @@ public class DebugFloorGenerator extends FloorGenerator {
         generateSpaces();
         generateRectangle(5,5,20,20);
         spaces[7][10].setOccupant(playerEntity);
-        spaces[12][10].addTerrain(new DebugSpawner(()->{return new DebugRat();},15));
+        //spaces[12][10].addTerrain(new DebugSpawner(()->{return new DebugRat();},15));
+        spaces[12][10].setOccupant(new Spider());
     }
 
     protected void generateSpaces(){
@@ -97,41 +98,32 @@ public class DebugFloorGenerator extends FloorGenerator {
 
         public DebugRat(){
             super();
-            setBehavior(new AnimalBehavior(this));
         }
 
-        private class DebugBehavior extends AnimalBehavior{
+        @Override
+        public PathConditions getConditionsToEntity() {
+            return new PathConditions().addDeterrentConditions(
+                s -> {
+                    return s instanceof DebugSpace ds ? ds.getD() : 0;
+                }
+                ).addForbiddenConditions(
+                s -> {
+                    return s instanceof DebugSpace ds ? ds.isForbidden() : false;
+                }
+            );
+        }
 
-            protected DebugBehavior(Entity animal) {
-                super(animal);
-            }
-
-            @Override
-            protected PathConditions generateConditionsToEntity() {
-                return new PathConditions().addDeterrentConditions(
-                    s -> {
-                        return s instanceof DebugSpace ds ? ds.getD() : 0;
-                    }
-                    ).addForbiddenConditions(
-                    s -> {
-                        return s instanceof DebugSpace ds ? ds.isForbidden() : false;
-                    }
-                );
-            }
-
-            @Override
-            protected PathConditions generateConditionsToSpace() {
-                return new PathConditions().addDeterrentConditions(
-                    s -> {
-                        return s instanceof DebugSpace ds ? ds.getD() : 0;
-                    }
-                    ).addForbiddenConditions(
-                    s -> {
-                        return s instanceof DebugSpace ds ? ds.isForbidden() : false;
-                    }
-                );
-            }
-
+        @Override
+        public PathConditions getConditionsToSpace() {
+            return new PathConditions().addDeterrentConditions(
+                s -> {
+                    return s instanceof DebugSpace ds ? ds.getD() : 0;
+                }
+                ).addForbiddenConditions(
+                s -> {
+                    return s instanceof DebugSpace ds ? ds.isForbidden() : false;
+                }
+            );
         }
 
     }

@@ -14,6 +14,14 @@ public interface HasAttributes {
         getAttributeMap().set(attribute,amount);
     }
 
+    default void incrementAttribute(Attribute attribute){
+        getAttributeMap().increment(attribute);
+    }
+
+    default void decrementAttribute(Attribute attribute){
+        getAttributeMap().decrement(attribute);
+    }
+
     default int getAttributePoints(){
         return -1;
     }

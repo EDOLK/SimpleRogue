@@ -11,7 +11,6 @@ import game.floorgeneration.pools.Pool;
 import game.gamelogic.DropsXP;
 import game.gamelogic.HasDodge;
 import game.gamelogic.HasDrops;
-import game.gamelogic.behavior.AnimalBehavior;
 import game.gamelogic.combat.AttackInfo;
 import game.gamelogic.combat.OnHit;
 import game.gameobjects.DamageType;
@@ -33,7 +32,6 @@ public class Snake extends Animal implements DropsXP, HasDodge, OnHit, HasDrops{
         setTileName("Giant Snake");
         setDescription("A giant Snake. Fast and venomous.");
         setCorpse(new Corpse(this));
-        setBehavior(new AnimalBehavior(this));
 
         Weapon fangs = new Weapon();
         fangs.setName("fangs");

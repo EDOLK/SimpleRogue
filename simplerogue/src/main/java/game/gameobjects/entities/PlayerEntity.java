@@ -1,7 +1,9 @@
 package game.gameobjects.entities;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.hexworks.zircon.api.color.TileColor;
 
@@ -22,6 +24,8 @@ import game.gamelogic.SkillMap;
 import game.gamelogic.SkillMap.Skill;
 import game.gamelogic.abilities.Ability;
 import game.gamelogic.abilities.HasAbilities;
+import game.gamelogic.skilltrees.SkillTree;
+import game.gamelogic.skilltrees.UsesSkillTrees;
 import game.gameobjects.ArmorSlot;
 import game.gameobjects.DamageType;
 import game.gameobjects.ItemSlot;
@@ -34,7 +38,7 @@ import game.gameobjects.items.armor.Armor;
 import game.gameobjects.items.armor.ArmorType;
 import game.gameobjects.items.weapons.Weapon;
 
-public class PlayerEntity extends Entity implements Armored, Armed, Levelable, Experiential, HasInventory, LightSource, HasOffHand, HasAbilities, HasDodge, HasAttributes, HasSkills{
+public class PlayerEntity extends Entity implements Armored, Armed, Levelable, Experiential, HasInventory, LightSource, HasOffHand, HasAbilities, HasDodge, HasAttributes, HasSkills, UsesSkillTrees{
 
     private int maxWeight = 60;
     private int maxMP;
@@ -50,16 +54,8 @@ public class PlayerEntity extends Entity implements Armored, Armed, Levelable, E
     private AttributeMap aMap = new AttributeMap();
     private SkillMap sMap = new SkillMap();
     private int attributePoints = 0;
-
-    @Override
-    public int getAttributePoints() {
-        return this.attributePoints;
-    }
-
-    @Override
-    public void setAttributePoints(int att) {
-        this.attributePoints = att;
-    }
+    private int skillTreePoints = 0;
+    private Map<SkillTree, Integer> skillLevels = new HashMap<>();
 
     public PlayerEntity(TileColor bGColor, TileColor fGColor, char character) {
         super(bGColor, fGColor, character);
@@ -172,13 +168,14 @@ public class PlayerEntity extends Entity implements Armored, Armed, Levelable, E
         while (this.XP >= XPToNextLevel) {
             level++;
             attributePoints++;
+            skillTreePoints++;
             this.XP -= XPToNextLevel;
             XPToNextLevel = 10 + (level * 5);
             setMaxHP(getMaxHP() + 5 + (getAttribute(Attribute.ENDURANCE) * 3));
             heal(5 + (getAttribute(Attribute.ENDURANCE) * 3));
             setMaxMP(getMaxMP() + 5 + (getAttribute(Attribute.INTELLIGENCE) * 3));
             setMP(getMP() + 5 + (getAttribute(Attribute.INTELLIGENCE) * 3));
-            Display.log("Level up!");
+            Display.logHeader("Level up!");
         }
     }
 
@@ -247,5 +244,31 @@ public class PlayerEntity extends Entity implements Armored, Armed, Levelable, E
     public SkillMap getSkillMap() {
         return this.sMap;
     }
+
+    @Override
+    public Map<SkillTree, Integer> getSkillLevels() {
+        return skillLevels;
+    }
+
+    @Override
+    public int getAttributePoints() {
+        return this.attributePoints;
+    }
+
+    @Override
+    public void setAttributePoints(int att) {
+        this.attributePoints = att;
+    }
+
+    @Override
+    public int getSkillTreePoints() {
+        return this.skillTreePoints;
+    }
+
+    @Override
+    public void setSkillTreePoints(int points) {
+        this.skillTreePoints = points;
+    }
+
 
 }
