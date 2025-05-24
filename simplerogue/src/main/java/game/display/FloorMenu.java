@@ -3,7 +3,6 @@ package game.display;
 import static game.App.lerp;
 import static game.gameobjects.Space.moveEntity;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.hexworks.zircon.api.ComponentDecorations;
@@ -140,20 +139,8 @@ public final class FloorMenu extends Menu{
             healthBarLayer.clear();
             darknessLayer.clear();
         }
-        ArrayList<Space> visibleSpaces = new ArrayList<Space>();
-        for (int x = 0; x < currentFloor.SIZE_X; x++) {
-            for (int y = 0; y < currentFloor.SIZE_Y; y++){
-                Space current = currentFloor.getSpace(x, y);
-                if (playerEntity.isWithinVision(current) && current.getLight() != 0){
-                    visibleSpaces.add(current);
-                    memoryLayer.draw(Tile.empty(), Position.create(x,y));
-                }
-                // visibleSpaces.add(current);
-            }
-        }
-        
 
-        for (Space space : visibleSpaces) {
+        for (Space space : playerEntity.getSpacesInVision(true)) {
             addToLayers(space, playerEntity);
         }
 
@@ -170,7 +157,9 @@ public final class FloorMenu extends Menu{
         int x = current.getX();
         int y = current.getY();
         float darkness = 1.0f - current.getLight();
-        // double darkness = 0;
+        float darknessCeil = 0.8f;
+
+        darkness = Math.min(darkness, darknessCeil);
 
         spaceLayer.draw(current.getTile(darkness), Position.create(x, y));
 
@@ -200,7 +189,10 @@ public final class FloorMenu extends Menu{
         if (cursor != null){
             Space cursorSpace = cursor.getSelectedSpace();
             cursorLayer.draw(cursor.getTile(), Position.create(cursorSpace.getX(), cursorSpace.getY()));
-            if (cursor.getSelectedSpace().getLight() > 0 && playerEntity.isWithinVision(cursorSpace)) {
+            if (
+                (cursor.getSelectedSpace().getLight() > 0 && playerEntity.isWithinVision(cursorSpace)) || 
+                (playerEntity.isWithinVision(cursorSpace) && Space.getDistance(playerEntity.getSpace(), cursorSpace) <= playerEntity.getNightVisionRange())
+            ) {
                 cursor.collectExaminables();
                 setExamineTooltip();
             }

@@ -42,6 +42,7 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
     private int maxHP;
     private int HP;
     private int visionRange = 10;
+    private int nightVisionRange = 1;
     private int weight;
     private Item corpse = new Item();
     private ArrayList<Status> statuses = new ArrayList<Status>();
@@ -212,7 +213,6 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
                 return false;
             }
         }
-
         if (getStatuses().add(status)){
             status.setOwner(this);
             return true;
@@ -262,24 +262,30 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
     }
 
     public List<Space> getSpacesInVision(){
+        return getSpacesInVision(false);
+    }
 
-        Space[][] spaces = getCurrentFloor().getSpaces();
+    public List<Space> getSpacesInVision(boolean seeSelf){
+
         List<Space> spacesInVision = new ArrayList<Space>();
 
-        int startX = getX() - getVisionRange();
-        startX = startX < 0 ? 0 : startX;
-        int endX = getX() + getVisionRange();
-        endX = endX >= spaces.length ? spaces.length-1 : endX;
+        int visRange = getVisionRange() > getNightVisionRange() ? getVisionRange() : getNightVisionRange();
 
-        int startY = getY() - getVisionRange();
-        startY = startY < 0 ? 0 : startY;
-        int endY = getY() + getVisionRange();
-        endY = endY >= spaces[startX].length ? spaces[startX].length-1 : endY;
+        int startX = getCurrentFloor().clampX(getX() - visRange);
+        int endX = getCurrentFloor().clampX(getX() + visRange);
+        int startY = getCurrentFloor().clampY(getY() - visRange);
+        int endY = getCurrentFloor().clampY(getY() + visRange);
 
-        for (int x = startX; x < endX; x++) {
-            for (int y = startY; y < endY; y++) {
-                Space potentialSpace = spaces[x][y];
-                if (isWithinVision(potentialSpace) && potentialSpace != getSpace()){
+        for (int x = startX; x <= endX; x++) {
+            for (int y = startY; y <= endY; y++) {
+                Space potentialSpace = getCurrentFloor().getSpace(x,y);
+                if (isWithinVision(potentialSpace)){
+                    if (!seeSelf && potentialSpace == getSpace()) {
+                        continue;
+                    }
+                    if (Space.getDistance(getSpace(), potentialSpace) > getNightVisionRange() && potentialSpace.getLight() <= 0) {
+                        continue;
+                    }
                     spacesInVision.add(potentialSpace);
                 }
             }
@@ -288,14 +294,19 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
         return spacesInVision;
     }
 
+    public int getNightVisionRange() {
+        return this.nightVisionRange;
+    }
+
+    public void setNightVisionRange(int nightVisionRange) {
+        this.nightVisionRange = nightVisionRange;
+    }
+
     public boolean isWithinVision(Entity entity){
         return isWithinVision(entity.getSpace());
     }
 
     public boolean isWithinVision(Space space){
-        if (space.getX() < getX() - visionRange+1 || space.getX() > getX() + visionRange-1 || space.getY() < getY() - visionRange+1 || space.getY() > getY() + visionRange-1){
-            return false;
-        }
         boolean b = canDrawLine(space);
         if (!b) {
             outer:

@@ -59,7 +59,7 @@ public class AnimalWandering extends Behavior {
             if (!h.getPath()[h.getPath().length-1].isOccupied() || h.getPath()[h.getPath().length-1].getOccupant() != target) {
                 return Optional.empty();
             }
-            return Optional.of(new AnimalHunting(this.animal, target));
+            return Optional.of(h);
         } catch (Exception e) {
             return Optional.empty();
         }

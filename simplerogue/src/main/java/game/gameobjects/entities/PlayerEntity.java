@@ -19,7 +19,6 @@ import game.gamelogic.HasInventory;
 import game.gamelogic.HasOffHand;
 import game.gamelogic.HasSkills;
 import game.gamelogic.Levelable;
-import game.gamelogic.LightSource;
 import game.gamelogic.SkillMap;
 import game.gamelogic.SkillMap.Skill;
 import game.gamelogic.abilities.Ability;
@@ -38,7 +37,7 @@ import game.gameobjects.items.armor.Armor;
 import game.gameobjects.items.armor.ArmorType;
 import game.gameobjects.items.weapons.Weapon;
 
-public class PlayerEntity extends Entity implements Armored, Armed, Levelable, Experiential, HasInventory, LightSource, HasOffHand, HasAbilities, HasDodge, HasAttributes, HasSkills, UsesSkillTrees{
+public class PlayerEntity extends Entity implements Armored, Armed, Levelable, Experiential, HasInventory, HasOffHand, HasAbilities, HasDodge, HasAttributes, HasSkills, UsesSkillTrees{
 
     private int maxWeight = 60;
     private int maxMP;
@@ -67,6 +66,7 @@ public class PlayerEntity extends Entity implements Armored, Armed, Levelable, E
         setWeight(0);
         setCorpse(new Corpse(this));
         setTileName("Player");
+        setNightVisionRange(1);
 
         Weapon fists = new Weapon();
         fists.setDamageType(DamageType.BLUNT);
@@ -197,11 +197,6 @@ public class PlayerEntity extends Entity implements Armored, Armed, Levelable, E
     @Override
     public int getHardWeightLimit() {
         return maxWeight + (this.getAttribute(Attribute.STRENGTH) * 5);
-    }
-
-    @Override
-    public int getLightSourceIntensity() {
-        return 2;
     }
 
     @Override
