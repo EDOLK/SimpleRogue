@@ -17,8 +17,8 @@ import game.gameobjects.Space;
 import game.gameobjects.entities.Animal;
 import game.gameobjects.entities.Entity;
 import game.gamelogic.combat.AttackInfo;
-import game.gamelogic.combat.OnAttacked;
-public class Sleeping extends Status implements OverridesBehavable, Behavable, OnAttacked {
+import game.gamelogic.combat.OnHitted;
+public class Sleeping extends Status implements OverridesBehavable, Behavable, OnHitted {
 
     public Sleeping() {
         super();
@@ -42,15 +42,15 @@ public class Sleeping extends Status implements OverridesBehavable, Behavable, O
     public int behave() {
         for (Entity target : checkForTargets()) {
             if (target != null) {
-                int targetStealth = App.randomNumber(1,20);
-                int animalPerception = App.randomNumber(1,20);
+                int targetStealth = Math.max(App.randomNumber(1,20), App.randomNumber(1,20));
+                int animalPerception = 10;
                 if (target instanceof HasSkills hasSkills) {
                     targetStealth += hasSkills.getSkill(Skill.STEALTH);
                 }
                 if (owner instanceof HasSkills hasSkills) {
                     animalPerception += hasSkills.getSkill(Skill.PERCEPTION);
                 }
-                targetStealth += (int)((target.getSpace().getLight()-0.50f)*-20);
+                targetStealth += (int)((target.getSpace().getLight()-0.50f)*-15);
                 int distance = Space.getDistance(owner.getSpace(), target.getSpace());
                 if (distance <= 5) {
                     animalPerception += Math.abs(distance-6);
@@ -81,7 +81,7 @@ public class Sleeping extends Status implements OverridesBehavable, Behavable, O
     }
 
     @Override
-    public void doOnAttacked(Entity self, Entity other, AttackInfo attackInfo) {
+    public void doOnHitted(Entity self, Entity other, AttackInfo attackInfo) {
         Display.log("The " + owner.getName() + " wakes up.", owner.getSpace());
         owner.removeStatus(this);
     }

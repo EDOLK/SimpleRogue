@@ -7,9 +7,12 @@ import java.util.Optional;
 import game.App;
 import game.Dungeon;
 import game.Path;
+import game.gamelogic.HasSkills;
+import game.gamelogic.SkillMap.Skill;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Animal;
 import game.gameobjects.entities.Entity;
+import game.gameobjects.statuses.BeginningHunt;
 
 public class AnimalWandering extends Behavior {
 
@@ -26,10 +29,10 @@ public class AnimalWandering extends Behavior {
     public int behave() {
         Optional<? extends Behavior> hunt = checkForHunt();
         if (hunt.isPresent()) {
+            animal.addStatus(new BeginningHunt());
             return animal.setAndBehave(hunt.get());
         }
         if (path == null && !generatePath()) {
-            System.err.println("Error: no path found");
             return animal.getTimeToWait();
         }
         if (path[locationInPath].getOccupant() == animal && !pathIsBlocked() && locationInPath != path.length-1) {
@@ -56,7 +59,7 @@ public class AnimalWandering extends Behavior {
         try {
             AnimalHunting h = new AnimalHunting(this.animal, target);
             //TODO: Bandaid fix. Fix properly later.
-            if (!h.getPath()[h.getPath().length-1].isOccupied() || h.getPath()[h.getPath().length-1].getOccupant() != target) {
+            if (!h.isValid()) {
                 return Optional.empty();
             }
             return Optional.of(h);
@@ -72,7 +75,7 @@ public class AnimalWandering extends Behavior {
     protected Optional<? extends Behavior> checkForHunt() {
         List<Entity> potentialTargets = new ArrayList<>();
         for (Entity entity : this.animal.getEntitiesInVision()) {
-            if (animal.isEnemy(entity)) {
+            if (animal.isEnemy(entity) && checkForStealth(entity)) {
                 potentialTargets.add(entity);
             }
         }
@@ -86,6 +89,28 @@ public class AnimalWandering extends Behavior {
             }
         }
         return Optional.empty();
+    }
+
+    private boolean checkForStealth(Entity entity) {
+        if (entity != null) {
+            int entityStealth = App.randomNumber(1,20);
+            int animalPerception = 10;
+            if (entity instanceof HasSkills hasSkills) {
+                entityStealth += hasSkills.getSkill(Skill.STEALTH);
+            }
+            if (animal instanceof HasSkills hasSkills) {
+                animalPerception += hasSkills.getSkill(Skill.PERCEPTION);
+            }
+            entityStealth += (int)((entity.getSpace().getLight()-0.50f)*-15);
+            int distance = Space.getDistance(animal.getSpace(), entity.getSpace());
+            if (distance <= 5) {
+                entityStealth -= Math.abs(distance-6);
+            }
+            if (animalPerception >= entityStealth) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean generatePath(){
@@ -102,6 +127,10 @@ public class AnimalWandering extends Behavior {
     }
 
     protected List<Space> getWanderSpaces(){
+        return getWanderSpaces(false);
+    }
+
+    protected List<Space> getWanderSpaces(boolean inclusive){
         List<Space> potentialSpaces = new ArrayList<>();
         int ax = getWanderCenterX();
         int ay = getWanderCenterY();
@@ -109,9 +138,9 @@ public class AnimalWandering extends Behavior {
         int maxX = Dungeon.getCurrentFloor().clampX(ax+wanderRange);
         int minY = Dungeon.getCurrentFloor().clampY(ay-wanderRange);
         int maxY = Dungeon.getCurrentFloor().clampY(ay+wanderRange);
-        for (int x = minX; x < maxX; x++) {
-            for (int y = minY; y < maxY; y++) {
-                if (x == ax && y == ay)
+        for (int x = minX; x <= maxX; x++) {
+            for (int y = minY; y <= maxY; y++) {
+                if (x == ax && y == ay && !inclusive)
                     continue;
                 potentialSpaces.add(Dungeon.getCurrentFloor().getSpace(x,y));
             }

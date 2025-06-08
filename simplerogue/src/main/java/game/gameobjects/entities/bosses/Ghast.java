@@ -45,7 +45,6 @@ public class Ghast extends Animal implements HasInventory, DropsXP, HasResistanc
         setWeight(20);
         setName("Ghast");
         setDescription("A shambling, bloated undead. It stinks.");
-        setCorpse(null);
 
         Weapon claws = new Weapon();
         claws.setName("Claws");
@@ -55,6 +54,11 @@ public class Ghast extends Animal implements HasInventory, DropsXP, HasResistanc
 
         this.resistances.add(new PercentageResistance(DamageType.SUFFICATION, 1.00));
         this.resistances.add(new PercentageResistance(DamageType.POISON, 1.00));
+    }
+
+    @Override
+    public Item getCorpse() {
+        return null;
     }
 
     @Override

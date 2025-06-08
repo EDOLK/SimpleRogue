@@ -47,6 +47,7 @@ import game.gameobjects.entities.PlayerEntity;
 import game.gameobjects.entities.ThrownItem;
 import game.gameobjects.entities.Wall;
 import game.gameobjects.items.Item;
+import game.gameobjects.statuses.Status;
 import game.gameobjects.terrains.OpenDoor;
 import game.gameobjects.terrains.Staircase;
 import game.gameobjects.terrains.Terrain;
@@ -157,7 +158,7 @@ public final class FloorMenu extends Menu{
         int x = current.getX();
         int y = current.getY();
         float darkness = 1.0f - current.getLight();
-        float darknessCeil = 0.8f;
+        float darknessCeil = 0.75f;
 
         darkness = Math.min(darkness, darknessCeil);
 
@@ -172,7 +173,7 @@ public final class FloorMenu extends Menu{
         }
 
         for (Terrain terrain : current.getTerrains()) {
-            drawTerrain( terrain, x, y, darkness);
+            drawTerrain(terrain, x, y, darkness);
         }
 
         if (Display.getMode() == Mode.GRAPHICAL){
@@ -228,7 +229,12 @@ public final class FloorMenu extends Menu{
     private void drawEntity(Entity occupant, int x, int y, double darkness) {
         entityLayer.draw(occupant.getTile(darkness), Position.create(x, y));
         if (!occupant.getStatuses().isEmpty()){
-            statusLayer.draw(occupant.getStatuses().get(0).getTile(darkness), Position.create(x, y));
+            Status status = occupant.getStatuses().get(0);
+            if (status.isFullBright()) {
+                statusLayer.draw(status.getTile(0.0), Position.create(x + status.getxOffset(), y + status.getyOffset()));
+            } else {
+                statusLayer.draw(status.getTile(darkness), Position.create(x + status.getxOffset(), y + status.getyOffset()));
+            }
         }
         if (Display.getMode() == Mode.GRAPHICAL && occupant.getHP() < occupant.getMaxHP()){
             int healthBarValue = (int)lerp(0, 7, occupant.getMaxHP(), 1, occupant.getHP());
@@ -247,7 +253,7 @@ public final class FloorMenu extends Menu{
         if (Display.getMode() == Mode.ASCII){
             int blue = tile.getTile().getForegroundColor().getBlue() * 2;
             memoryLayer.draw(
-                tile.getTile().withForegroundColor(tile.getTile().getForegroundColor().withBlue(blue).darkenByPercent(.90)),
+                tile.getTile().withForegroundColor(tile.getTile().getForegroundColor().withBlue(blue).darkenByPercent(.85)),
                 position
             );
         } else if (Display.getMode() == Mode.GRAPHICAL){

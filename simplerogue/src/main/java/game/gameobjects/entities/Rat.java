@@ -12,7 +12,6 @@ import game.gamelogic.DropsXP;
 import game.gamelogic.HasDodge;
 import game.gamelogic.HasDrops;
 import game.gameobjects.DamageType;
-import game.gameobjects.items.Corpse;
 import game.gameobjects.items.Item;
 import game.gameobjects.items.weapons.Weapon;
 
@@ -29,7 +28,6 @@ public class Rat extends Animal implements DropsXP, HasDodge, HasDrops{
         setTileName("Giant Rat");
         setDescription("A giant rat, made feral by the negative influence of the dungeon.");
         setWeight(5);
-        setCorpse(new Corpse(this));
 
         Weapon teeth = new Weapon();
         teeth.setName("teeth");

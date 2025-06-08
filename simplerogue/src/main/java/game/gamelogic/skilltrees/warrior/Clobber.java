@@ -62,7 +62,7 @@ public class Clobber implements Ability, Behavable{
 
     @Override
     public void activate() {
-        Display.getRootMenu().startSelecting(new ClobberSelector(owner));
+        Display.getRootMenu().startSelecting(new ClobberSelector());
     }
 
     @Override
@@ -72,12 +72,6 @@ public class Clobber implements Ability, Behavable{
 
     private class ClobberSelector implements SimpleSelector {
 
-        private Entity owner;
-
-        private ClobberSelector(Entity owner) {
-            this.owner = owner;
-        }
-
         private ClobberSelector(){};
 
         @Override
@@ -85,7 +79,7 @@ public class Clobber implements Ability, Behavable{
 
             List<Weapon> validWeapons = new ArrayList<>();
 
-            if (owner instanceof Armed armedOwner) {
+            if (Clobber.this.owner instanceof Armed armedOwner) {
                 for (Weapon weapon : armedOwner.getWeapons()) {
                     if (weapon.getDamageType() == DamageType.BLUNT) {
                         validWeapons.add(weapon);
@@ -97,8 +91,8 @@ public class Clobber implements Ability, Behavable{
 
             if (!validWeapons.isEmpty()) {
                 weaponToUse = App.getRandom(validWeapons);
-            } else if (owner.getUnarmedWeapon() != null && owner.getUnarmedWeapon().getDamageType() == DamageType.BLUNT) {
-                weaponToUse = owner.getUnarmedWeapon();
+            } else if (Clobber.this.owner.getUnarmedWeapon() != null && Clobber.this.owner.getUnarmedWeapon().getDamageType() == DamageType.BLUNT) {
+                weaponToUse = Clobber.this.owner.getUnarmedWeapon();
             } else {
                 return true;
             }
@@ -112,7 +106,7 @@ public class Clobber implements Ability, Behavable{
                     clobberee.getY() + yOffset
                 );
 
-                AttackResult result = Floor.doAttack(owner, clobberee, weaponToUse);
+                AttackResult result = Floor.doAttack(Clobber.this.owner, clobberee, weaponToUse);
 
                 if (result.hit() && result.defender().isAlive()) {
                     if (nextSpace.isOccupied()) {
@@ -129,7 +123,7 @@ public class Clobber implements Ability, Behavable{
         
     }
 
-    private class Dazed extends Status implements Behavable, OverridesBehavable{
+    private static class Dazed extends Status implements Behavable, OverridesBehavable{
 
         private int randNum = App.randomNumber(1,5);
         private int timer = 3;

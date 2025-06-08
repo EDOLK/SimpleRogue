@@ -1,6 +1,5 @@
 package game.gameobjects.entities;
 
-import static game.App.randomNumber;
 
 import org.hexworks.zircon.api.color.TileColor;
 
@@ -22,9 +21,7 @@ public abstract class Animal extends Entity implements HasBehavior, HasAttribute
         super(bGColor, fGColor, character);
         setNightVisionRange(5);
         setBehavior(getDefaultBehavior());
-        if (randomNumber(0, 1) == 1){
-            addStatus(new Sleeping());
-        }
+        addStatus(new Sleeping());
     }
 
     protected Behavior getDefaultBehavior(){

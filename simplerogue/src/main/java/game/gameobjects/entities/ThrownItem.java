@@ -17,6 +17,7 @@ import game.gamelogic.resistances.Resistance;
 import game.gameobjects.DamageType;
 import game.gameobjects.DisplayableTile;
 import game.gameobjects.Space;
+import game.gameobjects.items.Item;
 
 public class ThrownItem extends Entity implements HasDodge, HasResistances, Behavable{
 
@@ -33,7 +34,6 @@ public class ThrownItem extends Entity implements HasDodge, HasResistances, Beha
         List<Space> l = Line.getLineAsListInclusive(getSpace(), targetSpace);
         l.remove(0);
         pathToTarget = l.iterator();
-        setCorpse(null);
         if (aimable instanceof Examinable examinable){
             setName("Thrown " + examinable.getName());
             setDescription(examinable.getDescription());
@@ -42,6 +42,11 @@ public class ThrownItem extends Entity implements HasDodge, HasResistances, Beha
         for (DamageType damageType : DamageType.values()) {
             resistances.add(new PercentageResistance(damageType, 1.0));
         }
+    }
+
+    @Override
+    public Item getCorpse() {
+        return null;
     }
 
     public Iterator<Space> getPathToTarget() {

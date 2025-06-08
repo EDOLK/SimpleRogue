@@ -8,13 +8,14 @@ import game.gameobjects.Floor;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Animal;
 import game.gameobjects.entities.Entity;
+import game.gameobjects.statuses.BeginningSearch;
 
 public class AnimalHunting extends Behavior {
 
-    private Animal animal;
-    private Entity target;
-    private Space[] path;
-    private int locationInPath = 0;
+    protected Animal animal;
+    protected Entity target;
+    protected Space[] path;
+    protected int locationInPath = 0;
 
     public AnimalHunting(Animal animal, Entity target) throws PathNotFoundException {
         this.animal = animal;
@@ -28,7 +29,14 @@ public class AnimalHunting extends Behavior {
 
     @Override
     public int behave() {
-        if (path[locationInPath].getOccupant() == animal && path[path.length-1].getOccupant() == target && !pathIsBlocked()) {
+        if (!animal.isWithinVision(target)) {
+            Optional<? extends Behavior> wanderToTarget = getSearchingBehavior(target.getSpace());
+            if (wanderToTarget.isPresent()) {
+                animal.addStatus(new BeginningSearch());
+                return animal.setAndBehave(wanderToTarget.get());
+            }
+        }
+        if (this.isValid()) {
             Space possibleSpace = path[locationInPath+1];
             if (Space.moveEntity(animal, possibleSpace)) {
                 locationInPath++;
@@ -55,6 +63,10 @@ public class AnimalHunting extends Behavior {
         return this.animal.isAlive();
     }
 
+    protected Optional<? extends Behavior> getSearchingBehavior(Space space){
+        return Optional.of(new AnimalSearching(animal, space));
+    }
+
     protected Optional<? extends Behavior> getWanderingBehavior(){
         return Optional.of(new AnimalWandering(animal));
     }
@@ -63,7 +75,7 @@ public class AnimalHunting extends Behavior {
         try {
             AnimalHunting h = new AnimalHunting(animal, target);
             //TODO: Bandaid fix. Fix properly later.
-            if (!h.path[h.path.length-1].isOccupied() || h.path[h.path.length-1].getOccupant() != target) {
+            if (!h.isValid()) {
                 return Optional.empty();
             }
             return Optional.of(h);
@@ -73,7 +85,11 @@ public class AnimalHunting extends Behavior {
         return Optional.empty();
     }
 
-    private boolean pathIsBlocked(){
+    public boolean isValid(){
+        return this.path[this.locationInPath].getOccupant() == this.animal && this.path[this.path.length-1].getOccupant() == this.target && !this.pathIsBlocked();
+    }
+
+    protected boolean pathIsBlocked(){
         for (int i = locationInPath+1; i < path.length-1; i++) {
             Space space = path[i];
             if (this.animal.getConditionsToSpace().evaluateForForbidden(space)) {

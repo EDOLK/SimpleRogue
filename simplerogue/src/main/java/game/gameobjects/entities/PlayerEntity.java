@@ -30,7 +30,6 @@ import game.gameobjects.DamageType;
 import game.gameobjects.ItemSlot;
 import game.gameobjects.Space;
 import game.gameobjects.WeaponSlot;
-import game.gameobjects.items.Corpse;
 import game.gameobjects.items.Item;
 import game.gameobjects.items.Torch;
 import game.gameobjects.items.armor.Armor;
@@ -64,7 +63,6 @@ public class PlayerEntity extends Entity implements Armored, Armed, Levelable, E
         setMP(15);
         setVisionRange(15);
         setWeight(0);
-        setCorpse(new Corpse(this));
         setTileName("Player");
         setNightVisionRange(1);
 

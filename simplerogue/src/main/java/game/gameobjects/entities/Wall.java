@@ -27,10 +27,6 @@ public class Wall extends Entity implements HasResistances{
         setLiquidBlocker(true);
         setLightBlocker(true);
         setWeight(100);
-        setCorpse(new Item(this.getbGColor().darkenByPercent(.50), this.getfGColor().darkenByPercent(.50), '░'));
-        getCorpse().setName("Rubble");
-        getCorpse().setDescription("A pile of rubble.");
-        getCorpse().setWeight(500);
         for (DamageType damageType : DamageType.values()) {
             if (damageType == DamageType.PIERCING){
                 resistances.add(new PercentageResistance(damageType, 0.90));
@@ -38,6 +34,15 @@ public class Wall extends Entity implements HasResistances{
                 resistances.add(new PercentageResistance(damageType, 1.00));
             }
         }
+    }
+
+    @Override
+    public Item getCorpse() {
+        Item i = new Item(this.getbGColor().darkenByPercent(.50), this.getfGColor().darkenByPercent(.50), '░');
+        i.setName("Rubble");
+        i.setDescription("A pile of rubble.");
+        i.setWeight(500);
+        return i;
     }
 
     @Override

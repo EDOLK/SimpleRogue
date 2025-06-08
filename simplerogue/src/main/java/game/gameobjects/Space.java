@@ -267,8 +267,11 @@ public class Space extends DisplayableTile{
                 if (x == 1 && y == 1) {
                     continue;
                 }
-                Space potentialSpace = Dungeon.getCurrentFloor().getSpace(space.getX() + x, space.getY() + y);
-                list.add(potentialSpace);
+                try {
+                    list.add(Dungeon.getCurrentFloor().getSpace(space.getX() + x, space.getY() + y));
+                } catch (Exception e) {
+
+                }
             }
         }
         return list;
