@@ -27,7 +27,6 @@ public class Chest extends Entity implements HasInventory, Interactable{
         setName("Chest");
         setTileName("Chest");
         setDescription("A chest. It probably has things in it.");
-        setCorpse(null);
         HasDrops hasDrops = new HasDrops() {
 
             @Override
@@ -45,6 +44,11 @@ public class Chest extends Entity implements HasInventory, Interactable{
         for (Item item : itemList) {
             addItemToInventory(item);
         }
+    }
+
+    @Override
+    public Item getCorpse() {
+        return null;
     }
 
     public Chest() {

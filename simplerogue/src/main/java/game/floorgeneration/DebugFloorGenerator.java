@@ -11,7 +11,6 @@ import game.gameobjects.Space;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.entities.PlayerEntity;
 import game.gameobjects.entities.Rat;
-import game.gameobjects.entities.Spider;
 import game.gameobjects.entities.Wall;
 import game.gameobjects.terrains.Terrain;
 
@@ -27,10 +26,13 @@ public class DebugFloorGenerator extends FloorGenerator {
     public void generateFloor(Space[][] spaces, PlayerEntity playerEntity) {
         this.spaces = spaces;
         generateSpaces();
-        generateRectangle(5,5,20,20);
-        spaces[7][10].setOccupant(playerEntity);
+        generateRectangle(5,5,30,30);
+        spaces[7][20].setOccupant(playerEntity);
         //spaces[12][10].addTerrain(new DebugSpawner(()->{return new DebugRat();},15));
-        spaces[12][10].setOccupant(new Spider());
+        spaces[7][10].setOccupant(new Rat());
+        for (int i = 10; i <= 20; i++) {
+            spaces[8][i].setOccupant(new Wall());
+        }
     }
 
     protected void generateSpaces(){

@@ -4,6 +4,7 @@ import static game.App.getRandom;
 import static game.App.randomNumber;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.hexworks.zircon.api.color.TileColor;
@@ -22,9 +23,10 @@ import game.gameobjects.Space;
 import game.gameobjects.entities.Animal;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.entities.Rat;
-import game.gameobjects.items.Corpse;
 import game.gameobjects.items.Item;
 import game.gameobjects.items.weapons.Weapon;
+import game.gameobjects.statuses.Sleeping;
+import game.gameobjects.statuses.Status;
 
 public class RatKing extends Animal implements HasInventory, DropsXP{
 
@@ -40,7 +42,6 @@ public class RatKing extends Animal implements HasInventory, DropsXP{
         setWeight(12);
         setName("Rat King");
         setDescription("A mass of rats, bound together by a strange gelatinous substance. Every once in a while, a rat will free itself from the pile.");
-        setCorpse(new Corpse(new Rat()));
 
         Weapon fangs = new Weapon();
         fangs.setName("Fangs");
@@ -109,13 +110,26 @@ public class RatKing extends Animal implements HasInventory, DropsXP{
             int hp = randomNumber(2,5);
             setMaxHP(hp);
             setHP(hp);
-            setCorpse(null);
 
             Weapon fangs = new Weapon();
             fangs.setName("fangs");
             fangs.setDamageType(DamageType.PIERCING);
             fangs.setDamage(1, 3);
             setUnarmedWeapon(fangs);
+
+            Iterator<Status> it = this.getStatuses().iterator();
+            while (it.hasNext()) {
+                Status status = it.next();
+                if (status instanceof Sleeping) {
+                    it.remove();
+                }
+            }
+
+        }
+
+        @Override
+        public Item getCorpse() {
+            return null;
         }
 
         @Override

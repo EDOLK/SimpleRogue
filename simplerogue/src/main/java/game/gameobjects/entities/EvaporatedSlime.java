@@ -31,7 +31,6 @@ public class EvaporatedSlime extends Animal implements HasResistances, HasDodge,
         setTileName("Evaporated Slime");
         setDescription("A cloud of green vapor, still somehow keeping itself together.");
         setWeight(0);
-        setCorpse(null);
 
         Weapon mass = new Weapon();
         mass.setName("mass");
@@ -48,6 +47,11 @@ public class EvaporatedSlime extends Animal implements HasResistances, HasDodge,
         getResistances().add(new PercentageResistance(DamageType.PIERCING, 0.50));
     }
     
+    @Override
+    public Item getCorpse() {
+        return null;
+    }
+
     @Override
     protected boolean isVulnerable(Class<? extends Status> status) {
         if (status == Burning.class){

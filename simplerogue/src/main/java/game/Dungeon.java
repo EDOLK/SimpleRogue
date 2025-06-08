@@ -14,6 +14,7 @@ import game.floorgeneration.pools.LayerPool;
 import game.floorgeneration.pools.Pool;
 import game.floorgeneration.pools.layers.LayerOnePool;
 import game.gamelogic.skilltrees.SkillTree;
+import game.gamelogic.skilltrees.rogue.RogueSkillTree;
 import game.gamelogic.skilltrees.warrior.WarriorSkillTree;
 import game.gameobjects.Floor;
 import game.gameobjects.Space;
@@ -85,6 +86,7 @@ public class Dungeon {
         currentFloor = new Floor(sX, sY, new DefaultFloorGenerator(currentDepth));
         availableSkillTrees.clear();
         availableSkillTrees.add(new WarriorSkillTree());
+        availableSkillTrees.add(new RogueSkillTree());
     }
 
     public static void update(int time){

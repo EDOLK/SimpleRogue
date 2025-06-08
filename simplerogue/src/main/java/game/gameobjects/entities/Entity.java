@@ -8,7 +8,6 @@ import java.util.List;
 
 import org.hexworks.zircon.api.color.TileColor;
 
-import game.Dungeon;
 import game.Line;
 import game.display.Display;
 import game.gamelogic.Armed;
@@ -28,6 +27,7 @@ import game.gameobjects.DamageType;
 import game.gameobjects.DisplayableTile;
 import game.gameobjects.Floor;
 import game.gameobjects.Space;
+import game.gameobjects.items.Corpse;
 import game.gameobjects.items.Item;
 import game.gameobjects.items.armor.Armor;
 import game.gameobjects.items.weapons.Weapon;
@@ -42,8 +42,8 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
     private int maxHP;
     private int HP;
     private int visionRange = 10;
+    private int nightVisionRange = 1;
     private int weight;
-    private Item corpse = new Item();
     private ArrayList<Status> statuses = new ArrayList<Status>();
     protected boolean sightBlocker = false;
     protected boolean gasBlocker = false;
@@ -128,10 +128,16 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
         this.visionRange = visionRange;
     }
 
+    public String getOriginalName(){
+        return this.name;
+    }
+
     public String getName() {
         String n = this.name;
         for (Status status : statuses) {
-            n = status.getDescriptor() + " " + n;
+            if (status.getDescriptor() != null && !status.getDescriptor().equals("")){
+                n = status.getDescriptor() + " " + n;
+            }
         }
         return n;
     }
@@ -153,11 +159,7 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
     }
 
     public Item getCorpse() {
-        return corpse;
-    }
-
-    public void setCorpse(Item corpse) {
-        this.corpse = corpse;
+        return new Corpse(this);
     }
 
     public int getMaxHP() {
@@ -212,7 +214,6 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
                 return false;
             }
         }
-
         if (getStatuses().add(status)){
             status.setOwner(this);
             return true;
@@ -262,24 +263,27 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
     }
 
     public List<Space> getSpacesInVision(){
+        return getSpacesInVision(false);
+    }
 
-        Space[][] spaces = getCurrentFloor().getSpaces();
+    public List<Space> getSpacesInVision(boolean seeSelf){
+
         List<Space> spacesInVision = new ArrayList<Space>();
 
-        int startX = getX() - getVisionRange();
-        startX = startX < 0 ? 0 : startX;
-        int endX = getX() + getVisionRange();
-        endX = endX >= spaces.length ? spaces.length-1 : endX;
+        int visRange = getVisionRange() > getNightVisionRange() ? getVisionRange() : getNightVisionRange();
 
-        int startY = getY() - getVisionRange();
-        startY = startY < 0 ? 0 : startY;
-        int endY = getY() + getVisionRange();
-        endY = endY >= spaces[startX].length ? spaces[startX].length-1 : endY;
+        int startX = getCurrentFloor().clampX(getX() - visRange);
+        int endX = getCurrentFloor().clampX(getX() + visRange);
+        int startY = getCurrentFloor().clampY(getY() - visRange);
+        int endY = getCurrentFloor().clampY(getY() + visRange);
 
-        for (int x = startX; x < endX; x++) {
-            for (int y = startY; y < endY; y++) {
-                Space potentialSpace = spaces[x][y];
-                if (isWithinVision(potentialSpace) && potentialSpace != getSpace()){
+        for (int x = startX; x <= endX; x++) {
+            for (int y = startY; y <= endY; y++) {
+                Space potentialSpace = getCurrentFloor().getSpace(x,y);
+                if (isWithinVision(potentialSpace)){
+                    if (!seeSelf && potentialSpace == getSpace()) {
+                        continue;
+                    }
                     spacesInVision.add(potentialSpace);
                 }
             }
@@ -288,30 +292,33 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
         return spacesInVision;
     }
 
+    private boolean isBeyondNightVision(Space potentialSpace) {
+        return Space.getDistance(getSpace(), potentialSpace) > getNightVisionRange() && potentialSpace.getLight() <= 0;
+    }
+
+    public int getNightVisionRange() {
+        return this.nightVisionRange;
+    }
+
+    public void setNightVisionRange(int nightVisionRange) {
+        this.nightVisionRange = nightVisionRange;
+    }
+
     public boolean isWithinVision(Entity entity){
         return isWithinVision(entity.getSpace());
     }
 
     public boolean isWithinVision(Space space){
-        if (space.getX() < getX() - visionRange+1 || space.getX() > getX() + visionRange-1 || space.getY() < getY() - visionRange+1 || space.getY() > getY() + visionRange-1){
-            return false;
-        }
-        boolean b = canDrawLine(space);
-        if (!b) {
-            outer:
-            for (int x = -1; x <= 1; x++) {
-                for (int y = -1; y <= 1 ; y++) {
-                    if (x == 1 && y == 1)
-                        continue;
-                    Space p = Dungeon.getCurrentFloor().getClampedSpace(space.getX() + x, space.getY() + y);
-                    if (canDrawLine(p) && (!p.isOccupied() || !p.getOccupant().isSightBlocker())) {
-                        b = true;
-                        break outer;
-                    }
+        if (canDrawLine(space) && !isBeyondNightVision(space)) {
+            return true;
+        } else {
+            for (Space p : Space.getAdjacentSpaces(space)) {
+                if (canDrawLine(p) && !isBeyondNightVision(space) && (!p.isOccupied() || !p.getOccupant().isSightBlocker())) {
+                    return true;
                 }
             }
         }
-        return b;
+        return false;
     }
 
     private boolean canDrawLine(Space space) {
@@ -332,17 +339,7 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
     }
 
     public boolean isAdjacent(Space space){
-        for (int i = -1; i <= 1; i++) {
-            for (int j = -1; j <= 1; j++) {
-                if (i == 0 && j == 0){
-                    continue;
-                }
-                if (getCurrentFloor().getSpace(getX()+i, getY()+j).equals(space)){
-                    return true;
-                }
-            }
-        }
-        return false;
+        return Space.getAdjacentSpaces(this.getSpace()).contains(space);
     }
     
     public void heal(int hp){

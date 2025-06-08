@@ -16,6 +16,7 @@ import game.gamelogic.combat.OnHitted;
 import game.gameobjects.DamageType;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Entity;
+import game.gameobjects.items.Item;
 import game.gameobjects.items.weapons.Weapon;
 
 public class Clotting extends ArmorEnchantment implements OnHitted {
@@ -35,7 +36,6 @@ public class Clotting extends ArmorEnchantment implements OnHitted {
             setName("Blood Polyp");
             setDescription("A floating polyp of coagulated blood.");
             setWeight(1);
-            setCorpse(null);
 
             Weapon mass = new Weapon();
             mass.setName("mass");
@@ -43,6 +43,11 @@ public class Clotting extends ArmorEnchantment implements OnHitted {
             mass.setDamage(0, 0);
             setUnarmedWeapon(mass);
 
+        }
+
+        @Override
+        public Item getCorpse() {
+            return null;
         }
 
         @Override

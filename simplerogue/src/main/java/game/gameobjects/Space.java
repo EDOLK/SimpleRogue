@@ -96,7 +96,7 @@ public class Space extends DisplayableTile{
     private Entity occupant;
     private ArrayList<Item> items;
     private ArrayList<Terrain> terrains;
-    private float light = 0.0f;
+    private float light = 0.0f; // from 0.0 to 1.0
 
     private final int X;
     private final int Y;
@@ -267,13 +267,18 @@ public class Space extends DisplayableTile{
                 if (x == 1 && y == 1) {
                     continue;
                 }
-                Space potentialSpace = Dungeon.getCurrentFloor().getSpace(space.getX() + x, space.getY() + y);
-                list.add(potentialSpace);
+                try {
+                    list.add(Dungeon.getCurrentFloor().getSpace(space.getX() + x, space.getY() + y));
+                } catch (Exception e) {
+
+                }
             }
         }
         return list;
     }
 
+    public static int getDistance(Space s1, Space s2){
+        return Math.max(Math.abs(s1.getX()-s2.getX()),Math.abs(s1.getY()-s2.getY()));
+    }
 
 }
-    

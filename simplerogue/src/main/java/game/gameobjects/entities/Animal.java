@@ -1,5 +1,6 @@
 package game.gameobjects.entities;
 
+
 import org.hexworks.zircon.api.color.TileColor;
 
 import game.PathConditions;
@@ -9,6 +10,7 @@ import game.gamelogic.behavior.AnimalWandering;
 import game.gamelogic.behavior.Behavior;
 import game.gamelogic.behavior.HasBehavior;
 import game.gamelogic.behavior.HasEnemies;
+import game.gameobjects.statuses.Sleeping;
 
 public abstract class Animal extends Entity implements HasBehavior, HasAttributes, HasEnemies{
 
@@ -17,7 +19,13 @@ public abstract class Animal extends Entity implements HasBehavior, HasAttribute
 
     public Animal(TileColor bGColor, TileColor fGColor, char character) {
         super(bGColor, fGColor, character);
-        setBehavior(new AnimalWandering(this));
+        setNightVisionRange(5);
+        setBehavior(getDefaultBehavior());
+        addStatus(new Sleeping());
+    }
+
+    protected Behavior getDefaultBehavior(){
+        return new AnimalWandering(this);
     }
 
     public Animal() {

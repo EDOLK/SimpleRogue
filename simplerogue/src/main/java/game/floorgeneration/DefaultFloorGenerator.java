@@ -229,7 +229,13 @@ public class DefaultFloorGenerator extends FloorGenerator {
         while (chestShopper.hasPoints()) {
             Chest generated = chestShopper.generate();
             if (generated != null) {
-                getRandom(getRandom(rooms).getInteriorSpaces()).setOccupant(generated);
+                Room randomRoom = getRandom(rooms);
+                if (randomRoom != null) {
+                    Space randomSpace = getRandom(randomRoom.getInteriorSpaces());
+                    if (randomSpace != null) {
+                        randomSpace.setOccupant(generated);
+                    }
+                }
             }
         }
       

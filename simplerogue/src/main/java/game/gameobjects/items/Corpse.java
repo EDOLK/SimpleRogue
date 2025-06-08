@@ -29,7 +29,7 @@ public class Corpse extends Item implements Behavable, Consumable, SelfAware, Fl
 
     public Corpse(Entity entity){
         interpolator = entity.getfGColor().darkenByPercent(0.2).desaturate(0.9).interpolateTo(decayedColor);
-        originalEntityName = entity.getName();
+        originalEntityName = entity.getOriginalName();
         setCharacter(entity.getCharacter());
         setfGColor(entity.getfGColor().darkenByPercent(0.2));
         setbGColor(entity.getbGColor());

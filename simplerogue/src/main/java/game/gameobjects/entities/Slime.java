@@ -49,11 +49,14 @@ public class Slime extends Animal implements DropsXP, HasDodge, HasResistances, 
         mass.setDamage(1, 3);
         setUnarmedWeapon(mass);
         
-        setCorpse(null);
-
         resistances.add(new RangeResistance(DamageType.BLUNT, 0, 3));
         resistances.add(new PercentageResistance(DamageType.POISON, 0.20));
 
+    }
+
+    @Override
+    public Item getCorpse(){
+        return null;
     }
     
     @Override
