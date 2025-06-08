@@ -65,7 +65,7 @@ public class Spider extends Animal implements HasDodge, HasInventory, HasDrops{
     private Optional<? extends Behavior> getHuntingBehavior(Entity target){
         if (Spider.this.getDistanceFromNest(target.getSpace()) <= Spider.this.maxDistance) {
             try {
-                ProtoHunting h = new ProtoHunting(target);
+                SpiderHunting h = new SpiderHunting(target);
                 //TODO: Bandaid fix. Fix properly later.
                 if (!h.isValid()) {
                     return Optional.empty();
@@ -119,7 +119,7 @@ public class Spider extends Animal implements HasDodge, HasInventory, HasDrops{
                     }
                 }
             }
-            setBehavior(new ProtoTrapping());
+            setBehavior(new SpiderTrapping());
             return Spider.this.getTimeToWait();
         }
 
@@ -130,9 +130,9 @@ public class Spider extends Animal implements HasDodge, HasInventory, HasDrops{
         
     }
 
-    protected class ProtoTrapping extends AnimalWandering {
+    protected class SpiderTrapping extends AnimalWandering {
 
-        public ProtoTrapping() {
+        public SpiderTrapping() {
             super(Spider.this);
         }
 
@@ -163,7 +163,7 @@ public class Spider extends Animal implements HasDodge, HasInventory, HasDrops{
         @Override
         protected Optional<? extends Behavior> getWanderingBehavior() {
             if (Spider.this.traps < Spider.this.maxTraps) {
-                return Optional.of(new ProtoTrapping());
+                return Optional.of(new SpiderTrapping());
             }
             return Optional.of(new GoingToNest());
         }
@@ -180,15 +180,15 @@ public class Spider extends Animal implements HasDodge, HasInventory, HasDrops{
 
     }
     
-    protected class ProtoHunting extends AnimalHunting{
+    protected class SpiderHunting extends AnimalHunting{
 
-        public ProtoHunting(Entity target) throws PathNotFoundException {
+        public SpiderHunting(Entity target) throws PathNotFoundException {
             super(Spider.this, target);
         }
 
         @Override
         protected Optional<? extends Behavior> getWanderingBehavior() {
-            return Optional.of(new ProtoTrapping());
+            return Optional.of(new SpiderTrapping());
         }
 
         @Override
@@ -198,25 +198,25 @@ public class Spider extends Animal implements HasDodge, HasInventory, HasDrops{
 
         @Override
         protected Optional<? extends Behavior> getSearchingBehavior(Space space) {
-            return Optional.of(new ProtoSearching(animal, space));
+            return Optional.of(new SpiderSearching(animal, space));
         }
 
     }
 
-    protected class ProtoSearching extends AnimalSearching{
+    protected class SpiderSearching extends AnimalSearching{
 
-        public ProtoSearching(Animal animal, Space lastSpace) {
+        public SpiderSearching(Animal animal, Space lastSpace) {
             super(animal, lastSpace);
         }
 
         @Override
         protected Optional<? extends Behavior> getWanderingBehavior() {
-            return Optional.of(new ProtoSearching(animal, lastSpace));
+            return Optional.of(new SpiderSearching(animal, lastSpace));
         }
 
         @Override
         protected Optional<? extends Behavior> getSearchDoneBehavior() {
-            return Optional.of(new ProtoTrapping());
+            return Optional.of(new SpiderTrapping());
         }
 
         @Override
@@ -246,14 +246,14 @@ public class Spider extends Animal implements HasDodge, HasInventory, HasDrops{
 
         @Override
         protected Optional<? extends Behavior> getWanderingBehavior() {
-            return Optional.of(new ProtoTrapping());
+            return Optional.of(new SpiderTrapping());
         }
 
         @Override
         public int behave() {
             int time = super.behave();
             if (Spider.this.getSpace() == Spider.this.nestSpace && !(Spider.this.getBehavior() instanceof AnimalHunting)) {
-                Spider.this.setBehavior(new ProtoWaiting());
+                Spider.this.setBehavior(new SpiderWaiting());
                 return time;
             }
             return time;
@@ -261,9 +261,9 @@ public class Spider extends Animal implements HasDodge, HasInventory, HasDrops{
 
     }
 
-    protected class ProtoWaiting extends Behavior{
+    protected class SpiderWaiting extends Behavior{
 
-        protected ProtoWaiting(){}
+        protected SpiderWaiting(){}
 
         @Override
         public int behave() {
@@ -277,7 +277,7 @@ public class Spider extends Animal implements HasDodge, HasInventory, HasDrops{
             while (!enemies.isEmpty()) {
                 Entity random = App.getRandom(enemies);
                 try {
-                    return Spider.this.setAndBehave(new ProtoHunting(random));
+                    return Spider.this.setAndBehave(new SpiderHunting(random));
                 } catch (Exception e) {
                     enemies.remove(random);
                 }
@@ -334,7 +334,7 @@ public class Spider extends Animal implements HasDodge, HasInventory, HasDrops{
                         Spider.this.setBehavior(hunt.get());
                     }
                 } else {
-                    Spider.this.setBehavior(new ProtoTrapping());
+                    Spider.this.setBehavior(new SpiderTrapping());
                 }
             }
         }
