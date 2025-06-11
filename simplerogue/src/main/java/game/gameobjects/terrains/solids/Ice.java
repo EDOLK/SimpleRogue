@@ -2,8 +2,11 @@ package game.gameobjects.terrains.solids;
 
 import static game.App.randomNumber;
 
+import java.util.List;
+
 import org.hexworks.zircon.api.color.TileColor;
 
+import game.App;
 import game.Dungeon;
 import game.display.Display;
 import game.gamelogic.Examinable;
@@ -58,19 +61,10 @@ public class Ice extends Solid implements Triggerable, SelfAware, Examinable{
             } else {
                 Display.log("The " + entity.getName() + " slips on the ice.", getSpace());
             }
-            Space[] potentialSpaces = new Space[8];
-            int index = 0;
-            for (int i = -1; i <= 1; i++) {
-                for (int j = -1; j <= 1; j++) {
-                    if (i == 0 && j == 0){
-                        continue;
-                    }
-                    potentialSpaces[index] = Dungeon.getCurrentFloor().getSpace(getX() + i, getY() + j);
-                    index++;
-                }
+            Space random = App.getRandom(Space.getAdjacentSpaces(getSpace()));
+            if (random != null) {
+                Space.moveEntity(entity, random);
             }
-            Space moveSpace = potentialSpaces[randomNumber(0, 7)];
-            Space.moveEntity(entity, moveSpace);
         }
     }
 

@@ -111,13 +111,9 @@ public class Spider extends Animal implements HasDodge, HasInventory, HasDrops{
         @Override
         public int behave() {
             Spider.this.nestSpace = Spider.this.getSpace();
-            for (int i = -1; i <= 1; i++) {
-                for (int j = -1; j <= 1; j++) {
-                    Space pSpace = getCurrentFloor().getSpace(getX()+i, getY()+j);
-                    if (!pSpace.isOccupied() || pSpace.getOccupant() == Spider.this){
-                        pSpace.addTerrain(new Web());
-                    }
-                }
+            Spider.this.nestSpace.addTerrain(new Web());
+            for (Space space : Space.getAdjacentSpaces(Spider.this.nestSpace)) {
+                space.addTerrain(new Web());
             }
             setBehavior(new SpiderTrapping());
             return Spider.this.getTimeToWait();

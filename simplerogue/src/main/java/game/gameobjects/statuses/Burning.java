@@ -47,32 +47,18 @@ public class Burning extends Status implements Behavable, LightSource, Seperate{
 
     @Override
     public int behave() {
-        Space currentSpace = null;
-        currentSpace = owner.getSpace();
-        if (owner.getHP() > 0){
-            owner.dealDamage(randomNumber(minDamage, maxDamage), DamageType.FIRE);
-        }
-        if (currentSpace != null){
-            int x = currentSpace.getX();
-            int y = currentSpace.getY();
-            for (int i = -1; i <= 1; i++) {
-                for (int j = -1; j <= 1; j++) {
-                    int toX = x + i;
-                    int toY = y + j;
-                    try {
-                        Space toSpace = Dungeon.getCurrentFloor().getSpace(toX, toY);
-                        if (Fire.isFlammable(toSpace)){
-                            toSpace.addFire(new Fire(1));
-                        }
-                        if (i == 0 && j == 0)
-                            continue;
-                        if (toSpace.isOccupied()){
-                            toSpace.getOccupant().addStatus(new Burning());
-                        }
-                    } catch (Exception e) {
-                        continue;
-                    }
-                }
+        owner.dealDamage(randomNumber(minDamage, maxDamage), DamageType.FIRE);
+        List<Space> pSpaces = Space.getAdjacentSpaces(owner.getSpace());
+        pSpaces.add(owner.getSpace());
+        for (Space space : pSpaces) {
+            if (Fire.isFlammable(space)) {
+                space.addFire(new Fire(1));
+            }
+            if (space == owner.getSpace()) {
+                continue;
+            }
+            if (space.isOccupied()) {
+                space.getOccupant().addStatus(new Burning());
             }
         }
         turns--;
@@ -83,6 +69,12 @@ public class Burning extends Status implements Behavable, LightSource, Seperate{
         }
         return 100;
     }
+
+    @Override
+    public boolean isActive() {
+        return owner != null && owner.isAlive();
+    }
+
 
     public int getTurns() {
         return turns;
@@ -96,11 +88,6 @@ public class Burning extends Status implements Behavable, LightSource, Seperate{
     }
     public void addTurns(int amount){
         turns += amount;
-    }
-
-    @Override
-    public boolean isActive() {
-        return owner != null && owner.isAlive();
     }
 
     @Override
