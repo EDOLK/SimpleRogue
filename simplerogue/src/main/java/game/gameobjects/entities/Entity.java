@@ -49,6 +49,7 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
     protected boolean gasBlocker = false;
     protected boolean liquidBlocker = false;
     protected boolean lightBlocker = false;
+    protected boolean itemBlocker = false;
     private Weapon unarmedWeapon;
     private boolean alive = true;
 

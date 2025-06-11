@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
+import org.hexworks.zircon.api.color.TileColor;
+
 import game.display.Display;
 import game.display.FloorMenu;
 import game.floorgeneration.BossFloorGenerator;
@@ -83,7 +85,7 @@ public class Dungeon {
         currentDepth = 1;
         sX = sizeX;
         sY = sizeY;
-        currentFloor = new Floor(sX, sY, new DefaultFloorGenerator(currentDepth));
+        currentFloor = generateFloor();
         availableSkillTrees.clear();
         availableSkillTrees.add(new WarriorSkillTree());
         availableSkillTrees.add(new RogueSkillTree());
@@ -114,6 +116,10 @@ public class Dungeon {
             Display.replaceMenu(floorMenu);
             floorMenu.update();
         }
+    }
+
+    public static Floor generateFloor() {
+        return generateFloor(new PlayerEntity(TileColor.transparent(), TileColor.create(255, 255, 255, 255), '@'));
     }
     
     public static Floor generateFloor(PlayerEntity playerEntity){

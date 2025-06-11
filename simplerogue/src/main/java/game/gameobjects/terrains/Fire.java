@@ -11,7 +11,6 @@ import org.hexworks.zircon.api.Modifiers;
 import org.hexworks.zircon.api.color.TileColor;
 import org.hexworks.zircon.api.modifier.Modifier;
 
-import game.Dungeon;
 import game.gamelogic.Examinable;
 import game.gamelogic.Flammable;
 import game.gamelogic.LightSource;
@@ -154,19 +153,9 @@ public class Fire extends Terrain implements Behavable, SelfAware, Examinable, L
             getSpace().remove(solid);
         }
 
-        for (int x = -1; x <= 1; x++) {
-            for (int y = -1; y <= 1; y++) {
-                if (x == 0 && y == 0)
-                    continue;
-                try {
-                    Space potentialSpace = Dungeon.getCurrentFloor().getSpace(getX()+x, getY()+y);
-                    if (isFlammable(potentialSpace)){
-                        potentialSpace.addFire(new Fire(1));
-                    }
-                } catch (Exception e) {
-                    continue;
-                }
-                
+        for (Space space : Space.getAdjacentSpaces(getSpace())) {
+            if (isFlammable(space)) {
+                space.addFire(new Fire(1));
             }
         }
 

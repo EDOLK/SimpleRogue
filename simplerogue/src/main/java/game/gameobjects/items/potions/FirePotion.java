@@ -2,7 +2,6 @@ package game.gameobjects.items.potions;
 
 import org.hexworks.zircon.api.color.TileColor;
 
-import game.Dungeon;
 import game.display.Display;
 import game.gamelogic.Aimable;
 import game.gamelogic.Consumable;
@@ -33,18 +32,9 @@ public class FirePotion extends Item implements Aimable, Consumable{
     @Override
     public void onLand(Space space) {
         space.addFire(new Fire(5));
-        for (int i = -1; i <= 1; i++) {
-            for (int j = -1; j <= 1; j++) {
-                if (i == 0 && j == 0)
-                    continue;
-                try {
-                    Space pSpace = Dungeon.getCurrentFloor().getSpace(space.getX()+i, space.getY()+j);
-                    if (pSpace.isOccupied() && !pSpace.getOccupant().isGasBlocker() || (!pSpace.isOccupied())){
-                        pSpace.addFire(new Fire(3));
-                    }
-                } catch (Exception e) {
-                    continue;
-                }
+        for (Space s : Space.getAdjacentSpaces(space)) {
+            if (s.isOccupied() && !s.getOccupant().isGasBlocker() || (!s.isOccupied())){
+                s.addFire(new Fire(3));
             }
         }
     }

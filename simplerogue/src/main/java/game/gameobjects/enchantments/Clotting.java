@@ -2,13 +2,12 @@ package game.gameobjects.enchantments;
 
 import static game.App.randomNumber;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.hexworks.zircon.api.color.TileColor;
 import org.hexworks.zircon.api.data.Tile;
 
-import game.Dungeon;
 import game.gamelogic.behavior.Behavable;
 import game.gamelogic.combat.AttackInfo;
 import game.gamelogic.combat.OnDeath;
@@ -60,23 +59,7 @@ public class Clotting extends ArmorEnchantment implements OnHitted {
         @Override
         public int behave() {
             if (randomNumber(1,10) <= 5){
-                int cX = this.getX();
-                int cY = this.getY();
-                List<Space> adjacentSpaces = new ArrayList<>();
-                for (int x = -1; x <= 1; x++) {
-                    for (int y = -1; y <= 1; y++) {
-                        if (x == 0 && y == 0)
-                            continue;
-                        adjacentSpaces.add(Dungeon.getCurrentFloor().getSpace(cX + x, cY + y));
-                    }
-                }
-                for (int i = 0; i < adjacentSpaces.size(); i++) {
-                    Space s = adjacentSpaces.get(i);
-                    if (s.isOccupied()){
-                        adjacentSpaces.remove(s);
-                        i--;
-                    }
-                }
+                List<Space> adjacentSpaces = Space.getAdjacentSpaces(this.getSpace()).stream().filter((s) -> !s.isOccupied()).collect(Collectors.toList());
                 if (adjacentSpaces.size() != 0){
                     Space.moveEntity(this,adjacentSpaces.get(randomNumber(0,adjacentSpaces.size()-1)));
                 }
@@ -98,23 +81,7 @@ public class Clotting extends ArmorEnchantment implements OnHitted {
     @Override
     public void doOnHitted(Entity self, Entity other, AttackInfo attackInfo) {
         if (randomNumber(1,5) == 1 && attackInfo.getDamageDelt() != 0){
-            int cX = self.getX();
-            int cY = self.getY();
-            List<Space> adjacentSpaces = new ArrayList<>();
-            for (int x = -1; x <= 1; x++) {
-                for (int y = -1; y <= 1; y++) {
-                    if (x == 0 && y == 0)
-                        continue;
-                    adjacentSpaces.add(Dungeon.getCurrentFloor().getSpace(cX + x, cY + y));
-                }
-            }
-            for (int i = 0; i < adjacentSpaces.size(); i++) {
-                Space s = adjacentSpaces.get(i);
-                if (s.isOccupied()){
-                    adjacentSpaces.remove(s);
-                    i--;
-                }
-            }
+            List<Space> adjacentSpaces = Space.getAdjacentSpaces(self.getSpace()).stream().filter((s) -> !s.isOccupied()).collect(Collectors.toList());
             if (adjacentSpaces.size() != 0){
                 adjacentSpaces.get(
                     randomNumber(0,adjacentSpaces.size()-1)

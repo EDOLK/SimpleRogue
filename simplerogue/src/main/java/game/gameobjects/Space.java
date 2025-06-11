@@ -264,7 +264,7 @@ public class Space extends DisplayableTile{
         List<Space> list = new ArrayList<>();
         for (int x = -1; x <= 1; x++) {
             for (int y = -1; y <= 1 ; y++) {
-                if (x == 1 && y == 1) {
+                if (x == 0 && y == 0) {
                     continue;
                 }
                 try {
