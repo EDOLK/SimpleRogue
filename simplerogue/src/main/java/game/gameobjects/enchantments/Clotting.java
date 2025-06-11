@@ -2,14 +2,12 @@ package game.gameobjects.enchantments;
 
 import static game.App.randomNumber;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.hexworks.zircon.api.color.TileColor;
 import org.hexworks.zircon.api.data.Tile;
 
-import game.Dungeon;
 import game.gamelogic.behavior.Behavable;
 import game.gamelogic.combat.AttackInfo;
 import game.gamelogic.combat.OnDeath;

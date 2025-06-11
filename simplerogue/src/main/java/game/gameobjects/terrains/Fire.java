@@ -11,7 +11,6 @@ import org.hexworks.zircon.api.Modifiers;
 import org.hexworks.zircon.api.color.TileColor;
 import org.hexworks.zircon.api.modifier.Modifier;
 
-import game.Dungeon;
 import game.gamelogic.Examinable;
 import game.gamelogic.Flammable;
 import game.gamelogic.LightSource;

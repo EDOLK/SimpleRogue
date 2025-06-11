@@ -10,7 +10,6 @@ import org.hexworks.zircon.api.Modifiers;
 import org.hexworks.zircon.api.color.TileColor;
 import org.hexworks.zircon.api.modifier.Modifier;
 
-import game.Dungeon;
 import game.gamelogic.LightSource;
 import game.gamelogic.behavior.Behavable;
 import game.gameobjects.DamageType;

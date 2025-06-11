@@ -2,7 +2,6 @@ package game.gameobjects.items.potions;
 
 import org.hexworks.zircon.api.color.TileColor;
 
-import game.Dungeon;
 import game.display.Display;
 import game.gamelogic.Aimable;
 import game.gamelogic.Consumable;

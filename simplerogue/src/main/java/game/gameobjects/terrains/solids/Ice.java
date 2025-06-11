@@ -2,12 +2,9 @@ package game.gameobjects.terrains.solids;
 
 import static game.App.randomNumber;
 
-import java.util.List;
-
 import org.hexworks.zircon.api.color.TileColor;
 
 import game.App;
-import game.Dungeon;
 import game.display.Display;
 import game.gamelogic.Examinable;
 import game.gamelogic.SelfAware;

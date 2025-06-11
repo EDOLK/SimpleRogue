@@ -1,7 +1,5 @@
 package game.gameobjects.entities;
 
-import static game.Dungeon.getCurrentFloor;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
