@@ -30,7 +30,7 @@ public class BoStaff extends Weapon implements SelfAware, Flammable{
     }
 
     @Override
-    public void onBurn(Fire fire) {
+    public void onBurn() {
         getSpace().remove(this);
     }
 

@@ -27,6 +27,7 @@ import game.gamelogic.HasAccuracy;
 import game.gamelogic.HasDodge;
 import game.gamelogic.HasResistances;
 import game.gamelogic.HasVulnerabilities;
+import game.gameobjects.DisplayableTile;
 import game.gameobjects.enchantments.Enchantment;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.items.Item;
@@ -45,7 +46,10 @@ public class ExamineMenu extends Menu{
         String description = examinable.getDescription();
         String name = examinable.getName();
         String type = null;
-        Tile tile = examinable.getTile();
+        Tile tile = Tile.defaultTile();
+        if (examinable instanceof DisplayableTile dt) {
+            tile = dt.getTile();
+        }
 
         Panel panel = PanelBuilder.newBuilder()
             .withSize((int)(screen.getWidth()/2.5), (int)(screen.getHeight()/2.5))

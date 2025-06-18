@@ -53,7 +53,7 @@ public class OpenDoor extends Terrain implements Interactable, Examinable, Flamm
     }
 
     @Override
-    public void onBurn(Fire fire) {
+    public void onBurn() {
         door.addStatus(new Burning());
         int damage = randomNumber(1, 3);
         if (door.getHP() - damage <= 0){

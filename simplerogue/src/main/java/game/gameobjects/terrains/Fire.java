@@ -19,9 +19,7 @@ import game.gamelogic.behavior.Behavable;
 import game.gameobjects.Space;
 import game.gameobjects.items.Item;
 import game.gameobjects.statuses.Burning;
-import game.gameobjects.terrains.gasses.Gas;
 import game.gameobjects.terrains.liquids.Liquid;
-import game.gameobjects.terrains.solids.Solid;
 
 public class Fire extends Terrain implements Behavable, SelfAware, Examinable, LightSource{
     
@@ -118,7 +116,7 @@ public class Fire extends Terrain implements Behavable, SelfAware, Examinable, L
         
         if (flammable != null){
             addFuel(flammable.getFuelValue());
-            flammable.onBurn(this);
+            flammable.onBurn();
         }
 
         
@@ -126,32 +124,35 @@ public class Fire extends Terrain implements Behavable, SelfAware, Examinable, L
             space.getOccupant().addStatus(new Burning());
         }
 
-        List<Terrain> terrains = getSpace().getTerrains();
-        List<Gas> gassesToAdd = new ArrayList<Gas>();
-        List<Liquid> liquidsToAdd = new ArrayList<Liquid>();
-        List<Solid> solidsToRemove = new ArrayList<Solid>();
-        for (Terrain terrain : terrains) {
-            if (terrain instanceof Liquid liquid && liquid.evaporates()){
-                int amount = Math.min(this.getFuel(), liquid.getDepth());
-                this.subtractFuel(amount);
-                liquid.subtractDepth(amount);
-                gassesToAdd.add(liquid.getEvaporationGas(amount));
+        List<Terrain> terrainsToAdd = new ArrayList<>();
+        List<Terrain> terrainsToRemove = new ArrayList<>();
+
+        for (Terrain terrain : getSpace().getTerrains()) {
+
+            if (terrain instanceof Liquid liquid && liquid.evaporates()) {
+                int a = Math.min(this.fuel, liquid.getAmount());
+                this.fuel -= a;
+                liquid.setAmount(liquid.getAmount() - a);
+                terrainsToAdd.add(liquid.getEvaporationGas(a));
             }
-            if (terrain instanceof Solid solid && solid.melts()){
-                this.subtractFuel(1);
-                liquidsToAdd.add(solid.getMeltingLiquid(1));
-                solidsToRemove.add(solid);
+
+            if (terrain instanceof Melts melts && melts.melts()) {
+                if (terrain instanceof SpreadableTerrain st) {
+                    int a = Math.min(this.fuel, st.getAmount());
+                    this.fuel -= a;
+                    st.setAmount(st.getAmount() - a);
+                    terrainsToAdd.add(melts.getMeltingLiquid(a));
+                } else {
+                    terrainsToRemove.add(terrain);
+                    terrainsToAdd.add(melts.getMeltingLiquid(1));
+                    this.fuel--;
+                }
             }
+
         }
-        for (Gas gas : gassesToAdd) {
-            getSpace().addGas(gas);
-        }
-        for (Liquid liquid : liquidsToAdd) {
-            getSpace().addLiquid(liquid);
-        }
-        for (Solid solid : solidsToRemove) {
-            getSpace().remove(solid);
-        }
+
+        terrainsToAdd.forEach(getSpace()::addTerrain);
+        terrainsToRemove.forEach(getSpace()::remove);
 
         for (Space space : Space.getAdjacentSpaces(getSpace())) {
             if (isFlammable(space)) {

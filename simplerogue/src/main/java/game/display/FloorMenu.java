@@ -202,15 +202,15 @@ public final class FloorMenu extends Menu{
 
     private void drawTerrain(Terrain terrain, int x, int y, double darkness) {
         if (terrain instanceof Liquid liquid){
-            if (liquid.getDepth() <= 1){
+            if (liquid.getAmount() <= 1){
                 lowLiquidLayer.draw(liquid.getTile(darkness), Position.create(x, y));
                 return;
             }
-            if (liquid.getDepth() <= 5){
+            if (liquid.getAmount() <= 5){
                 midLiquidLayer.draw(liquid.getTile(darkness), Position.create(x, y));
                 return;
             }
-            if (liquid.getDepth() <= 10){
+            if (liquid.getAmount() <= 10){
                 highLiquidLayer.draw(liquid.getTile(darkness), Position.create(x, y));
                 return;
             }

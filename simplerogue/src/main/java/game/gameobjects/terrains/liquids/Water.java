@@ -5,7 +5,7 @@ import org.hexworks.zircon.api.color.TileColor;
 import game.gameobjects.terrains.Terrain;
 import game.gameobjects.terrains.gasses.Gas;
 import game.gameobjects.terrains.gasses.Steam;
-import game.gameobjects.terrains.solids.Ice;
+import game.gameobjects.terrains.Ice;
 
 public class Water extends Liquid{
     
@@ -16,9 +16,9 @@ public class Water extends Liquid{
         setbGColor(TileColor.create(75, 75, 235, 235));
         setName("Water");
         setTileName("Water");
-        setViscosity(0);
-        this.minOpacity = 100;
-        this.maxOpacity = 255;
+        setSpreadFactor(1.0f);
+        // this.minOpacity = 100;
+        // this.maxOpacity = 255;
     }
 
     @Override
@@ -37,11 +37,6 @@ public class Water extends Liquid{
     }
 
     @Override
-    public Terrain getFreezingTerrain(int amount) {
-        return new Ice(amount);
-    }
-
-    @Override
     public boolean evaporates() {
         return true;
     }
@@ -50,5 +45,10 @@ public class Water extends Liquid{
     public boolean freezes() {
         return true;
     }
+
+	@Override
+	public Terrain getFreezeTerrain(int amount) {
+        return new Ice(amount);
+	}
 
 }

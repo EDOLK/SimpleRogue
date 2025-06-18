@@ -35,7 +35,7 @@ public class FreezingPotion extends Item implements Aimable, Consumable {
 
     @Override
     public void onLand(Space space) {
-        space.addGas(new FreezingAir(10));
+        space.addTerrain(new FreezingAir(10));
     }
 
     @Override

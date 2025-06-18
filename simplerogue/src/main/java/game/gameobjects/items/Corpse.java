@@ -82,7 +82,7 @@ public class Corpse extends Item implements Behavable, Consumable, SelfAware, Fl
         TileColor newColor = interpolator.getColorAtRatio(pos);
         setfGColor(newColor);
         if (randomNumber(1, 100) <= 10 && decay >= decayLimit/3){
-            currentSpace.addGas(new Miasma(randomNumber(1, 10)));
+            currentSpace.addTerrain(new Miasma(randomNumber(1, 10)));
         }
         decay++;
         return 100;
@@ -122,7 +122,7 @@ public class Corpse extends Item implements Behavable, Consumable, SelfAware, Fl
     }
 
     @Override
-    public void onBurn(Fire fire) {
+    public void onBurn() {
         getSpace().addItem(new CookedCorpse(this));
         getSpace().remove(this);
     }

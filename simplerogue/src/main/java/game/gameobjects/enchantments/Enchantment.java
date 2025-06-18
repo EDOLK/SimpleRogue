@@ -1,8 +1,9 @@
 package game.gameobjects.enchantments;
 
 import game.gamelogic.Examinable;
+import game.gameobjects.DisplayableTile;
 
-public abstract class Enchantment<T> implements Examinable{
+public abstract class Enchantment<T> extends DisplayableTile implements Examinable{
 
     protected String prefix;
     protected String suffix;

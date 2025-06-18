@@ -67,7 +67,7 @@ public class Torch extends Weapon implements Flammable, LightSource, SelfAware, 
     }
 
     @Override
-    public void onBurn(Fire fire) {
+    public void onBurn() {
         space.remove(this);
     }
 

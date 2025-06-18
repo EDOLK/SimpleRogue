@@ -27,7 +27,7 @@ public class WaterPotion extends Item implements Aimable{
 
     @Override
     public void onLand(Space space) {
-        space.addLiquid(new Water(10));
+        space.addTerrain(new Water(10));
     }
 
     @Override

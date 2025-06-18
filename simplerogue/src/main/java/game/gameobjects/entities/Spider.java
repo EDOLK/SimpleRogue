@@ -359,7 +359,7 @@ public class Spider extends Animal implements HasDodge, HasInventory, HasDrops{
         }
 
         @Override
-        public void onBurn(Fire fire) {
+        public void onBurn() {
             getSpace().remove(this);
         }
         

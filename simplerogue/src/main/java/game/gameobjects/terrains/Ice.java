@@ -1,4 +1,4 @@
-package game.gameobjects.terrains.solids;
+package game.gameobjects.terrains;
 
 import static game.App.randomNumber;
 
@@ -15,14 +15,13 @@ import game.gameobjects.entities.PlayerEntity;
 import game.gameobjects.terrains.liquids.Liquid;
 import game.gameobjects.terrains.liquids.Water;
 
-public class Ice extends Solid implements Triggerable, SelfAware, Examinable{
+public class Ice extends Terrain implements Triggerable, SelfAware, Examinable, Melts{
 
     private Space space;
     private String name;
     private String description;
     
     public Ice(int amount){
-        super(amount);
         name = "Ice";
         description = "Ice. Slippery.";
         setbGColor(TileColor.create(150, 245, 255, 100));

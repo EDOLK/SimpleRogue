@@ -22,9 +22,8 @@ public class FreezingAir extends Gas{
         this.setName("Freezing air");
         this.setfGColor(TileColor.create(180, 180, 255, 255));
         this.setbGColor(TileColor.transparent());
-        this.setSpreadFactor(0.5);
-        setTileName("Freezing Air");
-        this.disapparationRate = 10;
+        this.setSpreadFactor(0.5f);
+        this.setTileName("Freezing Air");
     }
 
     @Override
@@ -52,13 +51,17 @@ public class FreezingAir extends Gas{
         List<Terrain> terrains = getSpace().getTerrains();
         Stack<Terrain> terrainsToBeAdded = new Stack<Terrain>();
         for (Terrain terrain : terrains) {
-            if (terrain instanceof Liquid liquid){
-                terrainsToBeAdded.add(liquid.getFreezingTerrain(liquid.getDepth()));
-                liquid.subtractDepth(liquid.getDepth());
+            if (terrain instanceof Liquid liquid && liquid.evaporates()){
+                int a = Math.min(this.getAmount(), liquid.getAmount());
+                this.setAmount(this.getAmount()-a);
+                liquid.setAmount(liquid.getAmount()-a);
+                terrainsToBeAdded.add(liquid.getFreezeTerrain(a));
             }
             if (terrain instanceof Gas gas && gas.condenses()){
-                terrainsToBeAdded.add(gas.getCondensationLiquid(gas.getDensity()));
-                gas.removeDensity((gas.getDensity()));
+                int a = Math.min(this.getAmount(), gas.getAmount());
+                this.setAmount(this.getAmount()-a);
+                gas.setAmount(gas.getAmount()-a);
+                terrainsToBeAdded.add(gas.getCondensationLiquid(a));
             }
         }
         while (!terrainsToBeAdded.isEmpty()) {
