@@ -3,6 +3,7 @@ package game.floorgeneration;
 import java.util.function.Supplier;
 
 import game.PathConditions;
+import game.gamelogic.Aimable;
 import game.gamelogic.Examinable;
 import game.gamelogic.Interactable;
 import game.gamelogic.SelfAware;
@@ -12,6 +13,11 @@ import game.gameobjects.entities.Entity;
 import game.gameobjects.entities.PlayerEntity;
 import game.gameobjects.entities.Rat;
 import game.gameobjects.entities.Wall;
+import game.gameobjects.items.Item;
+import game.gameobjects.items.potions.FreezingPotion;
+import game.gameobjects.items.potions.WaterPotion;
+import game.gameobjects.items.weapons.BoStaff;
+import game.gameobjects.terrains.ProtoFire;
 import game.gameobjects.terrains.SpreadableTerrain;
 import game.gameobjects.terrains.Terrain;
 
@@ -29,7 +35,11 @@ public class DebugFloorGenerator extends FloorGenerator {
         generateSpaces();
         generateRectangle(5,5,30,30);
         spaces[7][20].setOccupant(playerEntity);
-        spaces[7][21].addTerrain(new DebugSpreadable(10));
+        playerEntity.addItemToInventory(new WaterPotion());
+        playerEntity.addItemToInventory(new FreezingPotion());
+        playerEntity.addItemToInventory(new BoStaff());
+        playerEntity.addItemToInventory(new BoStaff());
+        playerEntity.addItemToInventory(new BoStaff());
     }
 
     protected void generateSpaces(){

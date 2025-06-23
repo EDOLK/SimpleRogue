@@ -127,9 +127,6 @@ public class Dungeon {
     }
     
     public static Floor generateFloor(PlayerEntity playerEntity){
-        playerEntity.addItemToInventory(new FirePotion());
-        playerEntity.addItemToInventory(new WaterPotion());
-        playerEntity.addItemToInventory(new FreezingPotion());
         if (currentDepth % 5 == 0) {
             return new Floor(sX, sY, playerEntity, new BossFloorGenerator(currentDepth));
         } else {

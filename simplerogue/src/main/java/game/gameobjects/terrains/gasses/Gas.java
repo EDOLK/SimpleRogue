@@ -32,7 +32,7 @@ public abstract class Gas extends SpreadableTerrain implements Examinable {
 
     @Override
     public String getName() {
-        return this.name;
+        return this.name + " (" + this.amount + ")";
     };
 
     public void setDescription(String description) {

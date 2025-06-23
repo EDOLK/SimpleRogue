@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.stream.Collectors;
+
+import org.hexworks.zircon.api.data.Tile;
 
 import game.App;
+import game.display.Display;
 import game.gamelogic.SelfAware;
 import game.gamelogic.behavior.Behavable;
 import game.gameobjects.Space;
@@ -23,6 +25,19 @@ public abstract class SpreadableTerrain extends Terrain implements SelfAware, Be
     protected int disapparationTimer;
     protected int disapparationRate;
     protected int minSpreadAmount;
+
+    public SpreadableTerrain(int amount) {
+        super();
+        this.amount = amount;
+    }
+
+    public int getDisapparationTimer() {
+        return disapparationTimer;
+    }
+
+    public void setDisapparationTimer(int disapparationTimer) {
+        this.disapparationTimer = disapparationTimer;
+    }
 
     public float getSpreadFactor() {
         return spreadFactor;
@@ -70,46 +85,36 @@ public abstract class SpreadableTerrain extends Terrain implements SelfAware, Be
         this.minSpreadAmount = minSpreadAmount;
     }
 
-    protected abstract SpreadableTerrain createSelf(int amount);
-
-    protected abstract boolean isValidToSpread(Space potentialSpace);
-
-    public SpreadableTerrain(int amount) {
-        super();
-        this.amount = amount;
-    }
-
     @Override
     public int behave() {
 
-        if (disapparationTimer >= getDisapparationRate()){
-            setAmount(getAmount()-1);
-            this.disapparationTimer = 0;
+        if (this.getDisapparationTimer() >= this.getDisapparationRate()){
+            this.setAmount(this.getAmount()-1);
+            this.setDisapparationTimer(0);
         } else {
-            this.disapparationTimer++;
+            this.setDisapparationTimer(this.getDisapparationTimer()+1);
         }
 
-        List<Space> validSpaces = Space.getAdjacentSpaces(this.getSpace()).stream()
-            .filter(this::isValidToSpread)
-            .collect(Collectors.toList());
+        List<Space> validSpaces = Space.getAdjacentSpaces(this.getSpace());
 
-        if (Math.random() < getSpreadFactor() && validSpaces != null && !validSpaces.isEmpty()) {
-            while (getAmount() >= getMinSpreadAmount()) {
+        if (Math.random() < this.getSpreadFactor() && validSpaces != null && !validSpaces.isEmpty()) {
+            while (this.getAmount() >= this.getMinSpreadAmount()) {
                 Pair<Integer, List<Space>> lPair = getLowest(validSpaces, this::getAmountOfSelf);
-                if (lPair.getFirst() < this.getAmount() && !lPair.getSecond().isEmpty()) {
-                    this.addSelf(App.getRandom(lPair.getSecond()));
-                    this.setAmount(getAmount()-1);
+                Space lowestSpace = App.getRandom(lPair.getSecond());
+                if (lPair.getFirst() < this.getAmount() && lowestSpace != null && this.isValidToSpread(lowestSpace)) {
+                    this.setAmount(this.getAmount()-1);
+                    lowestSpace.addTerrain(this.createSelfWithTimer(1));
                 } else {
                     break;
                 }
             }
         }
 
-        if (this.amount == 0) {
+        if (this.getAmount() == 0) {
             this.getSpace().remove(this);
         }
 
-        return this.spreadTime;
+        return this.getSpreadTime();
     }
 
     @Override
@@ -144,16 +149,17 @@ public abstract class SpreadableTerrain extends Terrain implements SelfAware, Be
         return 0;
     }
 
-    private void addSelf(Space space){
-        Optional<SpreadableTerrain> optSelf = getSelf(space);
-        if (optSelf.isPresent()) {
-            optSelf.get().setAmount(optSelf.get().getAmount()+1);
-        } else {
-            space.addTerrain(createSelf(1));
-        }
+    protected abstract boolean isValidToSpread(Space potentialSpace);
+
+    protected abstract SpreadableTerrain createSelf(int amount);
+
+    protected SpreadableTerrain createSelfWithTimer(int amount){
+        SpreadableTerrain t = createSelf(amount);
+        t.setDisapparationTimer(this.getDisapparationTimer());
+        return t;
     }
 
-    private <T> Pair<Integer, List<T>> getLowest (List<T> list, Function<T,Integer> func){
+    private <T> Pair<Integer, List<T>> getLowest(List<T> list, Function<T,Integer> func){
         int lowestInt = Integer.MAX_VALUE;
         List<T> lowestList = new ArrayList<>();
         for (T t : list) {
@@ -167,5 +173,30 @@ public abstract class SpreadableTerrain extends Terrain implements SelfAware, Be
         }
         return new Pair<Integer, List<T>>(lowestInt, lowestList);
     }
-    
+
+    @Override
+    public Tile getTile(double percent) {
+        return getTile(percent, amount);
+    }
+
+    public Tile getTile(double percent, int amount){
+        switch (Display.getMode()) {
+            case ASCII:
+                return Tile.newBuilder()
+                    .withBackgroundColor(getbGColor().darkenByPercent(percent).withAlpha((int)App.lerp(0,75,SpreadableTerrain.MAX_AMOUNT,255,amount)))
+                    .withForegroundColor(getfGColor().darkenByPercent(percent))
+                    .withCharacter(getCharacter())
+                    .withModifiers(getModifiers())
+                    .withTileset(Display.getGraphicalTileSet())
+                    .build();
+            case GRAPHICAL:
+                return Tile.newBuilder()
+                    .withName(getTileName())
+                    .withTileset(Display.getGraphicalTileSet())
+                    .buildGraphicalTile();
+            default:
+                return Tile.defaultTile();
+        }
+    }
+
 }
