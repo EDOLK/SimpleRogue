@@ -14,7 +14,6 @@ import game.gamelogic.Upgrader;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.items.Item;
-import game.gameobjects.terrains.Fire;
 
 public class ScrollOfUpgrade extends Item implements SelfAware, Scrollable, Flammable, Upgrader{
 

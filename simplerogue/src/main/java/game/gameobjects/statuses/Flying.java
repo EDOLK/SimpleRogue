@@ -1,8 +1,6 @@
 package game.gameobjects.statuses;
 
 import java.util.HashSet;
-import java.util.List;
-
 import org.hexworks.zircon.api.Modifiers;
 import org.hexworks.zircon.api.color.TileColor;
 import org.hexworks.zircon.api.modifier.Modifier;
@@ -10,7 +8,7 @@ import org.hexworks.zircon.api.modifier.Modifier;
 import game.gamelogic.HasDodge;
 import game.gamelogic.behavior.Behavable;
 
-public class Flying extends Status implements Behavable, HasDodge, Seperate{
+public class Flying extends Status implements Behavable, HasDodge, SeperateIn{
 
     private int turns;
     private boolean perminent;
@@ -61,7 +59,7 @@ public class Flying extends Status implements Behavable, HasDodge, Seperate{
     }
 
     @Override
-    public void onStack(Status SameStatus) {
+    public void onStackIn(Status SameStatus) {
         Flying otherFlying = (Flying)SameStatus;
         if (!this.isPerminent() && !otherFlying.isPerminent()){
             otherFlying.setTurns(otherFlying.getTurns()+this.getTurns());
@@ -69,13 +67,8 @@ public class Flying extends Status implements Behavable, HasDodge, Seperate{
     }
 
     @Override
-    public Status validateSameness(List<Status> Statuses) {
-        for (Status status : Statuses) {
-            if (status instanceof Flying flying){
-                return flying;
-            }
-        }
-        return null;
+    public boolean validateSamenessIn(Status status) {
+        return status instanceof Flying;
     }
     
 }

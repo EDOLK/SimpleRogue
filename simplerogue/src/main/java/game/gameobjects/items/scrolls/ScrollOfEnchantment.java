@@ -25,7 +25,6 @@ import game.gameobjects.entities.Entity;
 import game.gameobjects.items.Item;
 import game.gameobjects.items.armor.Armor;
 import game.gameobjects.items.weapons.Weapon;
-import game.gameobjects.terrains.Fire;
 
 public class ScrollOfEnchantment extends Item implements SelfAware, Scrollable, Flammable, Upgrader {
 

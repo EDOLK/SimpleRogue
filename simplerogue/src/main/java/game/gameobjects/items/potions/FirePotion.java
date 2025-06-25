@@ -18,7 +18,7 @@ public class FirePotion extends Item implements Aimable, Consumable{
         setCharacter('p');
         setfGColor(TileColor.create(250, 134, 7, 255));
         setbGColor(TileColor.transparent());
-        setDescription("An orange potion, it seems volitile.");
+        setDescription("An orange potion, it seems volatile.");
         setName("Fire Potion");
         setTileName("Orange Potion");
         setWeight(1);
@@ -32,11 +32,6 @@ public class FirePotion extends Item implements Aimable, Consumable{
     @Override
     public void onLand(Space space) {
         space.addFire(new Fire(5));
-        for (Space s : Space.getAdjacentSpaces(space)) {
-            if (s.isOccupied() && !s.getOccupant().isGasBlocker() || (!s.isOccupied())){
-                s.addFire(new Fire(3));
-            }
-        }
     }
 
     @Override
@@ -49,7 +44,7 @@ public class FirePotion extends Item implements Aimable, Consumable{
         if (consumer.addStatus(new Burning())){
             if (consumer instanceof PlayerEntity){
                 Display.log("You light yourself on fire. Idiot.");
-            } else{
+            } else {
                 Display.log("The " + consumer.getName() + " lights itself on fire.", consumer.getSpace());
             }
             Display.update();

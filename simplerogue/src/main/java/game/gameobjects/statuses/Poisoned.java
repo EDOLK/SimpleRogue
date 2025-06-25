@@ -3,8 +3,6 @@ package game.gameobjects.statuses;
 import static game.App.randomNumber;
 
 import java.util.HashSet;
-import java.util.List;
-
 import org.hexworks.zircon.api.Modifiers;
 import org.hexworks.zircon.api.color.TileColor;
 import org.hexworks.zircon.api.modifier.Modifier;
@@ -12,7 +10,7 @@ import org.hexworks.zircon.api.modifier.Modifier;
 import game.gamelogic.behavior.Behavable;
 import game.gameobjects.DamageType;
 
-public class Poisoned extends Status implements Behavable, Seperate{
+public class Poisoned extends Status implements Behavable, SeperateIn{
 
     private int minDamage;
     private int maxDamage;
@@ -49,18 +47,12 @@ public class Poisoned extends Status implements Behavable, Seperate{
     }
 
     @Override
-    public void onStack(Status SameStatus) {
+    public void onStackIn(Status SameStatus) {
         
     }
 
     @Override
-    public Status validateSameness(List<Status> Statuses) {
-        for (Status status : Statuses) {
-            if (status instanceof Poisoned poisoned){
-                return poisoned;
-            }
-        }
-        return null;
+    public boolean validateSamenessIn(Status status) {
+        return status instanceof Poisoned;
     }
-    
 }

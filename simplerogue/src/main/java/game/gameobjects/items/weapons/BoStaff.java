@@ -6,7 +6,6 @@ import game.gamelogic.Flammable;
 import game.gamelogic.SelfAware;
 import game.gameobjects.DamageType;
 import game.gameobjects.Space;
-import game.gameobjects.terrains.Fire;
 
 public class BoStaff extends Weapon implements SelfAware, Flammable{
 

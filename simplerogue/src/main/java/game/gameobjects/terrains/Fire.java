@@ -5,8 +5,6 @@ import static game.App.lerp;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
 import org.hexworks.zircon.api.Modifiers;
 import org.hexworks.zircon.api.color.TileColor;
 import org.hexworks.zircon.api.modifier.Modifier;
@@ -19,7 +17,6 @@ import game.gamelogic.behavior.Behavable;
 import game.gameobjects.Space;
 import game.gameobjects.items.Item;
 import game.gameobjects.statuses.Burning;
-import game.gameobjects.terrains.liquids.Liquid;
 
 public class Fire extends Terrain implements Behavable, SelfAware, Examinable, LightSource{
     
@@ -38,10 +35,9 @@ public class Fire extends Terrain implements Behavable, SelfAware, Examinable, L
         }
         return false;
     }
+
     private Space space;
-
     private int fuel;
-
     protected String name = "Fire";
     protected String description = "This is fire.";
     protected String subHeader = "";
@@ -54,9 +50,7 @@ public class Fire extends Terrain implements Behavable, SelfAware, Examinable, L
         setbGColor(TileColor.create(250, 205, 0, 255));
         setCharacter('▓');
         setTileName("Fire");
-        Set<Modifier> modSet = new HashSet<Modifier>();
-        modSet.add(Modifiers.blink());
-        setModifiers(modSet);
+        setModifiers(new HashSet<Modifier>(List.of(Modifiers.blink())));
     }
     
     public int getFuel() {
@@ -105,7 +99,7 @@ public class Fire extends Terrain implements Behavable, SelfAware, Examinable, L
             }
         }
 
-        if (flammable == null || Math.random() <= 0.50){
+        if (flammable == null || Math.random() < 0.50){
             for (Item item : space.getItems()) {
                 if (item instanceof Flammable flammableItem){
                     flammable = flammableItem;
@@ -128,13 +122,6 @@ public class Fire extends Terrain implements Behavable, SelfAware, Examinable, L
         List<Terrain> terrainsToRemove = new ArrayList<>();
 
         for (Terrain terrain : getSpace().getTerrains()) {
-
-            if (terrain instanceof Liquid liquid && liquid.evaporates()) {
-                int a = Math.min(this.fuel, liquid.getAmount());
-                this.fuel -= a;
-                liquid.setAmount(liquid.getAmount() - a);
-                terrainsToAdd.add(liquid.getEvaporationGas(a));
-            }
 
             if (terrain instanceof Melts melts && melts.melts()) {
                 if (terrain instanceof SpreadableTerrain st) {
@@ -204,7 +191,7 @@ public class Fire extends Terrain implements Behavable, SelfAware, Examinable, L
 
     @Override
     public int getLightSourceIntensity() {
-        return (int)lerp(0, 0, MAX_FUEL, 20, fuel);
+        return (int)lerp(1, 5, MAX_FUEL, 20, fuel);
     }
 
 }

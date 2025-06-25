@@ -15,7 +15,6 @@ import game.gameobjects.DamageType;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.entities.PlayerEntity;
-import game.gameobjects.terrains.Fire;
 import game.gameobjects.terrains.gasses.Miasma;
 
 public class Corpse extends Item implements Behavable, Consumable, SelfAware, Flammable{

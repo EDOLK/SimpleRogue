@@ -1,7 +1,6 @@
 package game.gameobjects.statuses;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.hexworks.zircon.api.Modifiers;
@@ -13,7 +12,7 @@ import game.gamelogic.behavior.Behavable;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Entity;
 
-public class Freezing extends Status implements Seperate, Behavable, OverridesMovement{
+public class Freezing extends Status implements SeperateIn, Behavable, OverridesMovement{
     
     private int turns = 0;
     private int limit = 1;
@@ -32,18 +31,8 @@ public class Freezing extends Status implements Seperate, Behavable, OverridesMo
     }
 
     @Override
-    public void onStack(Status SameStatus) {
+    public void onStackIn(Status SameStatus) {
 
-    }
-
-    @Override
-    public Status validateSameness(List<Status> Statuses) {
-        for (Status status : Statuses) {
-            if (status instanceof Freezing freezing){
-                return freezing;
-            }
-        }
-        return null;
     }
 
     @Override
@@ -70,6 +59,11 @@ public class Freezing extends Status implements Seperate, Behavable, OverridesMo
     @Override
     public boolean isEnabled() {
         return enabled;
+    }
+
+    @Override
+    public boolean validateSamenessIn(Status status) {
+        return status instanceof Freezing;
     }
     
 }

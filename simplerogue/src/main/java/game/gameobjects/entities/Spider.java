@@ -29,10 +29,9 @@ import game.gameobjects.DamageType;
 import game.gameobjects.Space;
 import game.gameobjects.items.Item;
 import game.gameobjects.items.weapons.Weapon;
-import game.gameobjects.statuses.Seperate;
+import game.gameobjects.statuses.SeperateIn;
 import game.gameobjects.statuses.Status;
 import game.gameobjects.terrains.ExposedTrap;
-import game.gameobjects.terrains.Fire;
 import game.gameobjects.terrains.HiddenTrap;
 
 public class Spider extends Animal implements HasDodge, HasInventory, HasDrops{
@@ -378,7 +377,7 @@ public class Spider extends Animal implements HasDodge, HasInventory, HasDrops{
     /**
      * Webbed
      */
-    public static class Webbed extends Status implements OverridesAttack, OverridesMovement, Behavable, Seperate{
+    public static class Webbed extends Status implements OverridesAttack, OverridesMovement, Behavable, SeperateIn{
 
         private int turns;
 
@@ -431,20 +430,15 @@ public class Spider extends Animal implements HasDodge, HasInventory, HasDrops{
         }
 
         @Override
-        public void onStack(Status SameStatus) {
+        public void onStackIn(Status SameStatus) {
             if (SameStatus instanceof Webbed webbed) {
                 webbed.turns += this.turns;
             }
         }
 
         @Override
-        public Status validateSameness(List<Status> Statuses) {
-            for (Status status : Statuses) {
-                if (status instanceof Webbed webbed){
-                    return webbed;
-                }
-            }
-            return null;
+        public boolean validateSamenessIn(Status status) {
+            return status instanceof Webbed;
         }
     }
 

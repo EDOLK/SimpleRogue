@@ -17,7 +17,6 @@ import game.gameobjects.Space;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.items.weapons.Weapon;
 import game.gameobjects.statuses.Burning;
-import game.gameobjects.terrains.Fire;
 
 public class Torch extends Weapon implements Flammable, LightSource, SelfAware, Behavable, Interactable, OnCrit{
     

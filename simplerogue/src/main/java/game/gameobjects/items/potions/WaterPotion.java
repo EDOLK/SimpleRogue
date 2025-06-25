@@ -22,7 +22,7 @@ public class WaterPotion extends Item implements Aimable{
 
     @Override
     public void onHit(Entity target) {
-
+        target.addStatus(new Water.Wet());
     }
 
     @Override
@@ -34,6 +34,5 @@ public class WaterPotion extends Item implements Aimable{
     public boolean landsOnHit() {
         return true;
     }
-    
     
 }

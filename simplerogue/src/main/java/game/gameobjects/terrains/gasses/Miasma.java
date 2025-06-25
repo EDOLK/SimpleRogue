@@ -6,7 +6,6 @@ import org.hexworks.zircon.api.color.TileColor;
 
 import game.gamelogic.Flammable;
 import game.gameobjects.DamageType;
-import game.gameobjects.terrains.Fire;
 import game.gameobjects.terrains.liquids.Liquid;
 
 public class Miasma extends Gas implements Flammable{
@@ -19,13 +18,13 @@ public class Miasma extends Gas implements Flammable{
         setCharacter(' ');
         setfGColor(TileColor.transparent());
         setbGColor(TileColor.create(99, 0, 153, 255));
-        //TODO: dont forget about opacity
+        setSpreadFactor(0.9f);
     }
 
     @Override
     public int behave() {
         if (getSpace().isOccupied()){
-            getSpace().getOccupant().dealDamage(randomNumber(0,getAmount()), DamageType.SUFFICATION);
+            getSpace().getOccupant().dealDamage(randomNumber(0, getAmount()), DamageType.SUFFICATION);
         }
         return super.behave();
     }
@@ -37,7 +36,7 @@ public class Miasma extends Gas implements Flammable{
 
     @Override
     public void onBurn() {
-        getSpace().removeTerrain(this);
+        this.getSpace().removeTerrain(this);
     }
 
     @Override
@@ -47,7 +46,7 @@ public class Miasma extends Gas implements Flammable{
 
     @Override
     public Liquid getCondensationLiquid(int depth) {
-        throw new UnsupportedOperationException("Method getCondensationLiquid unsopported for class Miasma");
+        throw new UnsupportedOperationException("Unimplemented method 'getCondensationLiquid'");
     }
 
     @Override

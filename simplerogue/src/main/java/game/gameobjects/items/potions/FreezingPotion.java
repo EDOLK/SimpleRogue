@@ -7,6 +7,7 @@ import game.gamelogic.Consumable;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.items.Item;
+import game.gameobjects.statuses.Freezing;
 import game.gameobjects.terrains.gasses.FreezingAir;
 
 public class FreezingPotion extends Item implements Aimable, Consumable {
@@ -23,14 +24,13 @@ public class FreezingPotion extends Item implements Aimable, Consumable {
 
     @Override
     public boolean consume(Entity consumer) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'consume'");
+        consumer.addStatus(new Freezing());
+        return true;
     }
 
     @Override
     public void onHit(Entity target) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'onHit'");
+        target.addStatus(new Freezing());
     }
 
     @Override

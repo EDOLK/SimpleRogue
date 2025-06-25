@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.hexworks.zircon.api.data.Tile;
 
@@ -28,7 +29,7 @@ public abstract class SpreadableTerrain extends Terrain implements SelfAware, Be
 
     public SpreadableTerrain(int amount) {
         super();
-        this.amount = amount;
+        setAmount(amount);
     }
 
     public int getDisapparationTimer() {
@@ -95,13 +96,15 @@ public abstract class SpreadableTerrain extends Terrain implements SelfAware, Be
             this.setDisapparationTimer(this.getDisapparationTimer()+1);
         }
 
-        List<Space> validSpaces = Space.getAdjacentSpaces(this.getSpace());
+        List<Space> validSpaces = Space.getAdjacentSpaces(this.getSpace()).stream()
+            .filter(this::isValidToSpread)
+            .collect(Collectors.toList());
 
         if (Math.random() < this.getSpreadFactor() && validSpaces != null && !validSpaces.isEmpty()) {
             while (this.getAmount() >= this.getMinSpreadAmount()) {
                 Pair<Integer, List<Space>> lPair = getLowest(validSpaces, this::getAmountOfSelf);
                 Space lowestSpace = App.getRandom(lPair.getSecond());
-                if (lPair.getFirst() < this.getAmount() && lowestSpace != null && this.isValidToSpread(lowestSpace)) {
+                if (lPair.getFirst() < this.getAmount() && lowestSpace != null) {
                     this.setAmount(this.getAmount()-1);
                     lowestSpace.addTerrain(this.createSelfWithTimer(1));
                 } else {
@@ -110,7 +113,7 @@ public abstract class SpreadableTerrain extends Terrain implements SelfAware, Be
             }
         }
 
-        if (this.getAmount() == 0) {
+        if (this.getAmount() <= 0) {
             this.getSpace().remove(this);
         }
 
