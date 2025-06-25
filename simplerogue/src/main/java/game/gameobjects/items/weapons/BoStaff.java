@@ -6,7 +6,6 @@ import game.gamelogic.Flammable;
 import game.gamelogic.SelfAware;
 import game.gameobjects.DamageType;
 import game.gameobjects.Space;
-import game.gameobjects.terrains.Fire;
 
 public class BoStaff extends Weapon implements SelfAware, Flammable{
 
@@ -30,7 +29,7 @@ public class BoStaff extends Weapon implements SelfAware, Flammable{
     }
 
     @Override
-    public void onBurn(Fire fire) {
+    public void onBurn() {
         getSpace().remove(this);
     }
 

@@ -14,7 +14,6 @@ import game.gamelogic.Upgrader;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.items.Item;
-import game.gameobjects.terrains.Fire;
 
 public class ScrollOfUpgrade extends Item implements SelfAware, Scrollable, Flammable, Upgrader{
 
@@ -36,7 +35,7 @@ public class ScrollOfUpgrade extends Item implements SelfAware, Scrollable, Flam
     }
 
     @Override
-    public void onBurn(Fire fire) {
+    public void onBurn() {
         Display.log("The " + getName() + " burns up.", currentSpace);
         getSpace().remove(this);
     }

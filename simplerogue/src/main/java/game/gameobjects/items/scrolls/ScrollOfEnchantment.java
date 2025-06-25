@@ -25,7 +25,6 @@ import game.gameobjects.entities.Entity;
 import game.gameobjects.items.Item;
 import game.gameobjects.items.armor.Armor;
 import game.gameobjects.items.weapons.Weapon;
-import game.gameobjects.terrains.Fire;
 
 public class ScrollOfEnchantment extends Item implements SelfAware, Scrollable, Flammable, Upgrader {
 
@@ -55,7 +54,7 @@ public class ScrollOfEnchantment extends Item implements SelfAware, Scrollable, 
     }
 
     @Override
-    public void onBurn(Fire fire) {
+    public void onBurn() {
         Display.log("The " + getName() + " burns up.", currentSpace);
         getSpace().remove(this);
     }

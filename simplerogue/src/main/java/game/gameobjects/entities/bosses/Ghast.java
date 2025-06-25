@@ -69,7 +69,7 @@ public class Ghast extends Animal implements HasInventory, DropsXP, HasResistanc
     @Override
     public int behave(){
         if (randomNumber(0,1) == 1) {
-            this.getSpace().addGas(new Miasma(randomNumber(1,5)));
+            this.getSpace().addTerrain(new Miasma(randomNumber(1,5)));
         }
         return super.behave();
     }
@@ -81,7 +81,7 @@ public class Ghast extends Animal implements HasInventory, DropsXP, HasResistanc
 
     @Override
     public void doOnHitted(Entity self, Entity other, AttackInfo attackInfo) {
-        self.getSpace().addGas(new Miasma(randomNumber(1,5)));
+        self.getSpace().addTerrain(new Miasma(randomNumber(1,5)));
     }
 
     @Override

@@ -16,9 +16,9 @@ public class Steam extends Gas{
         setfGColor(TileColor.transparent());
         setbGColor(TileColor.create(255, 255, 255, 255));
         setName("Steam");
-        this.minOpacity = 100;
-        this.maxOpacity = 255;
-        setSpreadFactor(0.5);
+        setSpreadFactor(0.5f);
+        // this.minOpacity = 100;
+        // this.maxOpacity = 255;
     }
 
     @Override

@@ -31,7 +31,8 @@ import game.gameobjects.items.Corpse;
 import game.gameobjects.items.Item;
 import game.gameobjects.items.armor.Armor;
 import game.gameobjects.items.weapons.Weapon;
-import game.gameobjects.statuses.Seperate;
+import game.gameobjects.statuses.SeperateIn;
+import game.gameobjects.statuses.SeperateOut;
 import game.gameobjects.statuses.Status;
 
 public abstract class Entity extends DisplayableTile implements Examinable, SelfAware{
@@ -208,17 +209,42 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
         if (!isVulnerable(status.getClass())){
             return false;
         }
-        if (status instanceof Seperate seperate){
-            Status sameStatus = seperate.validateSameness(statuses);
-            if (sameStatus != null){
-                seperate.onStack(sameStatus);
-                return false;
+        
+        List<Status> filteredIn = new ArrayList<>();
+        if (status instanceof SeperateIn seperate){
+            for (Status st : statuses) {
+                if (seperate.validateSamenessIn(st)) {
+                    filteredIn.add(st);
+                }
             }
         }
+
+        List<SeperateOut> filteredOut = new ArrayList<>();
+        for (Status status2 : statuses) {
+            if (status2 instanceof SeperateOut seperate) {
+                if (seperate.validateSamenessOut(status)) {
+                    filteredOut.add(seperate);
+                }
+            }
+        }
+
+        for (Status sIn : filteredIn) {
+            ((SeperateIn)status).onStackIn(sIn);
+        }
+
+        for (SeperateOut sOut : filteredOut) {
+            sOut.onStackOut(status);
+        }
+
+        if (!filteredIn.isEmpty() || !filteredOut.isEmpty()) {
+            return false;
+        }
+
         if (getStatuses().add(status)){
             status.setOwner(this);
             return true;
         }
+
         return false;
     }
 

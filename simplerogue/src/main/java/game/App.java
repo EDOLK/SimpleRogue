@@ -27,4 +27,8 @@ public class App
         return list.isEmpty() ? null : list.get(randomNumber(0,list.size()-1));
     }
 
+    public static <T> T removeRandom(List<T> list){
+        return list.isEmpty() ? null : list.remove(randomNumber(0,list.size()-1));
+    }
+
 }

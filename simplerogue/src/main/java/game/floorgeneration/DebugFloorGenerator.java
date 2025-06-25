@@ -11,9 +11,13 @@ import game.gameobjects.Space;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.entities.PlayerEntity;
 import game.gameobjects.entities.Rat;
-import game.gameobjects.entities.Spider;
 import game.gameobjects.entities.Wall;
+import game.gameobjects.items.potions.FreezingPotion;
+import game.gameobjects.items.potions.WaterPotion;
+import game.gameobjects.items.weapons.BoStaff;
+import game.gameobjects.terrains.SpreadableTerrain;
 import game.gameobjects.terrains.Terrain;
+import game.gameobjects.items.potions.FirePotion;
 
 public class DebugFloorGenerator extends FloorGenerator {
 
@@ -29,8 +33,11 @@ public class DebugFloorGenerator extends FloorGenerator {
         generateSpaces();
         generateRectangle(5,5,30,30);
         spaces[7][20].setOccupant(playerEntity);
-        //spaces[12][10].addTerrain(new DebugSpawner(()->{return new DebugRat();},15));
-        spaces[7][10].setOccupant(new Spider());
+        playerEntity.addItemToInventory(new WaterPotion());
+        playerEntity.addItemToInventory(new FreezingPotion());
+        playerEntity.addItemToInventory(new FirePotion());
+        playerEntity.addItemToInventory(new BoStaff());
+        spaces[7][22].setOccupant(new Rat());
     }
 
     protected void generateSpaces(){
@@ -57,6 +64,39 @@ public class DebugFloorGenerator extends FloorGenerator {
             for (int dy = y; dy < y+height; dy++) {
                 spaces[dx][dy].setOccupant(null);
             }
+        }
+
+    }
+
+    private class DebugSpreadable extends SpreadableTerrain implements Examinable {
+
+        public DebugSpreadable(int amount) {
+            super(amount);
+        }
+
+        @Override
+        public char getCharacter() {
+            return (char)(this.amount+48);
+        }
+
+        @Override
+        protected SpreadableTerrain createSelf(int amount) {
+            return new DebugSpreadable(amount);
+        }
+
+        @Override
+        protected boolean isValidToSpread(Space potentialSpace) {
+            return !potentialSpace.isOccupied() || !potentialSpace.getOccupant().isLiquidBlocker();
+        }
+
+        @Override
+        public String getName() {
+            return "Debug (" + this.amount + ")";
+        }
+
+        @Override
+        public String getDescription() {
+            return "Placeholder.";
         }
 
     }

@@ -132,8 +132,6 @@ public class Floor{
 
         this.lastTime = time;
 
-        doLight();
-
         Stack<Behavable> behavables = new Stack<Behavable>();
 
         for (int x = 0; x < spaces.length; x++) {
@@ -238,10 +236,11 @@ public class Floor{
 
         }
 
+        doLight();
 
     }
 
-    private void doLight() {
+    public void doLight() {
 
         for (int x = 0; x < spaces.length; x++) {
             for (int y = 0; y < spaces[x].length; y++) {

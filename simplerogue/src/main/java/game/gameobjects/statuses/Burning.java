@@ -4,8 +4,6 @@ import static game.App.randomNumber;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
 import org.hexworks.zircon.api.Modifiers;
 import org.hexworks.zircon.api.color.TileColor;
 import org.hexworks.zircon.api.modifier.Modifier;
@@ -16,7 +14,7 @@ import game.gameobjects.DamageType;
 import game.gameobjects.Space;
 import game.gameobjects.terrains.Fire;
 
-public class Burning extends Status implements Behavable, LightSource, Seperate{
+public class Burning extends Status implements Behavable, LightSource, SeperateIn{
     
     private int minDamage;
     private int maxDamage;
@@ -24,7 +22,6 @@ public class Burning extends Status implements Behavable, LightSource, Seperate{
 
     private int minIntensity;
     private int maxIntensity;
-    
     
     public Burning(){
         this(1, 3, 3, 0, 1);
@@ -35,11 +32,9 @@ public class Burning extends Status implements Behavable, LightSource, Seperate{
         this.maxDamage = maxDamage;
         this.turns = turns;
         this.minIntensity = minIntensity;
-        Set<Modifier> mods = new HashSet<Modifier>();
-        mods.add(Modifiers.blink());
         setCharacter('▒');
         setfGColor(TileColor.create(252, 132, 3, 255));
-        setModifiers(mods);
+        setModifiers(new HashSet<Modifier>(List.of(Modifiers.blink())));
         setDescriptor("Burning");
         setTileName("Fire");
     }
@@ -47,14 +42,12 @@ public class Burning extends Status implements Behavable, LightSource, Seperate{
     @Override
     public int behave() {
         owner.dealDamage(randomNumber(minDamage, maxDamage), DamageType.FIRE);
-        List<Space> pSpaces = Space.getAdjacentSpaces(owner.getSpace());
-        pSpaces.add(owner.getSpace());
-        for (Space space : pSpaces) {
+        if (Fire.isFlammable(owner.getSpace())) {
+            owner.getSpace().addFire(new Fire(1));
+        }
+        for (Space space : Space.getAdjacentSpaces(owner.getSpace())) {
             if (Fire.isFlammable(space)) {
                 space.addFire(new Fire(1));
-            }
-            if (space == owner.getSpace()) {
-                continue;
             }
             if (space.isOccupied()) {
                 space.getOccupant().addStatus(new Burning());
@@ -95,20 +88,15 @@ public class Burning extends Status implements Behavable, LightSource, Seperate{
     }
 
     @Override
-    public void onStack(Status sameStatus) {
+    public void onStackIn(Status sameStatus) {
         if (sameStatus instanceof Burning burning) {
             burning.turns += this.turns;
         }
     }
 
     @Override
-    public Status validateSameness(List<Status> Statuses) {
-        for (Status status : Statuses) {
-            if (status instanceof Burning burning){
-                return burning;
-            }
-        }
-        return null;
+    public boolean validateSamenessIn(Status status) {
+        return status instanceof Burning;
     }
     
 }

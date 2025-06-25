@@ -6,14 +6,10 @@ import org.hexworks.zircon.api.color.TileColor;
 
 import game.gamelogic.Flammable;
 import game.gameobjects.DamageType;
-import game.gameobjects.Space;
-import game.gameobjects.terrains.Fire;
 import game.gameobjects.terrains.liquids.Liquid;
 
 public class Miasma extends Gas implements Flammable{
 
-    protected Space currentSpace;
-    
     public Miasma(int initialDensity){
         super(initialDensity);
         setCharacter(' ');
@@ -22,61 +18,41 @@ public class Miasma extends Gas implements Flammable{
         setCharacter(' ');
         setfGColor(TileColor.transparent());
         setbGColor(TileColor.create(99, 0, 153, 255));
-        this.minOpacity = 100;
-        this.maxOpacity = 255;
+        setSpreadFactor(0.9f);
     }
-
 
     @Override
     public int behave() {
         if (getSpace().isOccupied()){
-            getSpace().getOccupant().dealDamage(randomNumber(0,getDensity()), DamageType.SUFFICATION);
+            getSpace().getOccupant().dealDamage(randomNumber(0, getAmount()), DamageType.SUFFICATION);
         }
         return super.behave();
     }
 
-
-    @Override
-    public Space getSpace() {
-        return currentSpace;
-    }
-
-
-    @Override
-    public void setSpace(Space space) {
-        currentSpace = space;
-    }
-
-
     @Override
     public int getFuelValue() {
-        return getDensity();
+        return getAmount();
     }
 
-
     @Override
-    public void onBurn(Fire fire) {
-        getSpace().removeTerrain(this);
+    public void onBurn() {
+        this.getSpace().removeTerrain(this);
     }
 
     @Override
     public Gas createSelf(int density) {
-        return new Miasma(1);
+        return new Miasma(density);
     }
-
 
     @Override
     public Liquid getCondensationLiquid(int depth) {
-        return null;
+        throw new UnsupportedOperationException("Unimplemented method 'getCondensationLiquid'");
     }
-
 
     @Override
     public boolean condenses() {
         return false;
     }
-    
-    
     
 }
 

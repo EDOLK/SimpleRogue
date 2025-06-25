@@ -2,6 +2,7 @@ package game.gameobjects;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.hexworks.zircon.api.color.TileColor;
 
@@ -12,9 +13,8 @@ import game.gamelogic.Triggerable;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.items.Item;
 import game.gameobjects.terrains.Fire;
+import game.gameobjects.terrains.SpreadableTerrain;
 import game.gameobjects.terrains.Terrain;
-import game.gameobjects.terrains.gasses.Gas;
-import game.gameobjects.terrains.liquids.Liquid;
 
 public class Space extends DisplayableTile{
 
@@ -140,26 +140,6 @@ public class Space extends DisplayableTile{
         return terrains.remove(terrain);
     }
 
-    public boolean addGas(Gas gas){
-        Gas otherGas = gas.getGas(this);
-        if (otherGas != null){
-            otherGas.addDensity(gas.getDensity());
-            return true;
-        } else {
-            return addTerrain(gas);
-        }
-    }
-
-    public boolean addLiquid(Liquid liquid){
-        Liquid otherLiquid = liquid.getLiquid(this);
-        if (otherLiquid != null){
-            otherLiquid.addDepth(liquid.getDepth());
-            return true;
-        } else {
-            return addTerrain(liquid);
-        }
-    }
-
     public boolean addFire(Fire fire){
         for (Terrain terrain : terrains) {
             if (terrain instanceof Fire){
@@ -215,6 +195,14 @@ public class Space extends DisplayableTile{
 
     public boolean addTerrain(Terrain terrain){
         if (terrain != null){
+            if (terrain instanceof SpreadableTerrain st) {
+                Optional<SpreadableTerrain> self = st.getSelf(this);
+                if (self.isPresent()) {
+                    SpreadableTerrain t = self.get();
+                    t.setAmount(t.getAmount() + st.getAmount());
+                    return true;
+                }
+            }
             if (terrain instanceof SelfAware selfAware){
                 selfAware.setSpace(this);
             }
