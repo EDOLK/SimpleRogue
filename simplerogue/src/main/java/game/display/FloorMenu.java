@@ -48,6 +48,7 @@ import game.gameobjects.entities.ThrownItem;
 import game.gameobjects.entities.Wall;
 import game.gameobjects.items.Item;
 import game.gameobjects.statuses.Status;
+import game.gameobjects.terrains.Fire;
 import game.gameobjects.terrains.OpenDoor;
 import game.gameobjects.terrains.Staircase;
 import game.gameobjects.terrains.Terrain;
@@ -60,6 +61,7 @@ public final class FloorMenu extends Menu{
     private Layer spaceLayer;
     private Layer trapLayer;
     private Layer terrainLayer;
+    private Layer fireLayer;
     private Layer lowLiquidLayer;
     private Layer itemLayer;
     private Layer midLiquidLayer;
@@ -127,6 +129,7 @@ public final class FloorMenu extends Menu{
         PlayerEntity playerEntity = currentFloor.getPlayer();
         spaceLayer.clear();
         terrainLayer.clear();
+        fireLayer.clear();
         trapLayer.clear();
         lowLiquidLayer.clear();
         itemLayer.clear();
@@ -201,25 +204,33 @@ public final class FloorMenu extends Menu{
     }
 
     private void drawTerrain(Terrain terrain, int x, int y, double darkness) {
-        if (terrain instanceof Liquid liquid){
-            if (liquid.getAmount() <= 1){
-                lowLiquidLayer.draw(liquid.getTile(darkness), Position.create(x, y));
-                return;
+        switch (terrain) {
+            case Liquid liquid -> {
+                if (liquid.getAmount() <= 1){
+                    lowLiquidLayer.draw(liquid.getTile(darkness), Position.create(x, y));
+                    return;
+                }
+                if (liquid.getAmount() <= 5){
+                    midLiquidLayer.draw(liquid.getTile(darkness), Position.create(x, y));
+                    return;
+                }
+                if (liquid.getAmount() <= 10){
+                    highLiquidLayer.draw(liquid.getTile(darkness), Position.create(x, y));
+                    return;
+                }
             }
-            if (liquid.getAmount() <= 5){
-                midLiquidLayer.draw(liquid.getTile(darkness), Position.create(x, y));
-                return;
+            case Gas gas -> {
+                gasLayer.draw(gas.getTile(darkness), Position.create(x, y));
             }
-            if (liquid.getAmount() <= 10){
-                highLiquidLayer.draw(liquid.getTile(darkness), Position.create(x, y));
-                return;
+            case Trap trap -> {
+                trapLayer.draw(trap.getTile(darkness), Position.create(x, y));
             }
-        } else if (terrain instanceof Gas gas){
-            gasLayer.draw(gas.getTile(darkness), Position.create(x, y));
-        } else if (terrain instanceof Trap trap){
-            trapLayer.draw(trap.getTile(darkness), Position.create(x, y));
-        } else {
-            terrainLayer.draw(terrain.getTile(darkness), Position.create(x, y));
+            case Fire fire -> {
+                fireLayer.draw(fire.getTile(darkness), Position.create(x, y));
+            }
+            default -> {
+                terrainLayer.draw(terrain.getTile(darkness), Position.create(x, y));
+            }
         }
         if (terrain instanceof OpenDoor || terrain instanceof Staircase) {
             drawInMemory(terrain, Position.create(x,y));
@@ -510,6 +521,11 @@ public final class FloorMenu extends Menu{
             .withSize(currentFloor.SIZE_X, currentFloor.SIZE_Y)
             .build();
         screen.addLayer(terrainLayer);
+
+        fireLayer = Layer.newBuilder()
+            .withSize(currentFloor.SIZE_X, currentFloor.SIZE_Y)
+            .build();
+        screen.addLayer(fireLayer);
         
         lowLiquidLayer = Layer.newBuilder()
             .withSize(currentFloor.SIZE_X, currentFloor.SIZE_Y)

@@ -34,6 +34,11 @@
       <artifactId>zircon.jvm.swing</artifactId>
       <version>2020.2.0-RELEASE</version>
     </dependency>
+    <dependency>
+      <groupId>de.articdive</groupId>
+      <artifactId>jnoise-pipeline</artifactId>
+      <version>4.1.0</version>
+    </dependency>
   </dependencies>
 
   <build>
