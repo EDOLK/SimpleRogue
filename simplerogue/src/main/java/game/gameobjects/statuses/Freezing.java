@@ -31,11 +31,8 @@ public class Freezing extends Status implements SeperateIn, Behavable, Overrides
     }
 
     @Override
-    public boolean onStackIn(Status sameStatus) {
-        if (sameStatus instanceof Freezing) {
-            return true;
-        }
-        return false;
+    public void onStackIn(Status SameStatus) {
+
     }
 
     @Override

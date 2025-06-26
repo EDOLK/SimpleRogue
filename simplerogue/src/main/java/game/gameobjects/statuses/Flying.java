@@ -21,7 +21,7 @@ public class Flying extends Status implements Behavable, HasDodge, SeperateIn{
         this.turns = turns;
     }
 
-    public boolean isPermanent() {
+    public boolean isPerminent() {
         return perminent;
     }
 
@@ -59,14 +59,11 @@ public class Flying extends Status implements Behavable, HasDodge, SeperateIn{
     }
 
     @Override
-    public boolean onStackIn(Status sameStatus) {
-        if (sameStatus instanceof Flying otherFlying) {
-            if (!this.isPermanent() && !otherFlying.isPermanent()){
-                otherFlying.setTurns(otherFlying.getTurns()+this.getTurns());
-            }
-            return true;
+    public void onStackIn(Status SameStatus) {
+        Flying otherFlying = (Flying)SameStatus;
+        if (!this.isPerminent() && !otherFlying.isPerminent()){
+            otherFlying.setTurns(otherFlying.getTurns()+this.getTurns());
         }
-        return false;
     }
 
     @Override

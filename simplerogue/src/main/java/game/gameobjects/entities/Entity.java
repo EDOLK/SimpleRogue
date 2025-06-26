@@ -18,7 +18,6 @@ import game.gamelogic.Experiential;
 import game.gamelogic.HasDrops;
 import game.gamelogic.HasInventory;
 import game.gamelogic.HasResistances;
-import game.gamelogic.HasStatusVulns;
 import game.gamelogic.HasVulnerabilities;
 import game.gamelogic.SelfAware;
 import game.gamelogic.resistances.Resistance;
@@ -35,7 +34,6 @@ import game.gameobjects.items.weapons.Weapon;
 import game.gameobjects.statuses.SeperateIn;
 import game.gameobjects.statuses.SeperateOut;
 import game.gameobjects.statuses.Status;
-import game.gameobjects.terrains.Terrain;
 
 public abstract class Entity extends DisplayableTile implements Examinable, SelfAware{
 
@@ -196,7 +194,7 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
         currentSpace = newSpace;
     }
 
-    protected boolean isVulnerable(Status status){
+    protected boolean isVulnerable(Class<? extends Status> status){
         return true;
     }
 
@@ -208,53 +206,41 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
         if (status == null){
             return false;
         }
-        boolean vulnerable = isVulnerable(status);
+        if (!isVulnerable(status.getClass())){
+            return false;
+        }
+        
         List<Status> filteredIn = new ArrayList<>();
-        List<SeperateOut> filteredOut = new ArrayList<>();
-
-        for (Status st : statuses) {
-            if (!vulnerable && st instanceof HasStatusVulns v) {
-                if (v.isVulnerable(status)) {
-                    vulnerable = true;
-                }
-            }
-            if (status instanceof SeperateIn sIn) {
-                if (sIn.validateSamenessIn(st)){
+        if (status instanceof SeperateIn seperate){
+            for (Status st : statuses) {
+                if (seperate.validateSamenessIn(st)) {
                     filteredIn.add(st);
                 }
             }
-            if (st instanceof SeperateOut sOut) {
-                if (sOut.validateSamenessOut(status)) {
-                    filteredOut.add(sOut);
+        }
+
+        List<SeperateOut> filteredOut = new ArrayList<>();
+        for (Status status2 : statuses) {
+            if (status2 instanceof SeperateOut seperate) {
+                if (seperate.validateSamenessOut(status)) {
+                    filteredOut.add(seperate);
                 }
             }
         }
 
-        if (!vulnerable) {
-            return false;
-        }
-
-        boolean fIn = false;
-
         for (Status sIn : filteredIn) {
-            if (((SeperateIn)status).onStackIn(sIn)){
-                fIn = true;
-            }
+            ((SeperateIn)status).onStackIn(sIn);
         }
-
-        boolean fOut = false;
 
         for (SeperateOut sOut : filteredOut) {
-            if (sOut.onStackOut(status)) {
-                fOut = true;
-            }
+            sOut.onStackOut(status);
         }
 
-        if (fIn || fOut) {
+        if (!filteredIn.isEmpty() || !filteredOut.isEmpty()) {
             return false;
         }
 
-        if (statuses.add(status)){
+        if (getStatuses().add(status)){
             status.setOwner(this);
             return true;
         }
@@ -354,7 +340,7 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
             return true;
         } else {
             for (Space p : Space.getAdjacentSpaces(space)) {
-                if (canDrawLine(p) && !isBeyondNightVision(p) && !hasSightBlocker(p)) {
+                if (canDrawLine(p) && !isBeyondNightVision(space) && (!p.isOccupied() || !p.getOccupant().isSightBlocker())) {
                     return true;
                 }
             }
@@ -365,23 +351,14 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
     private boolean canDrawLine(Space space) {
         List<Space> lineSpaces = Line.getLineAsListExclusive(currentSpace,space);
         for (Space currentSpace : lineSpaces) {
-            if (hasSightBlocker(currentSpace)) {
-                return false;
+            if (currentSpace.isOccupied()){
+                Entity occupant = currentSpace.getOccupant();
+                if (occupant.isSightBlocker()){
+                    return false;
+                }
             }
         }
         return true;
-    }
-
-    private boolean hasSightBlocker(Space space){
-        if (space.isOccupied() && space.getOccupant().isSightBlocker()) {
-            return true;
-        }
-        for (Terrain t : space.getTerrains()) {
-            if (t.isSightBlocker()) {
-                return true;
-            }
-        }
-        return false;
     }
     
     public boolean isAdjacent(SelfAware selfAware){

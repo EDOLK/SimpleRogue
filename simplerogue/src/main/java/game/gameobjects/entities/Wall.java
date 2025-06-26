@@ -9,7 +9,6 @@ import game.gamelogic.resistances.PercentageResistance;
 import game.gamelogic.resistances.Resistance;
 import game.gameobjects.DamageType;
 import game.gameobjects.items.Item;
-import game.gameobjects.statuses.Mossy;
 import game.gameobjects.statuses.Status;
 
 public class Wall extends Entity implements HasResistances{
@@ -62,8 +61,8 @@ public class Wall extends Entity implements HasResistances{
     }
 
     @Override
-    protected boolean isVulnerable(Status status) {
-        return status instanceof Mossy;
+    protected boolean isVulnerable(Class<? extends Status> status) {
+        return false;
     }
 
 }

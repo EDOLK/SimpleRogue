@@ -47,11 +47,8 @@ public class Poisoned extends Status implements Behavable, SeperateIn{
     }
 
     @Override
-    public boolean onStackIn(Status sameStatus) {
-        if (sameStatus instanceof Poisoned) {
-            return true;
-        }
-        return false;
+    public void onStackIn(Status SameStatus) {
+        
     }
 
     @Override
