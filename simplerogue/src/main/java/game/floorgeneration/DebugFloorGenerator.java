@@ -2,6 +2,11 @@ package game.floorgeneration;
 
 import java.util.function.Supplier;
 
+import de.articdive.jnoise.generators.noise_parameters.fade_functions.FadeFunction;
+import de.articdive.jnoise.generators.noise_parameters.interpolation.Interpolation;
+import de.articdive.jnoise.generators.noisegen.perlin.PerlinNoiseGenerator;
+import de.articdive.jnoise.pipeline.JNoise;
+import game.App;
 import game.PathConditions;
 import game.gamelogic.Examinable;
 import game.gamelogic.Interactable;
@@ -15,6 +20,8 @@ import game.gameobjects.entities.Wall;
 import game.gameobjects.items.potions.FreezingPotion;
 import game.gameobjects.items.potions.WaterPotion;
 import game.gameobjects.items.weapons.BoStaff;
+import game.gameobjects.statuses.Mossy;
+import game.gameobjects.terrains.Moss;
 import game.gameobjects.terrains.SpreadableTerrain;
 import game.gameobjects.terrains.Terrain;
 import game.gameobjects.items.potions.FirePotion;
@@ -31,13 +38,31 @@ public class DebugFloorGenerator extends FloorGenerator {
     public void generateFloor(Space[][] spaces, PlayerEntity playerEntity) {
         this.spaces = spaces;
         generateSpaces();
-        generateRectangle(5,5,30,30);
+        generateRectangle(1,1,48,48);
         spaces[7][20].setOccupant(playerEntity);
-        playerEntity.addItemToInventory(new WaterPotion());
-        playerEntity.addItemToInventory(new FreezingPotion());
-        playerEntity.addItemToInventory(new FirePotion());
-        playerEntity.addItemToInventory(new BoStaff());
-        spaces[7][22].setOccupant(new Rat());
+        generateTerrain();
+    }
+
+    protected void generateTerrain(){
+        JNoise perlinCosine = JNoise.newBuilder()
+            .perlin((long)Math.random(),Interpolation.COSINE,FadeFunction.QUINTIC_POLY)
+            .scale(10.0)
+            .build();
+        for (int x = 0; x < spaces.length; x++) {
+            for (int y = 0; y < spaces[x].length; y++) {
+                Space space = spaces[x][y];
+                double noiseX = App.lerp(0,0,spaces.length,1.0,x);
+                double noiseY = App.lerp(0,0,spaces[x].length,1.0,y);
+                double val = perlinCosine.evaluateNoise(noiseX, noiseY);
+                if (val > 0) {
+                    if (space.isOccupied() && space.getOccupant() instanceof Wall) {
+                        space.getOccupant().addStatus(new Mossy());
+                    } else {
+                        space.addTerrain(new Moss());
+                    }
+                }
+            }
+        }
     }
 
     protected void generateSpaces(){

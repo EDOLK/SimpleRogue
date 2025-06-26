@@ -6,15 +6,24 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import de.articdive.jnoise.core.api.functions.Interpolation;
+import de.articdive.jnoise.generators.noise_parameters.fade_functions.FadeFunction;
+import de.articdive.jnoise.generators.noisegen.perlin.PerlinNoiseGenerator;
+import de.articdive.jnoise.pipeline.JNoise;
+import game.App;
 import game.Dungeon;
 import game.Path;
 import game.PathConditions;
 import game.gameobjects.Space;
+import game.gameobjects.entities.Brazier;
 import game.gameobjects.entities.Chest;
 import game.gameobjects.entities.Door;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.entities.PlayerEntity;
 import game.gameobjects.entities.Wall;
+import game.gameobjects.statuses.Mossy;
+import game.gameobjects.terrains.Grass;
+import game.gameobjects.terrains.Moss;
 import game.gameobjects.terrains.Staircase;
 import kotlin.Pair;
 
@@ -37,7 +46,9 @@ public class DefaultFloorGenerator extends FloorGenerator {
         this.SIZE_Y = spaces[0].length;
         generateSpaces();
         generateWalls();
-        spawnEntities(generateRooms());
+        Pair<List<Room>,List<Space[]>> pair = generateRooms();
+        spawnEntities(pair);
+        generateTerrain();
     }
 
     protected void generateSpaces(){
@@ -198,6 +209,32 @@ public class DefaultFloorGenerator extends FloorGenerator {
             }
         }
         return true;
+    }
+
+    protected void generateTerrain(){
+        JNoise perlinCosine = JNoise.newBuilder()
+            .perlin((long)Math.random(),Interpolation.COSINE,FadeFunction.QUINTIC_POLY)
+            .scale(10.0)
+            .build();
+        for (int x = 0; x < spaces.length; x++) {
+            for (int y = 0; y < spaces[x].length; y++) {
+                Space space = spaces[x][y];
+                double noiseX = App.lerp(0,0,spaces.length,1.0,x);
+                double noiseY = App.lerp(0,0,spaces[x].length,1.0,y);
+                double val = perlinCosine.evaluateNoise(noiseX, noiseY);
+                if (val > 0.33) {
+                    if (space.getOccupant() instanceof Wall) {
+                        space.getOccupant().addStatus(new Mossy());
+                    } else {
+                        if (val > 0.50) {
+                            space.addTerrain(new Grass());
+                        } else {
+                            space.addTerrain(new Moss());
+                        }
+                    }
+                }
+            }
+        }
     }
 
     protected void spawnEntities(Pair<List<Room>,List<Space[]>> pair) {

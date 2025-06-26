@@ -430,10 +430,12 @@ public class Spider extends Animal implements HasDodge, HasInventory, HasDrops{
         }
 
         @Override
-        public void onStackIn(Status SameStatus) {
+        public boolean onStackIn(Status SameStatus) {
             if (SameStatus instanceof Webbed webbed) {
                 webbed.turns += this.turns;
+                return true;
             }
+            return false;
         }
 
         @Override

@@ -5,7 +5,7 @@ package game.gameobjects.statuses;
  * */
 public interface SeperateOut{
 
-    public void onStackOut(Status sameStatus);
+    public boolean onStackOut(Status sameStatus);
 
     public boolean validateSamenessOut(Status status);
 
