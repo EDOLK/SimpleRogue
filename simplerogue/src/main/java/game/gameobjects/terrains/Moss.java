@@ -52,15 +52,44 @@ public class Moss extends Terrain implements Flammable, Examinable, SelfAware, B
 
     @Override
     public int behave() {
-        for (Terrain t : getSpace().getTerrains()) {
-            if (t instanceof Water w) {
-                w.setAmount(w.getAmount()-1);
-                getSpace().addTerrain(new Grass());
-                getSpace().remove(this);
-                break;
+        trySpread(getSpace(), true, true);
+        // Space.getAdjacentSpaces(getSpace()).forEach((s) -> Moss.trySpread(s,true,true));
+        return 1000;
+    }
+
+    public static boolean trySpread(Space space, boolean waterRequired, boolean createSpeadingMoss) {
+        Moss moss = null;
+        Grass grass = null;
+        Water water = null;
+        for (Terrain t : space.getTerrains()) {
+            if (t instanceof Moss m) {
+                moss = m;
+            }
+            if (t instanceof Grass g) {
+                grass = g;
+            }
+            // TODO: modify setAmount to make amount check unnecessary
+            if (t instanceof Water w && w.getAmount() > 0) {
+                water = w;
             }
         }
-        return 100;
+        if (!waterRequired || water != null) {
+            if (waterRequired) {
+                water.setAmount(water.getAmount()-1);
+            }
+            if (grass != null) {
+                if (createSpeadingMoss) {
+                    space.addTerrain(new SpreadingMoss(1));
+                }
+            } else if (moss != null){
+                space.remove(moss);
+                space.addTerrain(new Grass());
+            } else {
+                space.addTerrain(new Moss());
+            }
+            return true;
+        }
+        return false;
     }
 
     @Override

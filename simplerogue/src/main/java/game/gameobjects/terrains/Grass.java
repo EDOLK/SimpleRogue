@@ -6,10 +6,11 @@ import game.gamelogic.Examinable;
 import game.gamelogic.Flammable;
 import game.gamelogic.SelfAware;
 import game.gamelogic.Triggerable;
+import game.gamelogic.behavior.Behavable;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Entity;
 
-public class Grass extends Terrain implements Flammable, Examinable, SelfAware, Triggerable{
+public class Grass extends Terrain implements Flammable, Examinable, SelfAware, Triggerable, Behavable{
 
     private Space space;
 
@@ -33,6 +34,18 @@ public class Grass extends Terrain implements Flammable, Examinable, SelfAware, 
     @Override
     public int getFuelValue() {
         return 1;
+    }
+
+    @Override
+    public int behave() {
+        Moss.trySpread(getSpace(), true, true);
+        // Space.getAdjacentSpaces(getSpace()).forEach((s) -> Moss.trySpread(s, true, true));
+        return 1000;
+    }
+
+    @Override
+    public boolean isActive() {
+        return getSpace() != null;
     }
 
     @Override
@@ -62,5 +75,4 @@ public class Grass extends Terrain implements Flammable, Examinable, SelfAware, 
         return false;
     }
 
-    
 }

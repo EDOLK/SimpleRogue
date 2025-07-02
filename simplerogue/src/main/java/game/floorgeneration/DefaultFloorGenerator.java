@@ -8,14 +8,12 @@ import java.util.List;
 
 import de.articdive.jnoise.core.api.functions.Interpolation;
 import de.articdive.jnoise.generators.noise_parameters.fade_functions.FadeFunction;
-import de.articdive.jnoise.generators.noisegen.perlin.PerlinNoiseGenerator;
 import de.articdive.jnoise.pipeline.JNoise;
 import game.App;
 import game.Dungeon;
 import game.Path;
 import game.PathConditions;
 import game.gameobjects.Space;
-import game.gameobjects.entities.Brazier;
 import game.gameobjects.entities.Chest;
 import game.gameobjects.entities.Door;
 import game.gameobjects.entities.Entity;
@@ -253,11 +251,12 @@ public class DefaultFloorGenerator extends FloorGenerator {
                 rooms.addAll(pair.getFirst());
                 rooms.remove(spawnRoom);
             }
-            Room room = getRandom(rooms);
             Entity generated = entityShopper.generate();
             if (generated != null) {
-                rooms.remove(room);
-                getRandom(room.getInteriorSpaces()).setOccupant(generated);
+                Room randomRoom = App.removeRandom(rooms);
+                if (randomRoom != null) {
+                    getRandom(randomRoom.getInteriorSpaces()).setOccupant(generated);
+                }
             }
         }
 

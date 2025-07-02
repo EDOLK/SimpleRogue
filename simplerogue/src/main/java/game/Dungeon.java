@@ -11,7 +11,6 @@ import org.hexworks.zircon.api.color.TileColor;
 import game.display.Display;
 import game.display.FloorMenu;
 import game.floorgeneration.BossFloorGenerator;
-import game.floorgeneration.DebugFloorGenerator;
 import game.floorgeneration.DefaultFloorGenerator;
 import game.floorgeneration.pools.LayerPool;
 import game.floorgeneration.pools.Pool;
@@ -26,6 +25,8 @@ import game.gameobjects.entities.Entity;
 import game.gameobjects.entities.PlayerEntity;
 import game.gameobjects.entities.Wall;
 import game.gameobjects.items.Item;
+import game.gameobjects.items.potions.FirePotion;
+import game.gameobjects.items.potions.WaterPotion;
 import game.gameobjects.terrains.Staircase;
 
 public class Dungeon {

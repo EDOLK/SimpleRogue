@@ -102,7 +102,7 @@ public abstract class SpreadableTerrain extends Terrain implements SelfAware, Be
 
         if (Math.random() < this.getSpreadFactor() && validSpaces != null && !validSpaces.isEmpty()) {
             while (this.getAmount() >= this.getMinSpreadAmount()) {
-                Pair<Integer, List<Space>> lPair = getLowest(validSpaces, this::getAmountOfSelf);
+                Pair<Integer, List<Space>> lPair = getLowest(validSpaces);
                 Space lowestSpace = App.getRandom(lPair.getSecond());
                 if (lPair.getFirst() < this.getAmount() && lowestSpace != null) {
                     this.setAmount(this.getAmount()-1);
@@ -162,11 +162,11 @@ public abstract class SpreadableTerrain extends Terrain implements SelfAware, Be
         return t;
     }
 
-    private <T> Pair<Integer, List<T>> getLowest(List<T> list, Function<T,Integer> func){
+    protected Pair<Integer, List<Space>> getLowest(List<Space> list){
         int lowestInt = Integer.MAX_VALUE;
-        List<T> lowestList = new ArrayList<>();
-        for (T t : list) {
-            int val = func.apply(t);
+        List<Space> lowestList = new ArrayList<>();
+        for (Space t : list) {
+            int val = this.getAmountOfSelf(t);
             if (val < lowestInt) {
                 lowestInt = val;
                 lowestList = new ArrayList<>(List.of(t));
@@ -174,7 +174,7 @@ public abstract class SpreadableTerrain extends Terrain implements SelfAware, Be
                 lowestList.add(t);
             }
         }
-        return new Pair<Integer, List<T>>(lowestInt, lowestList);
+        return new Pair<Integer, List<Space>>(lowestInt, lowestList);
     }
 
     @Override
