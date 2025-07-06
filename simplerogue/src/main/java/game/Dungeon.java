@@ -20,10 +20,10 @@ import game.gamelogic.skilltrees.rogue.RogueSkillTree;
 import game.gamelogic.skilltrees.warrior.WarriorSkillTree;
 import game.gameobjects.Floor;
 import game.gameobjects.Space;
-import game.gameobjects.entities.Chest;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.entities.PlayerEntity;
 import game.gameobjects.entities.Wall;
+import game.gameobjects.entities.props.Chest;
 import game.gameobjects.items.Item;
 import game.gameobjects.terrains.Staircase;
 
@@ -63,6 +63,14 @@ public class Dungeon {
 
     public static Pool<Supplier<Item>> getCurrentTreasurePool() {
         return currentLayerPool.TREASURE_POOL;
+    }
+
+    public static Pool<Supplier<Entity>> getCurrentPropPool() {
+        return currentLayerPool.PROP_POOL;
+    }
+
+    public static Pool<Supplier<Item>> getCurrentPropDropPool() {
+        return currentLayerPool.PROP_DROP_POOL;
     }
 
     public static void setCurrentFloor(Floor currentFloor) {

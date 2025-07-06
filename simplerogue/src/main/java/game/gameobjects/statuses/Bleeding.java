@@ -3,6 +3,7 @@ package game.gameobjects.statuses;
 import static game.App.randomNumber;
 
 import java.util.HashSet;
+
 import org.hexworks.zircon.api.Modifiers;
 import org.hexworks.zircon.api.color.TileColor;
 import org.hexworks.zircon.api.modifier.Modifier;
@@ -10,32 +11,33 @@ import org.hexworks.zircon.api.modifier.Modifier;
 import game.gamelogic.behavior.Behavable;
 import game.gameobjects.DamageType;
 
-public class Poisoned extends Status implements Behavable, SeperateIn{
+public class Bleeding extends Status implements Behavable{
 
+    private int remainingDamage;
     private int minDamage;
     private int maxDamage;
-    private int turns;
 
-    public Poisoned(int minDamage, int maxDamage, int turns) {
+    public Bleeding(int damage, int minDamage, int maxDamage){
+        this.remainingDamage = damage;
         this.minDamage = minDamage;
         this.maxDamage = maxDamage;
-        this.turns = turns;
         setCharacter(' ');
         setbGColor(TileColor.transparent());
-        setfGColor(TileColor.create(50, 200, 50, 100));
+        setfGColor(TileColor.create(200, 50, 50, 100));
         HashSet<Modifier> modifiers = new HashSet<Modifier>();
         modifiers.add(Modifiers.blink());
         setModifiers(modifiers);
-        setDescriptor("Poisoned");
+        setDescriptor("Bleeding");
     }
 
     @Override
     public int behave() {
-        if (owner.getHP() > 0){
-            owner.dealDamage(randomNumber(minDamage, maxDamage), DamageType.POISON);
+        int damageToBeDelt = randomNumber(Math.min(minDamage,remainingDamage), Math.min(maxDamage,remainingDamage));
+        if (owner.isAlive()){
+            owner.dealDamage(damageToBeDelt, DamageType.BLEED);
         }
-        turns--;
-        if (turns <= 0){
+        remainingDamage -= damageToBeDelt;
+        if (remainingDamage <= 0){
             owner.removeStatus(this);
         }
         return 100;
@@ -45,17 +47,5 @@ public class Poisoned extends Status implements Behavable, SeperateIn{
     public boolean isActive() {
         return owner != null && owner.isAlive();
     }
-
-    @Override
-    public boolean onStackIn(Status sameStatus) {
-        if (sameStatus instanceof Poisoned) {
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public boolean validateSamenessIn(Status status) {
-        return status instanceof Poisoned;
-    }
+    
 }

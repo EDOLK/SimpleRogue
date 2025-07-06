@@ -6,15 +6,25 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.hexworks.zircon.api.color.TileColor;
+
+import de.articdive.jnoise.core.api.functions.Interpolation;
+import de.articdive.jnoise.generators.noise_parameters.fade_functions.FadeFunction;
+import de.articdive.jnoise.pipeline.JNoise;
+import game.App;
 import game.Dungeon;
 import game.Path;
 import game.PathConditions;
 import game.gameobjects.Space;
-import game.gameobjects.entities.Chest;
+import game.gameobjects.entities.Animal;
 import game.gameobjects.entities.Door;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.entities.PlayerEntity;
 import game.gameobjects.entities.Wall;
+import game.gameobjects.entities.props.Chest;
+import game.gameobjects.statuses.Mossy;
+import game.gameobjects.terrains.Grass;
+import game.gameobjects.terrains.Moss;
 import game.gameobjects.terrains.Staircase;
 import kotlin.Pair;
 
@@ -37,7 +47,10 @@ public class DefaultFloorGenerator extends FloorGenerator {
         this.SIZE_Y = spaces[0].length;
         generateSpaces();
         generateWalls();
-        spawnEntities(generateRooms());
+        Pair<List<Room>,List<Space[]>> pair = generateRooms();
+        spawnProps(pair);
+        generateTerrain();
+        spawnEntities(pair);
     }
 
     protected void generateSpaces(){
@@ -200,6 +213,54 @@ public class DefaultFloorGenerator extends FloorGenerator {
         return true;
     }
 
+    protected void spawnProps(Pair<List<Room>, List<Space[]>> pair) {
+        List<Room> rooms = new ArrayList<>(pair.getFirst());
+        JNoise perlinCosine = JNoise.newBuilder()
+            .perlin(App.randomNumber(0,9999),Interpolation.COSINE,FadeFunction.QUINTIC_POLY)
+            .scale(10)
+            .build();
+        for (int i = 1; i < rooms.size(); i++) {
+            Room room = rooms.get(i);
+            for (Space space : room.getInteriorSpaces()) {
+                if (!space.isOccupied()) {
+                    double val = perlinCosine.evaluateNoise(
+                        App.lerp(0,0,spaces.length,1.0,space.getX()),
+                        App.lerp(0,0,spaces[space.getX()].length,1.0,space.getY())
+                    );
+                    if (val >= 0.5) {
+                        space.setOccupant(Dungeon.getCurrentPropPool().getRandom(2,2).get());
+                    }
+                }
+            }
+        }
+    }
+
+    protected void generateTerrain(){
+        JNoise perlinCosine = JNoise.newBuilder()
+            .perlin(App.randomNumber(0,9999),Interpolation.COSINE,FadeFunction.QUINTIC_POLY)
+            .scale(10.0)
+            .build();
+        for (int x = 0; x < spaces.length; x++) {
+            for (int y = 0; y < spaces[x].length; y++) {
+                Space space = spaces[x][y];
+                double noiseX = App.lerp(0,0,spaces.length,1.0,x);
+                double noiseY = App.lerp(0,0,spaces[x].length,1.0,y);
+                double val = perlinCosine.evaluateNoise(noiseX, noiseY);
+                if (val > 0.33) {
+                    if (space.isOccupied() && !(space.getOccupant() instanceof Animal)) {
+                        space.getOccupant().addStatus(new Mossy());
+                    } else {
+                        if (val > 0.50) {
+                            space.addTerrain(new Grass());
+                        } else {
+                            space.addTerrain(new Moss());
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     protected void spawnEntities(Pair<List<Room>,List<Space[]>> pair) {
         List<Room> rooms = new ArrayList<>(pair.getFirst());
 
@@ -216,11 +277,12 @@ public class DefaultFloorGenerator extends FloorGenerator {
                 rooms.addAll(pair.getFirst());
                 rooms.remove(spawnRoom);
             }
-            Room room = getRandom(rooms);
             Entity generated = entityShopper.generate();
             if (generated != null) {
-                rooms.remove(room);
-                getRandom(room.getInteriorSpaces()).setOccupant(generated);
+                Room randomRoom = App.removeRandom(rooms);
+                if (randomRoom != null) {
+                    getRandom(randomRoom.getInteriorSpaces()).setOccupant(generated);
+                }
             }
         }
 
@@ -239,7 +301,15 @@ public class DefaultFloorGenerator extends FloorGenerator {
             }
         }
       
-        getRandom(pair.getFirst().get(pair.getFirst().size()-1).getInteriorSpaces()).addTerrain(new Staircase());
+        Room lastRoom = pair.getFirst().get(pair.getFirst().size()-1);
+        List<Space> lastRoomSpaces = new ArrayList<>(lastRoom.getInteriorSpaces());
+        while (!lastRoomSpaces.isEmpty()) {
+            Space s = App.removeRandom(lastRoomSpaces);
+            if (!s.isOccupied()) {
+                s.addTerrain(new Staircase());
+                break;
+            }
+        }
 
     }
 

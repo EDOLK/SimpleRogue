@@ -75,18 +75,20 @@ public class Water extends Liquid{
         }
 
         @Override
-        public void onStackIn(Status sameStatus) {
+        public boolean onStackIn(Status sameStatus) {
             switch (sameStatus) {
                 case Wet w -> {
                     w.timer++;
+                    return true;
                 }
                 case Burning b -> {
                     int amount = (b.getTurns()/2);
                     b.subtractTurns(amount);
                     b.getOwner().getSpace().addTerrain(new Steam(amount));
+                    return true;
                 }
                 default -> {
-
+                    return false;
                 }
             }
         }
@@ -97,12 +99,14 @@ public class Water extends Liquid{
         }
 
         @Override
-        public void onStackOut(Status sameStatus) {
+        public boolean onStackOut(Status sameStatus) {
             if (sameStatus instanceof Burning b) {
                 int amount = (b.getTurns()/2);
                 this.timer -= amount;
                 this.getOwner().getSpace().addTerrain(new Steam(amount));
+                return true;
             }
+            return false;
         }
 
         @Override

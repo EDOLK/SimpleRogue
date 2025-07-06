@@ -54,5 +54,9 @@ public abstract class Status extends DisplayableTile{
     public Status(){
         super();
     }
+
+    public static boolean isActiveHelper(Status status){
+        return status.getOwner() != null && status.getOwner().isAlive();
+    }
     
 }
