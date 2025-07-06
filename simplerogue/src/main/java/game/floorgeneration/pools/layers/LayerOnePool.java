@@ -2,9 +2,9 @@ package game.floorgeneration.pools.layers;
 
 import java.util.function.Supplier;
 
+import game.floorgeneration.TestEntity;
 import game.floorgeneration.pools.LayerPool;
 import game.floorgeneration.pools.PoolBuilder;
-import game.gameobjects.entities.Chest;
 import game.gameobjects.entities.DireRat;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.entities.Rat;
@@ -13,7 +13,13 @@ import game.gameobjects.entities.Snake;
 import game.gameobjects.entities.Spider;
 import game.gameobjects.entities.bosses.Ghast;
 import game.gameobjects.entities.bosses.RatKing;
+import game.gameobjects.entities.props.Barrel;
+import game.gameobjects.entities.props.Brazier;
+import game.gameobjects.entities.props.Chest;
+import game.gameobjects.entities.props.Crate;
+import game.gameobjects.items.Bandage;
 import game.gameobjects.items.Item;
+import game.gameobjects.items.Ration;
 import game.gameobjects.items.Torch;
 import game.gameobjects.items.armor.Chainmail;
 import game.gameobjects.items.armor.Cloak;
@@ -40,52 +46,62 @@ public class LayerOnePool extends LayerPool {
         super(
 
             new PoolBuilder<Supplier<Entity>>()
-            .put(()->{return new Rat();}, 5)
-            .put(()->{return new DireRat();}, 6)
-            .put(()->{return new Slime();}, 8)
-            .put(()->{return new Snake();}, 7)
-            .put(()->{return new Spider();}, 10)
+            .put(()->new Rat(), 5)
+            .put(()->new DireRat(), 6)
+            .put(()->new Slime(), 8)
+            .put(()->new Snake(), 7)
+            .put(()->new Spider(), 10)
             .build(),
 
             new PoolBuilder<Supplier<Item>>()
-            .put(()->{return new BoStaff();}, 5)
-            .put(()->{return new Dagger();}, 10)
-            .put(()->{return new ShortSword();}, 5)
-            .put(()->{return new HandAxe();}, 5)
-            .put(()->{return new FirePotion();}, 10)
-            .put(()->{return new HealingPotion();}, 15)
-            .put(()->{return new LeatherCap();}, 5)
-            .put(()->{return new LeatherArmor();}, 10)
-            .put(()->{return new LeatherGloves();}, 5)
-            .put(()->{return new LeatherPants();}, 5)
-            .put(()->{return new Cloak();}, 5)
-            .put(()->{return new Torch();}, 3)
+            .put(()->new BoStaff(), 5)
+            .put(()->new Dagger(), 10)
+            .put(()->new ShortSword(), 5)
+            .put(()->new HandAxe(), 5)
+            .put(()->new FirePotion(), 10)
+            .put(()->new HealingPotion(), 15)
+            .put(()->new LeatherCap(), 5)
+            .put(()->new LeatherArmor(), 10)
+            .put(()->new LeatherGloves(), 5)
+            .put(()->new LeatherPants(), 5)
+            .put(()->new Cloak(), 5)
             .build(),
 
             new PoolBuilder<Supplier<Item>>()
-            .put(()->{return new Chainmail();}, 7)
-            .put(()->{return new FirePotion();}, 5)
-            .put(()->{return new HealingPotion();}, 5)
-            .put(()->{return new IronGreaves();}, 7)
-            .put(()->{return new IronHelm();}, 7)
-            .put(()->{return new PlateGauntlets();}, 7)
-            .put(()->{return new ScrollOfUpgrade();}, 10)
-            .put(()->{return new ScrollOfEnchantment();}, 10)
-            .put(()->{return new PlateArmor();}, 10)
-            .put(()->{return new BoStaff();}, 5)
-            .put(()->{return new Dagger();}, 10)
-            .put(()->{return new ShortSword();}, 5)
-            .put(()->{return new HandAxe();}, 5)
-            .put(()->{return new Torch();}, 3)
+            .put(()->new Chainmail(), 7)
+            .put(()->new FirePotion(), 5)
+            .put(()->new HealingPotion(), 5)
+            .put(()->new IronGreaves(), 7)
+            .put(()->new IronHelm(), 7)
+            .put(()->new PlateGauntlets(), 7)
+            .put(()->new ScrollOfUpgrade(), 10)
+            .put(()->new ScrollOfEnchantment(), 10)
+            .put(()->new PlateArmor(), 10)
+            .put(()->new BoStaff(), 5)
+            .put(()->new Dagger(), 10)
+            .put(()->new ShortSword(), 5)
+            .put(()->new HandAxe(), 5)
             .build(),
 
             new PoolBuilder<Supplier<Chest>>()
-            .put(()-> {return new Chest();}, 20)
+            .put(()->new Chest(), 20)
             .build(),
 
             new PoolBuilder<Supplier<Entity>>()
-            .put(()->{return new RatKing();}, 1)
-            .put(()->{return new Ghast();}, 1)
+            .put(()->new RatKing(), 1)
+            .put(()->new Ghast(), 1)
+            .build(),
+
+            new PoolBuilder<Supplier<Entity>>()
+            .put(()->new Crate(), 2)
+            .put(()->new Barrel(), 2)
+            .put(()->new Brazier(Math.random() <= 0.50), 2)
+            .build(),
+
+            new PoolBuilder<Supplier<Item>>()
+            .put(()->new Torch(), 3)
+            .put(()->new Ration(), 2)
+            .put(()->new Bandage(), 2)
             .build()
 
         );

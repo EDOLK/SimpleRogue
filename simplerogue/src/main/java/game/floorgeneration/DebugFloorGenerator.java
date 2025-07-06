@@ -1,5 +1,7 @@
 package game.floorgeneration;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
 
 import de.articdive.jnoise.generators.noise_parameters.fade_functions.FadeFunction;
@@ -7,12 +9,14 @@ import de.articdive.jnoise.generators.noise_parameters.interpolation.Interpolati
 import de.articdive.jnoise.generators.noisegen.perlin.PerlinNoiseGenerator;
 import de.articdive.jnoise.pipeline.JNoise;
 import game.App;
+import game.Dungeon;
 import game.PathConditions;
 import game.gamelogic.Examinable;
 import game.gamelogic.Interactable;
 import game.gamelogic.SelfAware;
 import game.gamelogic.behavior.Behavable;
 import game.gameobjects.Space;
+import game.gameobjects.entities.Animal;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.entities.PlayerEntity;
 import game.gameobjects.entities.Rat;
@@ -21,9 +25,11 @@ import game.gameobjects.items.potions.FreezingPotion;
 import game.gameobjects.items.potions.WaterPotion;
 import game.gameobjects.items.weapons.BoStaff;
 import game.gameobjects.statuses.Mossy;
+import game.gameobjects.terrains.Grass;
 import game.gameobjects.terrains.Moss;
 import game.gameobjects.terrains.SpreadableTerrain;
 import game.gameobjects.terrains.Terrain;
+import kotlin.Pair;
 import game.gameobjects.items.potions.FirePotion;
 
 public class DebugFloorGenerator extends FloorGenerator {
@@ -45,7 +51,7 @@ public class DebugFloorGenerator extends FloorGenerator {
 
     protected void generateTerrain(){
         JNoise perlinCosine = JNoise.newBuilder()
-            .perlin((long)Math.random(),Interpolation.COSINE,FadeFunction.QUINTIC_POLY)
+            .perlin(App.randomNumber(0,9999),Interpolation.COSINE,FadeFunction.QUINTIC_POLY)
             .scale(10.0)
             .build();
         for (int x = 0; x < spaces.length; x++) {
@@ -54,11 +60,15 @@ public class DebugFloorGenerator extends FloorGenerator {
                 double noiseX = App.lerp(0,0,spaces.length,1.0,x);
                 double noiseY = App.lerp(0,0,spaces[x].length,1.0,y);
                 double val = perlinCosine.evaluateNoise(noiseX, noiseY);
-                if (val > 0) {
-                    if (space.isOccupied() && space.getOccupant() instanceof Wall) {
+                if (val > 0.33) {
+                    if (space.isOccupied() && !(space.getOccupant() instanceof Animal)) {
                         space.getOccupant().addStatus(new Mossy());
                     } else {
-                        space.addTerrain(new Moss());
+                        if (val > 0.50) {
+                            space.addTerrain(new Grass());
+                        } else {
+                            space.addTerrain(new Moss());
+                        }
                     }
                 }
             }

@@ -1,23 +1,18 @@
-package game.gameobjects.entities;
+package game.gameobjects.entities.props;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
-import org.hexworks.zircon.api.Modifiers;
 import org.hexworks.zircon.api.color.TileColor;
-import org.hexworks.zircon.api.modifier.Glow;
-import org.hexworks.zircon.api.modifier.Modifier;
-
 import game.display.Display;
 import game.gamelogic.HasResistances;
 import game.gamelogic.LightSource;
 import game.gamelogic.combat.AttackInfo;
 import game.gamelogic.combat.OnDeath;
-import game.gamelogic.combat.OnKill;
 import game.gamelogic.resistances.PercentageResistance;
 import game.gamelogic.resistances.Resistance;
 import game.gameobjects.DamageType;
+import game.gameobjects.entities.Entity;
 import game.gameobjects.items.Item;
 import game.gameobjects.statuses.SeperateOut;
 import game.gameobjects.statuses.Status;

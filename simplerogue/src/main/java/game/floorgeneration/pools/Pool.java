@@ -30,10 +30,14 @@ public class Pool<T> {
     }
     
     public T getRandom(int priceLimit){
+        return getRandom(0, priceLimit);
+    }
+
+    public T getRandom(int priceLimitMin, int priceLimitMax){
         List<Entry<T, Integer>> entries = new ArrayList<Entry<T,Integer>>(map.entrySet());
         Collections.shuffle(entries);
         for (Entry<T,Integer> entry : entries) {
-            if (entry.getValue() <= priceLimit){
+            if (entry.getValue() >= priceLimitMin && entry.getValue() <= priceLimitMax){
                 return entry.getKey();
             }
         }

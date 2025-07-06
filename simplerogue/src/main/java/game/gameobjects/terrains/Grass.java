@@ -23,7 +23,7 @@ public class Grass extends Terrain implements Flammable, Examinable, SelfAware, 
 
     @Override
     public String getName() {
-        return "Grass";
+        return "Tall Grass";
     }
 
     @Override
