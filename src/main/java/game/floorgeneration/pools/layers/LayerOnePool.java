@@ -2,7 +2,6 @@ package game.floorgeneration.pools.layers;
 
 import java.util.function.Supplier;
 
-import game.floorgeneration.TestEntity;
 import game.floorgeneration.pools.LayerPool;
 import game.floorgeneration.pools.PoolBuilder;
 import game.gameobjects.entities.DireRat;
