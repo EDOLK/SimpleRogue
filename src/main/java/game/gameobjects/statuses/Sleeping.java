@@ -11,7 +11,7 @@ import game.App;
 import game.display.Display;
 import game.gamelogic.HasSkills;
 import game.gamelogic.OverridesBehavable;
-import game.gamelogic.SkillMap.Skill;
+import game.gamelogic.Skill;
 import game.gamelogic.behavior.Behavable;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Animal;

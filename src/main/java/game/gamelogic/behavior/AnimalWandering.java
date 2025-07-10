@@ -8,7 +8,7 @@ import game.App;
 import game.Dungeon;
 import game.Path;
 import game.gamelogic.HasSkills;
-import game.gamelogic.SkillMap.Skill;
+import game.gamelogic.Skill;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Animal;
 import game.gameobjects.entities.Entity;

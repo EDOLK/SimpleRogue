@@ -2,7 +2,7 @@ package game.gamelogic.skilltrees.rogue;
 
 import game.gamelogic.AttributeMap.Attribute;
 import game.gamelogic.HasSkills;
-import game.gamelogic.SkillMap.Skill;
+import game.gamelogic.Skill;
 import game.gamelogic.abilities.HasAbilities;
 import game.gamelogic.skilltrees.SkillTree;
 

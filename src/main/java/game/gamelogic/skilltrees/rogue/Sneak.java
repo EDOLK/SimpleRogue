@@ -5,7 +5,7 @@ import org.hexworks.zircon.api.color.TileColor;
 import game.display.AbilitySelectMenu;
 import game.display.Display;
 import game.gamelogic.ModifiesSkills;
-import game.gamelogic.SkillMap.Skill;
+import game.gamelogic.Skill;
 import game.gamelogic.time.ModifiesMoveTime;
 import game.gamelogic.abilities.Ability;
 import game.gamelogic.behavior.Behavable;

@@ -36,13 +36,4 @@ public class SkillMap {
     public void set(Skill skill, int amount){
         aMap.put(skill, amount);
     }
-
-    public enum Skill {
-        STEALTH,
-        ACROBATICS,
-        ATHLETICS,
-        WIZARDRY,
-        PERCEPTION,
-        NATURE;
-    }
 }

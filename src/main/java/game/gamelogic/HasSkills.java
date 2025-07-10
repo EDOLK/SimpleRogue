@@ -1,6 +1,5 @@
 package game.gamelogic;
 
-import game.gamelogic.SkillMap.Skill;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.statuses.Status;
 
