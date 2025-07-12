@@ -5,13 +5,17 @@ import static game.Dungeon.getCurrentFloor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.hexworks.zircon.api.color.TileColor;
 
+import game.App;
+import game.CheckConditions;
 import game.Line;
 import game.display.Display;
 import game.gamelogic.Armed;
 import game.gamelogic.Armored;
+import game.gamelogic.Attribute;
 import game.gamelogic.DropsXP;
 import game.gamelogic.Examinable;
 import game.gamelogic.Experiential;
@@ -21,7 +25,6 @@ import game.gamelogic.HasResistances;
 import game.gamelogic.HasStatusVulns;
 import game.gamelogic.HasVulnerabilities;
 import game.gamelogic.SelfAware;
-import game.gamelogic.resistances.Resistance;
 import game.gamelogic.time.ModifiesMoveTime;
 import game.gamelogic.time.ModifiesAttackTime;
 import game.gameobjects.DamageType;
@@ -42,7 +45,7 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
     private String name = "Placeholder Name";
     private String description = "Placeholder description.";
     protected Space currentSpace;
-    private int maxHP;
+    private int baseMaxHP;
     private int HP;
     private int visionRange = 10;
     private int nightVisionRange = 1;
@@ -55,6 +58,7 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
     protected boolean itemBlocker = false;
     private Weapon unarmedWeapon;
     private boolean alive = true;
+    protected int enduranceHPMult = 0;
 
     public boolean isAlive() {
         return alive;
@@ -167,11 +171,15 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
     }
 
     public int getMaxHP() {
-        return maxHP;
+        return this.baseMaxHP + (Attribute.getAttribute(Attribute.ENDURANCE, this) * this.enduranceHPMult);
     }
 
-    public void setMaxHP(int maxHealth) {
-        this.maxHP = maxHealth;
+    public int getBaseMaxHP() {
+        return baseMaxHP;
+    }
+
+    public void setBaseMaxHP(int maxHealth) {
+        this.baseMaxHP = maxHealth;
     }
 
     public int getHP() {
@@ -398,10 +406,10 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
             return;
         }
 
-        if (HP + hp >= maxHP){
-            HP = maxHP;
+        if (getHP() + hp >= getMaxHP()){
+            setHP(getMaxHP());
         } else {
-            HP += hp;
+            setHP(getHP() + hp);
         }
         
         if (this instanceof PlayerEntity){
@@ -463,9 +471,12 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
     
     public int doResistances(int damage, DamageType damageType){
 
-        List<HasResistances> hasResistancesList = collectHasResistances();
-
-        for (HasResistances hasResistances : hasResistancesList) {
+        for (HasResistances hasResistances : App.recursiveCheck(this, getConditionsForResAndVulns(), (obj) -> {
+            if (obj instanceof HasResistances hResistances) {
+                return Optional.of(hResistances);
+            }
+            return Optional.empty();
+        })) {
             damage = hasResistances.applyResistances(damage, damageType);
         }
 
@@ -473,50 +484,24 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
 
     }
 
-    public List<Resistance> collectResistances(){
-        List<HasResistances> hasResistancesList = collectHasResistances();
-        List<Resistance> resistances = new ArrayList<>();
-        for (HasResistances hasResistances : hasResistancesList) {
-            resistances.addAll(hasResistances.getResistances());
-        }
-        return resistances;
-    }
-
-    public List<HasResistances> collectHasResistances(){
-
-        List<HasResistances> resistances = new ArrayList<>();
-
-        if (this instanceof HasResistances hasResistances){
-            resistances.add(hasResistances);
-        }
-
-        if (this instanceof Armored armored){
-            for (Armor armor : armored.getArmor()) {
-                resistances.add(armor);
-            }
-        }
-        
-        for (Status status : getStatuses()) {
-            if (status instanceof HasResistances statusWithResistances){
-                resistances.add(statusWithResistances);
-            }
-        }
-        return resistances;
-    }
-
     public int doVulnerabilities(int damage, DamageType damageType){
 
-        if (this instanceof HasVulnerabilities hasVulnerabilities){
-            damage = hasVulnerabilities.applyVulnerabilities(damage, damageType);
-        }
-
-        for (Status status : getStatuses()) {
-            if (status instanceof HasVulnerabilities statusWithVulnerabilities){
-                damage = statusWithVulnerabilities.applyVulnerabilities(damage, damageType);
+        for (HasVulnerabilities hr : App.recursiveCheck(this, getConditionsForResAndVulns(), (obj) -> {
+            if (obj instanceof HasVulnerabilities has) {
+                return Optional.of(has);
             }
+            return Optional.empty();
+        })) {
+            damage = hr.applyVulnerabilities(damage, damageType);
         }
 
         return damage;
+
+    }
+
+    private CheckConditions getConditionsForResAndVulns(){
+        return CheckConditions.all()
+            .withInventory(false);
     }
 
     // on death behavior (most will just drop a corpse, and other drops)

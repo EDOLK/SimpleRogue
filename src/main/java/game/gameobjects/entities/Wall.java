@@ -18,7 +18,7 @@ public class Wall extends Entity implements HasResistances{
 
     public Wall(){
         super(TileColor.transparent(), TileColor.create(200, 200, 200, 255), '█');
-        setMaxHP(100);
+        setBaseMaxHP(100);
         setHP(100);
         setName("Wall");
         setTileName("Wall");

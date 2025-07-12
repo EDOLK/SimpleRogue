@@ -2,21 +2,15 @@ package game.gameobjects.terrains;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.hexworks.zircon.api.Modifiers;
 import org.hexworks.zircon.api.color.TileColor;
 import org.hexworks.zircon.api.modifier.Modifier;
 
-import game.display.Display;
 import game.gamelogic.Examinable;
 import game.gameobjects.Space;
-import game.gameobjects.entities.Entity;
-import game.gameobjects.entities.PlayerEntity;
-import game.gameobjects.statuses.Rooted;
 import game.gameobjects.terrains.liquids.Water;
 import kotlin.Pair;
 

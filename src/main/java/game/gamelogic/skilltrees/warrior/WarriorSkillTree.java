@@ -1,6 +1,6 @@
 package game.gamelogic.skilltrees.warrior;
 
-import game.gamelogic.AttributeMap.Attribute;
+import game.gamelogic.Attribute;
 import game.gamelogic.abilities.HasAbilities;
 import game.gamelogic.skilltrees.SkillTree;
 

@@ -9,7 +9,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import game.gamelogic.AttributeMap.Attribute;
+import game.gamelogic.Attribute;
 import game.gamelogic.HasAttributes;
 import game.gamelogic.HasName;
 import game.gamelogic.HasSkills;

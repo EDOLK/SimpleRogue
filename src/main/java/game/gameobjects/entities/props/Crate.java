@@ -14,7 +14,7 @@ public class Crate extends ContainerProp{
 
     public Crate(){
         super(TileColor.transparent(), TileColor.create(153, 57, 2, 255), 'C');
-        setMaxHP(5);
+        setBaseMaxHP(5);
         setHP(5);
         setWeight(5);
         setName("Crate");

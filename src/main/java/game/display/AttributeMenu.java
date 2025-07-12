@@ -22,7 +22,7 @@ import org.hexworks.zircon.api.uievent.UIEventPhase;
 import org.hexworks.zircon.api.uievent.UIEventResponse;
 
 import game.display.KeyMap.Action;
-import game.gamelogic.AttributeMap.Attribute;
+import game.gamelogic.Attribute;
 import game.gamelogic.HasAttributes;
 
 public class AttributeMenu extends Menu {

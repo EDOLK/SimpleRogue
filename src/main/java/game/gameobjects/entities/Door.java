@@ -19,7 +19,7 @@ public class Door extends Entity implements Interactable, HasResistances{
     
     public Door(Character c){
         super(TileColor.transparent(), TileColor.create(181, 88, 45, 255), c);
-        setMaxHP(10);
+        setBaseMaxHP(10);
         setHP(10);
         setName("Door");
         setTileName("Closed Door");

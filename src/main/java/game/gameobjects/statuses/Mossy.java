@@ -4,7 +4,6 @@ import org.hexworks.zircon.api.color.TileColor;
 
 import game.gamelogic.HasStatusVulns;
 import game.gamelogic.behavior.Behavable;
-import game.gameobjects.Space;
 import game.gameobjects.terrains.Moss;
 
 public class Mossy extends Status implements SeperateOut, HasStatusVulns, Behavable{

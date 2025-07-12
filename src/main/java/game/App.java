@@ -11,11 +11,11 @@ import java.util.function.Function;
 import game.display.Display;
 import game.gamelogic.Armed;
 import game.gamelogic.Armored;
+import game.gamelogic.HasInventory;
 import game.gamelogic.abilities.HasAbilities;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.items.armor.Armor;
 import game.gameobjects.items.weapons.Weapon;
-import game.gameobjects.statuses.Status;
 
 public class App 
 {
@@ -45,36 +45,62 @@ public class App
     }
 
     public static <T> List<T> recursiveCheck(Object object, Function<Object, Optional<T>> function){
-        return recursiveCheckHelper(object, function, new ArrayList<>(), new HashSet<>());
+        return recursiveCheck(object, CheckConditions.all(), function);
     }
 
-    private static <T> List<T> recursiveCheckHelper(Object object, Function<Object, Optional<T>> function, List<T> ts, Set<Object> checkedObjects){
-        Consumer<Object> helper = (obj) -> recursiveCheckHelper(obj,function,ts,checkedObjects);
+    public static <T> List<T> recursiveCheck(Object object, CheckConditions conditions, Function<Object, Optional<T>> function){
+        return recursiveCheckHelper(object, conditions, function, new ArrayList<>(), new HashSet<>());
+    }
+
+    private static <T> List<T> recursiveCheckHelper(Object object, CheckConditions conditions, Function<Object, Optional<T>> function, List<T> tList, Set<Object> checkedObjects){
+
+        Consumer<Object> helper = (obj) -> recursiveCheckHelper(obj,conditions,function,tList,checkedObjects);
+
         if (object != null && checkedObjects.add(object)) {
+
             Optional<T> optional = function.apply(object);
+
             if (optional.isPresent()) {
-                ts.add(optional.get());
+                tList.add(optional.get());
             }
+
             if (object instanceof Entity entity) {
-                entity.getStatuses().forEach(helper::accept);
+                if (conditions.includesStatuses()) {
+                    entity.getStatuses().forEach(helper::accept);
+                }
+                if (conditions.includesUnarmedWeapon()) {
+                    helper.accept(entity.getUnarmedWeapon());
+                }
             }
-            if (object instanceof Armed armed) {
+
+            if (object instanceof HasInventory hasInventory && conditions.includesInventory()) {
+                hasInventory.getInventory().forEach(helper::accept);
+            }
+
+            if (object instanceof Armed armed && conditions.includesArmedWeapons()) {
                 armed.getWeapons().forEach(helper::accept);
             }
-            if (object instanceof Armored armored) {
+
+            if (object instanceof Armored armored && conditions.includesArmors()) {
                 armored.getArmor().forEach(helper::accept);
             }
-            if (object instanceof HasAbilities hasAbilities) {
+
+            if (object instanceof HasAbilities hasAbilities && conditions.includesAbilities()) {
                 hasAbilities.getAbilities().forEach(helper::accept);
             }
-            if (object instanceof Weapon weapon) {
+
+            if (object instanceof Weapon weapon && conditions.includesEnchantments()) {
                 helper.accept(weapon.getEnchantment());
             }
-            if (object instanceof Armor armor) {
+
+            if (object instanceof Armor armor && conditions.includesEnchantments()) {
                 helper.accept(armor.getEnchantment());
             }
+
         }
-        return ts;
+
+        return tList;
+
     }
 
 }

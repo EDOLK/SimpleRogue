@@ -36,21 +36,4 @@ public class AttributeMap {
     public void set(Attribute attribute, int amount){
         aMap.put(attribute, amount);
     }
-
-    public enum Attribute {
-        STRENGTH("STR"),
-        DEXTERITY("DEX"),
-        ENDURANCE("END"),
-        INTELLIGENCE("INT"),
-        CHARISMA("CHA"),
-        WISDOM("WIS"),
-        LUCK("LCK");
-
-        public final String shortHand;
-
-        private Attribute(String shortHand){
-            this.shortHand = shortHand;
-        }
-
-    }
 }

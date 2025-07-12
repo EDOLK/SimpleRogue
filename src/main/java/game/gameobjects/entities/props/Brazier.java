@@ -35,7 +35,7 @@ public class Brazier extends Entity implements HasResistances {
         this.setbGColor(TileColor.transparent());
         this.setName("Brazier");
         this.setWeight(20);
-        this.setMaxHP(1);
+        this.setBaseMaxHP(1);
         this.setHP(1);
         if (lit) {
             this.addStatus(new Lit());

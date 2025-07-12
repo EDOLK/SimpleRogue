@@ -9,7 +9,6 @@ import org.hexworks.zircon.api.color.TileColor;
 
 import game.App;
 import game.display.Display;
-import game.gamelogic.HasSkills;
 import game.gamelogic.OverridesBehavable;
 import game.gamelogic.Skill;
 import game.gamelogic.behavior.Behavable;
@@ -44,12 +43,8 @@ public class Sleeping extends Status implements OverridesBehavable, Behavable, O
             if (target != null) {
                 int targetStealth = Math.max(App.randomNumber(1,20), App.randomNumber(1,20));
                 int animalPerception = 10;
-                if (target instanceof HasSkills hasSkills) {
-                    targetStealth += hasSkills.getSkill(Skill.STEALTH);
-                }
-                if (owner instanceof HasSkills hasSkills) {
-                    animalPerception += hasSkills.getSkill(Skill.PERCEPTION);
-                }
+                targetStealth += Skill.getSkill(Skill.STEALTH, target);
+                animalPerception += Skill.getSkill(Skill.PERCEPTION, owner);
                 targetStealth += (int)((target.getSpace().getLight()-0.50f)*-15);
                 int distance = Space.getDistance(owner.getSpace(), target.getSpace());
                 if (distance <= 5) {
