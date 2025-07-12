@@ -16,6 +16,7 @@ import game.gameobjects.entities.props.Barrel;
 import game.gameobjects.entities.props.Brazier;
 import game.gameobjects.entities.props.Chest;
 import game.gameobjects.entities.props.Crate;
+import game.gameobjects.items.Antidote;
 import game.gameobjects.items.Bandage;
 import game.gameobjects.items.Item;
 import game.gameobjects.items.Ration;
@@ -99,6 +100,7 @@ public class LayerOnePool extends LayerPool {
 
             new PoolBuilder<Supplier<Item>>()
             .put(()->new Torch(), 3)
+            .put(()->new Antidote(), 3)
             .put(()->new Ration(), 2)
             .put(()->new Bandage(), 2)
             .build()
