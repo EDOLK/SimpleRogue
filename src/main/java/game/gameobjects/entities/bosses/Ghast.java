@@ -40,7 +40,7 @@ public class Ghast extends Animal implements HasInventory, DropsXP, HasResistanc
 
     public Ghast() {
         super(TileColor.transparent(), TileColor.create(141, 30, 232, 255),'G');
-        setMaxHP(25);
+        setBaseMaxHP(25);
         setHP(25);
         setWeight(20);
         setName("Ghast");

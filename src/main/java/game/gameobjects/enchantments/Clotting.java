@@ -30,7 +30,7 @@ public class Clotting extends ArmorEnchantment implements OnHitted {
             super(TileColor.transparent(), TileColor.create(200, 25, 25, 255), 'o');
             this.healthStored = healthStored;
             this.owner = owner;
-            setMaxHP(1);
+            setBaseMaxHP(1);
             setHP(1);
             setName("Blood Polyp");
             setDescription("A floating polyp of coagulated blood.");

@@ -44,7 +44,7 @@ public class Spider extends Animal implements HasDodge, HasInventory, HasDrops{
 
     public Spider(){
         super(TileColor.transparent(), TileColor.create(125, 125, 125, 255), 'x');
-        setMaxHP(5);
+        setBaseMaxHP(5);
         setHP(5);
         setWeight(5);
         setName("Giant spider");

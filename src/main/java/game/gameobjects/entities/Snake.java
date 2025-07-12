@@ -24,7 +24,7 @@ public class Snake extends Animal implements DropsXP, HasDodge, OnHit, HasDrops{
 
     public Snake() {
         super(TileColor.transparent(), TileColor.create(38, 125, 34, 255), 's');
-        setMaxHP(5);
+        setBaseMaxHP(5);
         setHP(5);
         setWeight(5);
         setName("Giant Snake");

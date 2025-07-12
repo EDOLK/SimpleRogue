@@ -25,7 +25,7 @@ public class EvaporatedSlime extends Animal implements HasResistances, HasDodge,
 
     public EvaporatedSlime(){
         super(TileColor.transparent(), TileColor.create(20, 230, 20, 255), '▒');
-        setMaxHP(10);
+        setBaseMaxHP(10);
         setHP(10);
         setName("Evaporated Slime");
         setTileName("Evaporated Slime");

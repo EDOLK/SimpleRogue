@@ -22,7 +22,7 @@ public class Rat extends Animal implements DropsXP, HasDodge, HasDrops{
     public Rat() {
 
         super(TileColor.transparent(), TileColor.create(125, 76, 36, 255), 'r');
-        setMaxHP(10);
+        setBaseMaxHP(10);
         setHP(10);
         setName("Giant Rat");
         setTileName("Giant Rat");

@@ -8,9 +8,7 @@ import org.hexworks.zircon.api.color.TileColor;
 import game.Dungeon;
 import game.display.Display;
 import game.display.ItemSelectMenu;
-import game.gamelogic.AttributeMap;
-import game.gamelogic.AttributeMap.Attribute;
-import game.gamelogic.HasAttributes;
+import game.gamelogic.Attribute;
 import game.gamelogic.HasInventory;
 import game.gamelogic.Interactable;
 import game.gameobjects.Space;
@@ -47,9 +45,7 @@ public abstract class ContainerProp extends Entity implements Interactable, HasI
     @Override
     public int defaultInteraction(Entity interactor){
         int str = 0;
-        if (interactor instanceof HasAttributes hasAttributes) {
-            str += hasAttributes.getAttribute(Attribute.STRENGTH);
-        }
+        str += Attribute.getAttribute(Attribute.STRENGTH, interactor);
         if ((str*5) >= this.getWeight()) {
             int xOffset = this.getX() - interactor.getX();
             int yOffset = this.getY() - interactor.getY();

@@ -1,7 +1,5 @@
 package game.gamelogic;
 
-import game.gamelogic.AttributeMap.Attribute;
-
 public interface HasAttributes {
 
     public AttributeMap getAttributeMap();

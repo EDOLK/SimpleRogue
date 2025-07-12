@@ -13,7 +13,7 @@ public class Chest extends ContainerProp{
 
     public Chest(){
         super(TileColor.transparent(), TileColor.create(230, 188, 64, 255), 'c');
-        setMaxHP(5);
+        setBaseMaxHP(5);
         setHP(5);
         setWeight(5);
         setName("Chest");

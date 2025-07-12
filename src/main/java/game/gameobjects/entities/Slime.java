@@ -36,7 +36,7 @@ public class Slime extends Animal implements DropsXP, HasDodge, HasResistances, 
     public Slime(){
 
         super(TileColor.transparent(), TileColor.create(20, 230, 20, 255), 'o');
-        setMaxHP(10);
+        setBaseMaxHP(10);
         setHP(10);
         setName("Green Slime");
         setTileName("Slime");
@@ -66,7 +66,7 @@ public class Slime extends Animal implements DropsXP, HasDodge, HasResistances, 
             if (addItemToInventory(item)){
                 getSpace().remove(item);
                 Display.log("The " + item.getName() + " becomes suspended in the " + getName(), getSpace());
-                setMaxHP(getMaxHP() + 1);
+                setBaseMaxHP(getMaxHP() + 1);
                 setHP(getHP()+1);
             }
         }
@@ -81,7 +81,7 @@ public class Slime extends Animal implements DropsXP, HasDodge, HasResistances, 
             if (consumableItem != null && consumableItem instanceof Consumable consumable){
                 consumable.consume(this);
                 inventory.remove(consumableItem);
-                setMaxHP(getMaxHP()-1);
+                setBaseMaxHP(getMaxHP()-1);
                 setHP(getHP()-1);
             }
         }

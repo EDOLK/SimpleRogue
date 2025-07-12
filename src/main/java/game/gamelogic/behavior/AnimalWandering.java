@@ -7,8 +7,7 @@ import java.util.Optional;
 import game.App;
 import game.Dungeon;
 import game.Path;
-import game.gamelogic.HasSkills;
-import game.gamelogic.SkillMap.Skill;
+import game.gamelogic.Skill;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Animal;
 import game.gameobjects.entities.Entity;
@@ -95,12 +94,8 @@ public class AnimalWandering extends Behavior {
         if (entity != null) {
             int entityStealth = App.randomNumber(1,20);
             int animalPerception = 10;
-            if (entity instanceof HasSkills hasSkills) {
-                entityStealth += hasSkills.getSkill(Skill.STEALTH);
-            }
-            if (animal instanceof HasSkills hasSkills) {
-                animalPerception += hasSkills.getSkill(Skill.PERCEPTION);
-            }
+            entityStealth += Skill.getSkill(Skill.STEALTH, entity);
+            animalPerception += Skill.getSkill(Skill.PERCEPTION, animal);
             entityStealth += (int)((entity.getSpace().getLight()-0.50f)*-15);
             int distance = Space.getDistance(animal.getSpace(), entity.getSpace());
             if (distance <= 5) {

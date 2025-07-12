@@ -10,8 +10,8 @@ import org.hexworks.zircon.api.color.TileColor;
 import game.display.Display;
 import game.gamelogic.Armed;
 import game.gamelogic.Armored;
+import game.gamelogic.Attribute;
 import game.gamelogic.AttributeMap;
-import game.gamelogic.AttributeMap.Attribute;
 import game.gamelogic.Experiential;
 import game.gamelogic.HasAttributes;
 import game.gamelogic.HasDodge;
@@ -19,8 +19,8 @@ import game.gamelogic.HasInventory;
 import game.gamelogic.HasOffHand;
 import game.gamelogic.HasSkills;
 import game.gamelogic.Levelable;
+import game.gamelogic.Skill;
 import game.gamelogic.SkillMap;
-import game.gamelogic.SkillMap.Skill;
 import game.gamelogic.abilities.Ability;
 import game.gamelogic.abilities.HasAbilities;
 import game.gamelogic.skilltrees.SkillTree;
@@ -57,7 +57,7 @@ public class PlayerEntity extends Entity implements Armored, Armed, Levelable, E
 
     public PlayerEntity(TileColor bGColor, TileColor fGColor, char character) {
         super(bGColor, fGColor, character);
-        setMaxHP(15);
+        setBaseMaxHP(15);
         setHP(15);
         setMaxMP(15);
         setMP(15);
@@ -94,6 +94,7 @@ public class PlayerEntity extends Entity implements Armored, Armed, Levelable, E
         e.setEquippedWeapon(club);
         offHandSlot.setEquippedItem(new Torch(true));
 
+        this.enduranceHPMult = 3;
     }
 
     public boolean addAbility(Ability ability){
@@ -169,10 +170,6 @@ public class PlayerEntity extends Entity implements Armored, Armed, Levelable, E
             skillTreePoints++;
             this.XP -= XPToNextLevel;
             XPToNextLevel = 10 + (level * 5);
-            setMaxHP(getMaxHP() + 5 + (getAttribute(Attribute.ENDURANCE) * 3));
-            heal(5 + (getAttribute(Attribute.ENDURANCE) * 3));
-            setMaxMP(getMaxMP() + 5 + (getAttribute(Attribute.INTELLIGENCE) * 3));
-            setMP(getMP() + 5 + (getAttribute(Attribute.INTELLIGENCE) * 3));
             Display.logHeader("Level up!");
         }
     }
@@ -194,7 +191,7 @@ public class PlayerEntity extends Entity implements Armored, Armed, Levelable, E
 
     @Override
     public int getHardWeightLimit() {
-        return maxWeight + (this.getAttribute(Attribute.STRENGTH) * 5);
+        return maxWeight + (Attribute.getAttribute(Attribute.STRENGTH, this) * 5);
     }
 
     @Override
@@ -225,7 +222,7 @@ public class PlayerEntity extends Entity implements Armored, Armed, Levelable, E
 
     @Override
     public int getDodge() {
-        return this.getAttribute(Attribute.DEXTERITY) + (this.getSkill(Skill.ATHLETICS) * 3);
+        return Attribute.getAttribute(Attribute.DEXTERITY, this) + (Skill.getSkill(Skill.ATHLETICS, this) * 3);
     }
 
     @Override

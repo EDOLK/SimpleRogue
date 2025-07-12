@@ -37,7 +37,7 @@ public class RatKing extends Animal implements HasInventory, DropsXP{
 
     public RatKing() {
         super(TileColor.transparent(), TileColor.create(125, 76, 36, 255),'R');
-        setMaxHP(17);
+        setBaseMaxHP(17);
         setHP(17);
         setWeight(12);
         setName("Rat King");
@@ -108,7 +108,7 @@ public class RatKing extends Animal implements HasInventory, DropsXP{
             super();
             setDescription(getDescription() + " it looks scraggly and malnurished, yet strangely coordinated with the other rats.");
             int hp = randomNumber(2,5);
-            setMaxHP(hp);
+            setBaseMaxHP(hp);
             setHP(hp);
 
             Weapon fangs = new Weapon();

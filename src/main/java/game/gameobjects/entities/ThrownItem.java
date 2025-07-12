@@ -29,7 +29,7 @@ public class ThrownItem extends Entity implements HasDodge, HasResistances, Beha
     public ThrownItem(Aimable aimable, Space spawnSpace, Space targetSpace, int speed){
         this.aimable = aimable;
         setSpace(spawnSpace);
-        setMaxHP(1);
+        setBaseMaxHP(1);
         setHP(1);
         List<Space> l = Line.getLineAsListInclusive(getSpace(), targetSpace);
         l.remove(0);

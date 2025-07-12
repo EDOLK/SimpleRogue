@@ -14,7 +14,7 @@ public class Barrel extends ContainerProp{
 
     public Barrel(){
         super(TileColor.transparent(), TileColor.create(153, 57, 2, 255), 'B');
-        setMaxHP(5);
+        setBaseMaxHP(5);
         setHP(5);
         setWeight(5);
         setName("Barrel");

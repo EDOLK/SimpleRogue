@@ -4,20 +4,21 @@ import static game.App.lerp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Stack;
 import java.util.WeakHashMap;
 
 import org.hexworks.zircon.api.color.TileColor;
 
 import game.App;
+import game.CheckConditions;
 import game.Line;
 import game.display.Display;
 import game.floorgeneration.FloorGenerator;
 import game.gamelogic.Armed;
 import game.gamelogic.Armored;
-import game.gamelogic.AttributeMap.Attribute;
+import game.gamelogic.Attribute;
 import game.gamelogic.HasAccuracy;
-import game.gamelogic.HasAttributes;
 import game.gamelogic.HasDodge;
 import game.gamelogic.HasOffHand;
 import game.gamelogic.LightSource;
@@ -520,9 +521,7 @@ public class Floor{
         
         int damage = attackerWeapon.generateDamage();
 
-        if (attacker instanceof HasAttributes hasAttributes) {
-            damage += hasAttributes.getAttribute(Attribute.STRENGTH);
-        }
+        damage += Attribute.getAttribute(Attribute.STRENGTH, attacker);
         
         damage = crit ? damage * 2 : damage;
 
@@ -618,78 +617,63 @@ public class Floor{
 
     
     public static List<CombatModifier> getCombatModifiers(Entity entity){
-        List<CombatModifier> combatModifiers = new ArrayList<CombatModifier>();
-        if (entity instanceof CombatModifier combatModifierEntity){
-            combatModifiers.add(combatModifierEntity);
-        }
-        if (entity instanceof Armed armedEntity){
-            for (Weapon weapon : armedEntity.getWeapons()) {
-                if (weapon instanceof CombatModifier combatModifierWeapon){
-                    combatModifiers.add(combatModifierWeapon);
-                }
-                if (weapon.getEnchantment() instanceof CombatModifier combatModifierWeaponEnchantment){
-                    combatModifiers.add(combatModifierWeaponEnchantment);
-                }
+        return App.recursiveCheck(entity, getCombatModConditions(), (obj) -> {
+            if (obj instanceof CombatModifier cm){
+                return Optional.of(cm);
             }
-        }
-        if (entity instanceof Armored armoredEntity){
-            for (Armor armor : armoredEntity.getArmor()) {
-                if (armor instanceof CombatModifier combatModifierArmor){
-                    combatModifiers.add(combatModifierArmor);
-                }
-                if (armor.getEnchantment() instanceof CombatModifier combatModifierArmorEnchantment){
-                    combatModifiers.add(combatModifierArmorEnchantment);
-                }
-            }
-        }
-        for (Status status : entity.getStatuses()) {
-            if (status instanceof CombatModifier combatModifierStatus){
-                combatModifiers.add(combatModifierStatus);
-            }
-        }
-        return combatModifiers;
+            return Optional.empty();
+        });
     }
-    
+
+    private static CheckConditions getCombatModConditions(){
+        return CheckConditions.all()
+            .withInventory(false);
+    }
+
     public static int getDodge(Entity entity){
         int dodge = 0;
-        if (entity instanceof HasDodge hasDodge){
+        for (HasDodge hasDodge : App.recursiveCheck(entity, getDodgeConditions(), (obj) -> {
+            if (obj instanceof HasDodge hd) {
+                return Optional.of(hd);
+            }
+            return Optional.empty();
+        })) {
             dodge += hasDodge.getDodge();
         }
-        if (entity instanceof Armored armoredEntity){
-            for (Armor armor : armoredEntity.getArmor()) {
-                dodge += armor.getDodge();
-                if (armor.getEnchantment() instanceof HasDodge hasDodgeEnchantment){
-                    dodge += hasDodgeEnchantment.getDodge();
-                }
-            }
-        }
-        for (Status status : entity.getStatuses()) {
-            if (status instanceof HasDodge dodgeStatus){
-                dodge += dodgeStatus.getDodge();
-            }
-        }
         return dodge;
+    }
+
+    private static CheckConditions getDodgeConditions(){
+        return CheckConditions.all()
+            .withInventory(false);
     }
     
     public static int getAccuracy(Entity entity, Weapon activeWeapon){
 
         int accuracy = 0;
-        accuracy += activeWeapon.getAccuracy();
 
-        if (entity instanceof HasAccuracy entityWithAccuracy){
-            accuracy += entityWithAccuracy.getAccuracy();
-        }
-        
-        if (activeWeapon.getEnchantment() instanceof HasAccuracy enchantmentWithAccuracy){
-            accuracy += enchantmentWithAccuracy.getAccuracy();
-        }
-
-        for (Status status : entity.getStatuses()) {
-            if (status instanceof HasAccuracy accuracyStatus){
-                accuracy += accuracyStatus.getAccuracy();
+        for (HasAccuracy hasAccuracy : App.recursiveCheck(entity, getAccuracyConditions(), (obj) -> {
+            if (obj instanceof HasAccuracy ha) {
+                return Optional.of(ha);
             }
+            return Optional.empty();
+        })){
+            accuracy += hasAccuracy.getAccuracy();
+        };
+
+        if (activeWeapon instanceof HasAccuracy ha) {
+            accuracy += ha.getAccuracy();
         }
+
         return accuracy;
+
+    }
+
+    private static CheckConditions getAccuracyConditions(){
+        return CheckConditions.all()
+            .withInventory(false)
+            .withArmedWeapons(false)
+            .withUnarmedWeapon(false);
     }
 
 }
