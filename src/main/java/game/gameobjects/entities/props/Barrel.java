@@ -29,7 +29,7 @@ public class Barrel extends ContainerProp{
 
             @Override
             public int getDropPoints() {
-                return Math.random() >= 0.6 ? App.randomNumber(2,5) : 0;
+                return Math.random() >= 0.6 ? App.randomNumber(2,6) : 0;
             }
             
         }.generateDrops()) {
