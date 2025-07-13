@@ -2,6 +2,7 @@ package game.display;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 
 import org.hexworks.zircon.api.ComponentDecorations;
@@ -20,6 +21,7 @@ import game.gamelogic.Upgradable;
 import game.gamelogic.Upgrader;
 import game.gameobjects.ArmorSlot;
 import game.gameobjects.ItemSlot;
+import game.gameobjects.ItemStack;
 import game.gameobjects.Space;
 import game.gameobjects.WeaponSlot;
 import game.gameobjects.entities.Entity;
@@ -64,14 +66,15 @@ public class ItemSelectMenu extends Menu{
         itemSelectMenu.type = Type.DROP;
         itemSelectMenu.space = space;
         itemSelectMenu.inventories = new HasInventory[]{dropper};
-        Container container = Display.createFittedContainer(itemSelectMenu.screen, "Dropping", dropper.getInventory());
-        Function<Item, UIEventResponse> function = (item) ->{
+        Container container = Display.createFittedContainer(itemSelectMenu.screen, "Dropping", dropper.getStacks());
+        Function<ItemStack, UIEventResponse> function = (stack) ->{
+            Item item = stack.getItem();
             dropper.removeItemFromInventory(item);
             space.addItem(item);
             Display.replaceMenu(itemSelectMenu.refresh());
             return UIEventResponse.processed();
         };
-        Display.populateContainer(container, function, dropper.getInventory());
+        Display.populateContainer(container, function, dropper.getStacks());
         itemSelectMenu.screen.addComponent(container);
         return itemSelectMenu;
     }
@@ -286,13 +289,13 @@ public class ItemSelectMenu extends Menu{
         ItemSelectMenu itemSelectMenu = new ItemSelectMenu();
         itemSelectMenu.entity = playerEntity;
         itemSelectMenu.type = Type.INVENTORY;
-        List<Item> list = playerEntity.getInventory();
-        Container container = Display.createFittedContainer(itemSelectMenu.screen, "Inventory", list);
-        Function <Item, UIEventResponse> function = (item) ->{
-            Display.setMenu(new ItemContextMenu(item, playerEntity));
+        Set<ItemStack> stacks = playerEntity.getStacks();
+        Container container = Display.createFittedContainer(itemSelectMenu.screen, "Inventory", stacks);
+        Function <ItemStack, UIEventResponse> function = (stack) ->{
+            Display.setMenu(new ItemContextMenu(stack.getItem(), playerEntity));
             return UIEventResponse.processed();
         };
-        Display.populateContainer(container, function, list);
+        Display.populateContainer(container, function, stacks);
         itemSelectMenu.screen.addComponent(container);
         return itemSelectMenu;
     }

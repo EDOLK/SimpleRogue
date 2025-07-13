@@ -14,6 +14,7 @@ import game.gamelogic.Armored;
 import game.gamelogic.HasInventory;
 import game.gamelogic.abilities.HasAbilities;
 import game.gameobjects.entities.Entity;
+import game.gameobjects.items.Torch;
 import game.gameobjects.items.armor.Armor;
 import game.gameobjects.items.weapons.Weapon;
 
@@ -22,6 +23,9 @@ public class App
     public static void main(String[] args){
         Dungeon.initialize(50, 50);
         Display.initialize(70, 61);
+        Dungeon.getCurrentFloor().getPlayer().addItemToInventory(new Torch());
+        Dungeon.getCurrentFloor().getPlayer().addItemToInventory(new Torch());
+        Dungeon.getCurrentFloor().getPlayer().addItemToInventory(new Torch());
     }
 
     public static int randomNumber(int min, int max){

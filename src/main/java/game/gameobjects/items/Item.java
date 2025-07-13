@@ -51,5 +51,9 @@ public class Item extends DisplayableTile implements Examinable{
     public void setWeight(int weight) {
         this.weight = weight;
     }
+
+    public boolean canStack(Item otherItem){
+        return this.getName() == otherItem.getName();
+    }
     
 }

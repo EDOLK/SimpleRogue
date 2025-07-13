@@ -118,4 +118,12 @@ public class Weapon extends Item implements HasAccuracy, Levelable, Upgradable{
         return n;
     }
 
+    @Override
+    public boolean canStack(Item otherItem) {
+        if (otherItem instanceof Weapon weapon) {
+            return this.level == weapon.level && this.enchantment == weapon.enchantment;
+        }
+        return super.canStack(otherItem);
+    }
+
 }

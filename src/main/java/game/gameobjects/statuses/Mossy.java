@@ -12,7 +12,7 @@ public class Mossy extends Status implements SeperateOut, HasStatusVulns, Behava
         super();
         setbGColor(TileColor.transparent());
         setfGColor(TileColor.create(40,120,40,255));
-        setCharacter('▒');
+        setCharacter('░');
         setDescriptor("Mossy");
     }
 
