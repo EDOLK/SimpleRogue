@@ -20,7 +20,7 @@ import game.gameobjects.items.weapons.Weapon;
 public class App 
 {
     public static void main(String[] args){
-        Dungeon.initialize(50, 50);
+        Dungeon.initialize(50, "akwoeoqk", 50);
         Display.initialize(70, 61);
     }
 
