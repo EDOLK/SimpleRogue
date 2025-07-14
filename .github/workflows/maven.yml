@@ -20,7 +20,7 @@ permissions:
   
 jobs:
   build:
-
+    name: Build with Maven
     runs-on: ubuntu-latest
 
     steps:
