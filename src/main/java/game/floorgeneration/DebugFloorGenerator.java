@@ -140,7 +140,7 @@ public class DebugFloorGenerator extends FloorGenerator {
         public PathConditions getConditionsToEntity() {
             return new PathConditions().addDeterrentConditions(
                 s -> {
-                    return s instanceof DebugSpace ds ? ds.getD() : 0;
+                    return s instanceof DebugSpace ds ? ds.getD() : 0d;
                 }
                 ).addForbiddenConditions(
                 s -> {
@@ -153,7 +153,7 @@ public class DebugFloorGenerator extends FloorGenerator {
         public PathConditions getConditionsToSpace() {
             return new PathConditions().addDeterrentConditions(
                 s -> {
-                    return s instanceof DebugSpace ds ? ds.getD() : 0;
+                    return s instanceof DebugSpace ds ? ds.getD() : 0d;
                 }
                 ).addForbiddenConditions(
                 s -> {
