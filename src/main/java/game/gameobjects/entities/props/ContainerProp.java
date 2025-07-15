@@ -10,13 +10,17 @@ import game.display.Display;
 import game.display.ItemSelectMenu;
 import game.gamelogic.Attribute;
 import game.gamelogic.HasInventory;
+import game.gamelogic.HasResistances;
 import game.gamelogic.Interactable;
+import game.gamelogic.resistances.PercentageResistance;
+import game.gamelogic.resistances.Resistance;
+import game.gameobjects.DamageType;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.entities.PlayerEntity;
 import game.gameobjects.items.Item;
 
-public abstract class ContainerProp extends Entity implements Interactable, HasInventory{
+public abstract class ContainerProp extends Entity implements Interactable, HasInventory, HasResistances{
 
     private List<Item> inventory = new ArrayList<Item>();
 
@@ -79,4 +83,15 @@ public abstract class ContainerProp extends Entity implements Interactable, HasI
         return "The " + getName() + " breaks.";
     }
 
+    @Override
+    public List<Resistance> getResistances() {
+        List<Resistance> rList = new ArrayList<>();
+        for (DamageType type : DamageType.values()) {
+            if (type != DamageType.SLASHING && type != DamageType.PIERCING && type != DamageType.BLUNT
+                    && type != DamageType.FIRE) {
+                rList.add(new PercentageResistance(type, 1.0));
+            }
+        }
+        return rList;
+    }
 }

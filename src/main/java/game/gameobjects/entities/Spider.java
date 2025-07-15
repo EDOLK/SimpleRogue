@@ -12,6 +12,7 @@ import game.Dungeon;
 import game.Path.PathNotFoundException;
 import game.display.Display;
 import game.floorgeneration.pools.Pool;
+import game.gamelogic.DropsXP;
 import game.gamelogic.Flammable;
 import game.gamelogic.HasDodge;
 import game.gamelogic.HasDrops;
@@ -34,7 +35,7 @@ import game.gameobjects.statuses.Status;
 import game.gameobjects.terrains.ExposedTrap;
 import game.gameobjects.terrains.HiddenTrap;
 
-public class Spider extends Animal implements HasDodge, HasInventory, HasDrops{
+public class Spider extends Animal implements HasDodge, HasInventory, HasDrops, DropsXP{
     
     private List<Item> inventory = new ArrayList<Item>();
     protected Space nestSpace;
@@ -452,6 +453,11 @@ public class Spider extends Animal implements HasDodge, HasInventory, HasDrops{
     @Override
     public int getDropPoints() {
         return App.randomNumber(5,10);
+    }
+
+    @Override
+    public int dropXP() {
+        return 10;
     }
 
     
