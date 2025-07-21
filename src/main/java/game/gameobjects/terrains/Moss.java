@@ -72,6 +72,9 @@ public class Moss extends Terrain implements Flammable, Examinable, SelfAware, B
             if (t instanceof Water w && w.getAmount() > 0) {
                 water = w;
             }
+            if (grass != null && water != null) {
+                break;
+            }
         }
         if (!waterRequired || water != null) {
             if (waterRequired) {

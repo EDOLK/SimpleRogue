@@ -15,15 +15,12 @@ import game.gameobjects.DamageType;
 import game.gameobjects.items.Item;
 import game.gameobjects.items.weapons.Weapon;
 
-public class Rat extends Animal implements DropsXP, HasDodge, HasDrops{
+public class Rat extends Animal implements DropsXP, HasDrops, HasDodge{
     
-    private int dropPoints = randomNumber(3, 10);
-
     public Rat() {
 
         super(TileColor.transparent(), TileColor.create(125, 76, 36, 255), 'r');
-        setBaseMaxHP(10);
-        setHP(10);
+        setBaseMaxHP(10); setHP(10);
         setName("Giant Rat");
         setTileName("Giant Rat");
         setDescription("A giant rat, made feral by the negative influence of the dungeon.");
@@ -42,18 +39,18 @@ public class Rat extends Animal implements DropsXP, HasDodge, HasDrops{
     }
 
     @Override
-    public int getDodge() {
-        return 5;
-    }
-
-    @Override
     public Pool<Supplier<Item>> getItemPool() {
         return Dungeon.getCurrentDropPool();
     }
 
     @Override
     public int getDropPoints() {
-        return dropPoints;
+        return randomNumber(3, 10);
+    }
+
+    @Override
+    public int getDodge() {
+        return 2;
     }
 
 }

@@ -8,6 +8,7 @@ import game.gameobjects.terrains.Terrain;
 import game.gameobjects.terrains.gasses.Gas;
 import game.gameobjects.terrains.gasses.Steam;
 import game.gamelogic.behavior.Behavable;
+import game.gameobjects.entities.Entity;
 import game.gameobjects.statuses.Burning;
 import game.gameobjects.statuses.SeperateIn;
 import game.gameobjects.statuses.SeperateOut;
@@ -82,9 +83,9 @@ public class Water extends Liquid{
                     return true;
                 }
                 case Burning b -> {
-                    int amount = (b.getTurns()/2);
-                    b.subtractTurns(amount);
-                    b.getOwner().getSpace().addTerrain(new Steam(amount));
+                    Entity owner = b.getOwner();
+                    owner.removeStatus(b);
+                    owner.getSpace().addTerrain(new Steam(1));
                     return true;
                 }
                 default -> {
@@ -101,9 +102,9 @@ public class Water extends Liquid{
         @Override
         public boolean onStackOut(Status sameStatus) {
             if (sameStatus instanceof Burning b) {
-                int amount = (b.getTurns()/2);
-                this.timer -= amount;
-                this.getOwner().getSpace().addTerrain(new Steam(amount));
+                Entity owner = this.getOwner();
+                owner.getSpace().addTerrain(new Steam(1));
+                owner.removeStatus(this);
                 return true;
             }
             return false;

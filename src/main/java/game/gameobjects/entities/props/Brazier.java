@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.hexworks.zircon.api.color.TileColor;
+import org.hexworks.zircon.api.data.Tile;
+
 import game.display.Display;
 import game.gamelogic.HasResistances;
 import game.gamelogic.LightSource;
@@ -14,6 +16,7 @@ import game.gamelogic.resistances.Resistance;
 import game.gameobjects.DamageType;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.items.Item;
+import game.gameobjects.statuses.Burning;
 import game.gameobjects.statuses.SeperateOut;
 import game.gameobjects.statuses.Status;
 import game.gameobjects.terrains.Fire;
@@ -39,6 +42,8 @@ public class Brazier extends Entity implements HasResistances {
         this.setHP(1);
         if (lit) {
             this.addStatus(new Lit());
+        } else {
+            this.addStatus(new UnLit());
         }
     }
 
@@ -82,14 +87,47 @@ public class Brazier extends Entity implements HasResistances {
             if (sameStatus instanceof Wet) {
                 Entity owner = this.owner;
                 owner.removeStatus(this);
+                owner.addStatus(new UnLit());
                 Display.log("The " + owner.getName() + " goes out.", owner.getSpace());
             }
-            return false;
+            return true;
         }
 
         @Override
         public boolean validateSamenessOut(Status status) {
-            return status instanceof Wet;
+            return status instanceof Wet || status instanceof Burning;
+        }
+        
+    }
+
+    private static class UnLit extends Status implements SeperateOut{
+
+        public UnLit() {
+            super();
+            this.setCharacter(' ');
+            this.setfGColor(TileColor.transparent());
+            this.setbGColor(TileColor.transparent());
+            this.setDescriptor("");
+        }
+
+        @Override
+        public boolean onStackOut(Status sameStatus) {
+            if (sameStatus instanceof Burning) {
+                Entity owner = this.owner;
+                owner.removeStatus(this);
+                owner.addStatus(new Lit());
+            }
+            return true;
+        }
+
+        @Override
+        public boolean validateSamenessOut(Status status) {
+            return status instanceof Burning;
+        }
+
+        @Override
+        public Tile getTile(double percent) {
+            return Tile.empty();
         }
         
     }

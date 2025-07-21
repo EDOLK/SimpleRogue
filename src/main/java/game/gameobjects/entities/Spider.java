@@ -31,6 +31,7 @@ import game.gameobjects.Space;
 import game.gameobjects.items.Item;
 import game.gameobjects.items.weapons.Weapon;
 import game.gameobjects.statuses.SeperateIn;
+import game.gameobjects.statuses.Sleeping;
 import game.gameobjects.statuses.Status;
 import game.gameobjects.terrains.ExposedTrap;
 import game.gameobjects.terrains.HiddenTrap;
@@ -58,6 +59,9 @@ public class Spider extends Animal implements HasDodge, HasInventory, HasDrops, 
         fangs.setDamageType(DamageType.PIERCING);
         fangs.setDamage(1, 6);
         setUnarmedWeapon(fangs);
+
+        this.removeStatus(this.getStatusByClass(Sleeping.class));
+
     }
 
     private Optional<? extends Behavior> getHuntingBehavior(Entity target){
@@ -88,7 +92,7 @@ public class Spider extends Animal implements HasDodge, HasInventory, HasDrops, 
 
     @Override
     public int getDodge() {
-        return 10;
+        return 7;
     }
 
     protected int getDistanceFromNest(){
@@ -361,16 +365,6 @@ public class Spider extends Animal implements HasDodge, HasInventory, HasDrops, 
         @Override
         public void onBurn() {
             getSpace().remove(this);
-        }
-        
-    }
-    /**
-     * HiddenWeb
-     */
-    public class HiddenWeb extends HiddenTrap{
-
-        public HiddenWeb(Web web) {
-            super(web);
         }
         
     }

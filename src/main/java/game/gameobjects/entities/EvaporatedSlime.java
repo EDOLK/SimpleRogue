@@ -3,6 +3,7 @@ package game.gameobjects.entities;
 import static game.App.randomNumber;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.hexworks.zircon.api.color.TileColor;
 
@@ -21,8 +22,6 @@ import game.gameobjects.statuses.Status;
 
 public class EvaporatedSlime extends Animal implements HasResistances, HasDodge, DropsXP {
     
-    ArrayList<Resistance> resistances = new ArrayList<Resistance>();
-
     public EvaporatedSlime(){
         super(TileColor.transparent(), TileColor.create(20, 230, 20, 255), '▒');
         setBaseMaxHP(10);
@@ -42,9 +41,6 @@ public class EvaporatedSlime extends Animal implements HasResistances, HasDodge,
         flying.setPerminent(true);
         addStatus(flying);
 
-        getResistances().add(new PercentageResistance(DamageType.FIRE, 0.50));
-        getResistances().add(new PercentageResistance(DamageType.SLASHING, 0.50));
-        getResistances().add(new PercentageResistance(DamageType.PIERCING, 0.50));
     }
     
     @Override
@@ -61,8 +57,12 @@ public class EvaporatedSlime extends Animal implements HasResistances, HasDodge,
     }
 
     @Override
-    public ArrayList<Resistance> getResistances() {
-        return resistances;
+    public List<Resistance> getResistances() {
+        return List.of(
+            new PercentageResistance(DamageType.FIRE, 0.50),
+            new PercentageResistance(DamageType.SLASHING, 0.50),
+            new PercentageResistance(DamageType.PIERCING, 0.50)
+        );
     }
 
     @Override
@@ -85,7 +85,7 @@ public class EvaporatedSlime extends Animal implements HasResistances, HasDodge,
 
     @Override
     public int getDodge() {
-        return 7;
+        return 5;
     }
 
 }

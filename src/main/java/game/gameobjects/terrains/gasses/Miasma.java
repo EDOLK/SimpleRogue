@@ -17,16 +17,17 @@ public class Miasma extends Gas implements Flammable{
         setDescription("The stench of rot and decay permiates the air.");
         setCharacter(' ');
         setfGColor(TileColor.transparent());
-        setbGColor(TileColor.create(99, 0, 153, 255));
-        setSpreadFactor(0.9f);
+        setbGColor(TileColor.create(242, 0, 255, 255));
+        setSpreadFactor(0.7f);
     }
 
     @Override
     public int behave() {
-        if (getSpace().isOccupied()){
+        int t = super.behave();
+        if (getSpace() != null && getSpace().isOccupied()){
             getSpace().getOccupant().dealDamage(randomNumber(0, getAmount()), DamageType.SUFFICATION);
         }
-        return super.behave();
+        return t;
     }
 
     @Override
