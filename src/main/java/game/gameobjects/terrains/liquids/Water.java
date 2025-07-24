@@ -101,7 +101,7 @@ public class Water extends Liquid{
 
         @Override
         public boolean onStackOut(Status sameStatus) {
-            if (sameStatus instanceof Burning b) {
+            if (sameStatus instanceof Burning) {
                 Entity owner = this.getOwner();
                 owner.getSpace().addTerrain(new Steam(1));
                 owner.removeStatus(this);

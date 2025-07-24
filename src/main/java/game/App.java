@@ -14,11 +14,7 @@ import game.gamelogic.Armored;
 import game.gamelogic.HasInventory;
 import game.gamelogic.abilities.HasAbilities;
 import game.gameobjects.entities.Entity;
-import game.gameobjects.entities.PlayerEntity;
-import game.gameobjects.entities.props.Brazier;
 import game.gameobjects.items.armor.Armor;
-import game.gameobjects.items.potions.FirePotion;
-import game.gameobjects.items.potions.WaterPotion;
 import game.gameobjects.items.weapons.Weapon;
 
 public class App 
@@ -26,10 +22,6 @@ public class App
     public static void main(String[] args){
         Dungeon.initialize(50, 50);
         Display.initialize(70, 61);
-        PlayerEntity player = Dungeon.getCurrentFloor().getPlayer();
-        player.addItemToInventory(new FirePotion());
-        player.addItemToInventory(new WaterPotion());
-        Dungeon.getCurrentFloor().getSpace(player.getX()+1, player.getY()+1).setOccupant(new Brazier(false));
     }
 
     public static int randomNumber(int min, int max){

@@ -29,6 +29,9 @@ public class RogueSkillTree extends SkillTree {
             .addSkillTreeRequirement(this, 1)
             .addOnApply((e) -> {
                 e.setNightVisionRange(e.getNightVisionRange()+1);
+                if (e instanceof HasSkills hSkills) {
+                    hSkills.incrementSkill(Skill.PERCEPTION);
+                }
             })
         .build());
     }

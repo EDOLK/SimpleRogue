@@ -34,7 +34,6 @@ import game.gameobjects.statuses.SeperateIn;
 import game.gameobjects.statuses.Sleeping;
 import game.gameobjects.statuses.Status;
 import game.gameobjects.terrains.ExposedTrap;
-import game.gameobjects.terrains.HiddenTrap;
 
 public class Spider extends Animal implements HasDodge, HasInventory, HasDrops, DropsXP{
     
@@ -68,7 +67,7 @@ public class Spider extends Animal implements HasDodge, HasInventory, HasDrops, 
         if (Spider.this.getDistanceFromNest(target.getSpace()) <= Spider.this.maxDistance) {
             try {
                 SpiderHunting h = new SpiderHunting(target);
-                //TODO: Bandaid fix. Fix properly later.
+                // TODO: Bandaid fix. Fix properly later.
                 if (!h.isValid()) {
                     return Optional.empty();
                 }
@@ -421,7 +420,7 @@ public class Spider extends Animal implements HasDodge, HasInventory, HasDrops, 
 
         @Override
         public boolean isActive() {
-            return true;
+            return this.getOwner() != null;
         }
 
         @Override

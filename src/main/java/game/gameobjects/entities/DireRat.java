@@ -58,7 +58,7 @@ public class DireRat extends Rat implements HasResistances, HasAccuracy, OnHit{
     @Override
     public void doOnHit(Entity self, Entity other, AttackInfo attackInfo) {
         if (randomNumber(1, 4) == 4) {
-            other.addStatus(new Bleeding(5, 0, 1));
+            other.addStatus(new Bleeding(randomNumber(1, 5), 0, 1));
         }
     }
     

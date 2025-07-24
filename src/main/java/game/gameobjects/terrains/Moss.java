@@ -36,7 +36,9 @@ public class Moss extends Terrain implements Flammable, Examinable, SelfAware, B
 
     @Override
     public void onBurn() {
-        getSpace().addTerrain(new Ashes());
+        if (Math.random() < 0.50) {
+            getSpace().addTerrain(new Ashes());
+        }
         getSpace().remove(this);
     }
 
@@ -53,7 +55,6 @@ public class Moss extends Terrain implements Flammable, Examinable, SelfAware, B
     @Override
     public int behave() {
         trySpread(getSpace(), true, true);
-        // Space.getAdjacentSpaces(getSpace()).forEach((s) -> Moss.trySpread(s,true,true));
         return 1000;
     }
 

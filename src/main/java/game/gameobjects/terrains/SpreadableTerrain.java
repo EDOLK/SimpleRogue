@@ -184,15 +184,16 @@ public abstract class SpreadableTerrain extends Terrain implements SelfAware, Be
     public Tile getTile(double percent, int amount){
         int quotient = MAX_AMOUNT/3;
         int alpha = (int)App.lerp(0,140,SpreadableTerrain.MAX_AMOUNT,255,amount);
+        int value = (int)App.lerp(0, 0, SpreadableTerrain.MAX_AMOUNT, 1, amount);
         switch (Display.getMode()) {
             case ASCII:
                 return Tile.newBuilder()
                     .withBackgroundColor(getbGColor().darkenByPercent(percent).withAlpha(alpha))
-                    .withForegroundColor(getfGColor().darkenByPercent(percent).withAlpha(0))
+                    .withForegroundColor(getfGColor().darkenByPercent(percent).lightenByPercent(value).withAlpha(255))
                     .withCharacter(
-                        amount <= quotient ? '▓' :
+                        amount <= quotient ? '░' :
                         amount <= (quotient*2) ? '▒' :
-                        '░'
+                        '▓'
                     )
                     .withModifiers(getModifiers())
                     .withTileset(Display.getGraphicalTileSet())
