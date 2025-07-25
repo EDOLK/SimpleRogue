@@ -52,7 +52,7 @@ public class RatKing extends Animal implements HasInventory, DropsXP{
 
     @Override
     public int behave(){
-        if (randomNumber(0,2) == 2 && (ratCount < RAT_MAX && this.isWithinVision(Dungeon.getCurrentFloor().getPlayer()) || ratCount < RAT_PREP)) {
+        if (randomNumber(0,2) == 2 && ((ratCount < RAT_MAX && this.isWithinVision(Dungeon.getCurrentFloor().getPlayer())) || ratCount < RAT_PREP)) {
             Space space = getRandomSpace();
             if (space != null) {
                 space.setOccupant(RatKing.this.new SummonedRat());
@@ -97,12 +97,6 @@ public class RatKing extends Animal implements HasInventory, DropsXP{
     }
 
     public class SummonedRat extends Rat implements Levelable, HasResistances, OnDeath {
-
-        private List<Resistance> resistances = new ArrayList<>(List.of(
-            new RangeResistance(DamageType.BLUNT, this, 0,1),
-            new RangeResistance(DamageType.PIERCING, this, 0,1),
-            new RangeResistance(DamageType.SLASHING, this, 0,1)
-        ));
 
         public SummonedRat() {
             super();
@@ -161,7 +155,11 @@ public class RatKing extends Animal implements HasInventory, DropsXP{
 
         @Override
         public List<Resistance> getResistances() {
-            return resistances;
+            return List.of(
+                new RangeResistance(DamageType.BLUNT, this, 0,1),
+                new RangeResistance(DamageType.PIERCING, this, 0,1),
+                new RangeResistance(DamageType.SLASHING, this, 0,1)
+            );
         }
 
         @Override

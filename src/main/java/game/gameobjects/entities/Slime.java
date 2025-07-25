@@ -4,6 +4,7 @@ import static game.App.getRandom;
 import static game.App.randomNumber;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
 
 import org.hexworks.zircon.api.color.TileColor;
@@ -29,9 +30,7 @@ import game.gameobjects.items.weapons.Weapon;
 
 public class Slime extends Animal implements DropsXP, HasDodge, HasResistances, HasInventory, HasDrops, OnDeath{
 
-    private ArrayList<Resistance> resistances = new ArrayList<Resistance>();
     private ArrayList<Item> inventory = new ArrayList<Item>();
-    private int dropPoints = randomNumber(3, 15);
     
     public Slime(){
 
@@ -49,9 +48,6 @@ public class Slime extends Animal implements DropsXP, HasDodge, HasResistances, 
         mass.setDamage(1, 3);
         setUnarmedWeapon(mass);
         
-        resistances.add(new RangeResistance(DamageType.BLUNT, 0, 3));
-        resistances.add(new PercentageResistance(DamageType.POISON, 0.20));
-
     }
 
     @Override
@@ -89,8 +85,11 @@ public class Slime extends Animal implements DropsXP, HasDodge, HasResistances, 
     }
 
     @Override
-    public ArrayList<Resistance> getResistances() {
-        return resistances;
+    public List<Resistance> getResistances() {
+        return List.of(
+            new RangeResistance(DamageType.BLUNT, 0, 3),
+            new PercentageResistance(DamageType.POISON, 0.20)
+        );
     }
 
     @Override
@@ -104,7 +103,7 @@ public class Slime extends Animal implements DropsXP, HasDodge, HasResistances, 
     }
 
     @Override
-    public ArrayList<Item> getInventory() {
+    public List<Item> getInventory() {
         return inventory;
     }
 
@@ -141,7 +140,7 @@ public class Slime extends Animal implements DropsXP, HasDodge, HasResistances, 
 
     @Override
     public int getDropPoints() {
-        return dropPoints;
+        return randomNumber(3, 15);
     }
 
 }

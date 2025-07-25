@@ -81,7 +81,7 @@ public class Corpse extends Item implements Behavable, Consumable, SelfAware, Fl
         TileColor newColor = interpolator.getColorAtRatio(pos);
         setfGColor(newColor);
         if (randomNumber(1, 100) <= 10 && decay >= decayLimit/3){
-            currentSpace.addTerrain(new Miasma(randomNumber(1, 10)));
+            currentSpace.addTerrain(new Miasma(randomNumber(1, 5)));
         }
         decay++;
         return 100;

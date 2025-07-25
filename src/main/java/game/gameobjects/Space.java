@@ -249,9 +249,13 @@ public class Space extends DisplayableTile{
     }
     
     public static List<Space> getAdjacentSpaces(Space space){
+        return getSpacesWithin(space, 1);
+    }
+
+    public static List<Space> getSpacesWithin(Space space, int offset){
         List<Space> list = new ArrayList<>();
-        for (int x = -1; x <= 1; x++) {
-            for (int y = -1; y <= 1 ; y++) {
+        for (int x = -offset; x <= offset; x++) {
+            for (int y = -offset; y <= offset ; y++) {
                 if (x == 0 && y == 0) {
                     continue;
                 }

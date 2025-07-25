@@ -20,8 +20,6 @@ import game.gameobjects.statuses.Poisoned;
 
 public class Snake extends Animal implements DropsXP, HasDodge, OnHit, HasDrops{
     
-    private int dropPoints = randomNumber(3, 7);
-
     public Snake() {
         super(TileColor.transparent(), TileColor.create(38, 125, 34, 255), 's');
         setBaseMaxHP(5);
@@ -45,7 +43,7 @@ public class Snake extends Animal implements DropsXP, HasDodge, OnHit, HasDrops{
 
     @Override
     public int getDodge() {
-        return 7;
+        return 5;
     }
 
     @Override
@@ -55,7 +53,7 @@ public class Snake extends Animal implements DropsXP, HasDodge, OnHit, HasDrops{
 
     @Override
     public int getDropPoints() {
-        return dropPoints;
+        return randomNumber(3, 7);
     }
 
     @Override

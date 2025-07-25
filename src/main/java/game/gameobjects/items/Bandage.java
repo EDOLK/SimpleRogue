@@ -5,11 +5,17 @@ import org.hexworks.zircon.api.color.TileColor;
 import game.App;
 import game.display.Display;
 import game.gamelogic.Consumable;
+import game.gamelogic.Flammable;
+import game.gamelogic.SelfAware;
+import game.gameobjects.Space;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.entities.PlayerEntity;
 import game.gameobjects.statuses.Bleeding;
 
-public class Bandage extends Item implements Consumable {
+public class Bandage extends Item implements Consumable, Flammable, SelfAware {
+
+    private Space space;
+
     public Bandage() {
         super();
         setName("Bandage");
@@ -30,6 +36,22 @@ public class Bandage extends Item implements Consumable {
             }
         }
         return true;
+    }
+    @Override
+    public int getFuelValue() {
+        return 1;
+    }
+    @Override
+    public void onBurn() {
+
+    }
+    @Override
+    public Space getSpace() {
+        return this.space;
+    }
+    @Override
+    public void setSpace(Space space) {
+        this.space = space;
     }
     
 }

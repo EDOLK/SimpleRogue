@@ -21,10 +21,8 @@ public interface HasInventory {
             if (getInventoryWeight() + item.getWeight() <= getHardWeightLimit()){
                 return getInventory().add(item);
             }
-            return false;
-        } else {
-            return false;
         }
+        return false;
     }
 
     default boolean removeItemFromInventory(Item item){

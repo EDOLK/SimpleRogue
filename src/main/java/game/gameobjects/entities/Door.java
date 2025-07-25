@@ -1,21 +1,23 @@
 package game.gameobjects.entities;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.hexworks.zircon.api.color.TileColor;
 
+import game.gamelogic.Flammable;
 import game.gamelogic.HasResistances;
 import game.gamelogic.Interactable;
+import game.gamelogic.SelfAware;
 import game.gamelogic.resistances.PercentageResistance;
 import game.gamelogic.resistances.Resistance;
 import game.gameobjects.DamageType;
+import game.gameobjects.Space;
 import game.gameobjects.items.Item;
+import game.gameobjects.statuses.Burning;
+import game.gameobjects.statuses.Status;
 import game.gameobjects.terrains.OpenDoor;
 
 public class Door extends Entity implements Interactable, HasResistances{
-    
-    private ArrayList<Resistance> resistances = new ArrayList<Resistance>();
     
     public Door(Character c){
         super(TileColor.transparent(), TileColor.create(181, 88, 45, 255), c);
@@ -29,21 +31,44 @@ public class Door extends Entity implements Interactable, HasResistances{
         setGasBlocker(true);
         setLiquidBlocker(true);
         setLightBlocker(true);
-
-        resistances.add(new PercentageResistance(DamageType.BLEED, 1.0));
-        resistances.add(new PercentageResistance(DamageType.FROST, 1.0));
-        resistances.add(new PercentageResistance(DamageType.POISON, 1.0));
-        resistances.add(new PercentageResistance(DamageType.SUFFICATION, 1.0));
-        
     }
 
     @Override
     public Item getCorpse() {
-        Item i = new Item(this.getbGColor().darkenByPercent(.50), this.getfGColor().darkenByPercent(.50), '░');
-        i.setName("Broken Door");
-        i.setDescription("A broken door.");
-        i.setWeight(getBaseWeight());
-        return i;
+        return new BrokenDoor();
+    }
+
+    private static class BrokenDoor extends Item implements Flammable, SelfAware {
+
+        private Space space;
+
+        public BrokenDoor() {
+            super(TileColor.transparent(), TileColor.create(181, 88, 45, 255), '}');
+            setName("Broken Door");
+            setDescription("A broken door.");
+            setWeight(10);
+        }
+
+        @Override
+        public int getFuelValue() {
+            return 3;
+        }
+
+        @Override
+        public void onBurn() {
+            this.space.removeItem(this);
+        }
+
+        @Override
+        public Space getSpace() {
+            return this.space;
+        }
+
+        @Override
+        public void setSpace(Space space) {
+            this.space = space;
+        }
+
     }
 
     @Override
@@ -60,7 +85,12 @@ public class Door extends Entity implements Interactable, HasResistances{
 
     @Override
     public List<Resistance> getResistances() {
-        return resistances;
+        return List.of(
+            new PercentageResistance(DamageType.FROST, 1.0),
+            new PercentageResistance(DamageType.POISON, 1.0),
+            new PercentageResistance(DamageType.BLEED, 1.0),
+            new PercentageResistance(DamageType.SUFFICATION, 1.0)
+        );
     }
 
     @Override
@@ -68,7 +98,9 @@ public class Door extends Entity implements Interactable, HasResistances{
         return "The " + getName() + " breaks.";
     }
 
-
-
+    @Override
+    protected boolean isVulnerable(Status status) {
+        return status instanceof Burning;
+    }
     
 }
