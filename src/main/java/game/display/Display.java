@@ -195,7 +195,7 @@ public class Display {
         populateMenu(menu, function, label, list);
     }
 
-    public static <L extends HasName> void populateMenu(Menu menu, Function<L,UIEventResponse> function, String label, List<L> list){
+    public static <L extends HasName> void populateMenu(Menu menu, Function<L,UIEventResponse> function, String label, Collection<L> list){
         Container container = createFittedContainer(menu.screen,label,list);
         populateContainer(container, function, list);
         menu.screen.addComponent(container);

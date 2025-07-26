@@ -130,13 +130,5 @@ public class Corpse extends Item implements Behavable, Consumable, SelfAware, Fl
     public boolean isActive() {
         return getSpace() != null;
     }
-
-    @Override
-    public boolean canStack(Item otherItem) {
-        if (otherItem instanceof Corpse corpse) {
-            return this.decay == corpse.decay && this.originalEntityName == corpse.originalEntityName;
-        }
-        return super.canStack(otherItem);
-    }
     
 }

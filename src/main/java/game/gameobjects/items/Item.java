@@ -53,7 +53,7 @@ public class Item extends DisplayableTile implements Examinable{
     }
 
     public boolean canStack(Item otherItem){
-        return this.getName() == otherItem.getName();
+        return this.getName().equals(otherItem.getName());
     }
     
 }
