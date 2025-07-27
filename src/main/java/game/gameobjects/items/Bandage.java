@@ -43,7 +43,7 @@ public class Bandage extends Item implements Consumable, Flammable, SelfAware {
     }
     @Override
     public void onBurn() {
-
+        this.getSpace().removeItem(this);
     }
     @Override
     public Space getSpace() {

@@ -3,6 +3,7 @@ package game.display;
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
@@ -194,7 +195,7 @@ public class Display {
         populateMenu(menu, function, label, list);
     }
 
-    public static <L extends HasName> void populateMenu(Menu menu, Function<L,UIEventResponse> function, String label, List<L> list){
+    public static <L extends HasName> void populateMenu(Menu menu, Function<L,UIEventResponse> function, String label, Collection<L> list){
         Container container = createFittedContainer(menu.screen,label,list);
         populateContainer(container, function, list);
         menu.screen.addComponent(container);
@@ -209,7 +210,7 @@ public class Display {
         return createFittedContainer(screen, label, list);
     }
 
-    public static <L extends HasName> Container createFittedContainer(Screen screen, String label, List<L> list){
+    public static <L extends HasName> Container createFittedContainer(Screen screen, String label, Collection<L> list){
         int height = screen.getHeight()/3;
         if (list.size() + 2 > height){
             height = list.size()+2;
@@ -246,7 +247,7 @@ public class Display {
         return populateContainer(container, function, list);
     }
     
-    public static <L extends HasName> List<Pair<Button,L>> populateContainer(Container container,  Function<L,UIEventResponse> function, List<L> list){
+    public static <L extends HasName> List<Pair<Button,L>> populateContainer(Container container,  Function<L,UIEventResponse> function, Collection<L> list){
         List<Pair<Button,L>> buttons = new ArrayList<>();
         int i = 0;
         for (L l : list) {

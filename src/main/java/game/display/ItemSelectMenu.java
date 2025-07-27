@@ -1,15 +1,10 @@
 package game.display;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import org.hexworks.zircon.api.ComponentDecorations;
-import org.hexworks.zircon.api.builder.component.VBoxBuilder;
-import org.hexworks.zircon.api.component.Container;
-import org.hexworks.zircon.api.component.VBox;
-import org.hexworks.zircon.api.data.Position;
-import org.hexworks.zircon.api.graphics.BoxType;
 import org.hexworks.zircon.api.uievent.UIEventResponse;
 
 import game.gamelogic.Aimable;
@@ -20,6 +15,7 @@ import game.gamelogic.Upgradable;
 import game.gamelogic.Upgrader;
 import game.gameobjects.ArmorSlot;
 import game.gameobjects.ItemSlot;
+import game.gameobjects.ItemStack;
 import game.gameobjects.Space;
 import game.gameobjects.WeaponSlot;
 import game.gameobjects.entities.Entity;
@@ -30,336 +26,297 @@ import game.gameobjects.items.weapons.Weapon;
 
 public class ItemSelectMenu extends Menu{
 
-    private Type type;
-    private HasInventory[] inventories;
-    private Entity entity;
-    private Space space;
-    private ArmorSlot armorSlot;
-    private WeaponSlot weaponSlot;
-    private ItemSlot itemSlot;
-    private Upgrader upgrader;
-
-
-    private VBox createVbox(){
-        return VBoxBuilder.newBuilder()
-            .withPosition(Position.create(screen.getWidth()/2 - (screen.getWidth()/3/2), screen.getHeight()/2 - (screen.getHeight()/3/2)))
-            .withSize(screen.getWidth()/3, screen.getHeight()/3)
-            .withDecorations(ComponentDecorations.box(BoxType.SINGLE, "Select"))
-            .build();
-    }
-    
-    public ItemSelectMenu(Boolean withVbox){
-        super();
-        if (withVbox) {
-            this.screen.addComponent(createVbox());
-        }
-    }
-    
     public ItemSelectMenu(){
-        this(false);
+        super();
     }
 
     public static ItemSelectMenu createDropMenu(Space space, HasInventory dropper){
-        ItemSelectMenu itemSelectMenu = new ItemSelectMenu(false);
-        itemSelectMenu.type = Type.DROP;
-        itemSelectMenu.space = space;
-        itemSelectMenu.inventories = new HasInventory[]{dropper};
-        Container container = Display.createFittedContainer(itemSelectMenu.screen, "Dropping", dropper.getInventory());
-        Function<Item, UIEventResponse> function = (item) ->{
+        ItemSelectMenu m = new ItemSelectMenu(){
+            @Override
+            public Menu refresh() {
+                return createDropMenu(space, dropper);
+            }
+        };
+        Display.populateMenu(m, (stack) -> {
+            Item item = stack.getItem();
             dropper.removeItemFromInventory(item);
             space.addItem(item);
-            Display.replaceMenu(itemSelectMenu.refresh());
+            Display.replaceMenu(m.refresh());
             return UIEventResponse.processed();
-        };
-        Display.populateContainer(container, function, dropper.getInventory());
-        itemSelectMenu.screen.addComponent(container);
-        return itemSelectMenu;
+        }, "Dropping", dropper.getStacks());
+        return m;
     }
-    
-    public static ItemSelectMenu createPickupMenu(Space space, HasInventory pickUpper){
-        ItemSelectMenu itemSelectMenu = new ItemSelectMenu(false);
-        itemSelectMenu.type = Type.PICKUP;
-        itemSelectMenu.space = space;
-        itemSelectMenu.inventories = new HasInventory[]{pickUpper};
 
-        Function<Item, UIEventResponse> function = (item) ->{
+    public static ItemSelectMenu createPickupMenu(Space space, HasInventory pickUpper){
+        ItemSelectMenu m = new ItemSelectMenu(){
+            @Override
+            public Menu refresh() {
+                return createPickupMenu(space, pickUpper);
+            }
+        };
+        Display.populateMenu(m, (stack) -> {
+            Item item = stack.getItem();
             if (pickUpper.addItemToInventory(item)){
                 space.remove(item);
                 Display.log("Picked up the " + item.getName() + ".");
             } else {
                 Display.log("The " + item.getName() + " is too heavy.");
             }
-
-            Display.replaceMenu(itemSelectMenu.refresh());
-
+            Display.replaceMenu(m.refresh());
             return UIEventResponse.processed();
-        };
-        Display.populateMenu(itemSelectMenu, function, "Pickup", space.getItems());
-        return itemSelectMenu;
+        }, "Pickup", ItemStack.toItemStackSet(space.getItems()));
+        return m;
     }
-    
+
     public static ItemSelectMenu createInventoryTransferMenu(HasInventory fromInventory, HasInventory toInventory){
-        ItemSelectMenu menu = new ItemSelectMenu();
-        menu.type = Type.INVENTORY_TRANSFER;
-        menu.inventories = new HasInventory[]{fromInventory,toInventory};
-        Function<Item, UIEventResponse> function = (item) ->{
-            if (toInventory.addItemToInventory(item)){
-                fromInventory.removeItemFromInventory(item);
-                Display.log("Took the " + item.getName() + ".");
-            } else {
-                Display.log("The " + item.getName() + " is too heavy.");
-            }
-            Display.replaceMenu(menu.refresh());
-            return UIEventResponse.processed();
-        };
-        String name = "Pickup";
-        if (fromInventory instanceof Examinable examinable){
-            name = examinable.getName();
-        }
-        Display.populateMenu(menu, function, name, fromInventory.getInventory());
-        return menu;
-    }
-    
-    public static ItemSelectMenu createConsumableSelectMenu(Entity consumer){
-        ItemSelectMenu itemSelectMenu = new ItemSelectMenu(false);
-        itemSelectMenu.type = Type.CONSUMABLE;
-        itemSelectMenu.entity = consumer;
-
-        ArrayList<Item> items = new ArrayList<Item>();
-        if (consumer instanceof HasInventory hasInventory){
-            for (Item item : hasInventory.getInventory()) {
-                if (item instanceof Consumable){
-                    items.add(item);
-                }
-            }
-        }
-        
-        Function<Item,UIEventResponse> function = (i) -> {
-            if (i instanceof Consumable c){
-                if (c.consume(consumer) && consumer instanceof HasInventory hasInventory){
-                    hasInventory.removeItemFromInventory(i);
-                }
-            }
-            Display.revertMenu();
-            return UIEventResponse.processed();
-        };
-        Display.populateMenu(itemSelectMenu, function, "Consume", items);
-
-        return itemSelectMenu;
-    }
-    
-    public static ItemSelectMenu createWeaponSelectMenu(WeaponSlot weaponSlot, Entity entity){
-        ItemSelectMenu itemSelectMenu = new ItemSelectMenu(false);
-        itemSelectMenu.weaponSlot = weaponSlot;
-        itemSelectMenu.entity = entity;
-        ArrayList<Weapon> weapons = new ArrayList<Weapon>();
-        if (entity instanceof HasInventory hasInventory){
-            for (Item item : hasInventory.getInventory()) {
-                if (item instanceof Weapon weapon1){
-                    weapons.add(weapon1);
-                }
-            }
-        }
-
-        Container container = Display.createFittedContainer(itemSelectMenu.screen, "Select", weapons);
-        
-        Item nothing = new Item();
-        nothing.setName("Nothing");
-        
-        Function<Item, UIEventResponse> nothingFunction = nonItem ->{
-            if (entity instanceof HasInventory hasInventory){
-                hasInventory.addItemToInventory(weaponSlot.setEquippedWeapon(null));
-            } else {
-                weaponSlot.setEquippedWeapon(null);
-            }
-            Display.revertMenu();
-            return UIEventResponse.processed();
-        };
-
-        Display.populateContainer(container, nothingFunction, nothing);
-        
-        Function<Weapon, UIEventResponse> function = newWeapon -> {
-            if (entity instanceof HasInventory hasInventory){
-                hasInventory.removeItemFromInventory(newWeapon);
-                hasInventory.addItemToInventory(weaponSlot.setEquippedWeapon(newWeapon));
-            } else {
-                weaponSlot.setEquippedWeapon(newWeapon);
-            }
-            Display.revertMenu();
-            return UIEventResponse.processed();
-        };
-        
-        Display.populateContainer(container, function, weapons);
-        itemSelectMenu.screen.addComponent(container);
-
-        return itemSelectMenu;
-    }
-    
-    public static ItemSelectMenu createArmorSelectMenu(ArmorSlot armorSlot, Entity entity){
-        ItemSelectMenu itemSelectMenu = new ItemSelectMenu(false);
-        itemSelectMenu.armorSlot = armorSlot;
-        itemSelectMenu.entity = entity;
-        
-        ArrayList<Armor> armors = new ArrayList<Armor>();
-        if (entity instanceof HasInventory hasInventory){
-            for (Item item : hasInventory.getInventory()) {
-                if (item instanceof Armor armor){
-                    if (armor.getArmorType() == armorSlot.getType()){
-                        armors.add(armor);
-                    }
-                }
-            }
-        }
-
-        Container container = Display.createFittedContainer(itemSelectMenu.screen, "Select", armors);
-        
-        Item nothing = new Item();
-        nothing.setName("Nothing");
-        
-        Function<Item, UIEventResponse> nothingFunction = nonItem ->{
-            try {
-                if (entity instanceof HasInventory hasInventory){
-                    hasInventory.addItemToInventory(armorSlot.setEquippedArmor(null));
-                } else {
-                    armorSlot.setEquippedArmor(null);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            Display.revertMenu();
-            return UIEventResponse.processed();
-        };
-
-        Display.populateContainer(container, nothingFunction, nothing);
-
-        Function<Armor, UIEventResponse> armorFunction = new Function<Armor,UIEventResponse>() {
+        ItemSelectMenu m = new ItemSelectMenu(){
             @Override
-            public UIEventResponse apply(Armor armor){
-                try {
-                    if (entity instanceof HasInventory hasInventory){
-                        hasInventory.removeItemFromInventory(armor);
-                        hasInventory.addItemToInventory(armorSlot.setEquippedArmor(armor));
-                    } else {
-                        armorSlot.setEquippedArmor(armor);
+            public Menu refresh() {
+                return ItemSelectMenu.createInventoryTransferMenu(fromInventory, toInventory);
+            }
+        };
+        Display.populateMenu(
+            m,
+            (stack) -> {
+                Item item = stack.getItem();
+                if (toInventory.addItemToInventory(item)){
+                    fromInventory.removeItemFromInventory(item);
+                    Display.log("Took the " + item.getName() + ".");
+                } else {
+                    Display.log("The " + item.getName() + " is too heavy.");
+                }
+                Display.replaceMenu(m.refresh());
+                return UIEventResponse.processed();
+            },
+            fromInventory instanceof Examinable examinable ? examinable.getName() : "Pickup",
+            ItemStack.toItemStackSet(fromInventory.getInventory())
+        );
+        return m;
+    }
+
+    public static ItemSelectMenu createConsumableSelectMenu(Entity consumer){
+        ItemSelectMenu m = new ItemSelectMenu(){
+            @Override
+            public Menu refresh() {
+                return createConsumableSelectMenu(consumer);
+            }
+        };
+        Display.populateMenu(
+            m, 
+            (stack) -> {
+                Item i = stack.getItem();
+                if (i instanceof Consumable c){
+                    if (c.consume(consumer) && consumer instanceof HasInventory hasInventory){
+                        hasInventory.removeItemFromInventory(i);
                     }
-                } catch (Exception e) {
-                    Display.log(e.getMessage());
                 }
                 Display.revertMenu();
                 return UIEventResponse.processed();
+            },
+            "Consume",
+            consumer instanceof HasInventory hasInventory ?
+                ItemStack.toItemStackSet(
+                    hasInventory.getInventory().stream()
+                        .filter(i -> i instanceof Consumable)
+                        .collect(Collectors.toList())
+                )
+            : new HashSet<ItemStack>()
+        );
+        return m;
+    }
+
+    private static class Nothing extends Item{
+
+        @Override
+        public String getName() {
+            return "Nothing";
+        }
+
+    }
+
+    public static ItemSelectMenu createWeaponSelectMenu(WeaponSlot weaponSlot, Entity entity){
+        ItemSelectMenu itemSelectMenu = new ItemSelectMenu(){
+            @Override
+            public Menu refresh() {
+                return createWeaponSelectMenu(weaponSlot, entity);
             }
         };
-
-        Display.populateContainer(container, armorFunction, armors);
-
-        itemSelectMenu.screen.addComponent(container);
-
+        Display.populateMenu(
+            itemSelectMenu,
+            (stack) -> {
+                Item item = stack.getItem();
+                if (item instanceof Weapon newWeapon) {
+                    if (entity instanceof HasInventory hasInventory){
+                        hasInventory.removeItemFromInventory(newWeapon);
+                        hasInventory.addItemToInventory(weaponSlot.setEquippedWeapon(newWeapon));
+                    } else {
+                        weaponSlot.setEquippedWeapon(newWeapon);
+                    }
+                    Display.revertMenu();
+                    return UIEventResponse.processed();
+                } else if (item instanceof Nothing){
+                    if (entity instanceof HasInventory hasInventory){
+                        hasInventory.addItemToInventory(weaponSlot.setEquippedWeapon(null));
+                    } else {
+                        weaponSlot.setEquippedWeapon(null);
+                    }
+                    Display.revertMenu();
+                    return UIEventResponse.processed();
+                }
+                return UIEventResponse.pass();
+            },
+            "Select Weapon",
+            ItemStack.toItemStackSet(
+                Stream.concat(
+                    List.of(new Nothing()).stream().map(n->(Item)n),
+                    entity instanceof HasInventory hi ? hi.getInventory().stream().filter(i->i instanceof Weapon) : List.of().stream().map(i->(Item)i)
+                ).collect(Collectors.toList())
+            )
+        );
         return itemSelectMenu;
     }
 
-    public static ItemSelectMenu createThrowMenu(HasInventory hasInventory){
-        ItemSelectMenu itemSelectMenu = new ItemSelectMenu();
-        itemSelectMenu.type = Type.THROW;
-        itemSelectMenu.inventories = new HasInventory[]{hasInventory};
-        List<Item> aimables = new ArrayList<Item>();
-        for (Item item : hasInventory.getInventory()) {
-            if (item instanceof Aimable){
-                aimables.add(item);
+    public static ItemSelectMenu createArmorSelectMenu(ArmorSlot armorSlot, Entity entity){
+        ItemSelectMenu menu = new ItemSelectMenu(){
+            @Override
+            public Menu refresh() {
+                return createArmorSelectMenu(armorSlot, entity);
             }
-        }
-
-        Container container = Display.createFittedContainer(itemSelectMenu.screen, "Throw", aimables);
-
-        Function<Item, UIEventResponse> function = (item) ->{
-            Display.getRootMenu().startSelecting(Display.getRootMenu().new AimSelector((Aimable)item));
-            return UIEventResponse.processed();
         };
-        
-        Display.populateContainer(container, function, aimables);
-
-        itemSelectMenu.screen.addComponent(container);
-
-        return itemSelectMenu;
+        Display.populateMenu(
+            menu, 
+            (stack) -> {
+                Item item = stack.getItem();
+                if (item instanceof Armor armor) {
+                    try {
+                        if (entity instanceof HasInventory hasInventory){
+                            hasInventory.removeItemFromInventory(armor);
+                            hasInventory.addItemToInventory(armorSlot.setEquippedArmor(armor));
+                        } else {
+                            armorSlot.setEquippedArmor(armor);
+                        }
+                    } catch (Exception e) {
+                        Display.log(e.getMessage());
+                    }
+                    Display.revertMenu();
+                    return UIEventResponse.processed();
+                } else if (item instanceof Nothing){
+                    try {
+                        if (entity instanceof HasInventory hasInventory){
+                            hasInventory.addItemToInventory(armorSlot.setEquippedArmor(null));
+                        } else {
+                            armorSlot.setEquippedArmor(null);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    Display.revertMenu();
+                    return UIEventResponse.processed();
+                }
+                return UIEventResponse.pass();
+            }, 
+            "Select Armor",
+            ItemStack.toItemStackSet(
+                Stream.concat(
+                    List.of(new Nothing()).stream().map(n->(Item)n),
+                    entity instanceof HasInventory hi ? hi.getInventory().stream().filter(i->i instanceof Armor armor && armor.getArmorType() == armorSlot.getType()) : List.of().stream().map(i->(Item)i)
+                ).collect(Collectors.toList())
+            )
+        );
+        return menu;
+    }
+    
+    public static ItemSelectMenu createThrowMenu(HasInventory hasInventory){
+        ItemSelectMenu menu = new ItemSelectMenu(){
+            @Override
+            public Menu refresh() {
+                return createThrowMenu(hasInventory);
+            }
+        };
+        Display.populateMenu(
+            menu,
+            (stack) -> {
+                Item item = stack.getItem();
+                if (item instanceof Aimable aimable) {
+                    Display.getRootMenu().startSelecting(Display.getRootMenu().new AimSelector(aimable));
+                    return UIEventResponse.processed();
+                }
+                return UIEventResponse.pass();
+            },
+            "Throw",
+            ItemStack.toItemStackSet(hasInventory.getInventory().stream().filter(i -> i instanceof Aimable).collect(Collectors.toList()))
+        );
+        return menu;
     }
     
     public static ItemSelectMenu createInventoryMenu(PlayerEntity playerEntity){
-        ItemSelectMenu itemSelectMenu = new ItemSelectMenu();
-        itemSelectMenu.entity = playerEntity;
-        itemSelectMenu.type = Type.INVENTORY;
-        List<Item> list = playerEntity.getInventory();
-        Container container = Display.createFittedContainer(itemSelectMenu.screen, "Inventory", list);
-        Function <Item, UIEventResponse> function = (item) ->{
-            Display.setMenu(new ItemContextMenu(item, playerEntity));
-            return UIEventResponse.processed();
-        };
-        Display.populateContainer(container, function, list);
-        itemSelectMenu.screen.addComponent(container);
-        return itemSelectMenu;
-    }
-    
-    public static ItemSelectMenu createUpgradeMenu(Upgrader upgrader, HasInventory hasInventory){
-        ItemSelectMenu itemSelectMenu = new ItemSelectMenu();
-        itemSelectMenu.upgrader = upgrader;
-        itemSelectMenu.inventories = new HasInventory[]{hasInventory};
-        itemSelectMenu.type = Type.UPGRADE;
-        List<Item> list = new ArrayList<Item>();
-        for (Item item : hasInventory.getInventory()) {
-            if (item instanceof Upgradable upgradable && upgradable.canUpgrade(upgrader)){
-                list.add(item);
-            }
-        }
-        Container container = Display.createFittedContainer(itemSelectMenu.screen, "Upgrade", list);
-        Function <Item, UIEventResponse> function = (item) ->{
-            if (item instanceof Upgradable upgradable){
-                if (upgradable.upgrade(upgrader)){
-                    hasInventory.removeItemFromInventory((Item)upgrader);
-                }
-            }
-            Display.setAndForgetMenus(Display.getRootMenu());
-            return UIEventResponse.processed();
-        };
-        Display.populateContainer(container, function, list);
-        itemSelectMenu.screen.addComponent(container);
-        return itemSelectMenu;
-    }
-
-    public static Menu createItemSelectMenu(ItemSlot itemSlot, Entity entity) {
-
-        ItemSelectMenu itemSelectMenu = new ItemSelectMenu(false);
-        itemSelectMenu.type = Type.ITEM;
-        itemSelectMenu.itemSlot = itemSlot;
-        itemSelectMenu.entity = entity;
-        
-        ArrayList<Item> items = new ArrayList<>();
-        if (entity instanceof HasInventory hasInventory){
-            items.addAll(hasInventory.getInventory());
-        }
-
-        Container container = Display.createFittedContainer(itemSelectMenu.screen, "Select", items);
-        
-        Item nothing = new Item();
-
-        nothing.setName("Nothing");
-        
-        Function<Item, UIEventResponse> nothingFunction = nonItem ->{
-            try {
-                if (entity instanceof HasInventory hasInventory){
-                    hasInventory.addItemToInventory(itemSlot.setEquippedItem(null));
-                } else {
-                    itemSlot.setEquippedItem(null);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            Display.revertMenu();
-            return UIEventResponse.processed();
-        };
-
-        Display.populateContainer(container, nothingFunction, nothing);
-
-        Function<Item, UIEventResponse> itemFunction = new Function<Item,UIEventResponse>() {
+        ItemSelectMenu menu = new ItemSelectMenu(){
             @Override
-            public UIEventResponse apply(Item item){
+            public Menu refresh() {
+                return createInventoryMenu(playerEntity);
+            }
+        };
+        Display.populateMenu(
+            menu,
+            (stack) -> {
+                Display.setMenu(new ItemContextMenu(stack.getItem(), playerEntity));
+                return UIEventResponse.processed();
+            },
+            "Inventory",
+            ItemStack.toItemStackSet(playerEntity.getInventory())
+        );
+        return menu;
+    }
+
+    public static ItemSelectMenu createUpgradeMenu(Upgrader upgrader, HasInventory hasInventory){
+        ItemSelectMenu menu = new ItemSelectMenu(){
+            @Override
+            public Menu refresh() {
+                return createUpgradeMenu(upgrader, hasInventory);
+            }
+        };
+        Display.populateMenu(
+            menu,
+            (stack) -> {
+                Item item = stack.getItem();
+                if (item instanceof Upgradable upgradable){
+                    if (upgradable.upgrade(upgrader)){
+                        hasInventory.removeItemFromInventory((Item)upgrader);
+                    }
+                }
+                Display.setAndForgetMenus(Display.getRootMenu());
+                return UIEventResponse.processed();
+            },
+            "Upgrade",
+            ItemStack.toItemStackSet(hasInventory.getInventory().stream().filter(i->i instanceof Upgradable upgradable && upgradable.canUpgrade(upgrader)).collect(Collectors.toList()))
+        );
+        return menu;
+    }
+
+    public static Menu createItemSelectMenu(ItemSlot itemSlot, Entity entity){
+        ItemSelectMenu menu = new ItemSelectMenu(){
+            @Override
+            public Menu refresh() {
+                return createItemSelectMenu(itemSlot, entity);
+            }
+        };
+        Display.populateMenu(
+            menu,
+            (stack) -> {
+                Item item = stack.getItem();
+                if (item instanceof Nothing) {
+                    try {
+                        if (entity instanceof HasInventory hasInventory){
+                            hasInventory.addItemToInventory(itemSlot.setEquippedItem(null));
+                        } else {
+                            itemSlot.setEquippedItem(null);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    Display.revertMenu();
+                    return UIEventResponse.processed();
+                }
                 try {
                     if (entity instanceof HasInventory hasInventory){
                         hasInventory.removeItemFromInventory(item);
@@ -372,55 +329,16 @@ public class ItemSelectMenu extends Menu{
                 }
                 Display.revertMenu();
                 return UIEventResponse.processed();
-            }
-        };
-
-        Display.populateContainer(container, itemFunction, items);
-
-        itemSelectMenu.screen.addComponent(container);
-
-        return itemSelectMenu;
-    }
-
-    private enum Type{
-        DROP,
-        PICKUP,
-        INVENTORY_TRANSFER,
-        CONSUMABLE,
-        WEAPON,
-        ARMOR,
-        THROW,
-        INVENTORY,
-        UPGRADE,
-        ITEM;
-    }
-
-    @Override
-    public Menu refresh() {
-        switch (this.type) {
-            case ARMOR:
-                return ItemSelectMenu.createArmorSelectMenu(this.armorSlot, this.entity);
-            case CONSUMABLE:
-                return ItemSelectMenu.createConsumableSelectMenu(this.entity);
-            case DROP:
-                return ItemSelectMenu.createDropMenu(this.space, this.inventories[0]);
-            case INVENTORY:
-                return ItemSelectMenu.createInventoryMenu((PlayerEntity)this.entity);
-            case INVENTORY_TRANSFER:
-                return ItemSelectMenu.createInventoryTransferMenu(this.inventories[0],this.inventories[1]);
-            case ITEM:
-                return ItemSelectMenu.createItemSelectMenu(this.itemSlot,this.entity);
-            case PICKUP:
-                return ItemSelectMenu.createPickupMenu(this.space, this.inventories[0]);
-            case THROW:
-                return ItemSelectMenu.createThrowMenu(this.inventories[0]);
-            case UPGRADE:
-                return ItemSelectMenu.createUpgradeMenu(this.upgrader, this.inventories[0]);
-            case WEAPON:
-                return ItemSelectMenu.createWeaponSelectMenu(this.weaponSlot, this.entity);
-            default:
-                return new ItemSelectMenu();
-        }
+            },
+            "Select",
+            ItemStack.toItemStackSet(
+                Stream.concat(
+                    List.of(new Nothing()).stream(),
+                    entity instanceof HasInventory hi ? hi.getInventory().stream() : List.of().stream().map(o->(Item)o)
+                ).collect(Collectors.toList())
+            )
+        );
+        return menu;
     }
 
 }

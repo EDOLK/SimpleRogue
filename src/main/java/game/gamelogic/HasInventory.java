@@ -1,16 +1,20 @@
 package game.gamelogic;
 
 import java.util.List;
+import java.util.Set;
 
+import game.gameobjects.ItemStack;
 import game.gameobjects.items.Item;
-import game.gameobjects.items.armor.Armor;
-import game.gameobjects.items.weapons.Weapon;
 
 public interface HasInventory {
 
     public List<Item> getInventory();
 
     public int getHardWeightLimit();
+
+    default Set<ItemStack> getStacks(){
+        return ItemStack.toItemStackSet(getInventory());
+    }
 
     default int getSoftWeightLimit(){
         return getHardWeightLimit()/2;
@@ -31,23 +35,15 @@ public interface HasInventory {
 
     default int getInventoryWeight(){
         int w = 0;
-        for (Item item : getInventory()) {
-            w += item.getWeight();
-        }
+        w += getInventory().stream().mapToInt(i -> i.getWeight()).sum();
         if (this instanceof Armored armored){
-            for (Armor armor : armored.getArmor()) {
-                w += armor.getWeight();
-            }
+            w += armored.getArmor().stream().mapToInt(i -> i.getWeight()).sum();
         }
         if (this instanceof Armed armed){
-            for (Weapon weapon : armed.getWeapons()) {
-                w += weapon.getWeight();
-            }
+            w += armed.getWeapons().stream().mapToInt(i -> i.getWeight()).sum();
         }
         if (this instanceof HasOffHand hasOffHand) {
-            if (hasOffHand.getOffHandSlot().getEquippedItem() != null) {
-                w += hasOffHand.getOffHandSlot().getEquippedItem().getWeight();
-            }
+            w += hasOffHand.getOffHandSlot().getEquippedItem() != null ? hasOffHand.getOffHandSlot().getEquippedItem().getWeight() : 0;
         }
         return w;
     }

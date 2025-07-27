@@ -132,4 +132,12 @@ public class Torch extends Weapon implements Flammable, LightSource, SelfAware, 
             other.addStatus(new Burning());
     }
 
+    @Override
+    public boolean canStack(Item otherItem) {
+        if (otherItem instanceof Torch torch) {
+            return this.lit == torch.lit && this.fuel == torch.fuel;
+        }
+        return super.canStack(otherItem);
+    }
+
 }
