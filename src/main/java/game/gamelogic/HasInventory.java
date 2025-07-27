@@ -1,6 +1,5 @@
 package game.gamelogic;
 
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -14,19 +13,7 @@ public interface HasInventory {
     public int getHardWeightLimit();
 
     default Set<ItemStack> getStacks(){
-        Set<ItemStack> stacks = new LinkedHashSet<>();
-        outer:
-        for (Item item : getInventory()) {
-            for (ItemStack itemStack : stacks) {
-                if(itemStack.canStack(item)){
-                    itemStack.setAmount(itemStack.getAmount()+1);
-                    itemStack.setItem(item);
-                    continue outer;
-                }
-            }
-            stacks.add(new ItemStack(item, 1));
-        }
-        return stacks;
+        return ItemStack.toItemStackSet(getInventory());
     }
 
     default int getSoftWeightLimit(){

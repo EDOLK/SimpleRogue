@@ -1,5 +1,9 @@
 package game.gameobjects;
 
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import game.gamelogic.HasName;
 import game.gameobjects.items.Item;
 
@@ -37,6 +41,22 @@ public class ItemStack implements HasName {
 
     public boolean canStack(Item otherItem){
         return this.item.getClass() == otherItem.getClass() && this.item.canStack(otherItem);
+    }
+
+    public static Set<ItemStack> toItemStackSet(Collection<Item> items){
+        Set<ItemStack> stacks = new LinkedHashSet<>();
+        outer:
+        for (Item item : items) {
+            for (ItemStack itemStack : stacks) {
+                if(itemStack.canStack(item)){
+                    itemStack.setAmount(itemStack.getAmount()+1);
+                    itemStack.setItem(item);
+                    continue outer;
+                }
+            }
+            stacks.add(new ItemStack(item, 1));
+        }
+        return stacks;
     }
 
 }
