@@ -1,7 +1,6 @@
 package game.display;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -168,8 +167,8 @@ public class ItemSelectMenu extends Menu{
             "Select Weapon",
             ItemStack.toItemStackSet(
                 Stream.concat(
-                    List.of(new Nothing()).stream().map(n->(Item)n),
-                    entity instanceof HasInventory hi ? hi.getInventory().stream().filter(i->i instanceof Weapon) : List.of().stream().map(i->(Item)i)
+                    Stream.of(new Nothing()),
+                    entity instanceof HasInventory hi ? hi.getInventory().stream().filter(i->i instanceof Weapon) : Stream.empty()
                 ).collect(Collectors.toList())
             )
         );
@@ -218,8 +217,8 @@ public class ItemSelectMenu extends Menu{
             "Select Armor",
             ItemStack.toItemStackSet(
                 Stream.concat(
-                    List.of(new Nothing()).stream().map(n->(Item)n),
-                    entity instanceof HasInventory hi ? hi.getInventory().stream().filter(i->i instanceof Armor armor && armor.getArmorType() == armorSlot.getType()) : List.of().stream().map(i->(Item)i)
+                    Stream.of(new Nothing()),
+                    entity instanceof HasInventory hi ? hi.getInventory().stream().filter(i->i instanceof Armor armor && armor.getArmorType() == armorSlot.getType()) : Stream.empty()
                 ).collect(Collectors.toList())
             )
         );
@@ -333,8 +332,8 @@ public class ItemSelectMenu extends Menu{
             "Select",
             ItemStack.toItemStackSet(
                 Stream.concat(
-                    List.of(new Nothing()).stream(),
-                    entity instanceof HasInventory hi ? hi.getInventory().stream() : List.of().stream().map(o->(Item)o)
+                    Stream.of(new Nothing()),
+                    entity instanceof HasInventory hi ? hi.getInventory().stream() : Stream.empty()
                 ).collect(Collectors.toList())
             )
         );
