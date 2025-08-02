@@ -5,6 +5,7 @@ import java.util.Optional;
 import game.Path;
 import game.Path.PathNotFoundException;
 import game.gameobjects.Floor;
+import game.gameobjects.MovementResult;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Animal;
 import game.gameobjects.entities.Entity;
@@ -36,16 +37,19 @@ public class AnimalHunting extends Behavior {
                 return animal.setAndBehave(wanderToTarget.get());
             }
         }
-        if (this.isValid()) {
+        if (animal.isAdjacent(target)) {
+            Floor.doAttack(animal, target);
+            return animal.getTimeToAttack();
+        }
+        if (this.pathIsValid()) {
             Space possibleSpace = path[locationInPath+1];
-            if (Space.moveEntity(animal, possibleSpace)) {
-                locationInPath++;
+            MovementResult movementResult = Space.moveEntity(animal, possibleSpace);
+            if (movementResult.isSuccessful()) {
+                if (movementResult.getToSpace() == possibleSpace)
+                    locationInPath++;
                 return animal.getTimeToMove();
             }
-            if (possibleSpace.isOccupied() && possibleSpace.getOccupant() == target) {
-                Floor.doAttack(animal, target);
-                return animal.getTimeToAttack();
-            }
+            return animal.getTimeToWait();
         }
         Optional<? extends Behavior> hunting = getHuntingBehavior(target);
         if (hunting.isPresent()) {
@@ -75,7 +79,7 @@ public class AnimalHunting extends Behavior {
         try {
             AnimalHunting h = new AnimalHunting(animal, target);
             //TODO: Bandaid fix. Fix properly later.
-            if (!h.isValid()) {
+            if (!h.pathIsValid()) {
                 return Optional.empty();
             }
             return Optional.of(h);
@@ -85,7 +89,7 @@ public class AnimalHunting extends Behavior {
         return Optional.empty();
     }
 
-    public boolean isValid(){
+    public boolean pathIsValid(){
         return this.path[this.locationInPath].getOccupant() == this.animal && this.path[this.path.length-1].getOccupant() == this.target && !this.pathIsBlocked();
     }
 

@@ -7,12 +7,9 @@ import org.hexworks.zircon.api.Modifiers;
 import org.hexworks.zircon.api.color.TileColor;
 import org.hexworks.zircon.api.modifier.Modifier;
 
-import game.gamelogic.OverridesMovement;
 import game.gamelogic.behavior.Behavable;
-import game.gameobjects.Space;
-import game.gameobjects.entities.Entity;
 
-public class Freezing extends Status implements SeperateIn, Behavable, OverridesMovement{
+public class Freezing extends Status implements SeperateIn, Behavable{
     
     private int turns = 0;
     private int limit = 1;
@@ -39,11 +36,6 @@ public class Freezing extends Status implements SeperateIn, Behavable, Overrides
     }
 
     @Override
-    public boolean overrideMovement(Entity entity, Space toSpace) {
-        return false;
-    }
-
-    @Override
     public int behave() {
         if (turns >= limit){
             turns = 0;
@@ -57,11 +49,6 @@ public class Freezing extends Status implements SeperateIn, Behavable, Overrides
     @Override
     public boolean isActive() {
         return owner.isAlive();
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return enabled;
     }
 
     @Override

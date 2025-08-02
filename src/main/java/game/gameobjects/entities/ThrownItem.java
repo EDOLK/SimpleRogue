@@ -16,6 +16,7 @@ import game.gamelogic.resistances.PercentageResistance;
 import game.gamelogic.resistances.Resistance;
 import game.gameobjects.DamageType;
 import game.gameobjects.DisplayableTile;
+import game.gameobjects.MovementResult;
 import game.gameobjects.Space;
 import game.gameobjects.items.Item;
 
@@ -57,7 +58,8 @@ public class ThrownItem extends Entity implements HasDodge, HasResistances, Beha
     public int behave() {
         if (pathToTarget.hasNext()){
             Space nextSpace = pathToTarget.next();
-            if(!Space.moveEntity(this, nextSpace) && nextSpace.isOccupied()){
+            MovementResult result = Space.moveEntity(this, nextSpace);
+            if(!result.isSuccessful() && nextSpace.isOccupied()){
                 aimable.onHit(nextSpace.getOccupant());
                 if (aimable.landsOnHit())
                     aimable.onLand(nextSpace);

@@ -743,11 +743,9 @@ public final class FloorMenu extends Menu{
         int y = playerEntity.getY();
         Space potentialSpace = currentFloor.getSpace(x+toX, y+toY);
         if (potentialSpace.isOccupied()){
-            Entity occupant = potentialSpace.getOccupant();
-            return occupant.defaultInteraction(playerEntity);
+            return potentialSpace.getOccupant().defaultInteraction(playerEntity);
         } else {
-            moveEntity(playerEntity, potentialSpace);
-            return playerEntity.getTimeToMove();
+            return moveEntity(playerEntity, potentialSpace).isSuccessful() ? playerEntity.getTimeToMove() : playerEntity.getTimeToWait();
         }
     }
 

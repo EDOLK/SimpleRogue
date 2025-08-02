@@ -43,14 +43,24 @@ public class Space extends DisplayableTile{
 
     }
 
-    public static boolean moveEntity(Entity entity, Space toSpace){
+    public static MovementResult moveEntity(Entity entity, Space toSpace){
+
+        MovementResult result = new MovementResult()
+            .withFromSpace(entity.getSpace())
+            .withToSpace(toSpace)
+            .withMover(entity);
+
         OverridesMovement overridesMovement = (OverridesMovement)entity.getStatusByClass(OverridesMovement.class);
+
         if (overridesMovement != null && overridesMovement.isEnabled()){
-            return overridesMovement.overrideMovement(entity, toSpace);
+            return overridesMovement.overrideMovement(result, entity, toSpace)
+                .withOverride(overridesMovement);
         }
 
         if (toSpace.isOccupied()){
-            return false;
+            return result
+                .withSuccessful(false)
+                .withBlocker(toSpace.getOccupant());
         }
 
         Space prevSpace = entity.getSpace();
@@ -61,22 +71,13 @@ public class Space extends DisplayableTile{
             prevSpace.setOccupant(null);
         }
 
-        doTriggerables(entity, toSpace);
-        
-        return true;
+        return result
+            .withSuccessful(true)
+            .withTriggerables(doTriggerables(entity, toSpace));
 
     }
 
-    // public static void swapEntity(Entity entity, Entity otherEntity){
-    //     Space space = entity.getSpace();
-    //     Space otherSpace = otherEntity.getSpace();
-    //     space.setOccupant(otherEntity);
-    //     otherSpace.setOccupant(entity);
-    //     doTriggerables(entity, otherSpace);
-    //     doTriggerables(otherEntity, space);
-    // }
-
-    private static void doTriggerables(Entity entity, Space toSpace) {
+    private static List<Triggerable> doTriggerables(Entity entity, Space toSpace) {
         List<Triggerable> triggerables = new ArrayList<Triggerable>();
         for (Item item : toSpace.getItems()) {
             if (item instanceof Triggerable triggerableItem){
@@ -91,6 +92,7 @@ public class Space extends DisplayableTile{
         for (Triggerable triggerable : triggerables) {
             triggerable.triggerOnEntity(entity);
         }
+        return triggerables;
     }
 
     private Entity occupant;

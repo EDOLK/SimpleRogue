@@ -27,6 +27,7 @@ import game.gamelogic.behavior.Behavable;
 import game.gamelogic.behavior.Behavior;
 import game.gameobjects.AttackResult;
 import game.gameobjects.DamageType;
+import game.gameobjects.MovementResult;
 import game.gameobjects.Space;
 import game.gameobjects.items.Item;
 import game.gameobjects.items.weapons.Weapon;
@@ -68,7 +69,7 @@ public class Spider extends Animal implements HasDodge, HasInventory, HasDrops, 
             try {
                 SpiderHunting h = new SpiderHunting(target);
                 // TODO: Bandaid fix. Fix properly later.
-                if (!h.isValid()) {
+                if (!h.pathIsValid()) {
                     return Optional.empty();
                 }
                 return Optional.of(h);
@@ -385,13 +386,13 @@ public class Spider extends Animal implements HasDodge, HasInventory, HasDrops, 
         }
 
         @Override
-        public boolean overrideMovement(Entity entity, Space toSpace) {
+        public MovementResult overrideMovement(MovementResult result, Entity entity, Space toSpace) {
             if (entity instanceof PlayerEntity){
                 Display.log("You struggle against the webs.");
             } else {
                 Display.log("The " + entity.getName() + " struggles against the webs", entity.getSpace());
             }
-            return false;
+            return result.withSuccessful(false);
         }
 
         @Override
