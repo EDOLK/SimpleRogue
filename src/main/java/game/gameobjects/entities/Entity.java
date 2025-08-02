@@ -579,7 +579,7 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
         }
         for (Status status : statuses) {
             if (status instanceof ModifiesMoveTime mmt){
-                t = mmt.modifyTime(t);
+                t = mmt.modifyMoveTime(t);
             }
         }
         return t;
@@ -593,7 +593,7 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
         int t = getBaseAttackTime();
         for (Status status : statuses) {
             if (status instanceof ModifiesAttackTime mat){
-                t = mat.modifyTime(t);
+                t = mat.modifyAttackTime(t);
             }
         }
         return t;

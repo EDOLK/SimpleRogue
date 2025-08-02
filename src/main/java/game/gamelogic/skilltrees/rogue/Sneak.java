@@ -99,7 +99,7 @@ public class Sneak implements Ability, Behavable {
         }
 
         @Override
-        public int modifyTime(int time) {
+        public int modifyMoveTime(int time) {
             return (int)(time + (time*0.10));
         }
         

@@ -169,7 +169,6 @@ public class Floor{
                         }
                     }
 
-
                     if (entity instanceof HasOffHand hasOffHand){
                         ItemSlot slot = hasOffHand.getOffHandSlot();
                         if (slot.getEquippedItem() != null && slot.getEquippedItem() instanceof Behavable behavableItem){

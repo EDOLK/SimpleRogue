@@ -1,4 +1,4 @@
 package game.gamelogic.time;
 public interface ModifiesAttackTime {
-    public int modifyTime(int time);
+    public int modifyAttackTime(int time);
 }

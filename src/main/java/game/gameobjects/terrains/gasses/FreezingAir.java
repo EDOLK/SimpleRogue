@@ -45,8 +45,7 @@ public class FreezingAir extends Gas{
     @Override
     public int behave() {
         if (getSpace().isOccupied()){
-            Entity occupant = getSpace().getOccupant();
-            occupant.addStatus(new Freezing());
+            getSpace().getOccupant().addStatus(new Freezing());
         }
         return super.behave();
     }
