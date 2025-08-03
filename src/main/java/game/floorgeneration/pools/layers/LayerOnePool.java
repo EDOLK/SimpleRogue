@@ -32,6 +32,7 @@ import game.gameobjects.items.armor.LeatherPants;
 import game.gameobjects.items.armor.PlateArmor;
 import game.gameobjects.items.armor.PlateGauntlets;
 import game.gameobjects.items.potions.FirePotion;
+import game.gameobjects.items.potions.FreezingPotion;
 import game.gameobjects.items.potions.HealingPotion;
 import game.gameobjects.items.potions.WaterPotion;
 import game.gameobjects.items.scrolls.ScrollOfEnchantment;
@@ -60,6 +61,7 @@ public class LayerOnePool extends LayerPool {
             .put(()->new ShortSword(), 5)
             .put(()->new HandAxe(), 5)
             .put(()->new FirePotion(), 10)
+            .put(()->new FreezingPotion(), 10)
             .put(()->new WaterPotion(), 10)
             .put(()->new HealingPotion(), 15)
             .put(()->new LeatherCap(), 5)
@@ -73,6 +75,7 @@ public class LayerOnePool extends LayerPool {
             .put(()->new Chainmail(), 7)
             .put(()->new FirePotion(), 5)
             .put(()->new WaterPotion(), 5)
+            .put(()->new FreezingPotion(), 5)
             .put(()->new HealingPotion(), 5)
             .put(()->new IronGreaves(), 7)
             .put(()->new IronHelm(), 7)

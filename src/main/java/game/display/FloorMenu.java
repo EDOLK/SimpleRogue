@@ -4,6 +4,7 @@ import static game.App.lerp;
 import static game.gameobjects.Space.moveEntity;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.hexworks.zircon.api.ComponentDecorations;
 import org.hexworks.zircon.api.builder.component.HeaderBuilder;
@@ -26,8 +27,10 @@ import org.hexworks.zircon.api.graphics.Layer;
 import org.hexworks.zircon.api.uievent.KeyboardEvent;
 import org.hexworks.zircon.api.uievent.UIEventPhase;
 import org.hexworks.zircon.api.uievent.UIEventResponse;
+import game.gamelogic.OverridesPlayerInput;
 
 import game.App;
+import game.CheckConditions;
 import game.Dungeon;
 import game.Line;
 import game.display.Display.Mode;
@@ -614,7 +617,7 @@ public final class FloorMenu extends Menu{
             default:
                 break;
         }
-        // gross but necessary, find better way to do this later.
+        // TODO: gross but necessary, find better way to do this later.
         if (!currentFloor.getPlayer().isAlive())
             currentState = State.DEAD;
 
@@ -623,6 +626,14 @@ public final class FloorMenu extends Menu{
     
 
     public UIEventResponse handleInGame(KeyboardEvent event, UIEventPhase phase){
+        List<OverridesPlayerInput> overridesInput = App.recursiveCheck(
+            currentFloor.getPlayer(),
+            CheckConditions.none().withStatuses(true),
+            (obj -> obj instanceof OverridesPlayerInput op ? Optional.of(op) : Optional.empty())
+        );
+        if (overridesInput.size() > 0) {
+            return overridesInput.get(0).handleKeyboardEvent(event, phase);
+        }
         int time = -1;
         switch (Display.getKeyMap().getAction(event.getCode())) {
             case UP: //up
@@ -630,56 +641,56 @@ public final class FloorMenu extends Menu{
                     time = forceHit(0, -1);
                     break;
                 }
-                time = tryMoveToAdjecent(0, -1);
+                time = tryMoveToAdjacent(0, -1);
                 break;
             case DOWN: //down
                 if (event.getCtrlDown()){
                     time = forceHit(0, 1);
                     break;
                 }
-                time = tryMoveToAdjecent(0, 1);
+                time = tryMoveToAdjacent(0, 1);
                 break;
             case LEFT: //left
                 if (event.getCtrlDown()){
                     time = forceHit(-1, 0);
                     break;
                 }
-                time = tryMoveToAdjecent(-1, 0);
+                time = tryMoveToAdjacent(-1, 0);
                 break;
             case RIGHT: //right
                 if (event.getCtrlDown()){
                     time = forceHit(1, 0);
                     break;
                 }
-                time = tryMoveToAdjecent(1, 0);
+                time = tryMoveToAdjacent(1, 0);
                 break;
             case UP_LEFT: //up-left
                 if (event.getCtrlDown()){
                     time = forceHit(-1, -1);
                     break;
                 }
-                time = tryMoveToAdjecent(-1, -1);
+                time = tryMoveToAdjacent(-1, -1);
                 break;
             case UP_RIGHT: //up-right
                 if (event.getCtrlDown()){
                     time = forceHit(1, -1);
                     break;
                 }
-                time = tryMoveToAdjecent(1, -1);
+                time = tryMoveToAdjacent(1, -1);
                 break;
             case DOWN_LEFT: //down-left
                 if (event.getCtrlDown()){
                     time = forceHit(-1, 1);
                     break;
                 }
-                time = tryMoveToAdjecent(-1, 1);
+                time = tryMoveToAdjacent(-1, 1);
                 break;
             case DOWN_RIGHT: //down-right
                 if (event.getCtrlDown()){
                     time = forceHit(1, 1);
                     break;
                 }
-                time = tryMoveToAdjecent(1, 1);
+                time = tryMoveToAdjacent(1, 1);
                 break;
             case CENTER: //wait
                 addToLog("waiting...");
@@ -734,7 +745,7 @@ public final class FloorMenu extends Menu{
         return UIEventResponse.processed();
     }
 
-    public int tryMoveToAdjecent(int toX, int toY){
+    public int tryMoveToAdjacent(int toX, int toY){
         if (toX < -1 || toX > 1 || toY < -1 || toY > 1){
             return -1;
         }
@@ -975,7 +986,7 @@ public final class FloorMenu extends Menu{
         return this;
     }
 
-    private class InteractSelector implements SimpleSelector{
+    public class InteractSelector implements SimpleSelector{
 
         @Override
         public boolean simpleSelect(Space space) {
@@ -1009,7 +1020,7 @@ public final class FloorMenu extends Menu{
 
     }
 
-    private class ExamineSelector implements Selector{
+    public class ExamineSelector implements Selector{
 
         @Override
         public boolean select(Cursor cursor) {
@@ -1026,7 +1037,7 @@ public final class FloorMenu extends Menu{
 
     }
 
-    private class GetSelector implements SimpleSelector{
+    public class GetSelector implements SimpleSelector{
 
         @Override
         public boolean simpleSelect(Space space) {
@@ -1036,7 +1047,7 @@ public final class FloorMenu extends Menu{
 
     }
 
-    private class DropSelector implements SimpleSelector{
+    public class DropSelector implements SimpleSelector{
 
         @Override
         public boolean simpleSelect(Space space) {

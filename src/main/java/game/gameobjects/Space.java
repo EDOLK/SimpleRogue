@@ -50,6 +50,7 @@ public class Space extends DisplayableTile{
             .withToSpace(toSpace)
             .withMover(entity);
 
+        // TODO: add support for multiple OverridesMovement at the same time
         OverridesMovement overridesMovement = (OverridesMovement)entity.getStatusByClass(OverridesMovement.class);
 
         if (overridesMovement != null && overridesMovement.isEnabled()){
