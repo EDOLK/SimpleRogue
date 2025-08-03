@@ -83,19 +83,23 @@ public class Brazier extends Entity implements HasResistances {
         }
 
         @Override
-        public boolean onStackOut(Status sameStatus) {
-            if (sameStatus instanceof Wet) {
-                Entity owner = this.owner;
-                owner.removeStatus(this);
-                owner.addStatus(new UnLit());
-                Display.log("The " + owner.getName() + " goes out.", owner.getSpace());
-            }
-            return true;
-        }
+        public boolean filterOut(Status status) {
+            switch (status) {
+                case Wet wet -> {
+                    Entity owner = this.owner;
+                    owner.removeStatus(this);
+                    owner.addStatus(new UnLit());
+                    Display.log("The " + owner.getName() + " goes out.", owner.getSpace());
+                    return true;
+                }
+                case Burning burning -> {
+                    return true;
+                }
+                default -> {
 
-        @Override
-        public boolean validateSamenessOut(Status status) {
-            return status instanceof Wet || status instanceof Burning;
+                }
+            }
+            return false;
         }
         
     }
@@ -111,23 +115,24 @@ public class Brazier extends Entity implements HasResistances {
         }
 
         @Override
-        public boolean onStackOut(Status sameStatus) {
-            if (sameStatus instanceof Burning) {
-                Entity owner = this.owner;
-                owner.removeStatus(this);
-                owner.addStatus(new Lit());
-            }
-            return true;
-        }
-
-        @Override
-        public boolean validateSamenessOut(Status status) {
-            return status instanceof Burning;
-        }
-
-        @Override
         public Tile getTile(double percent) {
             return Tile.empty();
+        }
+
+        @Override
+        public boolean filterOut(Status status) {
+            switch (status) {
+                case Burning burning -> {
+                    Entity owner = this.owner;
+                    owner.removeStatus(this);
+                    owner.addStatus(new Lit());
+                    return true;
+                }
+                default -> {
+
+                }
+            }
+            return false;
         }
         
     }

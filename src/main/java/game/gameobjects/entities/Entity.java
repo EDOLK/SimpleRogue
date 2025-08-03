@@ -213,12 +213,12 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
     }
     
     public boolean addStatus(Status status){
+
         if (status == null){
             return false;
         }
+
         boolean vulnerable = isVulnerable(status);
-        List<Status> filteredIn = new ArrayList<>();
-        List<SeperateOut> filteredOut = new ArrayList<>();
 
         for (Status st : statuses) {
             if (!vulnerable && st instanceof HasStatusVulns v) {
@@ -226,39 +226,19 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
                     vulnerable = true;
                 }
             }
-            if (status instanceof SeperateIn sIn) {
-                if (sIn.validateSamenessIn(st)){
-                    filteredIn.add(st);
+            if (st instanceof SeperateOut sOut) {
+                if (sOut.filterOut(status)){
+                    return false;
                 }
             }
-            if (st instanceof SeperateOut sOut) {
-                if (sOut.validateSamenessOut(status)) {
-                    filteredOut.add(sOut);
+            if (status instanceof SeperateIn sIn) {
+                if (sIn.filterIn(st)){
+                    return false;
                 }
             }
         }
 
         if (!vulnerable) {
-            return false;
-        }
-
-        boolean fIn = false;
-
-        for (Status sIn : filteredIn) {
-            if (((SeperateIn)status).onStackIn(sIn)){
-                fIn = true;
-            }
-        }
-
-        boolean fOut = false;
-
-        for (SeperateOut sOut : filteredOut) {
-            if (sOut.onStackOut(status)) {
-                fOut = true;
-            }
-        }
-
-        if (fIn || fOut) {
             return false;
         }
 

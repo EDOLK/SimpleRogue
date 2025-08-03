@@ -48,19 +48,14 @@ public class Bleeding extends Status implements Behavable, SeperateOut{
     }
 
     @Override
-    public boolean onStackOut(Status sameStatus) {
-        if (sameStatus instanceof Bleeding bleeding) {
+    public boolean filterOut(Status status) {
+        if (status instanceof Bleeding bleeding) {
             this.minDamage += bleeding.minDamage;
             this.maxDamage += bleeding.maxDamage;
             this.remainingDamage += bleeding.remainingDamage;
             return true;
         }
         return false;
-    }
-
-    @Override
-    public boolean validateSamenessOut(Status status) {
-        return status instanceof Bleeding;
     }
     
 }

@@ -50,16 +50,6 @@ public class Frozen extends Status implements SeperateIn, Behavable, OverridesBe
     }
 
     @Override
-    public boolean onStackIn(Status sameStatus) {
-        return true;
-    }
-
-    @Override
-    public boolean validateSamenessIn(Status status) {
-        return status instanceof Freezing || status instanceof Frozen;
-    }
-
-    @Override
     public UIEventResponse handleKeyboardEvent(KeyboardEvent event, UIEventPhase phase) {
         Action action = Display.getKeyMap().getAction(event.getCode());
         if (action != Action.ESCAPE && action != Action.EXAMINE_TOGGLE) {
@@ -67,6 +57,14 @@ public class Frozen extends Status implements SeperateIn, Behavable, OverridesBe
             Display.update();
         }
         return OverridesPlayerInput.super.handleKeyboardEvent(event, phase);
+    }
+
+    @Override
+    public boolean filterIn(Status status) {
+        if (status instanceof Freezing || status instanceof Frozen) {
+            return true;
+        }
+        return false;
     }
 
 }

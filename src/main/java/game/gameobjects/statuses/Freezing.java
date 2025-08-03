@@ -49,23 +49,6 @@ public class Freezing extends Status implements SeperateIn, Behavable, ModifiesM
     }
 
     @Override
-    public boolean onStackIn(Status sameStatus) {
-        if (sameStatus instanceof Freezing freezing) {
-            freezing.turns += this.turns;
-            return true;
-        }
-        if (sameStatus instanceof Frozen) {
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public boolean validateSamenessIn(Status status) {
-        return status instanceof Freezing || status instanceof Frozen;
-    }
-
-    @Override
     public int modifyAttackTime(int time) {
         return time + (int)App.lerp(0, 0, freezeLimit, time, turns);
     }
@@ -73,6 +56,18 @@ public class Freezing extends Status implements SeperateIn, Behavable, ModifiesM
     @Override
     public int modifyMoveTime(int time) {
         return time + (int)App.lerp(0, 0, freezeLimit, time, turns);
+    }
+
+    @Override
+    public boolean filterIn(Status status) {
+        if (status instanceof Freezing freezing) {
+            freezing.turns += this.turns;
+            return true;
+        }
+        if (status instanceof Frozen) {
+            return true;
+        }
+        return false;
     }
     
 }

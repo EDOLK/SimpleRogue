@@ -76,46 +76,6 @@ public class Water extends Liquid{
         }
 
         @Override
-        public boolean onStackIn(Status sameStatus) {
-            switch (sameStatus) {
-                case Wet w -> {
-                    w.timer++;
-                    return true;
-                }
-                case Burning b -> {
-                    Entity owner = b.getOwner();
-                    owner.removeStatus(b);
-                    owner.getSpace().addTerrain(new Steam(1));
-                    return true;
-                }
-                default -> {
-                    return false;
-                }
-            }
-        }
-
-        @Override
-        public boolean validateSamenessIn(Status status) {
-            return status instanceof Burning || status instanceof Wet;
-        }
-
-        @Override
-        public boolean onStackOut(Status sameStatus) {
-            if (sameStatus instanceof Burning) {
-                Entity owner = this.getOwner();
-                owner.getSpace().addTerrain(new Steam(1));
-                owner.removeStatus(this);
-                return true;
-            }
-            return false;
-        }
-
-        @Override
-        public boolean validateSamenessOut(Status status) {
-            return status instanceof Burning;
-        }
-
-        @Override
         public int behave() {
             this.timer--;
             if (timer <= 0) {
@@ -127,6 +87,36 @@ public class Water extends Liquid{
         @Override
         public boolean isActive() {
             return this.owner != null && this.owner.isAlive();
+        }
+
+        @Override
+        public boolean filterOut(Status status) {
+            if (status instanceof Burning) {
+                Entity owner = this.getOwner();
+                owner.getSpace().addTerrain(new Steam(1));
+                owner.removeStatus(this);
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        public boolean filterIn(Status status) {
+            switch (status) {
+                case Wet w -> {
+                    w.timer++;
+                    return true;
+                }
+                case Burning b -> {
+                    Entity owner = b.getOwner();
+                    owner.removeStatus(b);
+                    owner.getSpace().addTerrain(new Steam(1));
+                    return true;
+                }
+                default -> {
+                }
+            }
+            return false;
         }
 
     }

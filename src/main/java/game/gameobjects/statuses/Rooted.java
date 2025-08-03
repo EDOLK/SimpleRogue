@@ -47,8 +47,8 @@ public class Rooted extends Status implements OverridesMovement, Behavable, Sepe
     }
 
     @Override
-    public boolean onStackOut(Status sameStatus) {
-        switch (sameStatus) {
+    public boolean filterOut(Status status) {
+        switch (status) {
             case Burning burning -> {
                 this.owner.removeStatus(this);
                 return false;
@@ -57,13 +57,8 @@ public class Rooted extends Status implements OverridesMovement, Behavable, Sepe
                 return true;
             }
             default -> {
-                return false;
             }
         }
-    }
-
-    @Override
-    public boolean validateSamenessOut(Status status) {
-        return status instanceof Burning || status instanceof Rooted;
+        return false;
     }
 }

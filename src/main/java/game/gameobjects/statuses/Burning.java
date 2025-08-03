@@ -88,17 +88,12 @@ public class Burning extends Status implements Behavable, LightSource, SeperateI
     }
 
     @Override
-    public boolean onStackIn(Status sameStatus) {
-        if (sameStatus instanceof Burning burning) {
+    public boolean filterIn(Status status) {
+        if (status instanceof Burning burning) {
             burning.turns++;
             return true;
         }
         return false;
-    }
-
-    @Override
-    public boolean validateSamenessIn(Status status) {
-        return status instanceof Burning;
     }
     
 }
