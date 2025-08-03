@@ -7,16 +7,16 @@ import org.hexworks.zircon.api.Modifiers;
 import org.hexworks.zircon.api.color.TileColor;
 import org.hexworks.zircon.api.modifier.Modifier;
 
-import game.gamelogic.OverridesMovement;
+import game.App;
 import game.gamelogic.behavior.Behavable;
-import game.gameobjects.Space;
+import game.gamelogic.time.ModifiesAttackTime;
+import game.gamelogic.time.ModifiesMoveTime;
 import game.gameobjects.entities.Entity;
 
-public class Freezing extends Status implements SeperateIn, Behavable, OverridesMovement{
+public class Freezing extends Status implements SeperateIn, Behavable, ModifiesMoveTime, ModifiesAttackTime{
     
-    private int turns = 0;
-    private int limit = 1;
-    private boolean enabled = false;
+    private int turns = 10;
+    private int freezeLimit = 20;
 
     public Freezing(){
         super();
@@ -31,42 +31,48 @@ public class Freezing extends Status implements SeperateIn, Behavable, Overrides
     }
 
     @Override
-    public boolean onStackIn(Status sameStatus) {
-        if (sameStatus instanceof Freezing) {
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public boolean overrideMovement(Entity entity, Space toSpace) {
-        return false;
-    }
-
-    @Override
     public int behave() {
-        if (turns >= limit){
-            turns = 0;
-            enabled = !enabled;
-        } else {
-            turns ++;
+        turns--;
+        if (turns >= freezeLimit) {
+            Entity owner = this.owner;
+            owner.removeStatus(this);
+            owner.addStatus(new Frozen());
+        } else if (turns <= 0) {
+            this.owner.removeStatus(this);
         }
         return 100;
     }
 
     @Override
     public boolean isActive() {
-        return owner.isAlive();
+        return this.owner != null && this.owner.isAlive();
     }
 
     @Override
-    public boolean isEnabled() {
-        return enabled;
+    public boolean onStackIn(Status sameStatus) {
+        if (sameStatus instanceof Freezing freezing) {
+            freezing.turns += this.turns;
+            return true;
+        }
+        if (sameStatus instanceof Frozen) {
+            return true;
+        }
+        return false;
     }
 
     @Override
     public boolean validateSamenessIn(Status status) {
-        return status instanceof Freezing;
+        return status instanceof Freezing || status instanceof Frozen;
+    }
+
+    @Override
+    public int modifyAttackTime(int time) {
+        return time + (int)App.lerp(0, 0, freezeLimit, time, turns);
+    }
+
+    @Override
+    public int modifyMoveTime(int time) {
+        return time + (int)App.lerp(0, 0, freezeLimit, time, turns);
     }
     
 }

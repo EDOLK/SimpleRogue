@@ -5,11 +5,13 @@ import org.hexworks.zircon.api.color.TileColor;
 import game.gamelogic.HasStatusVulns;
 import game.gamelogic.OverridesMovement;
 import game.gamelogic.behavior.Behavable;
+import game.gameobjects.MovementResult;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Entity;
 
 public class Rooted extends Status implements OverridesMovement, Behavable, SeperateOut, HasStatusVulns {
-    private int timer = 10;
+
+    private int timer = 5;
 
     public Rooted() {
         super();
@@ -35,8 +37,8 @@ public class Rooted extends Status implements OverridesMovement, Behavable, Sepe
     }
 
     @Override
-    public boolean overrideMovement(Entity entity, Space toSpace) {
-        return false;
+    public MovementResult overrideMovement(MovementResult result, Entity entity, Space toSpace) {
+        return result.withSuccessful(false);
     }
 
     @Override

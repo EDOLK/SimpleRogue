@@ -27,7 +27,7 @@ public class Ration extends Item implements Consumable {
                 Display.log("That ration was way too old.");
             }
         } else {
-            consumer.heal(App.randomNumber(1,3));
+            consumer.heal(App.randomNumber(1,5));
             if (consumer instanceof PlayerEntity) {
                 Display.log("Still edible, suprisingly.");
             }

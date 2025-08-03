@@ -8,6 +8,7 @@ import game.App;
 import game.Dungeon;
 import game.Path;
 import game.gamelogic.Skill;
+import game.gameobjects.MovementResult;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Animal;
 import game.gameobjects.entities.Entity;
@@ -36,7 +37,7 @@ public class AnimalWandering extends Behavior {
         }
         if (path[locationInPath].getOccupant() == animal && !pathIsBlocked() && locationInPath != path.length-1) {
             Space possibleSpace = path[locationInPath+1];
-            if (Space.moveEntity(animal, possibleSpace)) {
+            if (Space.moveEntity(animal, possibleSpace).isSuccessful()) {
                 locationInPath++;
                 return animal.getTimeToMove();
             }
@@ -58,7 +59,7 @@ public class AnimalWandering extends Behavior {
         try {
             AnimalHunting h = new AnimalHunting(this.animal, target);
             //TODO: Bandaid fix. Fix properly later.
-            if (!h.isValid()) {
+            if (!h.pathIsValid()) {
                 return Optional.empty();
             }
             return Optional.of(h);

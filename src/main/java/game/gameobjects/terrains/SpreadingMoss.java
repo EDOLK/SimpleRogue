@@ -9,8 +9,12 @@ import org.hexworks.zircon.api.Modifiers;
 import org.hexworks.zircon.api.color.TileColor;
 import org.hexworks.zircon.api.modifier.Modifier;
 
+import game.display.Display;
 import game.gamelogic.Examinable;
 import game.gameobjects.Space;
+import game.gameobjects.entities.Entity;
+import game.gameobjects.entities.PlayerEntity;
+import game.gameobjects.statuses.Rooted;
 import game.gameobjects.terrains.liquids.Water;
 import kotlin.Pair;
 
@@ -70,18 +74,16 @@ public class SpreadingMoss extends SpreadableTerrain implements Examinable{
     @Override
     public int behave() {
 
-        // TODO: add during movement refactor
-        //
-        // if (getSpace().isOccupied()) {
-        //     Entity occupant = getSpace().getOccupant();
-        //     if (occupant.addStatus(new Rooted())){
-        //         if (occupant instanceof PlayerEntity) {
-        //             Display.log("You are rooted!");
-        //         } else {
-        //             Display.log("The " + occupant.getTrueName() + " is rooted.", occupant.getSpace());
-        //         }
-        //     }
-        // }
+        if (getSpace().isOccupied()) {
+            Entity occupant = getSpace().getOccupant();
+            if (occupant.addStatus(new Rooted())){
+                if (occupant instanceof PlayerEntity) {
+                    Display.log("You are rooted!");
+                } else {
+                    Display.log("The " + occupant.getTrueName() + " is rooted.", occupant.getSpace());
+                }
+            }
+        }
 
         for (Terrain terrain : getSpace().getTerrains()) {
             if (terrain instanceof Water water && water.getAmount() > 0) {

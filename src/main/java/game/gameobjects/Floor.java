@@ -169,7 +169,6 @@ public class Floor{
                         }
                     }
 
-
                     if (entity instanceof HasOffHand hasOffHand){
                         ItemSlot slot = hasOffHand.getOffHandSlot();
                         if (slot.getEquippedItem() != null && slot.getEquippedItem() instanceof Behavable behavableItem){
@@ -358,6 +357,7 @@ public class Floor{
 
     public static List<AttackResult> doAttack(Entity attacker, Entity defender){
 
+        // TODO: add support for multiple OverridesAttack at the same time
         OverridesAttack overridesAttack = (OverridesAttack)attacker.getStatusByClass(OverridesAttack.class);
         if (overridesAttack != null){
             return overridesAttack.overrideAttack(attacker, defender);
@@ -403,6 +403,7 @@ public class Floor{
     }
 
     public static AttackResult doAttack(Entity attacker, Entity defender, Weapon attackerWeapon){
+        // TODO: add support for multiple OverridesAttack at the same time
         OverridesAttack overridesAttack = (OverridesAttack)attacker.getStatusByClass(OverridesAttack.class);
         if (overridesAttack != null){
             return overridesAttack.overrideAttack(attacker, defender, attackerWeapon);

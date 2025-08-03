@@ -41,9 +41,7 @@ public abstract class Menu {
         setScreen(ScreenBuilder.createScreenFor(tileGrid));
         getScreen().setTileset(tileSet);
         getScreen().setTheme(colorTheme);
-        getScreen().handleKeyboardEvents(KeyboardEventType.KEY_PRESSED, (event, phase) -> {
-            return handleKeyboardEvent(event, phase);
-        });
+        getScreen().handleKeyboardEvents(KeyboardEventType.KEY_PRESSED, this::handleKeyboardEvent);
     }
 
     public UIEventResponse handleKeyboardEvent(KeyboardEvent event, UIEventPhase phase){
