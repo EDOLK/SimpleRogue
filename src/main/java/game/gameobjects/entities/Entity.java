@@ -214,33 +214,30 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
     
     public boolean addStatus(Status status){
 
-        if (status == null){
+        if (status == null)
             return false;
-        }
 
         boolean vulnerable = isVulnerable(status);
 
-        for (Status st : statuses) {
-            if (!vulnerable && st instanceof HasStatusVulns v) {
-                if (v.isVulnerable(status)) {
-                    vulnerable = true;
-                }
-            }
-            if (st instanceof SeperateOut sOut) {
-                if (sOut.filterOut(status)){
-                    return false;
-                }
-            }
-            if (status instanceof SeperateIn sIn) {
-                if (sIn.filterIn(st)){
-                    return false;
-                }
-            }
+        List<Status> statusesToCheck = List.copyOf(statuses);
+
+        boolean filteredOut = false; boolean filteredIn = false;
+
+        for (Status st : statusesToCheck) {
+
+            if (!vulnerable && st instanceof HasStatusVulns v && v.isVulnerable(status))
+                vulnerable = true;
+
+            if (st instanceof SeperateOut sOut && sOut.filterOut(status))
+                filteredOut = true;
+
+            if (status instanceof SeperateIn sIn && sIn.filterIn(st))
+                filteredIn = true;
+
         }
 
-        if (!vulnerable) {
+        if (!vulnerable || filteredOut || filteredIn)
             return false;
-        }
 
         if (statuses.add(status)){
             status.setOwner(this);
@@ -251,16 +248,11 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
     }
 
     public boolean removeStatus(Status status){
-        if (status != null){
-            if (getStatuses().remove(status)){
-                status.setOwner(null);
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            return false;
+        if (status != null && statuses.remove(status)) {
+            status.setOwner(null);
+            return true;
         }
+        return false;
     }
     
     // public boolean hasStatus(Class<?> statusClass){
