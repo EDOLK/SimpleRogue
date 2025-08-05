@@ -14,7 +14,7 @@ import game.gameobjects.DamageType;
 import game.gameobjects.Space;
 import game.gameobjects.terrains.Fire;
 
-public class Burning extends Status implements Behavable, LightSource, SeperateIn{
+public class Burning extends Status implements Behavable, LightSource, FiltersIn{
     
     private int minDamage;
     private int maxDamage;
@@ -88,17 +88,12 @@ public class Burning extends Status implements Behavable, LightSource, SeperateI
     }
 
     @Override
-    public boolean onStackIn(Status sameStatus) {
-        if (sameStatus instanceof Burning burning) {
+    public boolean filterIn(Status status) {
+        if (status instanceof Burning burning) {
             burning.turns++;
             return true;
         }
         return false;
-    }
-
-    @Override
-    public boolean validateSamenessIn(Status status) {
-        return status instanceof Burning;
     }
     
 }

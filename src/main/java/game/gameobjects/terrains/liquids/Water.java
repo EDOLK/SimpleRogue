@@ -10,8 +10,8 @@ import game.gameobjects.terrains.gasses.Steam;
 import game.gamelogic.behavior.Behavable;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.statuses.Burning;
-import game.gameobjects.statuses.SeperateIn;
-import game.gameobjects.statuses.SeperateOut;
+import game.gameobjects.statuses.FiltersIn;
+import game.gameobjects.statuses.FiltersOut;
 import game.gameobjects.statuses.Status;
 import game.gameobjects.terrains.Ice;
 
@@ -62,7 +62,7 @@ public class Water extends Liquid{
         return new Wet();
     }
 
-    public static class Wet extends Status implements SeperateIn, SeperateOut, Behavable {
+    public static class Wet extends Status implements FiltersIn, FiltersOut, Behavable {
 
         private int timer = 20;
 
@@ -73,46 +73,6 @@ public class Water extends Liquid{
             setfGColor(TileColor.transparent());
             setbGColor(TileColor.create(75, 75, 235, 155));
             setModifiers(new HashSet<>(List.of(Modifiers.blink())));
-        }
-
-        @Override
-        public boolean onStackIn(Status sameStatus) {
-            switch (sameStatus) {
-                case Wet w -> {
-                    w.timer++;
-                    return true;
-                }
-                case Burning b -> {
-                    Entity owner = b.getOwner();
-                    owner.removeStatus(b);
-                    owner.getSpace().addTerrain(new Steam(1));
-                    return true;
-                }
-                default -> {
-                    return false;
-                }
-            }
-        }
-
-        @Override
-        public boolean validateSamenessIn(Status status) {
-            return status instanceof Burning || status instanceof Wet;
-        }
-
-        @Override
-        public boolean onStackOut(Status sameStatus) {
-            if (sameStatus instanceof Burning) {
-                Entity owner = this.getOwner();
-                owner.getSpace().addTerrain(new Steam(1));
-                owner.removeStatus(this);
-                return true;
-            }
-            return false;
-        }
-
-        @Override
-        public boolean validateSamenessOut(Status status) {
-            return status instanceof Burning;
         }
 
         @Override
@@ -127,6 +87,36 @@ public class Water extends Liquid{
         @Override
         public boolean isActive() {
             return this.owner != null && this.owner.isAlive();
+        }
+
+        @Override
+        public boolean filterOut(Status status) {
+            if (status instanceof Burning) {
+                Entity owner = this.getOwner();
+                owner.getSpace().addTerrain(new Steam(1));
+                owner.removeStatus(this);
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        public boolean filterIn(Status status) {
+            switch (status) {
+                case Wet w -> {
+                    w.timer++;
+                    return true;
+                }
+                case Burning b -> {
+                    Entity owner = b.getOwner();
+                    owner.removeStatus(b);
+                    owner.getSpace().addTerrain(new Steam(1));
+                    return true;
+                }
+                default -> {
+                }
+            }
+            return false;
         }
 
     }

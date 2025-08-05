@@ -8,7 +8,7 @@ import org.hexworks.zircon.api.modifier.Modifier;
 import game.gamelogic.HasDodge;
 import game.gamelogic.behavior.Behavable;
 
-public class Flying extends Status implements Behavable, HasDodge, SeperateIn{
+public class Flying extends Status implements Behavable, HasDodge, FiltersIn{
 
     private int turns;
     private boolean perminent;
@@ -59,19 +59,14 @@ public class Flying extends Status implements Behavable, HasDodge, SeperateIn{
     }
 
     @Override
-    public boolean onStackIn(Status sameStatus) {
-        if (sameStatus instanceof Flying otherFlying) {
+    public boolean filterIn(Status status) {
+        if (status instanceof Flying otherFlying) {
             if (!this.isPermanent() && !otherFlying.isPermanent()){
                 otherFlying.setTurns(otherFlying.getTurns()+this.getTurns());
             }
             return true;
         }
         return false;
-    }
-
-    @Override
-    public boolean validateSamenessIn(Status status) {
-        return status instanceof Flying;
     }
     
 }

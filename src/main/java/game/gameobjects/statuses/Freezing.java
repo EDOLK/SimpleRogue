@@ -1,29 +1,24 @@
 package game.gameobjects.statuses;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import org.hexworks.zircon.api.Modifiers;
 import org.hexworks.zircon.api.color.TileColor;
-import org.hexworks.zircon.api.modifier.Modifier;
 
 import game.App;
 import game.gamelogic.behavior.Behavable;
 import game.gamelogic.time.ModifiesAttackTime;
 import game.gamelogic.time.ModifiesMoveTime;
-import game.gameobjects.entities.Entity;
 
-public class Freezing extends Status implements SeperateIn, Behavable, ModifiesMoveTime, ModifiesAttackTime{
+public class Freezing extends Status implements FiltersIn, FiltersOut, Behavable, ModifiesMoveTime, ModifiesAttackTime{
     
     private int turns = 10;
     private int freezeLimit = 20;
 
     public Freezing(){
         super();
-        this.setCharacter('*');
-        Set<Modifier> modSet = new HashSet<Modifier>();
-        modSet.add(Modifiers.blink());
-        setModifiers(modSet);
+        setCharacter('*');
+        setModifiers(Set.of(Modifiers.blink()));
         setfGColor(TileColor.create(100, 100, 255, 255));
         setbGColor(TileColor.transparent());
         setDescriptor("Freezing");
@@ -34,9 +29,7 @@ public class Freezing extends Status implements SeperateIn, Behavable, ModifiesM
     public int behave() {
         turns--;
         if (turns >= freezeLimit) {
-            Entity owner = this.owner;
-            owner.removeStatus(this);
-            owner.addStatus(new Frozen());
+            this.owner.addStatus(new Frozen());
         } else if (turns <= 0) {
             this.owner.removeStatus(this);
         }
@@ -49,23 +42,6 @@ public class Freezing extends Status implements SeperateIn, Behavable, ModifiesM
     }
 
     @Override
-    public boolean onStackIn(Status sameStatus) {
-        if (sameStatus instanceof Freezing freezing) {
-            freezing.turns += this.turns;
-            return true;
-        }
-        if (sameStatus instanceof Frozen) {
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public boolean validateSamenessIn(Status status) {
-        return status instanceof Freezing || status instanceof Frozen;
-    }
-
-    @Override
     public int modifyAttackTime(int time) {
         return time + (int)App.lerp(0, 0, freezeLimit, time, turns);
     }
@@ -73,6 +49,36 @@ public class Freezing extends Status implements SeperateIn, Behavable, ModifiesM
     @Override
     public int modifyMoveTime(int time) {
         return time + (int)App.lerp(0, 0, freezeLimit, time, turns);
+    }
+
+    @Override
+    public boolean filterIn(Status status) {
+        switch (status) {
+            case Burning burning -> {
+                burning.getOwner().removeStatus(burning);
+                return true;
+            }
+            default -> {
+                return false;
+            }
+        }
+    }
+
+    @Override
+    public boolean filterOut(Status status) {
+        switch (status) {
+            case Freezing freezing -> {
+                this.turns += freezing.turns;
+                return true;
+            }
+            case Burning burning -> {
+                this.owner.removeStatus(this);
+                return true;
+            }
+            default -> {
+                return false;
+            }
+        }
     }
     
 }

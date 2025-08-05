@@ -35,8 +35,8 @@ import game.gameobjects.items.Corpse;
 import game.gameobjects.items.Item;
 import game.gameobjects.items.armor.Armor;
 import game.gameobjects.items.weapons.Weapon;
-import game.gameobjects.statuses.SeperateIn;
-import game.gameobjects.statuses.SeperateOut;
+import game.gameobjects.statuses.FiltersIn;
+import game.gameobjects.statuses.FiltersOut;
 import game.gameobjects.statuses.Status;
 import game.gameobjects.terrains.Terrain;
 
@@ -213,54 +213,31 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
     }
     
     public boolean addStatus(Status status){
-        if (status == null){
+
+        if (status == null)
             return false;
-        }
+
         boolean vulnerable = isVulnerable(status);
-        List<Status> filteredIn = new ArrayList<>();
-        List<SeperateOut> filteredOut = new ArrayList<>();
 
-        for (Status st : statuses) {
-            if (!vulnerable && st instanceof HasStatusVulns v) {
-                if (v.isVulnerable(status)) {
-                    vulnerable = true;
-                }
-            }
-            if (status instanceof SeperateIn sIn) {
-                if (sIn.validateSamenessIn(st)){
-                    filteredIn.add(st);
-                }
-            }
-            if (st instanceof SeperateOut sOut) {
-                if (sOut.validateSamenessOut(status)) {
-                    filteredOut.add(sOut);
-                }
-            }
+        List<Status> statusesToCheck = List.copyOf(statuses);
+
+        boolean filteredOut = false; boolean filteredIn = false;
+
+        for (Status st : statusesToCheck) {
+
+            if (!vulnerable && st instanceof HasStatusVulns v && v.isVulnerable(status))
+                vulnerable = true;
+
+            if (st instanceof FiltersOut sOut && sOut.filterOut(status))
+                filteredOut = true;
+
+            if (status instanceof FiltersIn sIn && sIn.filterIn(st))
+                filteredIn = true;
+
         }
 
-        if (!vulnerable) {
+        if (!vulnerable || filteredOut || filteredIn)
             return false;
-        }
-
-        boolean fIn = false;
-
-        for (Status sIn : filteredIn) {
-            if (((SeperateIn)status).onStackIn(sIn)){
-                fIn = true;
-            }
-        }
-
-        boolean fOut = false;
-
-        for (SeperateOut sOut : filteredOut) {
-            if (sOut.onStackOut(status)) {
-                fOut = true;
-            }
-        }
-
-        if (fIn || fOut) {
-            return false;
-        }
 
         if (statuses.add(status)){
             status.setOwner(this);
@@ -271,16 +248,11 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
     }
 
     public boolean removeStatus(Status status){
-        if (status != null){
-            if (getStatuses().remove(status)){
-                status.setOwner(null);
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            return false;
+        if (status != null && statuses.remove(status)) {
+            status.setOwner(null);
+            return true;
         }
+        return false;
     }
     
     // public boolean hasStatus(Class<?> statusClass){
