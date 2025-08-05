@@ -3,7 +3,6 @@ package game.gameobjects.terrains.gasses;
 import org.hexworks.zircon.api.color.TileColor;
 
 import game.gameobjects.Space;
-import game.gameobjects.entities.Entity;
 import game.gameobjects.statuses.Freezing;
 import game.gameobjects.terrains.liquids.Liquid;
 
