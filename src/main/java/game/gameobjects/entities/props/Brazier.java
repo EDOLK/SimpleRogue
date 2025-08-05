@@ -17,7 +17,7 @@ import game.gameobjects.DamageType;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.items.Item;
 import game.gameobjects.statuses.Burning;
-import game.gameobjects.statuses.SeperateOut;
+import game.gameobjects.statuses.FiltersOut;
 import game.gameobjects.statuses.Status;
 import game.gameobjects.terrains.Fire;
 import game.gameobjects.terrains.liquids.Water.Wet;
@@ -62,7 +62,7 @@ public class Brazier extends Entity implements HasResistances {
         return interactor.getTimeToWait();
     }
 
-    private static class Lit extends Status implements LightSource, OnDeath, SeperateOut{
+    private static class Lit extends Status implements LightSource, OnDeath, FiltersOut{
 
         public Lit() {
             super();
@@ -104,7 +104,7 @@ public class Brazier extends Entity implements HasResistances {
         
     }
 
-    private static class UnLit extends Status implements SeperateOut{
+    private static class UnLit extends Status implements FiltersOut{
 
         public UnLit() {
             super();

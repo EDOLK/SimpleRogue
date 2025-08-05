@@ -14,7 +14,7 @@ import game.gameobjects.DamageType;
 import game.gameobjects.Space;
 import game.gameobjects.terrains.Fire;
 
-public class Burning extends Status implements Behavable, LightSource, SeperateIn{
+public class Burning extends Status implements Behavable, LightSource, FiltersIn{
     
     private int minDamage;
     private int maxDamage;

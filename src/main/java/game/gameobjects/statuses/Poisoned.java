@@ -10,7 +10,7 @@ import org.hexworks.zircon.api.modifier.Modifier;
 import game.gamelogic.behavior.Behavable;
 import game.gameobjects.DamageType;
 
-public class Poisoned extends Status implements Behavable, SeperateIn{
+public class Poisoned extends Status implements Behavable, FiltersIn{
 
     private int minDamage;
     private int maxDamage;

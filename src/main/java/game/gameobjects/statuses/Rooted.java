@@ -9,7 +9,7 @@ import game.gameobjects.MovementResult;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Entity;
 
-public class Rooted extends Status implements OverridesMovement, Behavable, SeperateOut, HasStatusVulns {
+public class Rooted extends Status implements OverridesMovement, Behavable, FiltersOut, HasStatusVulns {
 
     private int timer = 5;
 

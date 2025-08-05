@@ -12,7 +12,7 @@ import org.hexworks.zircon.api.modifier.Modifier;
 import game.gamelogic.behavior.Behavable;
 import game.gameobjects.DamageType;
 
-public class Bleeding extends Status implements Behavable, SeperateOut{
+public class Bleeding extends Status implements Behavable, FiltersOut{
 
     private int remainingDamage;
     private int minDamage;

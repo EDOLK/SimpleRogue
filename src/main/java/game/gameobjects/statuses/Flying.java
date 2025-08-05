@@ -8,7 +8,7 @@ import org.hexworks.zircon.api.modifier.Modifier;
 import game.gamelogic.HasDodge;
 import game.gamelogic.behavior.Behavable;
 
-public class Flying extends Status implements Behavable, HasDodge, SeperateIn{
+public class Flying extends Status implements Behavable, HasDodge, FiltersIn{
 
     private int turns;
     private boolean perminent;

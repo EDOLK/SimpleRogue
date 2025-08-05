@@ -9,10 +9,11 @@ import game.display.KeyMap.Action;
 import game.gamelogic.OverridesBehavable;
 import game.gamelogic.OverridesPlayerInput;
 import game.gamelogic.behavior.Behavable;
+import game.gameobjects.terrains.gasses.Steam;
 import game.Dungeon;
 import game.display.Display;
 
-public class Frozen extends Status implements SeperateIn, Behavable, OverridesBehavable, OverridesPlayerInput {
+public class Frozen extends Status implements FiltersIn, FiltersOut, Behavable, OverridesBehavable, OverridesPlayerInput {
 
     private int turns = 5;
 
@@ -61,10 +62,41 @@ public class Frozen extends Status implements SeperateIn, Behavable, OverridesBe
 
     @Override
     public boolean filterIn(Status status) {
-        if (status instanceof Freezing || status instanceof Frozen) {
-            return true;
+        switch (status) {
+            case Freezing freezing -> {
+                freezing.getOwner().removeStatus(freezing);
+                return false;
+            }
+            case Burning burning -> {
+                burning.getOwner().getSpace().addTerrain(new Steam(1));
+                burning.getOwner().removeStatus(burning);
+                return true;
+            }
+            default -> {
+                return false;
+            }
         }
-        return false;
+    }
+
+    @Override
+    public boolean filterOut(Status status) {
+        switch (status) {
+            case Frozen frozen -> {
+                return true;
+            }
+            case Freezing freezing -> {
+                this.turns++;
+                return true;
+            }
+            case Burning burning -> {
+                this.owner.getSpace().addTerrain(new Steam(1));
+                this.owner.removeStatus(this);
+                return true;
+            }
+            default -> {
+                return false;
+            }
+        }
     }
 
 }

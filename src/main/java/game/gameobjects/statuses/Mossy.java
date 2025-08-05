@@ -6,7 +6,7 @@ import game.gamelogic.HasStatusVulns;
 import game.gamelogic.behavior.Behavable;
 import game.gameobjects.terrains.Moss;
 
-public class Mossy extends Status implements SeperateOut, HasStatusVulns, Behavable{
+public class Mossy extends Status implements FiltersOut, HasStatusVulns, Behavable{
 
     public Mossy() {
         super();

@@ -10,8 +10,8 @@ import game.gameobjects.terrains.gasses.Steam;
 import game.gamelogic.behavior.Behavable;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.statuses.Burning;
-import game.gameobjects.statuses.SeperateIn;
-import game.gameobjects.statuses.SeperateOut;
+import game.gameobjects.statuses.FiltersIn;
+import game.gameobjects.statuses.FiltersOut;
 import game.gameobjects.statuses.Status;
 import game.gameobjects.terrains.Ice;
 
@@ -62,7 +62,7 @@ public class Water extends Liquid{
         return new Wet();
     }
 
-    public static class Wet extends Status implements SeperateIn, SeperateOut, Behavable {
+    public static class Wet extends Status implements FiltersIn, FiltersOut, Behavable {
 
         private int timer = 20;
 

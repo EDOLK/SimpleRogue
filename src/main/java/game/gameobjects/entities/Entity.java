@@ -35,8 +35,8 @@ import game.gameobjects.items.Corpse;
 import game.gameobjects.items.Item;
 import game.gameobjects.items.armor.Armor;
 import game.gameobjects.items.weapons.Weapon;
-import game.gameobjects.statuses.SeperateIn;
-import game.gameobjects.statuses.SeperateOut;
+import game.gameobjects.statuses.FiltersIn;
+import game.gameobjects.statuses.FiltersOut;
 import game.gameobjects.statuses.Status;
 import game.gameobjects.terrains.Terrain;
 
@@ -228,10 +228,10 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
             if (!vulnerable && st instanceof HasStatusVulns v && v.isVulnerable(status))
                 vulnerable = true;
 
-            if (st instanceof SeperateOut sOut && sOut.filterOut(status))
+            if (st instanceof FiltersOut sOut && sOut.filterOut(status))
                 filteredOut = true;
 
-            if (status instanceof SeperateIn sIn && sIn.filterIn(st))
+            if (status instanceof FiltersIn sIn && sIn.filterIn(st))
                 filteredIn = true;
 
         }
