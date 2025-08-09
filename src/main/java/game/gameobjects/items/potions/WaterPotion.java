@@ -6,6 +6,7 @@ import game.gamelogic.Aimable;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.items.Item;
+import game.gameobjects.statuses.Wet;
 import game.gameobjects.terrains.liquids.Water;
 
 public class WaterPotion extends Item implements Aimable{
@@ -22,7 +23,7 @@ public class WaterPotion extends Item implements Aimable{
 
     @Override
     public void onHit(Entity target) {
-        target.addStatus(new Water.Wet());
+        target.addStatus(new Wet(new Water(1)));
     }
 
     @Override
