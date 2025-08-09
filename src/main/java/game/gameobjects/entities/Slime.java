@@ -27,6 +27,7 @@ import game.gameobjects.DamageType;
 import game.gameobjects.items.Corpse;
 import game.gameobjects.items.Item;
 import game.gameobjects.items.weapons.Weapon;
+import game.gameobjects.terrains.liquids.SlimeLiquid;
 
 public class Slime extends Animal implements DropsXP, HasDodge, HasResistances, HasInventory, HasDrops, OnDeath{
 
@@ -129,7 +130,7 @@ public class Slime extends Animal implements DropsXP, HasDodge, HasResistances, 
         if (attackInfo.getDamageType() == DamageType.FIRE) {
             getSpace().setOccupant(new EvaporatedSlime());
         } else {
-            getSpace().addItem(new Corpse(this));
+            getSpace().addTerrain(new SlimeLiquid(1));
         }
     }
 
