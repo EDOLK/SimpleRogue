@@ -19,8 +19,8 @@ import game.gameobjects.items.Item;
 import game.gameobjects.statuses.Burning;
 import game.gameobjects.statuses.FiltersOut;
 import game.gameobjects.statuses.Status;
+import game.gameobjects.statuses.Wet;
 import game.gameobjects.terrains.Fire;
-import game.gameobjects.terrains.liquids.Water.Wet;
 
 public class Brazier extends Entity implements HasResistances {
 

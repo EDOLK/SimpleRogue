@@ -6,6 +6,7 @@ import java.util.List;
 import game.gamelogic.Examinable;
 import game.gameobjects.Space;
 import game.gameobjects.statuses.Status;
+import game.gameobjects.statuses.Wet;
 import game.gameobjects.terrains.Fire;
 import game.gameobjects.terrains.SpreadableTerrain;
 import game.gameobjects.terrains.Terrain;
@@ -28,7 +29,9 @@ public abstract class Liquid extends SpreadableTerrain implements Examinable {
 
     public abstract boolean wets();
 
-    public abstract Status getWetStatus(int amount);
+    public Status getWetStatus(int amount){
+        return new Wet(this);
+    };
 
     @Override
     public int behave() {

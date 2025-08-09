@@ -30,7 +30,7 @@ import game.gameobjects.items.weapons.Weapon;
 
 public class Slime extends Animal implements DropsXP, HasDodge, HasResistances, HasInventory, HasDrops, OnDeath{
 
-    private ArrayList<Item> inventory = new ArrayList<Item>();
+    private List<Item> inventory = new ArrayList<>();
     
     public Slime(){
 

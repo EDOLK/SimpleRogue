@@ -92,8 +92,11 @@ public class SpreadingMoss extends SpreadableTerrain implements Examinable{
                 break;
             }
         }
+
         Moss.trySpread(this.getSpace(), false, false);
+
         return super.behave();
+
     }
 
     
