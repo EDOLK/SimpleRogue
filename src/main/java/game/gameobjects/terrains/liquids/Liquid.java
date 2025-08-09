@@ -15,9 +15,9 @@ import game.gameobjects.terrains.gasses.Gas;
 
 public abstract class Liquid extends SpreadableTerrain implements Examinable {
 
-    private String description;
+    private String description = "";
 
-    private String name;
+    private String name = "";
 
     public abstract boolean evaporates();
 
