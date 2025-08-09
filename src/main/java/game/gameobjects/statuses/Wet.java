@@ -15,6 +15,10 @@ public class Wet extends Status implements Behavable, FiltersOut, FiltersIn{
     private int timer = 20;
     private Liquid liquid;
 
+    public Liquid getLiquid() {
+        return liquid;
+    }
+
     public Wet(Liquid liquid) {
         super();
         this.liquid = liquid;
