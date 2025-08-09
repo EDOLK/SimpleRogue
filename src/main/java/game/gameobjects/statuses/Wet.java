@@ -17,6 +17,7 @@ public class Wet extends Status implements Behavable, FiltersOut, FiltersIn{
 
     public Wet(Liquid liquid) {
         super();
+        this.liquid = liquid;
         setDescriptor("Wet");
         setCharacter(' ');
         setfGColor(TileColor.transparent());
