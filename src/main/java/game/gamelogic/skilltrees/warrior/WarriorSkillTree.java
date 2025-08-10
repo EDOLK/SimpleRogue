@@ -11,15 +11,27 @@ public class WarriorSkillTree extends SkillTree {
         this.name = "Warrior";
         this.skillEntries.add(
             new SkillEntry.Builder()
-            .addName("Clobber")
-            .addCostRequirement(1)
-            .addAttributeRequirement(Attribute.STRENGTH, 1)
-            .addOnApply((e) -> {
-                if (e instanceof HasAbilities hasAbilities){
-                    hasAbilities.getAbilities().add(new Clobber(e));
-                }
-            })
-            .build()
+                .addName("Clobber")
+                .addCostRequirement(1)
+                .addAttributeRequirement(Attribute.STRENGTH, 1)
+                .addOnApply((e) -> {
+                    if (e instanceof HasAbilities hasAbilities){
+                        hasAbilities.getAbilities().add(new Clobber(e));
+                    }
+                })
+                .build()
+        );
+        this.skillEntries.add(
+            new SkillEntry.Builder()
+                .addName("Second Wind")
+                .addCostRequirement(1)
+                .addAttributeRequirement(Attribute.ENDURANCE, 1)
+                .addOnApply((e) -> {
+                    if (e instanceof HasAbilities hasAbilities){
+                        hasAbilities.getAbilities().add(new SecondWind(e));
+                    }
+                })
+                .build()
         );
     }
 

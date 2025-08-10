@@ -9,6 +9,11 @@ public class CheckConditions {
     private boolean armors;
     private boolean enchantments;
     private boolean inventory;
+    private boolean ability;
+
+    public boolean includesAbility() {
+        return ability;
+    }
 
     public boolean includesStatuses() {
         return statuses;
@@ -70,6 +75,11 @@ public class CheckConditions {
 
     public CheckConditions withInventory(boolean value){
         this.inventory = value;
+        return this;
+    }
+
+    public CheckConditions withAbility(boolean ability) {
+        this.ability = ability;
         return this;
     }
 

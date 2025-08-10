@@ -27,6 +27,8 @@ import game.gameobjects.DamageType;
 import game.gameobjects.Space;
 import game.gameobjects.items.Item;
 import game.gameobjects.items.weapons.Weapon;
+import game.gameobjects.statuses.Slimed;
+import game.gameobjects.statuses.Status;
 import game.gameobjects.terrains.liquids.SlimeLiquid;
 
 public class Slime extends Animal implements DropsXP, HasDodge, HasResistances, HasInventory, HasDrops, OnDeath{
@@ -147,6 +149,14 @@ public class Slime extends Animal implements DropsXP, HasDodge, HasResistances, 
     @Override
     public int getDropPoints() {
         return randomNumber(3, 15);
+    }
+
+    @Override
+    protected boolean isVulnerable(Status status) {
+        if (status instanceof Slimed) {
+            return false;
+        }
+        return super.isVulnerable(status);
     }
 
 }

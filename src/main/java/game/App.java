@@ -13,6 +13,7 @@ import game.gamelogic.Armed;
 import game.gamelogic.Armored;
 import game.gamelogic.HasInventory;
 import game.gamelogic.abilities.HasAbilities;
+import game.gamelogic.abilities.HasAbility;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.items.armor.Armor;
 import game.gameobjects.items.weapons.Weapon;
@@ -60,43 +61,46 @@ public class App
 
             Optional<T> optional = function.apply(object);
 
-            if (optional.isPresent()) {
+            if (optional.isPresent())
                 tList.add(optional.get());
-            }
 
             if (object instanceof Entity entity) {
-                if (conditions.includesStatuses()) {
+
+                if (conditions.includesStatuses())
                     entity.getStatuses().forEach(helper::accept);
-                }
-                if (conditions.includesUnarmedWeapon()) {
+
+                if (conditions.includesUnarmedWeapon())
                     helper.accept(entity.getUnarmedWeapon());
-                }
+
             }
 
-            if (object instanceof HasInventory hasInventory && conditions.includesInventory()) {
+            if (object instanceof HasInventory hasInventory && conditions.includesInventory())
                 hasInventory.getInventory().forEach(helper::accept);
-            }
 
-            if (object instanceof Armed armed && conditions.includesArmedWeapons()) {
+            if (object instanceof Armed armed && conditions.includesArmedWeapons())
                 armed.getWeapons().forEach(helper::accept);
-            }
 
-            if (object instanceof Armored armored && conditions.includesArmors()) {
+            if (object instanceof Armored armored && conditions.includesArmors())
                 armored.getArmor().forEach(helper::accept);
-            }
 
-            if (object instanceof HasAbilities hasAbilities && conditions.includesAbilities()) {
+            if (object instanceof HasAbilities hasAbilities && conditions.includesAbilities())
                 hasAbilities.getAbilities().forEach(helper::accept);
-            }
 
-            if (object instanceof Weapon weapon && conditions.includesEnchantments()) {
+            if (object instanceof Weapon weapon && conditions.includesEnchantments())
                 helper.accept(weapon.getEnchantment());
-            }
 
-            if (object instanceof Armor armor && conditions.includesEnchantments()) {
+            if (object instanceof Armor armor && conditions.includesEnchantments())
                 helper.accept(armor.getEnchantment());
-            }
+            
+            if (conditions.includesAbility()) {
 
+                if (object instanceof HasAbilities hasAbilities)
+                    hasAbilities.getAbilities().forEach(helper::accept);
+
+                if (object instanceof HasAbility hasAbility)
+                    helper.accept(hasAbility.getAbility());
+
+            }
         }
 
         return tList;
