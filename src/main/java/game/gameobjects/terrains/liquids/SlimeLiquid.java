@@ -18,6 +18,7 @@ public class SlimeLiquid extends Liquid {
         setName("Slime");
         // setTileName("Water");
         setSpreadFactor(0.20f);
+        setDisapparationRate(10);
     }
 
     @Override

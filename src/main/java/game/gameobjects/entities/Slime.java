@@ -24,7 +24,7 @@ import game.gamelogic.resistances.PercentageResistance;
 import game.gamelogic.resistances.RangeResistance;
 import game.gamelogic.resistances.Resistance;
 import game.gameobjects.DamageType;
-import game.gameobjects.items.Corpse;
+import game.gameobjects.Space;
 import game.gameobjects.items.Item;
 import game.gameobjects.items.weapons.Weapon;
 import game.gameobjects.terrains.liquids.SlimeLiquid;
@@ -131,6 +131,11 @@ public class Slime extends Animal implements DropsXP, HasDodge, HasResistances, 
             getSpace().setOccupant(new EvaporatedSlime());
         } else {
             getSpace().addTerrain(new SlimeLiquid(1));
+            Space.getAdjacentSpaces(getSpace()).forEach((s) -> {
+                if (Math.random() < .50) {
+                    s.addTerrain(new SlimeLiquid(1));
+                }
+            });
         }
     }
 
