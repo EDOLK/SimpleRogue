@@ -8,8 +8,10 @@ public class WarriorSkillTree extends SkillTree {
 
     public WarriorSkillTree() {
         super();
+
         this.name = "Warrior";
-        this.skillEntries.add(
+
+        this.addSkillEntry(
             new SkillEntry.Builder()
                 .addName("Clobber")
                 .addCostRequirement(1)
@@ -21,11 +23,13 @@ public class WarriorSkillTree extends SkillTree {
                 })
                 .build()
         );
-        this.skillEntries.add(
+
+        this.addSkillEntry(
             new SkillEntry.Builder()
                 .addName("Second Wind")
                 .addCostRequirement(1)
                 .addAttributeRequirement(Attribute.ENDURANCE, 1)
+                .addAttributeRequirement(Attribute.DEXTERITY, 1)
                 .addOnApply((e) -> {
                     if (e instanceof HasAbilities hasAbilities){
                         hasAbilities.getAbilities().add(new SecondWind(e));
@@ -33,6 +37,20 @@ public class WarriorSkillTree extends SkillTree {
                 })
                 .build()
         );
+
+        this.addSkillEntry(
+            new SkillEntry.Builder()
+                .addName("Bulwark")
+                .addCostRequirement(1)
+                .addAttributeRequirement(Attribute.ENDURANCE, 1)
+                .addOnApply((e) -> {
+                    if (e instanceof HasAbilities hasAbilities){
+                        hasAbilities.getAbilities().add(new Bulwark(e));
+                    }
+                })
+            .build()
+        );
+
     }
 
 }

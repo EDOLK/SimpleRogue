@@ -28,6 +28,14 @@ public abstract class SkillTree implements HasName {
         return skillEntries;
     }
 
+    public boolean removeSkillEntry(SkillEntry entry){
+        return skillEntries.remove(entry);
+    }
+
+    public boolean addSkillEntry(SkillEntry entry){
+        return skillEntries.add(entry);
+    }
+
     protected String name;
     protected String description;
     
@@ -43,12 +51,12 @@ public abstract class SkillTree implements HasName {
     public static class SkillEntry implements HasName {
 
         private Map<Ability, Integer> abilityRequirements;
-        private String description = "Placeholder description";
         private Map<Attribute, Integer> attributeRequirements;
         private Map<SkillTree, Integer> skillTreeRequirements;
-        private Consumer<Entity> applyFunction = (e) -> {};
         private Map<Skill, Integer> skillRequirements;
+        private Consumer<Entity> applyFunction = (e) -> {};
         private String name = "Placeholder name";
+        private String description = "Placeholder description";
         private int levelRequirement = -1;
         private int cost = 0;
 
