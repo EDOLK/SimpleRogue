@@ -169,7 +169,7 @@ public class Spider extends Animal implements HasDodge, HasInventory, HasDrops, 
         @Override
         public int behave() {
             int time = super.behave();
-            if (Spider.this.getBehavior() == this && Spider.this.traps < Spider.this.maxTraps && this.locationInPath == this.path.length-1) {
+            if (Spider.this.getBehavior() == this && Spider.this.traps < Spider.this.maxTraps && this.path != null && this.locationInPath == this.path.length-1) {
                 Spider.this.getSpace().addTerrain(new Web());
                 Spider.this.traps++;
             }

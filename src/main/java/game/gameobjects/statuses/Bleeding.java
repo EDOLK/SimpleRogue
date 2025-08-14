@@ -31,14 +31,17 @@ public class Bleeding extends Status implements Behavable, FiltersOut{
 
     @Override
     public int behave() {
+
         int damageToBeDelt = randomNumber(Math.min(minDamage,remainingDamage), Math.min(maxDamage,remainingDamage));
-        if (owner.isAlive()){
+
+        if (owner.isAlive())
             owner.dealDamage(damageToBeDelt, DamageType.BLEED);
-        }
+
         remainingDamage -= damageToBeDelt;
-        if (remainingDamage <= 0){
+
+        if (remainingDamage <= 0)
             owner.removeStatus(this);
-        }
+
         return 100;
     }
 

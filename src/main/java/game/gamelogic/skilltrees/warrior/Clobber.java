@@ -67,7 +67,7 @@ public class Clobber implements Ability, Behavable{
 
     @Override
     public boolean isEnabled() {
-        return cooldown <= 0;
+        return cooldown <= 0 && owner instanceof Armed armed && armed.getWeapons().stream().anyMatch(w->w.getDamageType() == DamageType.BLUNT);
     }
 
     private class ClobberSelector implements SimpleSelector {
@@ -91,8 +91,6 @@ public class Clobber implements Ability, Behavable{
 
             if (!validWeapons.isEmpty()) {
                 weaponToUse = App.getRandom(validWeapons);
-            } else if (Clobber.this.owner.getUnarmedWeapon() != null && Clobber.this.owner.getUnarmedWeapon().getDamageType() == DamageType.BLUNT) {
-                weaponToUse = Clobber.this.owner.getUnarmedWeapon();
             } else {
                 return true;
             }
@@ -110,7 +108,8 @@ public class Clobber implements Ability, Behavable{
 
                 if (result.hit() && result.defender().isAlive()) {
                     if (nextSpace.isOccupied()) {
-                        clobberee.dealDamage(2, DamageType.BLUNT);
+                        clobberee.dealDamage(App.randomNumber(1,5), DamageType.BLUNT);
+                        nextSpace.getOccupant().dealDamage(App.randomNumber(1,5), DamageType.BLUNT);
                     } else {
                         Space.moveEntity(clobberee, nextSpace);
                     }

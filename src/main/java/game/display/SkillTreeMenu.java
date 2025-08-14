@@ -52,7 +52,7 @@ public class SkillTreeMenu extends Menu {
                     return UIEventResponse.pass();
                 }
                 entry.apply(entity);
-                tree.getSkillEntries().remove(entry);
+                tree.removeSkillEntry(entry);
                 if (entity instanceof UsesSkillTrees ust) {
                     ust.getSkillLevels().computeIfPresent(tree, (k,v) -> {
                         return ++v;
@@ -67,9 +67,6 @@ public class SkillTreeMenu extends Menu {
         );
         for (Pair<Button, SkillEntry> pair : pairs) {
             Button button = pair.getFirst();
-            SkillEntry entry = pair.getSecond();
-            if (!entry.hasRequirements(entity)) {
-            }
             button.handleComponentEvents(ComponentEventType.FOCUS_GIVEN, (e) -> {
                 return handleHover(entity, entryContainer, pair);
             });
