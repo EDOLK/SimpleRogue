@@ -48,19 +48,21 @@ public class Bulwark implements Ability, OnHitted, Behavable, Levelable {
 
     @Override
     public void activate() {
-        Display.getRootMenu().startSelecting((space) -> {
-            if (space.isOccupied()) {
-                Weapon bulwarkWeapon = new Weapon();
-                bulwarkWeapon.setDamage(accumulatedDamage, accumulatedDamage);
-                bulwarkWeapon.setDamageType(DamageType.BLUNT);
-                AttackResult result = Floor.doAttack(owner, space.getOccupant(), bulwarkWeapon);
-                if (result.hit())
-                    accumulatedDamage = 0;
-                turnsLeftInCooldown = getCooldown();
-                return true;
+        Display.getRootMenu().startSelecting(
+            (space) -> {
+                if (space.isOccupied()) {
+                    Weapon bulwarkWeapon = new Weapon();
+                    bulwarkWeapon.setDamage(accumulatedDamage, accumulatedDamage);
+                    bulwarkWeapon.setDamageType(DamageType.BLUNT);
+                    AttackResult result = Floor.doAttack(owner, space.getOccupant(), bulwarkWeapon);
+                    if (result.hit())
+                        accumulatedDamage = 0;
+                    turnsLeftInCooldown = getCooldown();
+                    return true;
+                }
+                return false;
             }
-            return false;
-        });
+        );
     }
 
     @Override

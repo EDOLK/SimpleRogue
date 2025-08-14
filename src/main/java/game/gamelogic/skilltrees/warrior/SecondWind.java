@@ -29,6 +29,14 @@ public class SecondWind implements Ability, OnHitted, Behavable {
         this.owner = owner;
     }
 
+    private int getTimeLimit() {
+        return 5;
+    }
+
+    private int getCooldown(){
+        return 50;
+    }
+
     @Override
     public void activate() {
         owner.heal(Math.min(owner.getMaxHP()/2, lastHitDamage));
@@ -36,13 +44,14 @@ public class SecondWind implements Ability, OnHitted, Behavable {
         hit = false;
         timeSinceHit = 0;
         lastHitDamage = 0;
-        timer = 100;
-        Display.revertMenu();
+        timer = getCooldown();
+        Display.setAndForgetMenus(Display.getRootMenu());
+        Display.update();
     }
 
     @Override
     public boolean isEnabled() {
-        return timer <= 0 && hit && timeSinceHit <= 5;
+        return timer <= 0 && hit && lastHitDamage > 0;
     }
 
     @Override
@@ -51,7 +60,7 @@ public class SecondWind implements Ability, OnHitted, Behavable {
             "",
             "Second Wind",
             isEnabled() ? (lastHitDamage > 0 ? " x" + lastHitDamage : "") : "",
-            isEnabled() ? (" -" + (5 - timeSinceHit)) : "",
+            isEnabled() ? (" -" + (getTimeLimit() - timeSinceHit)) : "",
             (timer > 0 ? " (" + timer + ")" : "")
         );
     }
@@ -60,18 +69,21 @@ public class SecondWind implements Ability, OnHitted, Behavable {
     public void doOnHitted(Entity self, Entity other, AttackInfo attackInfo) {
         if (attackInfo.getDamageDelt() > 0) {
             hit = true;
-            lastHitDamage = attackInfo.getDamageDelt();
+            lastHitDamage = Math.max(attackInfo.getDamageDelt(), lastHitDamage);
             timeSinceHit = 0;
         }
     }
 
     @Override
     public int behave() {
-        if (timer > 0) {
+        if (timer > 0)
             timer--;
-        }
-        if (hit) {
+        if (hit){
             timeSinceHit++;
+            if (timeSinceHit >= getTimeLimit()) {
+                lastHitDamage = 0;
+                hit = false;
+            }
         }
         return 100;
     }
@@ -82,13 +94,14 @@ public class SecondWind implements Ability, OnHitted, Behavable {
     }
 
     private static class SecondWindStatus extends Status implements ModifiesMoveTime, ModifiesAttackTime, Behavable {
+
         private int turns = 1;
 
         public SecondWindStatus() {
             super();
             setCharacter('>');
             setbGColor(TileColor.transparent());
-            setfGColor(TileColor.create(255, 255, 255, 255));
+            setfGColor(TileColor.create(255, 255, 255, 100));
             setModifiers(new HashSet<Modifier>(List.of(Modifiers.blink())));
             setDescriptor("");
         }
