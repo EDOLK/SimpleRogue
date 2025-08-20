@@ -30,8 +30,8 @@ public class Torch extends Weapon implements Flammable, LightSource, SelfAware, 
         this.lit = lit;
         setName("Torch");
         setCharacter('t');
-        setfGColor(TileColor.create(138, 64, 22, 255));
-        setbGColor(TileColor.transparent());
+        setFgColor(TileColor.create(138, 64, 22, 255));
+        setBgColor(TileColor.transparent());
         setDescription("A torch. Can light nearby tiles on fire, assuming there is kindling, of course.");
         setWeight(1);
         setMinDamage(0);
@@ -112,7 +112,7 @@ public class Torch extends Weapon implements Flammable, LightSource, SelfAware, 
         setMinDamage(0);
         setMaxDamage(3);
         setDamageType(DamageType.FIRE);
-        setfGColor(TileColor.create(227, 118, 16, 255));
+        setFgColor(TileColor.create(227, 118, 16, 255));
     }
 
     private void setBurnt(){
@@ -123,7 +123,7 @@ public class Torch extends Weapon implements Flammable, LightSource, SelfAware, 
         setMaxDamage(2);
         setDamageType(DamageType.BLUNT);
         setDescription("A torch. This one's all spent.");
-        setfGColor(TileColor.create(87, 57, 29, 255));
+        setFgColor(TileColor.create(87, 57, 29, 255));
     }
 
     @Override

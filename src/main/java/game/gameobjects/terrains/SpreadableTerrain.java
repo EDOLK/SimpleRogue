@@ -188,8 +188,8 @@ public abstract class SpreadableTerrain extends Terrain implements SelfAware, Be
         switch (Display.getMode()) {
             case ASCII:
                 return Tile.newBuilder()
-                    .withBackgroundColor(getbGColor().darkenByPercent(percent).withAlpha(alpha))
-                    .withForegroundColor(getfGColor().darkenByPercent(percent).lightenByPercent(value).withAlpha(255))
+                    .withBackgroundColor(getBgColor().darkenByPercent(percent).withAlpha(alpha))
+                    .withForegroundColor(getFgColor().darkenByPercent(percent).lightenByPercent(value).withAlpha(255))
                     .withCharacter(
                         amount <= quotient ? '░' :
                         amount <= (quotient*2) ? '▒' :

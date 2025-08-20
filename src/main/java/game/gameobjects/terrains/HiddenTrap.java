@@ -17,8 +17,8 @@ public class HiddenTrap extends Trap implements SelfAware{
     public HiddenTrap(ExposedTrap exposedTrap) {
         this.exposedTrap = exposedTrap;
         setCharacter(' ');
-        setfGColor(TileColor.transparent());
-        setbGColor(TileColor.transparent());
+        setFgColor(TileColor.transparent());
+        setBgColor(TileColor.transparent());
         setModifiers(new HashSet<Modifier>());
     }
 

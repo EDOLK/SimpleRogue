@@ -21,8 +21,8 @@ public class Poisoned extends Status implements Behavable, FiltersIn{
         this.maxDamage = maxDamage;
         this.turns = turns;
         setCharacter(' ');
-        setbGColor(TileColor.transparent());
-        setfGColor(TileColor.create(50, 200, 50, 100));
+        setBgColor(TileColor.transparent());
+        setFgColor(TileColor.create(50, 200, 50, 100));
         HashSet<Modifier> modifiers = new HashSet<Modifier>();
         modifiers.add(Modifiers.blink());
         setModifiers(modifiers);

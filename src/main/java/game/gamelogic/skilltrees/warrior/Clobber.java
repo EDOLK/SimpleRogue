@@ -130,7 +130,7 @@ public class Clobber implements Ability, Behavable{
         public Dazed() {
             super();
             this.setCharacter('*');
-            this.setfGColor(TileColor.create(252,252,76, 255));
+            this.setFgColor(TileColor.create(252,252,76, 255));
             this.setDescriptor("Dazed");
             Set<Modifier> set = new HashSet<>();
             set.add(Modifiers.blink());

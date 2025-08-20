@@ -100,8 +100,8 @@ public class SecondWind implements Ability, OnHitted, Behavable {
         public SecondWindStatus() {
             super();
             setCharacter('>');
-            setbGColor(TileColor.transparent());
-            setfGColor(TileColor.create(255, 255, 255, 100));
+            setBgColor(TileColor.transparent());
+            setFgColor(TileColor.create(255, 255, 255, 100));
             setModifiers(new HashSet<Modifier>(List.of(Modifiers.blink())));
             setDescriptor("");
         }

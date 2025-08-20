@@ -24,8 +24,8 @@ public class Wet extends Status implements Behavable, FiltersOut, FiltersIn{
         this.liquid = liquid;
         setDescriptor("Wet");
         setCharacter(' ');
-        setfGColor(TileColor.transparent());
-        setbGColor(TileColor.create(liquid.getbGColor().getRed(), liquid.getbGColor().getGreen(), liquid.getbGColor().getBlue(), 100));
+        setFgColor(TileColor.transparent());
+        setBgColor(TileColor.create(liquid.getBgColor().getRed(), liquid.getBgColor().getGreen(), liquid.getBgColor().getBlue(), 100));
         setModifiers(new HashSet<>(List.of(Modifiers.blink())));
     }
 

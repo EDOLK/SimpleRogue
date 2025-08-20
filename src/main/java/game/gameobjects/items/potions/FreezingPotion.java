@@ -15,7 +15,7 @@ public class FreezingPotion extends Item implements Aimable, Consumable {
     public FreezingPotion(){
         setTileName("Cyan Potion");
         setCharacter('p');
-        setfGColor(TileColor.create(100, 100, 255, 255));
+        setFgColor(TileColor.create(100, 100, 255, 255));
         setName("Freezing potion");
         setTileName("Cyan Potion");
         setWeight(1);

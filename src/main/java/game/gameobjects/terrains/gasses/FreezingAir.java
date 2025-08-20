@@ -15,8 +15,8 @@ public class FreezingAir extends Gas{
         this.setCharacter(' ');
         this.setDescription("Freezing cold air.");
         this.setName("Freezing air");
-        this.setfGColor(TileColor.transparent());
-        this.setbGColor(TileColor.create(180, 180, 255, 255));
+        this.setFgColor(TileColor.transparent());
+        this.setBgColor(TileColor.create(180, 180, 255, 255));
         this.setSpreadFactor(0.5f);
         this.setTileName("Freezing Air");
     }

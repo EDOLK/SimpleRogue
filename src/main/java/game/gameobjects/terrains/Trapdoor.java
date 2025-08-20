@@ -27,7 +27,7 @@ public class Trapdoor extends Staircase {
         super();
         this.staircase = staircase;
         this.keyItem = keyItem;
-        setfGColor(TileColor.create(125, 125, 125, 255));
+        setFgColor(TileColor.create(125, 125, 125, 255));
     }
 
     @Override

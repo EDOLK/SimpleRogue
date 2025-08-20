@@ -15,8 +15,8 @@ public class Moss extends Terrain implements Flammable, Examinable, SelfAware, B
 
     public Moss() {
         setCharacter('░');
-        setbGColor(TileColor.transparent());
-        setfGColor(TileColor.create(40,120,40,255));
+        setBgColor(TileColor.transparent());
+        setFgColor(TileColor.create(40,120,40,255));
     }
 
     @Override

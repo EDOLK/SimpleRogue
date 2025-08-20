@@ -16,8 +16,8 @@ public class Rooted extends Status implements OverridesMovement, Behavable, Filt
     public Rooted() {
         super();
         setCharacter('=');
-        setfGColor(TileColor.create(87, 35, 3, 255));
-        setbGColor(TileColor.transparent());
+        setFgColor(TileColor.create(87, 35, 3, 255));
+        setBgColor(TileColor.transparent());
         setDescriptor("Rooted");
     }
 

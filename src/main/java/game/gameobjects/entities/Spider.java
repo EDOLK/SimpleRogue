@@ -302,8 +302,8 @@ public class Spider extends Animal implements HasDodge, HasInventory, HasDrops, 
         
         public Web(){
             setCharacter('#');
-            setfGColor(TileColor.create(200, 200, 200, 255));
-            setbGColor(TileColor.transparent());
+            setFgColor(TileColor.create(200, 200, 200, 255));
+            setBgColor(TileColor.transparent());
             setTileName("Web");
             this.name = "Webs";
             this.description = "Spider webs.";
@@ -379,8 +379,8 @@ public class Spider extends Animal implements HasDodge, HasInventory, HasDrops, 
         public Webbed(int turns){
             this.turns = turns;
             setCharacter('░');
-            setbGColor(TileColor.transparent());
-            setfGColor(TileColor.create(255, 255, 255, 255));
+            setBgColor(TileColor.transparent());
+            setFgColor(TileColor.create(255, 255, 255, 255));
             setDescriptor("Webbed");
             setTileName("Web");
         }

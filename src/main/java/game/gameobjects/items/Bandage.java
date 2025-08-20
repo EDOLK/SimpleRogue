@@ -22,8 +22,8 @@ public class Bandage extends Item implements Consumable, Flammable, SelfAware {
         setDescription("A couple of old bandages, should be good for minor wounds.");
         setCharacter('b');
         setWeight(1);
-        setbGColor(TileColor.transparent());
-        setfGColor(TileColor.create(250,250,200,255));
+        setBgColor(TileColor.transparent());
+        setFgColor(TileColor.create(250,250,200,255));
     }
     @Override
     public boolean consume(Entity consumer) {

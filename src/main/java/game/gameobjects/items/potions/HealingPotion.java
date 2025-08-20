@@ -13,8 +13,8 @@ public class HealingPotion extends Item implements Consumable{
     
     public HealingPotion(){
         setCharacter('p');
-        setfGColor(TileColor.create(255, 5, 5, 255));
-        setbGColor(TileColor.transparent());
+        setFgColor(TileColor.create(255, 5, 5, 255));
+        setBgColor(TileColor.transparent());
         setDescription("A red potion, it looks... healthy?");
         setName("Healing Potion");
         setTileName("Red Potion");

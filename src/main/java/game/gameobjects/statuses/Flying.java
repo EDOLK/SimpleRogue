@@ -31,8 +31,8 @@ public class Flying extends Status implements Behavable, HasDodge, FiltersIn{
 
     public Flying() {
         setCharacter('^');
-        setbGColor(TileColor.transparent());
-        setfGColor(TileColor.create(200, 200, 200, 100));
+        setBgColor(TileColor.transparent());
+        setFgColor(TileColor.create(200, 200, 200, 100));
         HashSet<Modifier> modifiers = new HashSet<Modifier>();
         modifiers.add(Modifiers.blink());
         setModifiers(modifiers);

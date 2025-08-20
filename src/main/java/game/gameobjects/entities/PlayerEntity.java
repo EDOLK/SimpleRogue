@@ -74,8 +74,8 @@ public class PlayerEntity extends Entity implements Armored, Armed, Levelable, E
         club.setDamageType(DamageType.BLUNT);
         club.setDamage(1, 4);
         club.setCharacter('c');
-        club.setfGColor(TileColor.create(135, 70, 30, 255));
-        club.setbGColor(TileColor.transparent());
+        club.setFgColor(TileColor.create(135, 70, 30, 255));
+        club.setBgColor(TileColor.transparent());
         club.setName("Wooden Club");
         club.setDescription("A simple wooden club.");
         club.setWeight(5);

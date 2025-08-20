@@ -16,8 +16,8 @@ public class Miasma extends Gas implements Flammable{
         setName("Miasma");
         setDescription("The stench of rot and decay permiates the air.");
         setCharacter(' ');
-        setfGColor(TileColor.transparent());
-        setbGColor(TileColor.create(242, 0, 255, 255));
+        setFgColor(TileColor.transparent());
+        setBgColor(TileColor.create(242, 0, 255, 255));
         setSpreadFactor(0.7f);
     }
 

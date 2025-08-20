@@ -27,8 +27,8 @@ public class Cursor extends DisplayableTile{
     public Cursor(Space selectedSpace){
         setSelectedSpace(selectedSpace);
         setCharacter(' ');
-        setbGColor(TileColor.transparent());
-        setfGColor(TileColor.transparent());
+        setBgColor(TileColor.transparent());
+        setFgColor(TileColor.transparent());
         setTileName("Selector");
         Set<Modifier> modSet = new HashSet<Modifier>();
         Border border = BorderBuilder.newBuilder()

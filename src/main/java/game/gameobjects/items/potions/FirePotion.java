@@ -16,8 +16,8 @@ public class FirePotion extends Item implements Aimable, Consumable{
 
     public FirePotion(){
         setCharacter('p');
-        setfGColor(TileColor.create(250, 134, 7, 255));
-        setbGColor(TileColor.transparent());
+        setFgColor(TileColor.create(250, 134, 7, 255));
+        setBgColor(TileColor.transparent());
         setDescription("An orange potion, it seems volatile.");
         setName("Fire Potion");
         setTileName("Orange Potion");

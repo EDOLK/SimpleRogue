@@ -34,8 +34,8 @@ public class Brazier extends Entity implements HasResistances {
             }
         }
         this.setCharacter('w');
-        this.setfGColor(TileColor.create(100,100,100,255));
-        this.setbGColor(TileColor.transparent());
+        this.setFgColor(TileColor.create(100,100,100,255));
+        this.setBgColor(TileColor.transparent());
         this.setName("Brazier");
         this.setWeight(20);
         this.setBaseMaxHP(1);
@@ -67,8 +67,8 @@ public class Brazier extends Entity implements HasResistances {
         public Lit() {
             super();
             this.setCharacter(' ');
-            this.setfGColor(TileColor.transparent());
-            this.setbGColor(TileColor.create(255, 255, 0, 50));
+            this.setFgColor(TileColor.transparent());
+            this.setBgColor(TileColor.create(255, 255, 0, 50));
             this.setDescriptor("Lit");
         }
 
@@ -109,8 +109,8 @@ public class Brazier extends Entity implements HasResistances {
         public UnLit() {
             super();
             this.setCharacter(' ');
-            this.setfGColor(TileColor.transparent());
-            this.setbGColor(TileColor.transparent());
+            this.setFgColor(TileColor.transparent());
+            this.setBgColor(TileColor.transparent());
             this.setDescriptor("");
         }
 

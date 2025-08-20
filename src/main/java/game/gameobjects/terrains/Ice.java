@@ -24,8 +24,8 @@ public class Ice extends Terrain implements Triggerable, SelfAware, Examinable, 
     public Ice(int amount){
         name = "Ice";
         description = "Ice. Slippery.";
-        setbGColor(TileColor.create(150, 245, 255, 100));
-        setfGColor(TileColor.transparent());
+        setBgColor(TileColor.create(150, 245, 255, 100));
+        setFgColor(TileColor.transparent());
         setCharacter(' ');
     }
 

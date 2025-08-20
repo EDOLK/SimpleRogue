@@ -16,8 +16,8 @@ public class Antidote extends Item implements Consumable {
         setDescription("A small green vial of bitter medicine.");
         setCharacter('a');
         setWeight(1);
-        setbGColor(TileColor.transparent());
-        setfGColor(TileColor.create(150,250,150,255));
+        setBgColor(TileColor.transparent());
+        setFgColor(TileColor.create(150,250,150,255));
     }
 
     @Override

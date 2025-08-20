@@ -10,8 +10,8 @@ public class Mossy extends Status implements FiltersOut, HasStatusVulns, Behavab
 
     public Mossy() {
         super();
-        setbGColor(TileColor.transparent());
-        setfGColor(TileColor.create(40,120,40,255));
+        setBgColor(TileColor.transparent());
+        setFgColor(TileColor.create(40,120,40,255));
         setCharacter('░');
         setDescriptor("Mossy");
     }

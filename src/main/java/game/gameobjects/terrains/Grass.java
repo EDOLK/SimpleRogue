@@ -9,8 +9,8 @@ public class Grass extends Moss implements Triggerable{
 
     public Grass() {
         setCharacter('▓');
-        setbGColor(TileColor.transparent());
-        setfGColor(TileColor.create(40,120,40,255));
+        setBgColor(TileColor.transparent());
+        setFgColor(TileColor.create(40,120,40,255));
         setSightBlocker(true);
     }
 

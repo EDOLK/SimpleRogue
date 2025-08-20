@@ -15,7 +15,7 @@ public class CookedCorpse extends Item implements Consumable{
         this.satiety = lerp(corpse.getDecayLimit(), 0, 0, 1.0, corpse.getDecay());
         setName("Cooked " + corpse.getOriginalEntityName());
         setCharacter(corpse.getCharacter());
-        setfGColor(TileColor.create(255, 170, 84,255));
+        setFgColor(TileColor.create(255, 170, 84,255));
     }
 
     @Override

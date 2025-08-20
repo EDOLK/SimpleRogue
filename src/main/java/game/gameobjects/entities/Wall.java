@@ -39,7 +39,7 @@ public class Wall extends Entity implements HasResistances{
 
     @Override
     public Item getCorpse() {
-        Item i = new Item(this.getbGColor().darkenByPercent(.50), this.getfGColor().darkenByPercent(.50), '░');
+        Item i = new Item(this.getBgColor().darkenByPercent(.50), this.getFgColor().darkenByPercent(.50), '░');
         i.setName("Rubble");
         i.setDescription("A pile of rubble.");
         i.setWeight(500);

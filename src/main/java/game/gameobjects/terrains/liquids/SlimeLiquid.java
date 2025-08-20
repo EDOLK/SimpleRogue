@@ -13,8 +13,8 @@ public class SlimeLiquid extends Liquid {
     public SlimeLiquid(int amount) {
         super(amount);
         setCharacter(' ');
-        setfGColor(TileColor.transparent());
-        setbGColor(TileColor.create(50, 255, 50, 255));
+        setFgColor(TileColor.transparent());
+        setBgColor(TileColor.create(50, 255, 50, 255));
         setName("Slime");
         // setTileName("Water");
         setSpreadFactor(0.20f);

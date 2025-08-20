@@ -17,8 +17,8 @@ public class Staircase extends Terrain implements SelfAware, Interactable, Exami
     
     public Staircase(){
         setCharacter('>');
-        setbGColor(TileColor.transparent());
-        setfGColor(TileColor.create(255, 255, 255, 255));
+        setBgColor(TileColor.transparent());
+        setFgColor(TileColor.create(255, 255, 255, 255));
         setTileName("Staircase Down");
     }
 

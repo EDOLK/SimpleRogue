@@ -16,8 +16,8 @@ public class Ration extends Item implements Consumable {
         setDescription("Standard rations, these are quite old and you're not sure if they're still good.");
         setCharacter('r');
         setWeight(1);
-        setbGColor(TileColor.transparent());
-        setfGColor(TileColor.create(250,250,200,255));
+        setBgColor(TileColor.transparent());
+        setFgColor(TileColor.create(250,250,200,255));
     }
     @Override
     public boolean consume(Entity consumer) {

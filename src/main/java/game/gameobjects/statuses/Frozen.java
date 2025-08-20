@@ -20,8 +20,8 @@ public class Frozen extends Status implements FiltersIn, FiltersOut, Behavable, 
     public Frozen() {
         super();
         this.setCharacter(' ');
-        setfGColor(TileColor.transparent());
-        setbGColor(TileColor.create(100, 100, 255, 100));
+        setFgColor(TileColor.transparent());
+        setBgColor(TileColor.create(100, 100, 255, 100));
         setDescriptor("Frozen");
         setTileName("Freezing Air");
     }

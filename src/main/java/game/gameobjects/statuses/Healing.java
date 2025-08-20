@@ -21,8 +21,8 @@ public class Healing extends Status implements Behavable{
         this.minHeal = minHeal;
         this.maxHeal = maxHeal;
         setCharacter(' ');
-        setbGColor(TileColor.transparent());
-        setfGColor(TileColor.create(255, 10, 10, 100));
+        setBgColor(TileColor.transparent());
+        setFgColor(TileColor.create(255, 10, 10, 100));
         HashSet<Modifier> modifiers = new HashSet<Modifier>();
         modifiers.add(Modifiers.blink());
         setModifiers(modifiers);

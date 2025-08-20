@@ -69,7 +69,7 @@ public class Sneak implements Ability, Behavable {
         private Sneaking() {
             super();
             setCharacter('░');
-            setfGColor(TileColor.create(100, 100, 100, 255));
+            setFgColor(TileColor.create(100, 100, 100, 255));
             setDescriptor("Sneaking");
         }
 

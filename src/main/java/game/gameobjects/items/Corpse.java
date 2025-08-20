@@ -27,11 +27,11 @@ public class Corpse extends Item implements Behavable, Consumable, SelfAware, Fl
     private String originalEntityName;
 
     public Corpse(Entity entity){
-        interpolator = entity.getfGColor().darkenByPercent(0.2).desaturate(0.9).interpolateTo(decayedColor);
+        interpolator = entity.getFgColor().darkenByPercent(0.2).desaturate(0.9).interpolateTo(decayedColor);
         originalEntityName = entity.getOriginalName();
         setCharacter(entity.getCharacter());
-        setfGColor(entity.getfGColor().darkenByPercent(0.2));
-        setbGColor(entity.getbGColor());
+        setFgColor(entity.getFgColor().darkenByPercent(0.2));
+        setBgColor(entity.getBgColor());
         setName("Corpse of " + entity.getName());
         setDescription("The corpse of a " + entity.getName() + ", it's rotting.");
         setTileName("Generic Corpse");
@@ -79,7 +79,7 @@ public class Corpse extends Item implements Behavable, Consumable, SelfAware, Fl
 
         double pos = lerp(0, 0, decayLimit, 1, decay);
         TileColor newColor = interpolator.getColorAtRatio(pos);
-        setfGColor(newColor);
+        setFgColor(newColor);
         if (randomNumber(1, 100) <= 10 && decay >= decayLimit/3){
             currentSpace.addTerrain(new Miasma(randomNumber(1, 5)));
         }

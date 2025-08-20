@@ -23,7 +23,7 @@ public class DireRat extends Rat implements HasResistances, HasAccuracy, OnHit{
         setName("Giant Dire Rat");
         setTileName("Dire Rat");
         setDescription("A Giant Dire Rat, with sleek white fur. Its fur is thick enough to give it some protection against edged weapons.");
-        setfGColor(TileColor.create(200, 200, 200, 255));
+        setFgColor(TileColor.create(200, 200, 200, 255));
 
         Weapon teeth = new Weapon();
         teeth.setName("teeth");

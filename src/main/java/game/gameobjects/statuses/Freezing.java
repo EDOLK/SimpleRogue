@@ -19,8 +19,8 @@ public class Freezing extends Status implements FiltersIn, FiltersOut, Behavable
         super();
         setCharacter('*');
         setModifiers(Set.of(Modifiers.blink()));
-        setfGColor(TileColor.create(100, 100, 255, 255));
-        setbGColor(TileColor.transparent());
+        setFgColor(TileColor.create(100, 100, 255, 255));
+        setBgColor(TileColor.transparent());
         setDescriptor("Freezing");
         setTileName("Freezing Air");
     }

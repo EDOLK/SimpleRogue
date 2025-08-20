@@ -8,8 +8,8 @@ public class BeginningHunt extends Status implements Behavable {
     public BeginningHunt() {
         super();
         this.setCharacter('!');
-        this.setbGColor(TileColor.create(0,0,0,0));
-        this.setfGColor(TileColor.create(255,25,25,255));
+        this.setBgColor(TileColor.create(0,0,0,0));
+        this.setFgColor(TileColor.create(255,25,25,255));
         this.setyOffset(-1);
         this.setFullBright(true);
     }

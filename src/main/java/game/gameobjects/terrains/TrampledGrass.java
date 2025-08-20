@@ -4,7 +4,7 @@ public class TrampledGrass extends Moss{
 
     public TrampledGrass() {
         super();
-        setfGColor(this.getfGColor().darkenByPercent(0.20));
+        setFgColor(this.getFgColor().darkenByPercent(0.20));
     }
 
     @Override

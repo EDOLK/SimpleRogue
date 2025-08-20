@@ -13,8 +13,8 @@ public class Steam extends Gas{
     public Steam(int initialDensity){
         super(initialDensity);
         setCharacter(' ');
-        setfGColor(TileColor.transparent());
-        setbGColor(TileColor.create(255, 255, 255, 255));
+        setFgColor(TileColor.transparent());
+        setBgColor(TileColor.create(255, 255, 255, 255));
         setName("Steam");
         setSpreadFactor(0.5f);
         // this.minOpacity = 100;

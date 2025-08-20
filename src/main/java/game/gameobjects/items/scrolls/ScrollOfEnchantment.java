@@ -40,8 +40,8 @@ public class ScrollOfEnchantment extends Item implements SelfAware, Scrollable, 
     
     public ScrollOfEnchantment(){
         setCharacter('\"');
-        setfGColor(TileColor.create(255, 184, 133, 255));
-        setbGColor(TileColor.transparent());
+        setFgColor(TileColor.create(255, 184, 133, 255));
+        setBgColor(TileColor.transparent());
         setTileName("Scroll");
         setDescription("A scroll of enchantment. Very flammable.");
         setName("Scroll of enchantment");

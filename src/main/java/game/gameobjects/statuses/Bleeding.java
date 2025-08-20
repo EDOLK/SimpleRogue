@@ -23,8 +23,8 @@ public class Bleeding extends Status implements Behavable, FiltersOut{
         this.minDamage = minDamage;
         this.maxDamage = maxDamage;
         setCharacter(' ');
-        setbGColor(TileColor.transparent());
-        setfGColor(TileColor.create(200, 50, 50, 100));
+        setBgColor(TileColor.transparent());
+        setFgColor(TileColor.create(200, 50, 50, 100));
         setModifiers(new HashSet<Modifier>(List.of(Modifiers.blink())));
         setDescriptor("Bleeding");
     }

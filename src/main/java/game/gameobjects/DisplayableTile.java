@@ -11,8 +11,8 @@ import game.display.Display;
 
 public abstract class DisplayableTile {
 
-    private TileColor bGColor;
-    private TileColor fGColor;
+    private TileColor bgColor;
+    private TileColor fgColor;
     private char character;
     private Set<Modifier> modifiers = new HashSet<Modifier>();
     private String tileName = "Question Mark";
@@ -27,25 +27,25 @@ public abstract class DisplayableTile {
     }
 
     public DisplayableTile(TileColor bGColor, TileColor fGColor, char character) {
-        this.bGColor = bGColor;
-        this.fGColor = fGColor;
+        this.bgColor = bGColor;
+        this.fgColor = fGColor;
         this.character = character;
     }
 
-    public TileColor getbGColor() {
-        return bGColor;
+    public TileColor getBgColor() {
+        return bgColor;
     }
 
-    public void setbGColor(TileColor bGColor) {
-        this.bGColor = bGColor;
+    public void setBgColor(TileColor bGColor) {
+        this.bgColor = bGColor;
     }
 
-    public TileColor getfGColor() {
-        return fGColor;
+    public TileColor getFgColor() {
+        return fgColor;
     }
 
-    public void setfGColor(TileColor fGColor) {
-        this.fGColor = fGColor;
+    public void setFgColor(TileColor fGColor) {
+        this.fgColor = fGColor;
     }
 
     public char getCharacter() {
@@ -80,8 +80,8 @@ public abstract class DisplayableTile {
         switch (Display.getMode()) {
             case ASCII:
                 return Tile.newBuilder()
-                    .withBackgroundColor(getbGColor().darkenByPercent(percent))
-                    .withForegroundColor(getfGColor().darkenByPercent(percent))
+                    .withBackgroundColor(getBgColor().darkenByPercent(percent))
+                    .withForegroundColor(getFgColor().darkenByPercent(percent))
                     .withCharacter(getCharacter())
                     .withModifiers(getModifiers())
                     .withTileset(Display.getGraphicalTileSet())

@@ -15,8 +15,8 @@ public class Ashes extends Terrain implements Examinable, Interactable, SelfAwar
     public Ashes() {
         super();
         setCharacter('░');
-        setbGColor(TileColor.transparent());
-        setfGColor(TileColor.create(120,120,120,255));
+        setBgColor(TileColor.transparent());
+        setFgColor(TileColor.create(120,120,120,255));
     }
 
     @Override

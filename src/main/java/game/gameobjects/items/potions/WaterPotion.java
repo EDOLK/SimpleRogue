@@ -16,8 +16,8 @@ public class WaterPotion extends Item implements Aimable{
         setTileName("Blue Potion");
         setDescription("A bottle of water");
         setCharacter('p');
-        setfGColor(TileColor.create(100, 100, 255, 255));
-        setbGColor(TileColor.transparent());
+        setFgColor(TileColor.create(100, 100, 255, 255));
+        setBgColor(TileColor.transparent());
         setWeight(1);
     }
 

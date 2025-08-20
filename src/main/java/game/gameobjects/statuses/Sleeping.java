@@ -23,7 +23,7 @@ public class Sleeping extends Status implements OverridesBehavable, Behavable, O
         super();
         this.setCharacter(' ');
         this.setDescriptor("Sleeping");
-        this.setfGColor(TileColor.create(66, 135, 245, 150));
+        this.setFgColor(TileColor.create(66, 135, 245, 150));
         this.setModifiers(new HashSet<>(List.of(Modifiers.blink())));
     }
 

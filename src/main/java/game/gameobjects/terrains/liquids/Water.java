@@ -11,8 +11,8 @@ public class Water extends Liquid{
     public Water(int depth){
         super(depth);
         setCharacter(' ');
-        setfGColor(TileColor.transparent());
-        setbGColor(TileColor.create(75, 75, 235, 255));
+        setFgColor(TileColor.transparent());
+        setBgColor(TileColor.create(75, 75, 235, 255));
         setName("Water");
         setTileName("Water");
         setSpreadFactor(1.0f);

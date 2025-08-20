@@ -21,8 +21,8 @@ public class ScrollOfUpgrade extends Item implements SelfAware, Scrollable, Flam
     
     public ScrollOfUpgrade(){
         setCharacter('\"');
-        setfGColor(TileColor.create(255, 184, 133, 255));
-        setbGColor(TileColor.transparent());
+        setFgColor(TileColor.create(255, 184, 133, 255));
+        setBgColor(TileColor.transparent());
         setTileName("Scroll");
         setDescription("A scroll of upgrade. Very flammable.");
         setName("Scroll of upgrade");

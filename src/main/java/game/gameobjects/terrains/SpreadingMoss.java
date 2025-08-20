@@ -22,8 +22,8 @@ public class SpreadingMoss extends SpreadableTerrain implements Examinable{
 
     public SpreadingMoss(int amount) {
         super(amount);
-        setfGColor(TileColor.create(50, 255, 50, 255));
-        setbGColor(TileColor.create(255, 255, 50, 255));
+        setFgColor(TileColor.create(50, 255, 50, 255));
+        setBgColor(TileColor.create(255, 255, 50, 255));
         setCharacter('▓');
         setModifiers(new HashSet<Modifier>(List.of(Modifiers.blink())));
         setDisapparationRate(10);

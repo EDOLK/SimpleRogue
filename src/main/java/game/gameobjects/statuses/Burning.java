@@ -33,7 +33,7 @@ public class Burning extends Status implements Behavable, LightSource, FiltersIn
         this.turns = turns;
         this.minIntensity = minIntensity;
         setCharacter('▒');
-        setfGColor(TileColor.create(252, 132, 3, 255));
+        setFgColor(TileColor.create(252, 132, 3, 255));
         setModifiers(new HashSet<Modifier>(List.of(Modifiers.blink())));
         setDescriptor("Burning");
         setTileName("Fire");
