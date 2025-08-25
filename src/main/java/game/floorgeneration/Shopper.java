@@ -2,6 +2,7 @@ package game.floorgeneration;
 
 import java.util.function.Supplier;
 
+import game.floorgeneration.pools.PoolEntry;
 import game.floorgeneration.pools.Pool;
 
 public class Shopper<T> {
@@ -14,9 +15,10 @@ public class Shopper<T> {
     }
 
     public T generate(){
-        Supplier<T> supplier = pool.getRandom(points);
+        PoolEntry<Supplier<T>> entry = pool.getRandom(points);
+        Supplier<T> supplier = entry.getT();
         if (supplier != null) {
-            points -= pool.getPrice(supplier);
+            points -= entry.getPrice();
             return supplier.get();
         }
         return null;

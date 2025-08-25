@@ -16,9 +16,8 @@ public interface HasDrops {
         Shopper<Item> shopper = new Shopper<>(getDropPoints(),getItemPool());
         while (shopper.hasPoints()){
             Item generated = shopper.generate();
-            if (generated != null) {
+            if (generated != null)
                 drops.add(generated);
-            }
         }
         return drops;
     }
