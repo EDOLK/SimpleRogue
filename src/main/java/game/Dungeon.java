@@ -46,31 +46,31 @@ public class Dungeon {
     }
 
     public static Pool<Supplier<Entity>> getCurrentBossPool() {
-        return currentLayerPool.BOSS_POOL;
+        return currentLayerPool.BOSS_POOL.copy();
     }
 
     public static Pool<Supplier<Chest>> getCurrentChestPool() {
-        return currentLayerPool.CHEST_POOL;
+        return currentLayerPool.CHEST_POOL.copy();
     }
 
     public static Pool<Supplier<Entity>> getCurrentMonsterPool() {
-        return currentLayerPool.MONSTER_POOL;
+        return currentLayerPool.MONSTER_POOL.copy();
     }
 
     public static Pool<Supplier<Item>> getCurrentDropPool() {
-        return currentLayerPool.DROP_POOL;
+        return currentLayerPool.DROP_POOL.copy();
     }
 
     public static Pool<Supplier<Item>> getCurrentTreasurePool() {
-        return currentLayerPool.TREASURE_POOL;
+        return currentLayerPool.TREASURE_POOL.copy();
     }
 
     public static Pool<Supplier<Entity>> getCurrentPropPool() {
-        return currentLayerPool.PROP_POOL;
+        return currentLayerPool.PROP_POOL.copy();
     }
 
     public static Pool<Supplier<Item>> getCurrentPropDropPool() {
-        return currentLayerPool.PROP_DROP_POOL;
+        return currentLayerPool.PROP_DROP_POOL.copy();
     }
 
     public static void setCurrentFloor(Floor currentFloor) {

@@ -11,6 +11,7 @@ import org.hexworks.zircon.api.color.TileColor;
 
 import game.Dungeon;
 import game.display.Display;
+import game.floorgeneration.pools.ConcretePool;
 import game.floorgeneration.pools.Pool;
 import game.gamelogic.Consumable;
 import game.gamelogic.DropsXP;

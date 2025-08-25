@@ -35,7 +35,7 @@ public class BossFloorGenerator extends DefaultFloorGenerator {
         key.setWeight(1);
         key.setDescription("An ominous-looking key.");
         getRandom(rooms.get(2).getInteriorSpaces()).addTerrain(new Trapdoor(new Staircase(), key));
-        Entity boss = Dungeon.getCurrentBossPool().getRandom(5*depth).get();
+        Entity boss = Dungeon.getCurrentBossPool().getRandom(5*depth).getT().get();
         if (boss instanceof HasInventory hasInventory) {
             hasInventory.addItemToInventory(key);
         } else {
