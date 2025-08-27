@@ -1,12 +1,9 @@
 package game.gamelogic.skilltrees.warrior;
 
 import java.util.Optional;
-import java.util.function.Consumer;
-
 import game.gamelogic.Attribute;
 import game.gamelogic.abilities.HasAbilities;
 import game.gamelogic.skilltrees.SkillTree;
-import game.gameobjects.entities.Entity;
 
 public class WarriorSkillTree extends SkillTree {
 

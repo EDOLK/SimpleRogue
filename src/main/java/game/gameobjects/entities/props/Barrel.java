@@ -6,7 +6,6 @@ import org.hexworks.zircon.api.color.TileColor;
 
 import game.App;
 import game.Dungeon;
-import game.floorgeneration.pools.ConcretePool;
 import game.floorgeneration.pools.Pool;
 import game.gamelogic.HasDrops;
 import game.gameobjects.items.Item;

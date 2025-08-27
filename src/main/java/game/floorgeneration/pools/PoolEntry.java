@@ -7,11 +7,9 @@ public class PoolEntry<T> {
     private int amount = -1;
     private double weight = 1.0d;
 
-    private PoolEntry(){
+    private PoolEntry(){}
 
-    }
-
-    public T getT() {
+    public T get() {
         return t;
     }
 
@@ -33,7 +31,7 @@ public class PoolEntry<T> {
 
     public PoolEntry<T> copy(){
         return new Builder<T>()
-            .withT(t)
+            .with(t)
             .withPrice(price)
             .withAmount(amount)
             .withWeight(weight)
@@ -42,7 +40,7 @@ public class PoolEntry<T> {
 
     public static class Builder<T> {
         private PoolEntry<T> entry = new PoolEntry<T>();
-        public Builder<T> withT(T t){
+        public Builder<T> with(T t){
             entry.t = t;
             return this;
         }

@@ -11,7 +11,6 @@ import game.App;
 import game.Dungeon;
 import game.Path.PathNotFoundException;
 import game.display.Display;
-import game.floorgeneration.pools.ConcretePool;
 import game.floorgeneration.pools.Pool;
 import game.gamelogic.DropsXP;
 import game.gamelogic.Flammable;

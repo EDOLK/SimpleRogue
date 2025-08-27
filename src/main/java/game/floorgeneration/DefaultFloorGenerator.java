@@ -229,7 +229,7 @@ public class DefaultFloorGenerator extends FloorGenerator {
                         App.lerp(0,0,spaces[space.getX()].length,1.0,space.getY())
                     );
                     if (val >= 0.5) {
-                        space.setOccupant(currentPropPool.getRandom(2,2).getT().get());
+                        space.setOccupant(currentPropPool.getRandom(2,2).get().get());
                     }
                 }
             }
