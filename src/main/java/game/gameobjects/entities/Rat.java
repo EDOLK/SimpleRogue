@@ -7,7 +7,6 @@ import java.util.function.Supplier;
 import org.hexworks.zircon.api.color.TileColor;
 
 import game.Dungeon;
-import game.floorgeneration.pools.ConcretePool;
 import game.floorgeneration.pools.Pool;
 import game.gamelogic.DropsXP;
 import game.gamelogic.HasDodge;

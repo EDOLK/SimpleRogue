@@ -16,7 +16,7 @@ public class Shopper<T> {
 
     public T generate(){
         PoolEntry<Supplier<T>> entry = pool.getRandom(points);
-        Supplier<T> supplier = entry.getT();
+        Supplier<T> supplier = entry.get();
         if (supplier != null) {
             points -= entry.getPrice();
             return supplier.get();
