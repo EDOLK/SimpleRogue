@@ -93,7 +93,6 @@ public class LayerOnePool extends LayerPool {
                     new PoolEntry.Builder<Supplier<Item>>()
                         .with(()->new Dagger())
                         .withPrice(10)
-                        .withAmount(1)
                         .build()
                 )
                 .put(
@@ -114,28 +113,24 @@ public class LayerOnePool extends LayerPool {
                     new PoolEntry.Builder<Supplier<Item>>()
                         .with(()->new FirePotion())
                         .withPrice(10)
-                        .withAmount(1)
                         .build()
                 )
                 .put(
                     new PoolEntry.Builder<Supplier<Item>>()
                         .with(()->new FreezingPotion())
                         .withPrice(10)
-                        .withAmount(1)
                         .build()
                 )
                 .put(
                     new PoolEntry.Builder<Supplier<Item>>()
                         .with(()->new WaterPotion())
                         .withPrice(10)
-                        .withAmount(1)
                         .build()
                 )
                 .put(
                     new PoolEntry.Builder<Supplier<Item>>()
                         .with(()->new HealingPotion())
                         .withPrice(15)
-                        .withAmount(1)
                         .build()
                 )
                 .put(
@@ -307,7 +302,7 @@ public class LayerOnePool extends LayerPool {
                 )
                 .put(
                     new PoolEntry.Builder<Supplier<Entity>>()
-                        .with(()->new Brazier(Math.random()<=0.50))
+                        .with(()->new Brazier(Math.random() <= 0.50))
                         .withAmount(1)
                         .withPrice(2)
                         .build()
