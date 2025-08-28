@@ -91,7 +91,9 @@ public class CheckConditions {
         this.armedWeapons = all;
         this.abilities = all;
         this.armors = all;
+        this.enchantments = all;
         this.inventory = all;
+        this.ability = all;
     }
 
     public static CheckConditions all(){
