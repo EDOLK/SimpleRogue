@@ -9,7 +9,7 @@ import game.floorgeneration.pools.Pool;
 import game.gameobjects.items.Item;
 
 public interface HasDrops {
-    public Pool<Supplier<Item>> getItemPool();
+    public Pool<Item> getItemPool();
     public int getDropPoints();
     default List<Item> generateDrops(){
         List<Item> drops = new ArrayList<Item>();

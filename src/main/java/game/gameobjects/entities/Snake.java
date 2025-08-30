@@ -47,7 +47,7 @@ public class Snake extends Animal implements DropsXP, HasDodge, OnHit, HasDrops{
     }
 
     @Override
-    public Pool<Supplier<Item>> getItemPool() {
+    public Pool<Item> getItemPool() {
         return Dungeon.getCurrentDropPool();
     }
 

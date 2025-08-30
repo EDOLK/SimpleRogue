@@ -3,6 +3,7 @@ package game.floorgeneration.pools;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.OptionalInt;
 import java.util.Random;
 import java.util.stream.Collectors;
 
@@ -33,13 +34,11 @@ public class ConcretePool<T> implements Pool<T> {
     
     @Override
     public int getLowestPrice(){
-        Integer lowest = Integer.MAX_VALUE;
-        for (PoolEntry<T> poolEntry : entries) {
-            if (poolEntry.getPrice() < lowest) {
-                lowest = poolEntry.getPrice();
-            }
+        OptionalInt lowest = entries.stream().mapToInt((e)->e.getPrice()).min();
+        if (lowest.isPresent()) {
+            return lowest.getAsInt();
         }
-        return lowest;
+        return 0;
     }
 
     @Override

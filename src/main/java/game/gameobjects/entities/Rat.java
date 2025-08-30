@@ -39,7 +39,7 @@ public class Rat extends Animal implements DropsXP, HasDrops, HasDodge{
     }
 
     @Override
-    public Pool<Supplier<Item>> getItemPool() {
+    public Pool<Item> getItemPool() {
         return Dungeon.getCurrentDropPool();
     }
 

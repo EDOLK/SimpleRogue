@@ -435,7 +435,7 @@ public class Spider extends Animal implements HasDodge, HasInventory, HasDrops, 
     }
 
     @Override
-    public Pool<Supplier<Item>> getItemPool() {
+    public Pool<Item> getItemPool() {
         return Dungeon.getCurrentDropPool();
     }
 

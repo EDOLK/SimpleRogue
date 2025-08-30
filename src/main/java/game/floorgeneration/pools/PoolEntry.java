@@ -1,8 +1,10 @@
 package game.floorgeneration.pools;
 
+import java.util.function.Supplier;
+
 public class PoolEntry<T> {
 
-    private T t = null;
+    private Supplier<T> t = null;
     private int price = 0;
     private int amount = -1;
     private double weight = 1.0d;
@@ -10,7 +12,7 @@ public class PoolEntry<T> {
     private PoolEntry(){}
 
     public T get() {
-        return t;
+        return t.get();
     }
 
     public int getPrice() {
@@ -25,11 +27,11 @@ public class PoolEntry<T> {
         return weight;
     }
 
-    public void decrementAmount(){
+    void decrementAmount(){
         amount--;
     }
 
-    public PoolEntry<T> copy(){
+    PoolEntry<T> copy(){
         return new Builder<T>()
             .with(t)
             .withPrice(price)
@@ -40,7 +42,7 @@ public class PoolEntry<T> {
 
     public static class Builder<T> {
         private PoolEntry<T> entry = new PoolEntry<T>();
-        public Builder<T> with(T t){
+        public Builder<T> with(Supplier<T> t){
             entry.t = t;
             return this;
         }

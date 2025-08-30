@@ -221,7 +221,7 @@ public class DefaultFloorGenerator extends FloorGenerator {
             .build();
         for (int i = 1; i < rooms.size(); i++) {
             Room room = rooms.get(i);
-            Pool<Supplier<Entity>> currentPropPool = Dungeon.getCurrentPropPool();
+            Pool<Entity> currentPropPool = Dungeon.getCurrentPropPool();
             for (Space space : room.getInteriorSpaces()) {
                 if (!space.isOccupied()) {
                     double val = perlinCosine.evaluateNoise(
@@ -229,7 +229,7 @@ public class DefaultFloorGenerator extends FloorGenerator {
                         App.lerp(0,0,spaces[space.getX()].length,1.0,space.getY())
                     );
                     if (val >= 0.5) {
-                        space.setOccupant(currentPropPool.getRandom(2,2).get().get());
+                        space.setOccupant(currentPropPool.getRandom(2,2).get());
                     }
                 }
             }

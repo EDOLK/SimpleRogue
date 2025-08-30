@@ -23,7 +23,7 @@ public class Barrel extends ContainerProp{
         for (Item item : new HasDrops() {
 
             @Override
-            public Pool<Supplier<Item>> getItemPool() {
+            public Pool<Item> getItemPool() {
                 return Dungeon.getCurrentPropDropPool();
             }
 
