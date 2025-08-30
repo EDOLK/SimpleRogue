@@ -2,7 +2,6 @@ package game.gamelogic;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
 import game.floorgeneration.Shopper;
 import game.floorgeneration.pools.Pool;

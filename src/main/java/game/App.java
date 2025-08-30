@@ -16,7 +16,6 @@ import game.gamelogic.abilities.HasAbilities;
 import game.gamelogic.abilities.HasAbility;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.items.armor.Armor;
-import game.gameobjects.items.potions.FirePotion;
 import game.gameobjects.items.weapons.Weapon;
 
 public class App 
@@ -24,7 +23,6 @@ public class App
     public static void main(String[] args){
         Dungeon.initialize(50, 50);
         Display.initialize(70, 61);
-        Dungeon.getCurrentFloor().getPlayer().addItemToInventory(new FirePotion());
     }
 
     public static int randomNumber(int min, int max){

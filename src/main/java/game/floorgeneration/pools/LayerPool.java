@@ -1,7 +1,5 @@
 package game.floorgeneration.pools;
 
-import java.util.function.Supplier;
-
 import game.gameobjects.entities.Entity;
 import game.gameobjects.entities.props.Chest;
 import game.gameobjects.items.Item;

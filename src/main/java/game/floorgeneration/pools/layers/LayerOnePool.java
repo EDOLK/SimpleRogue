@@ -1,9 +1,7 @@
 package game.floorgeneration.pools.layers;
 
-import java.util.function.Supplier;
-
-import game.floorgeneration.pools.LayerPool;
 import game.floorgeneration.pools.ConcretePool;
+import game.floorgeneration.pools.LayerPool;
 import game.floorgeneration.pools.PoolEntry;
 import game.gameobjects.entities.DireRat;
 import game.gameobjects.entities.Entity;

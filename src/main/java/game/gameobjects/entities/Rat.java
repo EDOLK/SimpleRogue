@@ -2,8 +2,6 @@ package game.gameobjects.entities;
 
 import static game.App.randomNumber;
 
-import java.util.function.Supplier;
-
 import org.hexworks.zircon.api.color.TileColor;
 
 import game.Dungeon;
