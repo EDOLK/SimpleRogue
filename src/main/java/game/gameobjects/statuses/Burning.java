@@ -89,11 +89,7 @@ public class Burning extends Status implements Behavable, LightSource, FiltersIn
 
     @Override
     public boolean filterIn(Status status) {
-        if (status instanceof Burning burning) {
-            burning.turns++;
-            return true;
-        }
-        return false;
+        return status instanceof Burning ? true : false;
     }
     
 }
