@@ -1,35 +1,33 @@
 package game.floorgeneration.pools;
 
-import java.util.function.Supplier;
-
 import game.gameobjects.entities.Entity;
 import game.gameobjects.entities.props.Chest;
 import game.gameobjects.items.Item;
 
 public abstract class LayerPool {
 
-    public final Pool<Supplier<Entity>> MONSTER_POOL;
+    public final Pool<Entity> MONSTER_POOL;
 
-    public final Pool<Supplier<Item>> DROP_POOL;
+    public final Pool<Item> DROP_POOL;
 
-    public final Pool<Supplier<Item>> TREASURE_POOL;
+    public final Pool<Item> TREASURE_POOL;
 
-    public final Pool<Supplier<Chest>> CHEST_POOL;
+    public final Pool<Chest> CHEST_POOL;
 
-    public final Pool<Supplier<Entity>> BOSS_POOL;
+    public final Pool<Entity> BOSS_POOL;
 
-    public final Pool<Supplier<Entity>> PROP_POOL;
+    public final Pool<Entity> PROP_POOL;
 
-    public final Pool<Supplier<Item>> PROP_DROP_POOL;
+    public final Pool<Item> PROP_DROP_POOL;
 
     public LayerPool(
-        Pool<Supplier<Entity>> monsterPool,
-        Pool<Supplier<Item>> dropPool,
-        Pool<Supplier<Item>> treasurePool,
-        Pool<Supplier<Chest>> chestPool,
-        Pool<Supplier<Entity>> bossPool,
-        Pool<Supplier<Entity>> propPool,
-        Pool<Supplier<Item>> propDropPool
+        Pool<Entity> monsterPool,
+        Pool<Item> dropPool,
+        Pool<Item> treasurePool,
+        Pool<Chest> chestPool,
+        Pool<Entity> bossPool,
+        Pool<Entity> propPool,
+        Pool<Item> propDropPool
     ) {
         this.BOSS_POOL = bossPool;
         this.CHEST_POOL = chestPool;

@@ -4,7 +4,6 @@ import static game.App.randomNumber;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
 import org.hexworks.zircon.api.color.TileColor;
 
@@ -45,32 +44,32 @@ public class Dungeon {
         return availableSkillTrees;
     }
 
-    public static Pool<Supplier<Entity>> getCurrentBossPool() {
-        return currentLayerPool.BOSS_POOL;
+    public static Pool<Entity> getCurrentBossPool() {
+        return currentLayerPool.BOSS_POOL.copy();
     }
 
-    public static Pool<Supplier<Chest>> getCurrentChestPool() {
-        return currentLayerPool.CHEST_POOL;
+    public static Pool<Chest> getCurrentChestPool() {
+        return currentLayerPool.CHEST_POOL.copy();
     }
 
-    public static Pool<Supplier<Entity>> getCurrentMonsterPool() {
-        return currentLayerPool.MONSTER_POOL;
+    public static Pool<Entity> getCurrentMonsterPool() {
+        return currentLayerPool.MONSTER_POOL.copy();
     }
 
-    public static Pool<Supplier<Item>> getCurrentDropPool() {
-        return currentLayerPool.DROP_POOL;
+    public static Pool<Item> getCurrentDropPool() {
+        return currentLayerPool.DROP_POOL.copy();
     }
 
-    public static Pool<Supplier<Item>> getCurrentTreasurePool() {
-        return currentLayerPool.TREASURE_POOL;
+    public static Pool<Item> getCurrentTreasurePool() {
+        return currentLayerPool.TREASURE_POOL.copy();
     }
 
-    public static Pool<Supplier<Entity>> getCurrentPropPool() {
-        return currentLayerPool.PROP_POOL;
+    public static Pool<Entity> getCurrentPropPool() {
+        return currentLayerPool.PROP_POOL.copy();
     }
 
-    public static Pool<Supplier<Item>> getCurrentPropDropPool() {
-        return currentLayerPool.PROP_DROP_POOL;
+    public static Pool<Item> getCurrentPropDropPool() {
+        return currentLayerPool.PROP_DROP_POOL.copy();
     }
 
     public static void setCurrentFloor(Floor currentFloor) {

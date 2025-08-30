@@ -5,7 +5,6 @@ import static game.App.randomNumber;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
 import org.hexworks.zircon.api.color.TileColor;
 
@@ -142,7 +141,7 @@ public class Slime extends Animal implements DropsXP, HasDodge, HasResistances, 
     }
 
     @Override
-    public Pool<Supplier<Item>> getItemPool() {
+    public Pool<Item> getItemPool() {
         return Dungeon.getCurrentDropPool();
     }
 

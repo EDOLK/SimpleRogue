@@ -1,7 +1,5 @@
 package game.gameobjects.entities.props;
 
-import java.util.function.Supplier;
-
 import org.hexworks.zircon.api.color.TileColor;
 
 import game.App;
@@ -23,7 +21,7 @@ public class Barrel extends ContainerProp{
         for (Item item : new HasDrops() {
 
             @Override
-            public Pool<Supplier<Item>> getItemPool() {
+            public Pool<Item> getItemPool() {
                 return Dungeon.getCurrentPropDropPool();
             }
 

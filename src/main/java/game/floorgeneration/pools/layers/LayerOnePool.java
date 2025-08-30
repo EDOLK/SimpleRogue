@@ -1,9 +1,8 @@
 package game.floorgeneration.pools.layers;
 
-import java.util.function.Supplier;
-
+import game.floorgeneration.pools.ConcretePool;
 import game.floorgeneration.pools.LayerPool;
-import game.floorgeneration.pools.PoolBuilder;
+import game.floorgeneration.pools.PoolEntry;
 import game.gameobjects.entities.DireRat;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.entities.Rat;
@@ -46,73 +45,300 @@ public class LayerOnePool extends LayerPool {
 
     public LayerOnePool(){
         super(
+            new ConcretePool.Builder<Entity>()
+                .put(
+                    new PoolEntry.Builder<Entity>()
+                        .with(()->new Rat())
+                        .withPrice(5)
+                        .withWeight(2.0d)
+                        .build()
+                )
+                .put(
+                    new PoolEntry.Builder<Entity>()
+                        .with(()->new DireRat())
+                        .withPrice(6)
+                        .build()
+                )
+                .put(
+                    new PoolEntry.Builder<Entity>()
+                        .with(()->new Snake())
+                        .withPrice(7)
+                        .build()
+                )
+                .put(
+                    new PoolEntry.Builder<Entity>()
+                        .with(()->new Slime())
+                        .withPrice(8)
+                        .build()
+                )
+                .put(
+                    new PoolEntry.Builder<Entity>()
+                        .with(()->new Spider())
+                        .withPrice(10)
+                        .build()
+                )
+                .build(),
 
-            new PoolBuilder<Supplier<Entity>>()
-            .put(()->new Rat(), 5)
-            .put(()->new DireRat(), 6)
-            .put(()->new Slime(), 8)
-            .put(()->new Snake(), 7)
-            .put(()->new Spider(), 10)
-            .build(),
+            new ConcretePool.Builder<Item>()
+                .put(
+                    new PoolEntry.Builder<Item>()
+                        .with(()->new BoStaff())
+                        .withPrice(5)
+                        .withAmount(1)
+                        .build()
+                )
+                .put(
+                    new PoolEntry.Builder<Item>()
+                        .with(()->new Dagger())
+                        .withPrice(10)
+                        .build()
+                )
+                .put(
+                    new PoolEntry.Builder<Item>()
+                        .with(()->new ShortSword())
+                        .withPrice(5)
+                        .withAmount(1)
+                        .build()
+                )
+                .put(
+                    new PoolEntry.Builder<Item>()
+                        .with(()->new HandAxe())
+                        .withPrice(5)
+                        .withAmount(1)
+                        .build()
+                )
+                .put(
+                    new PoolEntry.Builder<Item>()
+                        .with(()->new FirePotion())
+                        .withPrice(10)
+                        .build()
+                )
+                .put(
+                    new PoolEntry.Builder<Item>()
+                        .with(()->new FreezingPotion())
+                        .withPrice(10)
+                        .build()
+                )
+                .put(
+                    new PoolEntry.Builder<Item>()
+                        .with(()->new WaterPotion())
+                        .withPrice(10)
+                        .build()
+                )
+                .put(
+                    new PoolEntry.Builder<Item>()
+                        .with(()->new HealingPotion())
+                        .withPrice(15)
+                        .build()
+                )
+                .put(
+                    new PoolEntry.Builder<Item>()
+                        .with(()->new LeatherCap())
+                        .withPrice(5)
+                        .withAmount(1)
+                        .build()
+                )
+                .put(
+                    new PoolEntry.Builder<Item>()
+                        .with(()->new LeatherArmor())
+                        .withPrice(10)
+                        .withAmount(1)
+                        .build()
+                )
+                .put(
+                    new PoolEntry.Builder<Item>()
+                        .with(()->new LeatherGloves())
+                        .withPrice(5)
+                        .withAmount(1)
+                        .build()
+                )
+                .put(
+                    new PoolEntry.Builder<Item>()
+                        .with(()->new LeatherPants())
+                        .withPrice(5)
+                        .withAmount(1)
+                        .build()
+                )
+                .put(
+                    new PoolEntry.Builder<Item>()
+                        .with(()->new Cloak())
+                        .withPrice(5)
+                        .withAmount(1)
+                        .build()
+                )
+                .build(),
 
-            new PoolBuilder<Supplier<Item>>()
-            .put(()->new BoStaff(), 5)
-            .put(()->new Dagger(), 10)
-            .put(()->new ShortSword(), 5)
-            .put(()->new HandAxe(), 5)
-            .put(()->new FirePotion(), 10)
-            .put(()->new FreezingPotion(), 10)
-            .put(()->new WaterPotion(), 10)
-            .put(()->new HealingPotion(), 15)
-            .put(()->new LeatherCap(), 5)
-            .put(()->new LeatherArmor(), 10)
-            .put(()->new LeatherGloves(), 5)
-            .put(()->new LeatherPants(), 5)
-            .put(()->new Cloak(), 5)
-            .build(),
+            new ConcretePool.Builder<Item>()
+                .put(
+                    new PoolEntry.Builder<Item>()
+                        .with(()->new Chainmail())
+                        .withPrice(7)
+                        .build()
+                )
+                .put(
+                    new PoolEntry.Builder<Item>()
+                        .with(()->new FirePotion())
+                        .withPrice(5)
+                        .build()
+                )
+                .put(
+                    new PoolEntry.Builder<Item>()
+                        .with(()->new WaterPotion())
+                        .withPrice(5)
+                        .build()
+                )
+                .put(
+                    new PoolEntry.Builder<Item>()
+                        .with(()->new FreezingPotion())
+                        .withPrice(5)
+                        .build()
+                )
+                .put(
+                    new PoolEntry.Builder<Item>()
+                        .with(()->new HealingPotion())
+                        .withPrice(5)
+                        .build()
+                )
+                .put(
+                    new PoolEntry.Builder<Item>()
+                        .with(()->new IronGreaves())
+                        .withPrice(7)
+                        .build()
+                )
+                .put(
+                    new PoolEntry.Builder<Item>()
+                        .with(()->new IronHelm())
+                        .withPrice(7)
+                        .build()
+                )
+                .put(
+                    new PoolEntry.Builder<Item>()
+                        .with(()->new PlateGauntlets())
+                        .withPrice(7)
+                        .build()
+                )
+                .put(
+                    new PoolEntry.Builder<Item>()
+                        .with(()->new ScrollOfUpgrade())
+                        .withPrice(10)
+                        .build()
+                )
+                .put(
+                    new PoolEntry.Builder<Item>()
+                        .with(()->new ScrollOfEnchantment())
+                        .withPrice(10)
+                        .build()
+                )
+                .put(
+                    new PoolEntry.Builder<Item>()
+                        .with(()->new PlateArmor())
+                        .withPrice(10)
+                        .build()
+                )
+                .put(
+                    new PoolEntry.Builder<Item>()
+                        .with(()->new BoStaff())
+                        .withPrice(5)
+                        .build()
+                )
+                .put(
+                    new PoolEntry.Builder<Item>()
+                        .with(()->new Dagger())
+                        .withPrice(10)
+                        .build()
+                )
+                .put(
+                    new PoolEntry.Builder<Item>()
+                        .with(()->new ShortSword())
+                        .withPrice(5)
+                        .build()
+                )
+                .put(
+                    new PoolEntry.Builder<Item>()
+                        .with(()->new HandAxe())
+                        .withPrice(5)
+                        .build()
+                )
+                .build(),
 
-            new PoolBuilder<Supplier<Item>>()
-            .put(()->new Chainmail(), 7)
-            .put(()->new FirePotion(), 5)
-            .put(()->new WaterPotion(), 5)
-            .put(()->new FreezingPotion(), 5)
-            .put(()->new HealingPotion(), 5)
-            .put(()->new IronGreaves(), 7)
-            .put(()->new IronHelm(), 7)
-            .put(()->new PlateGauntlets(), 7)
-            .put(()->new ScrollOfUpgrade(), 10)
-            .put(()->new ScrollOfEnchantment(), 10)
-            .put(()->new PlateArmor(), 10)
-            .put(()->new BoStaff(), 5)
-            .put(()->new Dagger(), 10)
-            .put(()->new ShortSword(), 5)
-            .put(()->new HandAxe(), 5)
-            .build(),
+            new ConcretePool.Builder<Chest>()
+                .put(
+                    new PoolEntry.Builder<Chest>()
+                        .with(()->new Chest())
+                        .withPrice(20)
+                        .build()
+                )
+                .build(),
 
-            new PoolBuilder<Supplier<Chest>>()
-            .put(()->new Chest(), 20)
-            .build(),
+            new ConcretePool.Builder<Entity>()
+                .put(
+                    new PoolEntry.Builder<Entity>()
+                        .with(()->new RatKing())
+                        .withPrice(1)
+                        .build()
+                )
+                .put(
+                    new PoolEntry.Builder<Entity>()
+                        .with(()->new Ghast())
+                        .withPrice(1)
+                        .build()
+                )
+                .build(),
 
-            new PoolBuilder<Supplier<Entity>>()
-            .put(()->new RatKing(), 1)
-            .put(()->new Ghast(), 1)
-            .build(),
+            new ConcretePool.Builder<Entity>()
+                .put(
+                    new PoolEntry.Builder<Entity>()
+                        .with(()->new Crate())
+                        .withPrice(2)
+                        .build()
+                )
+                .put(
+                    new PoolEntry.Builder<Entity>()
+                        .with(()->new Barrel())
+                        .withPrice(2)
+                        .build()
+                )
+                .put(
+                    new PoolEntry.Builder<Entity>()
+                        .with(()->new Brazier(Math.random() <= 0.50))
+                        .withAmount(1)
+                        .withPrice(2)
+                        .build()
+                )
+                .build(),
 
-            new PoolBuilder<Supplier<Entity>>()
-            .put(()->new Crate(), 2)
-            .put(()->new Barrel(), 2)
-            .put(()->new Brazier(Math.random() <= 0.50), 2)
-            .build(),
-
-            new PoolBuilder<Supplier<Item>>()
-            .put(()->new Torch(), 3)
-            .put(()->new Antidote(), 3)
-            .put(()->new WaterPotion(), 3)
-            .put(()->new Ration(), 2)
-            .put(()->new Bandage(), 2)
-            .build()
-
+            new ConcretePool.Builder<Item>()
+                .put(
+                    new PoolEntry.Builder<Item>()
+                        .with(()->new Torch())
+                        .withPrice(3)
+                        .build()
+                )
+                .put(
+                    new PoolEntry.Builder<Item>()
+                        .with(()->new Antidote())
+                        .withPrice(3)
+                        .build()
+                )
+                .put(
+                    new PoolEntry.Builder<Item>()
+                        .with(()->new WaterPotion())
+                        .withPrice(3)
+                        .build()
+                )
+                .put(
+                    new PoolEntry.Builder<Item>()
+                        .with(()->new Ration())
+                        .withPrice(2)
+                        .build()
+                )
+                .put(
+                    new PoolEntry.Builder<Item>()
+                        .with(()->new Bandage())
+                        .withPrice(2)
+                        .build()
+                )
+                .build()
         );
     }
-
 }

@@ -2,8 +2,6 @@ package game.gameobjects.entities;
 
 import static game.App.randomNumber;
 
-import java.util.function.Supplier;
-
 import org.hexworks.zircon.api.color.TileColor;
 
 import game.Dungeon;
@@ -39,7 +37,7 @@ public class Rat extends Animal implements DropsXP, HasDrops, HasDodge{
     }
 
     @Override
-    public Pool<Supplier<Item>> getItemPool() {
+    public Pool<Item> getItemPool() {
         return Dungeon.getCurrentDropPool();
     }
 
