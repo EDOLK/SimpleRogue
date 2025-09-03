@@ -18,14 +18,16 @@ import game.floorgeneration.FloorGenerator;
 import game.gamelogic.Armed;
 import game.gamelogic.Armored;
 import game.gamelogic.Attribute;
-import game.gamelogic.HasAccuracy;
-import game.gamelogic.HasDodge;
 import game.gamelogic.HasOffHand;
 import game.gamelogic.LightSource;
+import game.gamelogic.ModifiesAccuracy;
+import game.gamelogic.ModifiesDodge;
 import game.gamelogic.OverridesAttack;
 import game.gamelogic.OverridesBehavable;
 import game.gamelogic.abilities.Ability;
 import game.gamelogic.abilities.HasAbilities;
+import game.gamelogic.abilities.HasPassives;
+import game.gamelogic.abilities.Passive;
 import game.gamelogic.behavior.Behavable;
 import game.gamelogic.combat.AttackInfo;
 import game.gamelogic.combat.CombatModifier;
@@ -165,6 +167,14 @@ public class Floor{
                         for (Ability ability : hasAbilities.getAbilities()){
                             if (ability instanceof Behavable behavableAbility){
                                 behavables.add(behavableAbility);
+                            }
+                        }
+                    }
+
+                    if (entity instanceof HasPassives hasPassives) {
+                        for (Passive passive : hasPassives.getPassives()){
+                            if (passive instanceof Behavable behavablePassive){
+                                behavables.add(behavablePassive);
                             }
                         }
                     }
@@ -633,13 +643,13 @@ public class Floor{
 
     public static int getDodge(Entity entity){
         int dodge = 0;
-        for (HasDodge hasDodge : App.recursiveCheck(entity, getDodgeConditions(), (obj) -> {
-            if (obj instanceof HasDodge hd) {
-                return Optional.of(hd);
+        for (ModifiesDodge modifiesDodge : App.recursiveCheck(entity, getDodgeConditions(), (obj) -> {
+            if (obj instanceof ModifiesDodge md) {
+                return Optional.of(md);
             }
             return Optional.empty();
         })) {
-            dodge += hasDodge.getDodge();
+            dodge = modifiesDodge.modifyDodge(dodge);
         }
         return dodge;
     }
@@ -653,17 +663,17 @@ public class Floor{
 
         int accuracy = 0;
 
-        for (HasAccuracy hasAccuracy : App.recursiveCheck(entity, getAccuracyConditions(), (obj) -> {
-            if (obj instanceof HasAccuracy ha) {
-                return Optional.of(ha);
+        for (ModifiesAccuracy modifiesAccuracy : App.recursiveCheck(entity, getAccuracyConditions(), (obj) -> {
+            if (obj instanceof ModifiesAccuracy ma) {
+                return Optional.of(ma);
             }
             return Optional.empty();
         })){
-            accuracy += hasAccuracy.getAccuracy();
+            accuracy = modifiesAccuracy.modifyAccuracy(accuracy);
         };
 
-        if (activeWeapon instanceof HasAccuracy ha) {
-            accuracy += ha.getAccuracy();
+        if (activeWeapon instanceof ModifiesAccuracy ma) {
+            accuracy = ma.modifyAccuracy(accuracy);
         }
 
         return accuracy;

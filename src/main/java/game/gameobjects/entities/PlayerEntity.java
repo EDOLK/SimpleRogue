@@ -22,6 +22,8 @@ import game.gamelogic.Skill;
 import game.gamelogic.SkillMap;
 import game.gamelogic.abilities.Ability;
 import game.gamelogic.abilities.HasAbilities;
+import game.gamelogic.abilities.HasPassives;
+import game.gamelogic.abilities.Passive;
 import game.gamelogic.skilltrees.SkillTree;
 import game.gamelogic.skilltrees.UsesSkillTrees;
 import game.gameobjects.ArmorSlot;
@@ -35,15 +37,16 @@ import game.gameobjects.items.armor.Armor;
 import game.gameobjects.items.armor.ArmorType;
 import game.gameobjects.items.weapons.Weapon;
 
-public class PlayerEntity extends Entity implements Armored, Armed, Levelable, Experiential, HasInventory, HasOffHand, HasAbilities, HasDodge, HasAttributes, HasSkills, UsesSkillTrees{
+public class PlayerEntity extends Entity implements Armored, Armed, Levelable, Experiential, HasInventory, HasOffHand, HasAbilities, HasDodge, HasAttributes, HasSkills, UsesSkillTrees, HasPassives{
 
     private int maxWeight = 60;
     private int maxMP;
     private int MP;
-    private List<ArmorSlot> armorSlots = new ArrayList<ArmorSlot>();
-    private List<WeaponSlot> weaponSlots = new ArrayList<WeaponSlot>();
-    private List<Item> inventory = new ArrayList<Item>();
+    private List<ArmorSlot> armorSlots = new ArrayList<>();
+    private List<WeaponSlot> weaponSlots = new ArrayList<>();
+    private List<Item> inventory = new ArrayList<>();
     private List<Ability> abilities = new ArrayList<>();
+    private List<Passive> passives = new ArrayList<>();
     private ItemSlot offHandSlot = new ItemSlot("Offhand");
     private int level = 1;
     private int XP = 0;
@@ -96,10 +99,12 @@ public class PlayerEntity extends Entity implements Armored, Armed, Levelable, E
         this.enduranceHPMult = 3;
     }
 
+    @Override
     public boolean addAbility(Ability ability){
         return abilities.add(ability);
     }
 
+    @Override
     public boolean removeAbility(Ability ability){
         return abilities.remove(ability);
     }
@@ -107,6 +112,21 @@ public class PlayerEntity extends Entity implements Armored, Armed, Levelable, E
     @Override
     public List<Ability> getAbilities() {
         return abilities;
+    }
+
+    @Override
+    public List<Passive> getPassives() {
+        return passives;
+    }
+
+    @Override
+    public boolean addPassive(Passive passive) {
+        return passives.add(passive);
+    }
+
+    @Override
+    public boolean removePassive(Passive passive) {
+        return passives.remove(passive);
     }
 
     public int getMaxMP() {
