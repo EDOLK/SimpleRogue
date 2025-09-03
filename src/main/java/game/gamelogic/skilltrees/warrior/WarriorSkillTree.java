@@ -19,7 +19,7 @@ public class WarriorSkillTree extends SkillTree {
                 .addAttributeRequirement(Attribute.STRENGTH, 1)
                 .addOnApply((e) -> {
                     if (e instanceof HasAbilities hasAbilities)
-                        hasAbilities.getAbilities().add(new Clobber(e));
+                        hasAbilities.addAbility(new Clobber(e));
                 })
                 .build()
         );
@@ -31,7 +31,7 @@ public class WarriorSkillTree extends SkillTree {
                 .addAttributeRequirement(Attribute.DEXTERITY, 1)
                 .addOnApply((e) -> {
                     if (e instanceof HasAbilities hasAbilities)
-                        hasAbilities.getAbilities().add(new SecondWind(e));
+                        hasAbilities.addAbility(new SecondWind(e));
                 })
                 .build()
         );
@@ -63,19 +63,60 @@ public class WarriorSkillTree extends SkillTree {
             })
             .build();
 
-        SkillEntry bulwarkOne = new SkillEntry.Builder()
-            .addName("Bulwark I")
-            .addCostRequirement(1)
-            .addAttributeRequirement(Attribute.ENDURANCE, 1)
+        this.addSkillEntry(
+            new SkillEntry.Builder()
+                .addName("Bulwark I")
+                .addCostRequirement(1)
+                .addAttributeRequirement(Attribute.ENDURANCE, 1)
+                .addOnApply((e) -> {
+                    if (e instanceof HasAbilities hasAbilities) {
+                        hasAbilities.addAbility(new Bulwark(e));
+                    }
+                    this.addSkillEntry(bulwarkTwo);
+                })
+                .build()
+        );
+
+        SkillEntry reliableCombatant3 = new SkillEntry.Builder()
+            .addName("Reliable Combatant III")
+            .addCostRequirement(3)
+            .addAttributeRequirement(Attribute.DEXTERITY, 2)
             .addOnApply((e) -> {
-                if (e instanceof HasAbilities hasAbilities) {
-                    hasAbilities.getAbilities().add(new Bulwark(e));
+                if (e instanceof HasAbilities hasAbilities){
+                    Optional<ReliableCombatant> reliableCombatant = hasAbilities.getAbilities().stream().filter(a->a instanceof ReliableCombatant).map(a->(ReliableCombatant)a).findFirst();
+                    if (reliableCombatant.isPresent())
+                        reliableCombatant.get().setLevel(3);
                 }
-                this.addSkillEntry(bulwarkTwo);
             })
             .build();
 
-        this.addSkillEntry(bulwarkOne);
+        SkillEntry reliableCombatant2 = new SkillEntry.Builder()
+            .addName("Reliable Combatant II")
+            .addCostRequirement(2)
+            .addAttributeRequirement(Attribute.DEXTERITY, 1)
+            .addOnApply((e) -> {
+                if (e instanceof HasAbilities hasAbilities){
+                    Optional<ReliableCombatant> reliableCombatant = hasAbilities.getAbilities().stream().filter(a->a instanceof ReliableCombatant).map(a->(ReliableCombatant)a).findFirst();
+                    if (reliableCombatant.isPresent())
+                        reliableCombatant.get().setLevel(2);
+                    this.addSkillEntry(reliableCombatant3);
+                }
+            })
+            .build();
+
+        this.addSkillEntry(
+            new SkillEntry.Builder()
+                .addName("Reliable Combatant I")
+                .addCostRequirement(1)
+                .addAttributeRequirement(Attribute.DEXTERITY, 1)
+                .addOnApply((e) -> {
+                    if (e instanceof HasAbilities hasAbilities)
+                        hasAbilities.addAbility(new ReliableCombatant(e));
+                    this.addSkillEntry(reliableCombatant2);
+                })
+                .build()
+        );
+
 
     }
 

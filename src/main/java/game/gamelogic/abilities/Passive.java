@@ -1,5 +1,5 @@
 package game.gamelogic.abilities;
 
-public class PassiveAbility {
+public interface Passive {
 
 }

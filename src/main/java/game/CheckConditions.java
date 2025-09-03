@@ -5,11 +5,11 @@ public class CheckConditions {
     private boolean statuses;
     private boolean unarmedWeapon;
     private boolean armedWeapons;
-    private boolean abilities;
     private boolean armors;
     private boolean enchantments;
     private boolean inventory;
     private boolean ability;
+    private boolean passive;
 
     public boolean includesAbility() {
         return ability;
@@ -27,10 +27,6 @@ public class CheckConditions {
         return armedWeapons;
     }
 
-    public boolean includesAbilities() {
-        return abilities;
-    }
-
     public boolean includesArmors() {
         return armors;
     }
@@ -41,6 +37,10 @@ public class CheckConditions {
 
     public boolean includesInventory(){
         return inventory;
+    }
+
+    public boolean includesPassive(){
+        return passive;
     }
 
     public CheckConditions withStatuses(boolean value) {
@@ -55,11 +55,6 @@ public class CheckConditions {
 
     public CheckConditions withArmedWeapons(boolean value) {
         this.armedWeapons = value;
-        return this;
-    }
-
-    public CheckConditions withAbilities(boolean value) {
-        this.abilities = value;
         return this;
     }
 
@@ -83,17 +78,22 @@ public class CheckConditions {
         return this;
     }
 
+    public CheckConditions withPassive(boolean passive) {
+        this.passive = passive;
+        return this;
+    }
+
     private CheckConditions(){};
 
     private CheckConditions(boolean all){
         this.statuses = all;
         this.unarmedWeapon = all;
         this.armedWeapons = all;
-        this.abilities = all;
         this.armors = all;
         this.enchantments = all;
         this.inventory = all;
         this.ability = all;
+        this.passive = all;
     }
 
     public static CheckConditions all(){

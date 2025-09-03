@@ -39,7 +39,7 @@ public enum Skill {
         return CheckConditions.none()
             .withArmors(true)
             .withStatuses(true)
-            .withAbilities(true)
+            .withAbility(true)
             .withArmedWeapons(true)
             .withEnchantments(true)
             .withUnarmedWeapon(true);

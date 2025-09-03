@@ -14,6 +14,7 @@ import game.gamelogic.Armored;
 import game.gamelogic.HasInventory;
 import game.gamelogic.abilities.HasAbilities;
 import game.gamelogic.abilities.HasAbility;
+import game.gamelogic.abilities.HasPassives;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.items.armor.Armor;
 import game.gameobjects.items.weapons.Weapon;
@@ -83,7 +84,7 @@ public class App
             if (object instanceof Armored armored && conditions.includesArmors())
                 armored.getArmor().forEach(helper::accept);
 
-            if (object instanceof HasAbilities hasAbilities && conditions.includesAbilities())
+            if (object instanceof HasAbilities hasAbilities && conditions.includesAbility())
                 hasAbilities.getAbilities().forEach(helper::accept);
 
             if (object instanceof Weapon weapon && conditions.includesEnchantments())
@@ -91,6 +92,9 @@ public class App
 
             if (object instanceof Armor armor && conditions.includesEnchantments())
                 helper.accept(armor.getEnchantment());
+
+            if (object instanceof HasPassives hasPassives && conditions.includesPassive())
+                hasPassives.getPassives().forEach(helper::accept);
             
             if (conditions.includesAbility()) {
 

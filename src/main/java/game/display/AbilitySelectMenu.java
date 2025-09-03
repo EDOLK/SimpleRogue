@@ -2,20 +2,17 @@ package game.display;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.hexworks.zircon.api.component.Button;
 import org.hexworks.zircon.api.component.Container;
 import org.hexworks.zircon.api.uievent.UIEventResponse;
 
-import game.gamelogic.Armed;
-import game.gamelogic.Armored;
-import game.gamelogic.HasOffHand;
+import game.App;
 import game.gamelogic.abilities.Ability;
 import game.gamelogic.abilities.HasAbilities;
 import game.gamelogic.abilities.HasAbility;
 import game.gameobjects.entities.Entity;
-import game.gameobjects.items.armor.Armor;
-import game.gameobjects.items.weapons.Weapon;
 import kotlin.Pair;
 
 public class AbilitySelectMenu extends Menu{
@@ -29,7 +26,7 @@ public class AbilitySelectMenu extends Menu{
         List<Ability> abilities = new ArrayList<>(hasAbilities.getAbilities());
         if (hasAbilities instanceof Entity entity) {
             for (Object object : getAspects(entity)) {
-                if (object instanceof HasAbility hasAbility) {
+                if (object instanceof HasAbility hasAbility && hasAbility.getAbility() != null) {
                     abilities.add(hasAbility.getAbility());
                 }
             }
@@ -50,31 +47,12 @@ public class AbilitySelectMenu extends Menu{
     }
 
     public List<Object> getAspects(Entity entity){
-        List<Object> list = new ArrayList<>();
-        list.add(entity);
-        if (entity instanceof Armed armed) {
-            list.addAll(armed.getWeapons());
-            for (Weapon weapon : armed.getWeapons()) {
-                if (weapon.getEnchantment()!=null) {
-                    list.add(weapon.getEnchantment());
-                }
+        return App.recursiveCheck(entity, (obj) -> {
+            if (obj instanceof HasAbility hasAbility) {
+                return Optional.of(hasAbility);
             }
-        }
-        if (entity instanceof Armored armored) {
-            list.addAll(armored.getArmor());
-            for (Armor armor : armored.getArmor()) {
-                if (armor.getEnchantment()!=null) {
-                    list.add(armor.getEnchantment());
-                }
-            }
-        }
-        if (entity instanceof HasOffHand hasOffHand){
-            if (hasOffHand.getOffHandSlot().getEquippedItem() != null){
-                list.add(hasOffHand.getOffHandSlot().getEquippedItem());
-            }
-        }
-        list.addAll(entity.getStatuses());
-        return list;
+            return Optional.empty();
+        });
     }
 
     @Override
