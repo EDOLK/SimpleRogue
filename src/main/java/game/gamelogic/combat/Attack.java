@@ -19,43 +19,43 @@ public class Attack {
 
     private Entity attacker;
     private Entity defender;
-    private Weapon attackerWeapon;
+    private Weapon activeWeapon;
     private boolean hit;
     private DamageType attackerDamageType;
     private int damage;
-    private int modifiedAttackerRoll;
     private boolean crit;
-    private int naturalAttackerRoll;
+    private int attackerRoll;
+    private int attackerToHit;
     private AttackInfo attackInfo;
     private int defenderDodge;
 
-    public Attack(Entity attacker, Entity defender, Weapon attackerWeapon){
+    public Attack(Entity attacker, Entity defender, Weapon activeWeapon){
         this.attacker = attacker;
         this.defender = defender;
-        this.attackerWeapon = attackerWeapon;
+        this.activeWeapon = activeWeapon;
 
-        attackInfo = new AttackInfo(attacker, defender, attackerWeapon);
+        attackInfo = new AttackInfo(attacker, defender, activeWeapon);
         defenderDodge = 0;
 
         defenderDodge += getDodge(defender);
 
         attackInfo.setDefenderDodge(defenderDodge);
 
-        naturalAttackerRoll = App.randomNumber(1, 20);
+        attackerRoll = App.randomNumber(1, 20);
 
-        attackInfo.setBaseRoll(naturalAttackerRoll);
+        attackInfo.setBaseRoll(attackerRoll);
 
-        crit = naturalAttackerRoll == 20;
+        crit = attackerRoll == 20;
 
         attackInfo.setCrit(crit);
 
-        modifiedAttackerRoll = naturalAttackerRoll;
+        attackerToHit = attackerRoll;
 
-        modifiedAttackerRoll += getAccuracy(attacker, attackerWeapon);
+        attackerToHit += getAccuracy(attacker, activeWeapon);
 
-        attackInfo.setModifiedRoll(modifiedAttackerRoll);
+        attackInfo.setModifiedRoll(attackerToHit);
         
-        damage = attackerWeapon.generateDamage();
+        damage = activeWeapon.generateDamage();
 
         damage += Attribute.getAttribute(Attribute.STRENGTH, attacker);
         
@@ -63,20 +63,20 @@ public class Attack {
 
         attackInfo.setDamage(damage);
 
-        attackerDamageType = attackerWeapon.getDamageType();
+        attackerDamageType = activeWeapon.getDamageType();
         
         attackInfo.setDamageType(attackerDamageType);
 
-        hit = modifiedAttackerRoll >= defenderDodge;
+        hit = attackerToHit >= defenderDodge;
 
         attackInfo.setHit(hit);
     }
 
     public AttackResult execute(){
         
-        List<CombatModifier> attackerCombatMods = getCombatModifiers(attacker);
+        List<AttackerCombatModifier> attackerCombatMods = getAttackerCombatMods(attacker);
 
-        List<CombatModifier> defenderCombatMods = getCombatModifiers(defender);
+        List<DefenderCombatModifier> defenderCombatMods = getDefenderCombatMods(defender);
 
         int damageDelt = 0;
 
@@ -110,7 +110,7 @@ public class Attack {
 
         }
 
-        for (CombatModifier modifier : attackerCombatMods) {
+        for (AttackerCombatModifier modifier : attackerCombatMods) {
             switch (modifier) {
                 case OnAttack onAttack -> {
                     onAttack.doOnAttack(attacker, defender, attackInfo);
@@ -135,7 +135,7 @@ public class Attack {
             }
         }
 
-        for (CombatModifier modifier : defenderCombatMods) {
+        for (DefenderCombatModifier modifier : defenderCombatMods) {
             switch (modifier) {
                 case OnAttacked onAttacked -> {
                     onAttacked.doOnAttacked(defender, attacker, attackInfo);
@@ -163,9 +163,17 @@ public class Attack {
         return new AttackResult(hit, crit, damageDelt, attackerDamageType, attacker, defender);
     }
 
-    private static List<CombatModifier> getCombatModifiers(Entity entity){
+    private static List<AttackerCombatModifier> getAttackerCombatMods(Entity entity){
         return App.recursiveCheck(entity, getCombatModConditions(), (obj) -> {
-            if (obj instanceof CombatModifier cm){
+            if (obj instanceof AttackerCombatModifier cm){
+                return Optional.of(cm);
+            }
+            return Optional.empty();
+        });
+    }
+    private static List<DefenderCombatModifier> getDefenderCombatMods(Entity entity){
+        return App.recursiveCheck(entity, getCombatModConditions(), (obj) -> {
+            if (obj instanceof DefenderCombatModifier cm){
                 return Optional.of(cm);
             }
             return Optional.empty();

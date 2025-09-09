@@ -17,6 +17,7 @@ import game.gameobjects.entities.Animal;
 import game.gameobjects.entities.Entity;
 import game.gamelogic.combat.AttackInfo;
 import game.gamelogic.combat.OnHitted;
+
 public class Sleeping extends Status implements OverridesBehavable, Behavable, OnHitted {
 
     public Sleeping() {
