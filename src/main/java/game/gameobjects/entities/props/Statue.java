@@ -20,17 +20,18 @@ public class Statue extends Entity implements HasResistances {
     private List<Resistance> resistances;
 
     public Statue() {
+        this(Math.random() < 0.10 ? 
+            Dungeon.getCurrentBossPool().getRandom(Dungeon.getCurrentBossPool().getHighestPrice()).get() : 
+            Dungeon.getCurrentMonsterPool().getRandom(Dungeon.getCurrentMonsterPool().getHighestPrice()).get() 
+        );
+    }
+
+    public Statue(Entity referenceEntity) {
         this.resistances = new ArrayList<>();
         for (DamageType type : DamageType.values()) {
             if (type != DamageType.BLUNT && type != DamageType.PIERCING && type != DamageType.SLASHING) {
                 resistances.add(new PercentageResistance(type, 1.0));
             }
-        }
-        Entity referenceEntity = null;
-        if (Math.random() < 0.10) {
-            referenceEntity = Dungeon.getCurrentBossPool().getRandom(Dungeon.getCurrentBossPool().getHighestPrice()).get();
-        } else {
-            referenceEntity = Dungeon.getCurrentMonsterPool().getRandom(Dungeon.getCurrentMonsterPool().getHighestPrice()).get();
         }
         if (referenceEntity != null) {
             this.setCharacter(referenceEntity.getCharacter());
