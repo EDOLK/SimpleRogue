@@ -18,6 +18,8 @@ public abstract class LayerPool {
 
     public final Pool<Entity> PROP_POOL;
 
+    public final Pool<Entity> LONE_PROP_POOL;
+
     public final Pool<Item> PROP_DROP_POOL;
 
     public LayerPool(
@@ -27,6 +29,7 @@ public abstract class LayerPool {
         Pool<Chest> chestPool,
         Pool<Entity> bossPool,
         Pool<Entity> propPool,
+        Pool<Entity> lonePropPool,
         Pool<Item> propDropPool
     ) {
         this.BOSS_POOL = bossPool;
@@ -35,6 +38,7 @@ public abstract class LayerPool {
         this.DROP_POOL = dropPool;
         this.MONSTER_POOL = monsterPool;
         this.PROP_POOL = propPool;
+        this.LONE_PROP_POOL = lonePropPool;
         this.PROP_DROP_POOL = propDropPool;
     }
 

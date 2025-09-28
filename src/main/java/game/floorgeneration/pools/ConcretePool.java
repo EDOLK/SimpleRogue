@@ -42,6 +42,15 @@ public class ConcretePool<T> implements Pool<T> {
     }
 
     @Override
+    public int getHighestPrice() {
+        OptionalInt highest = entries.stream().mapToInt((e)->e.getPrice()).max();
+        if (highest.isPresent()) {
+            return highest.getAsInt();
+        }
+        return 0;
+    }
+
+    @Override
     public Pool<T> copy() {
         return new Builder<T>()
             .putAll(

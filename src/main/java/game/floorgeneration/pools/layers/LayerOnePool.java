@@ -15,6 +15,7 @@ import game.gameobjects.entities.props.Barrel;
 import game.gameobjects.entities.props.Brazier;
 import game.gameobjects.entities.props.Chest;
 import game.gameobjects.entities.props.Crate;
+import game.gameobjects.entities.props.Statue;
 import game.gameobjects.items.Antidote;
 import game.gameobjects.items.Bandage;
 import game.gameobjects.items.Item;
@@ -298,11 +299,21 @@ public class LayerOnePool extends LayerPool {
                         .withPrice(2)
                         .build()
                 )
+                .build(),
+
+            new ConcretePool.Builder<Entity>()
                 .put(
                     new PoolEntry.Builder<Entity>()
                         .with(()->new Brazier(Math.random() <= 0.50))
                         .withAmount(1)
-                        .withPrice(2)
+                        .withPrice(1)
+                        .build()
+                )
+                .put(
+                    new PoolEntry.Builder<Entity>()
+                        .with(()->new Statue())
+                        .withAmount(1)
+                        .withPrice(1)
                         .build()
                 )
                 .build(),
