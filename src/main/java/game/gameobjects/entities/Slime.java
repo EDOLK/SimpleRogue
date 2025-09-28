@@ -17,11 +17,13 @@ import game.gamelogic.HasDodge;
 import game.gamelogic.HasDrops;
 import game.gamelogic.HasInventory;
 import game.gamelogic.HasResistances;
+import game.gamelogic.HasVulnerabilities;
 import game.gamelogic.combat.AttackInfo;
 import game.gamelogic.combat.OnDeath;
 import game.gamelogic.resistances.PercentageResistance;
-import game.gamelogic.resistances.RangeResistance;
 import game.gamelogic.resistances.Resistance;
+import game.gamelogic.vulnerabilities.PercentageVulnerability;
+import game.gamelogic.vulnerabilities.Vulnerability;
 import game.gameobjects.DamageType;
 import game.gameobjects.Space;
 import game.gameobjects.items.Item;
@@ -30,7 +32,7 @@ import game.gameobjects.statuses.Slimed;
 import game.gameobjects.statuses.Status;
 import game.gameobjects.terrains.liquids.SlimeLiquid;
 
-public class Slime extends Animal implements DropsXP, HasDodge, HasResistances, HasInventory, HasDrops, OnDeath{
+public class Slime extends Animal implements DropsXP, HasDodge, HasResistances, HasVulnerabilities, HasInventory, HasDrops, OnDeath{
 
     private List<Item> inventory = new ArrayList<>();
     
@@ -89,8 +91,16 @@ public class Slime extends Animal implements DropsXP, HasDodge, HasResistances, 
     @Override
     public List<Resistance> getResistances() {
         return List.of(
-            new RangeResistance(DamageType.BLUNT, 0, 3),
-            new PercentageResistance(DamageType.POISON, 0.20)
+            new PercentageResistance(DamageType.BLUNT, 0.5),
+            new PercentageResistance(DamageType.SUFFICATION, 1.00)
+        );
+    }
+
+    @Override
+    public List<Vulnerability> getVulnerabilities() {
+        return List.of(
+            new PercentageVulnerability(DamageType.PIERCING, .50),
+            new PercentageVulnerability(DamageType.SLASHING, .50)
         );
     }
 
