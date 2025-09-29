@@ -68,6 +68,10 @@ public class Dungeon {
         return currentLayerPool.PROP_POOL.copy();
     }
 
+    public static Pool<Entity> getCurrentLonePropPool() {
+        return currentLayerPool.LONE_PROP_POOL.copy();
+    }
+
     public static Pool<Item> getCurrentPropDropPool() {
         return currentLayerPool.PROP_DROP_POOL.copy();
     }

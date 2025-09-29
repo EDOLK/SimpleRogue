@@ -6,5 +6,6 @@ public interface Pool<T> {
     };
     public PoolEntry<T> getRandom(int priceLimitMin, int priceLimitMax);
     public int getLowestPrice();
+    public int getHighestPrice();
     public Pool<T> copy();
 }

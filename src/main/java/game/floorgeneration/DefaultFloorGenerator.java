@@ -218,9 +218,11 @@ public class DefaultFloorGenerator extends FloorGenerator {
             .perlin(App.randomNumber(0,9999),Interpolation.COSINE,FadeFunction.QUINTIC_POLY)
             .scale(10)
             .build();
+        int lonePropNum = App.randomNumber(0, rooms.size()-1);
         for (int i = 1; i < rooms.size(); i++) {
             Room room = rooms.get(i);
             Pool<Entity> currentPropPool = Dungeon.getCurrentPropPool();
+            Pool<Entity> currentLonePropPool = Dungeon.getCurrentLonePropPool();
             for (Space space : room.getInteriorSpaces()) {
                 if (!space.isOccupied()) {
                     double val = perlinCosine.evaluateNoise(
@@ -231,6 +233,13 @@ public class DefaultFloorGenerator extends FloorGenerator {
                         space.setOccupant(currentPropPool.getRandom(2,2).get());
                     }
                 }
+            }
+            if (lonePropNum > 0) {
+                Space lonePropSpace = App.getRandom(room.getInteriorSpaces());
+                if (!lonePropSpace.isOccupied()) {
+                    lonePropSpace.setOccupant(currentLonePropPool.getRandom(1,1).get());
+                }
+                lonePropNum--;
             }
         }
     }
