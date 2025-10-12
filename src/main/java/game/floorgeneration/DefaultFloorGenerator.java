@@ -13,7 +13,6 @@ import game.App;
 import game.Dungeon;
 import game.Path;
 import game.PathConditions;
-import game.display.Display;
 import game.floorgeneration.pools.Pool;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Animal;
@@ -21,10 +20,8 @@ import game.gameobjects.entities.Door;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.entities.Mimic;
 import game.gameobjects.entities.PlayerEntity;
-import game.gameobjects.entities.Rat;
 import game.gameobjects.entities.Wall;
 import game.gameobjects.entities.props.Chest;
-import game.gameobjects.items.potions.WaterPotion;
 import game.gameobjects.statuses.Mossy;
 import game.gameobjects.terrains.Grass;
 import game.gameobjects.terrains.Moss;
@@ -43,8 +40,11 @@ public class DefaultFloorGenerator extends FloorGenerator {
 
     public DefaultFloorGenerator(int depth) {
         super(depth);
-        if (Math.random() < floorsWithoutMimic * 0.1)
+        if (Math.random() < floorsWithoutMimic * 0.1) {
             spawnMimic = true;
+        } else {
+            floorsWithoutMimic++;
+        }
     }
 
     @Override
@@ -337,8 +337,6 @@ public class DefaultFloorGenerator extends FloorGenerator {
             }
         }
 
-        App.getRandom(spawnRoom.getInteriorSpaces()).setOccupant(new Mimic(player));
-      
         Room lastRoom = pair.getFirst().get(pair.getFirst().size()-1);
         List<Space> lastRoomSpaces = new ArrayList<>(lastRoom.getInteriorSpaces());
         while (!lastRoomSpaces.isEmpty()) {
