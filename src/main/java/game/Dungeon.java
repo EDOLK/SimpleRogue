@@ -40,6 +40,8 @@ public class Dungeon {
 
     private static List<SkillTree> availableSkillTrees = new ArrayList<>();
 
+    public static int floorsWithoutMimic;
+
     public static List<SkillTree> getAvailableSkillTrees() {
         return availableSkillTrees;
     }
@@ -100,6 +102,7 @@ public class Dungeon {
         availableSkillTrees.clear();
         availableSkillTrees.add(new WarriorSkillTree());
         availableSkillTrees.add(new RogueSkillTree());
+        floorsWithoutMimic = 1;
     }
 
     public static void update(int time){

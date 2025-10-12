@@ -36,14 +36,13 @@ public class DefaultFloorGenerator extends FloorGenerator {
     protected int SIZE_Y;
     private boolean spawnMimic = false;
     private List<Entity> replacableEntities = new ArrayList<>();
-    private static int floorsWithoutMimic = 1;
 
     public DefaultFloorGenerator(int depth) {
         super(depth);
-        if (Math.random() < floorsWithoutMimic * 0.1) {
+        if (Math.random() < Dungeon.floorsWithoutMimic * 0.1) {
             spawnMimic = true;
         } else {
-            floorsWithoutMimic++;
+            Dungeon.floorsWithoutMimic++;
         }
     }
 
@@ -333,7 +332,7 @@ public class DefaultFloorGenerator extends FloorGenerator {
             if (toBeReplaced != null) {
                 Space space = toBeReplaced.getSpace();
                 space.setOccupant(new Mimic(toBeReplaced));
-                floorsWithoutMimic = 1;
+                Dungeon.floorsWithoutMimic = 1;
             }
         }
 
