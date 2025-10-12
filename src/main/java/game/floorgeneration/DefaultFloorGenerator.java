@@ -13,14 +13,18 @@ import game.App;
 import game.Dungeon;
 import game.Path;
 import game.PathConditions;
+import game.display.Display;
 import game.floorgeneration.pools.Pool;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Animal;
 import game.gameobjects.entities.Door;
 import game.gameobjects.entities.Entity;
+import game.gameobjects.entities.Mimic;
 import game.gameobjects.entities.PlayerEntity;
+import game.gameobjects.entities.Rat;
 import game.gameobjects.entities.Wall;
 import game.gameobjects.entities.props.Chest;
+import game.gameobjects.items.potions.WaterPotion;
 import game.gameobjects.statuses.Mossy;
 import game.gameobjects.terrains.Grass;
 import game.gameobjects.terrains.Moss;
@@ -33,9 +37,14 @@ public class DefaultFloorGenerator extends FloorGenerator {
     protected PlayerEntity player;
     protected int SIZE_X;
     protected int SIZE_Y;
+    private boolean spawnMimic = false;
+    private List<Entity> replacableEntities = new ArrayList<>();
+    private static int floorsWithoutMimic = 1;
 
     public DefaultFloorGenerator(int depth) {
         super(depth);
+        if (Math.random() < floorsWithoutMimic * 0.1)
+            spawnMimic = true;
     }
 
     @Override
@@ -197,9 +206,13 @@ public class DefaultFloorGenerator extends FloorGenerator {
 
     private void generateDoor(Space[][] spaces, Space doorSpace) {
         if (spaces[doorSpace.getX()-1][doorSpace.getY()].isOccupied() && spaces[doorSpace.getX()+1][doorSpace.getY()].isOccupied()) {
-            doorSpace.setOccupant(new Door('-'));
+            Door door = new Door('-');
+            doorSpace.setOccupant(door);
+            replacableEntities.add(door);
         } else {
-            doorSpace.setOccupant(new Door('|'));
+            Door door = new Door('|');
+            doorSpace.setOccupant(door);
+            replacableEntities.add(door);
         }
     }
 
@@ -230,14 +243,18 @@ public class DefaultFloorGenerator extends FloorGenerator {
                         App.lerp(0,0,spaces[space.getX()].length,1.0,space.getY())
                     );
                     if (val >= 0.5) {
-                        space.setOccupant(currentPropPool.getRandom(2,2).get());
+                        Entity prop = currentPropPool.getRandom(2,2).get();
+                        space.setOccupant(prop);
+                        replacableEntities.add(prop);
                     }
                 }
             }
             if (lonePropNum > 0) {
                 Space lonePropSpace = App.getRandom(room.getInteriorSpaces());
                 if (!lonePropSpace.isOccupied()) {
-                    lonePropSpace.setOccupant(currentLonePropPool.getRandom(1,1).get());
+                    Entity loneProp = currentLonePropPool.getRandom(1,1).get();
+                    lonePropSpace.setOccupant(loneProp);
+                    replacableEntities.add(loneProp);
                 }
                 lonePropNum--;
             }
@@ -305,10 +322,22 @@ public class DefaultFloorGenerator extends FloorGenerator {
                     Space randomSpace = getRandom(randomRoom.getInteriorSpaces());
                     if (randomSpace != null) {
                         randomSpace.setOccupant(generated);
+                        replacableEntities.add(generated);
                     }
                 }
             }
         }
+
+        if (spawnMimic) {
+            Entity toBeReplaced = App.getRandom(replacableEntities);
+            if (toBeReplaced != null) {
+                Space space = toBeReplaced.getSpace();
+                space.setOccupant(new Mimic(toBeReplaced));
+                floorsWithoutMimic = 1;
+            }
+        }
+
+        App.getRandom(spawnRoom.getInteriorSpaces()).setOccupant(new Mimic(player));
       
         Room lastRoom = pair.getFirst().get(pair.getFirst().size()-1);
         List<Space> lastRoomSpaces = new ArrayList<>(lastRoom.getInteriorSpaces());

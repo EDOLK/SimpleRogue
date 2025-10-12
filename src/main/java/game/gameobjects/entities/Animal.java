@@ -28,10 +28,6 @@ public abstract class Animal extends Entity implements HasBehavior, HasAttribute
         return new AnimalWandering(this);
     }
 
-    public Animal() {
-        super();
-    }
-
     @Override
     public Behavior getBehavior() {
         return this.behavior;

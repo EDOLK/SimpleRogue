@@ -50,7 +50,7 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
     private int visionRange = 10;
     private int nightVisionRange = 1;
     private int weight;
-    private ArrayList<Status> statuses = new ArrayList<Status>();
+    private List<Status> statuses = new ArrayList<Status>();
     protected boolean sightBlocker = false;
     protected boolean gasBlocker = false;
     protected boolean liquidBlocker = false;
@@ -141,17 +141,13 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
     }
 
     public String getName() {
-        String n = this.name;
-        for (Status status : statuses) {
+        String n = getOriginalName();
+        for (Status status : getStatuses()) {
             if (status.getDescriptor() != null && !status.getDescriptor().equals("")){
                 n = status.getDescriptor() + " " + n;
             }
         }
         return n;
-    }
-    
-    public String getTrueName(){
-        return this.name;
     }
 
     public void setName(String name) {
@@ -208,7 +204,7 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
         return true;
     }
 
-    public ArrayList<Status> getStatuses() {
+    public List<Status> getStatuses() {
         return statuses;
     }
     
