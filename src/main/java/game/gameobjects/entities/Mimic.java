@@ -28,7 +28,7 @@ public class Mimic extends Animal implements OnAttacked, Interactable, DropsXP, 
     private boolean activated;
     private int activeTimer;
     private Entity disguise;
-    private List<Item> inventory;
+    private List<Item> inventory = new ArrayList<>();
 
     @Override
     public List<Status> getStatuses() {
@@ -137,7 +137,7 @@ public class Mimic extends Animal implements OnAttacked, Interactable, DropsXP, 
             this.disguise = App.getRandom(getEntitiesInVision());
             t = true;
         }
-        Display.log("The " + getName() + " transforms " + (t ? "back " : "") + "into a " + this.disguise.getName() + ".", getSpace());
+        Display.log("The " + getName() + " transforms " + (t ? "" : "back ") + "into a " + this.disguise.getName() + ".", getSpace());
         activated = false;
     }
 
