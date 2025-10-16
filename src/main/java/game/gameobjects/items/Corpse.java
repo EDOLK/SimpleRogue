@@ -73,7 +73,8 @@ public class Corpse extends Item implements Behavable, Consumable, SelfAware, Fl
     public int behave() {
         
         if (decay >= decayLimit){
-            deleteSelf();
+            getSpace().addItem(new SkeletonCorpse(this));
+            getSpace().remove(this);
             return 100;
         }
 
@@ -85,10 +86,6 @@ public class Corpse extends Item implements Behavable, Consumable, SelfAware, Fl
         }
         decay++;
         return 100;
-    }
-
-    private void deleteSelf(){
-        getSpace().remove(this);
     }
 
     @Override
@@ -122,7 +119,11 @@ public class Corpse extends Item implements Behavable, Consumable, SelfAware, Fl
 
     @Override
     public void onBurn() {
-        getSpace().addItem(new CookedCorpse(this));
+        if (Math.random() < 0.75) {
+            getSpace().addItem(new BurntCorpse(this));
+        } else {
+            getSpace().addItem(new CookedCorpse(this));
+        }
         getSpace().remove(this);
     }
 
