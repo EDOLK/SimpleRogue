@@ -134,8 +134,11 @@ public class Mimic extends Animal implements OnAttacked, Interactable, DropsXP, 
     private void deActivate(){
         boolean t = false;
         if (Math.random() < 0.25){
-            this.disguise = App.getRandom(getEntitiesInVision());
-            t = true;
+            List<Entity> entitiesInVision = getEntitiesInVision();
+            if (entitiesInVision != null && !entitiesInVision.isEmpty()) {
+                this.disguise = App.getRandom(entitiesInVision);
+                t = true;
+            }
         }
         Display.log("The " + getName() + " transforms " + (t ? "" : "back ") + "into a " + this.disguise.getName() + ".", getSpace());
         activated = false;
