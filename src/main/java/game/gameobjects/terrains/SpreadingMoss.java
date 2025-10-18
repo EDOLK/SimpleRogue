@@ -80,7 +80,7 @@ public class SpreadingMoss extends SpreadableTerrain implements Examinable{
                 if (occupant instanceof PlayerEntity) {
                     Display.log("You are rooted!");
                 } else {
-                    Display.log("The " + occupant.getTrueName() + " is rooted.", occupant.getSpace());
+                    Display.log("The " + occupant.getOriginalName() + " is rooted.", occupant.getSpace());
                 }
             }
         }

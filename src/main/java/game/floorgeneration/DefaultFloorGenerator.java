@@ -18,6 +18,7 @@ import game.gameobjects.Space;
 import game.gameobjects.entities.Animal;
 import game.gameobjects.entities.Door;
 import game.gameobjects.entities.Entity;
+import game.gameobjects.entities.Mimic;
 import game.gameobjects.entities.PlayerEntity;
 import game.gameobjects.entities.Wall;
 import game.gameobjects.entities.props.Chest;
@@ -33,9 +34,16 @@ public class DefaultFloorGenerator extends FloorGenerator {
     protected PlayerEntity player;
     protected int SIZE_X;
     protected int SIZE_Y;
+    private boolean spawnMimic = false;
+    private List<Entity> replacableEntities = new ArrayList<>();
 
     public DefaultFloorGenerator(int depth) {
         super(depth);
+        if (Math.random() < Dungeon.floorsWithoutMimic * 0.1) {
+            spawnMimic = true;
+        } else {
+            Dungeon.floorsWithoutMimic++;
+        }
     }
 
     @Override
@@ -197,9 +205,13 @@ public class DefaultFloorGenerator extends FloorGenerator {
 
     private void generateDoor(Space[][] spaces, Space doorSpace) {
         if (spaces[doorSpace.getX()-1][doorSpace.getY()].isOccupied() && spaces[doorSpace.getX()+1][doorSpace.getY()].isOccupied()) {
-            doorSpace.setOccupant(new Door('-'));
+            Door door = new Door('-');
+            doorSpace.setOccupant(door);
+            replacableEntities.add(door);
         } else {
-            doorSpace.setOccupant(new Door('|'));
+            Door door = new Door('|');
+            doorSpace.setOccupant(door);
+            replacableEntities.add(door);
         }
     }
 
@@ -230,14 +242,18 @@ public class DefaultFloorGenerator extends FloorGenerator {
                         App.lerp(0,0,spaces[space.getX()].length,1.0,space.getY())
                     );
                     if (val >= 0.5) {
-                        space.setOccupant(currentPropPool.getRandom(2,2).get());
+                        Entity prop = currentPropPool.getRandom(2,2).get();
+                        space.setOccupant(prop);
+                        replacableEntities.add(prop);
                     }
                 }
             }
             if (lonePropNum > 0) {
                 Space lonePropSpace = App.getRandom(room.getInteriorSpaces());
                 if (!lonePropSpace.isOccupied()) {
-                    lonePropSpace.setOccupant(currentLonePropPool.getRandom(1,1).get());
+                    Entity loneProp = currentLonePropPool.getRandom(1,1).get();
+                    lonePropSpace.setOccupant(loneProp);
+                    replacableEntities.add(loneProp);
                 }
                 lonePropNum--;
             }
@@ -305,11 +321,21 @@ public class DefaultFloorGenerator extends FloorGenerator {
                     Space randomSpace = getRandom(randomRoom.getInteriorSpaces());
                     if (randomSpace != null) {
                         randomSpace.setOccupant(generated);
+                        replacableEntities.add(generated);
                     }
                 }
             }
         }
-      
+
+        if (spawnMimic) {
+            Entity toBeReplaced = App.getRandom(replacableEntities);
+            if (toBeReplaced != null) {
+                Space space = toBeReplaced.getSpace();
+                space.setOccupant(new Mimic(toBeReplaced));
+                Dungeon.floorsWithoutMimic = 1;
+            }
+        }
+
         Room lastRoom = pair.getFirst().get(pair.getFirst().size()-1);
         List<Space> lastRoomSpaces = new ArrayList<>(lastRoom.getInteriorSpaces());
         while (!lastRoomSpaces.isEmpty()) {
