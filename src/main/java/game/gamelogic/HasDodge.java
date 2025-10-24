@@ -1,6 +1,6 @@
 package game.gamelogic;
 
-public interface HasDodge extends ModifiesDodge {
+public interface HasDodge extends DodgeModifier {
     public int getDodge();
 
     @Override

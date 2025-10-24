@@ -4,22 +4,24 @@ import static game.App.randomNumber;
 
 import org.hexworks.zircon.api.data.Tile;
 
-import game.gamelogic.combat.AttackInfo;
-import game.gamelogic.combat.OnHitted;
-import game.gameobjects.entities.Entity;
+import game.gamelogic.Armored;
+import game.gamelogic.combat.Attack;
+import game.gamelogic.combat.AttackModifier;
 import game.gameobjects.statuses.Bleeding;
 
-public class Thorny extends ArmorEnchantment implements OnHitted {
+public class Thorny extends ArmorEnchantment implements AttackModifier {
 
     public Thorny(){
         this.prefix = "Thorny";
     }
 
     @Override
-    public void doOnHitted(Entity self, Entity other, AttackInfo attackInfo) {
-        if (randomNumber(1,5) == 5 && attackInfo.getDamageDelt() != 0){
-            other.addStatus(new Bleeding((int)(attackInfo.getDamageDelt()*0.5),1,3));
-        }
+    public void modifyAttack(Attack attack) {
+        attack.attachPostAttackHook((ar) -> {
+            if (ar.defender() instanceof Armored armored && armored.getArmor().stream().anyMatch(a -> a.getEnchantment() == this) && ar.hit() && randomNumber(1, 5) == 5 && ar.damageDelt() != 0) {
+                ar.attacker().addStatus(new Bleeding((int)(ar.damageDelt()*0.5),1,3));
+            }
+        });
     }
 
     @Override

@@ -10,14 +10,14 @@ import org.hexworks.zircon.api.modifier.Modifier;
 import game.display.Display;
 import game.gamelogic.abilities.Ability;
 import game.gamelogic.behavior.Behavable;
-import game.gamelogic.combat.AttackInfo;
-import game.gamelogic.combat.OnHitted;
+import game.gamelogic.combat.Attack;
+import game.gamelogic.combat.AttackModifier;
 import game.gamelogic.time.ModifiesAttackTime;
 import game.gamelogic.time.ModifiesMoveTime;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.statuses.Status;
 
-public class SecondWind implements Ability, OnHitted, Behavable {
+public class SecondWind implements Ability, AttackModifier, Behavable {
 
     private Entity owner;
     private int timer;
@@ -66,12 +66,14 @@ public class SecondWind implements Ability, OnHitted, Behavable {
     }
 
     @Override
-    public void doOnHitted(Entity self, Entity other, AttackInfo attackInfo) {
-        if (attackInfo.getDamageDelt() > 0) {
-            hit = true;
-            lastHitDamage = Math.max(attackInfo.getDamageDelt(), lastHitDamage);
-            timeSinceHit = 0;
-        }
+    public void modifyAttack(Attack attack) {
+        attack.attachPostAttackHook((ar) -> {
+            if (ar.hit() && ar.damageDelt() > 0) {
+                hit = true;
+                lastHitDamage = Math.max(ar.damageDelt(), lastHitDamage);
+                timeSinceHit = 0;
+            }
+        });
     }
 
     @Override

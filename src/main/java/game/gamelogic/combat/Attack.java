@@ -1,59 +1,108 @@
 package game.gamelogic.combat;
 
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import game.App;
 import game.CheckConditions;
 import game.display.Display;
 import game.gamelogic.Attribute;
-import game.gamelogic.ModifiesAccuracy;
-import game.gamelogic.ModifiesDodge;
+import game.gamelogic.AccuracyModifier;
+import game.gamelogic.DodgeModifier;
 import game.gameobjects.AttackResult;
 import game.gameobjects.DamageType;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.entities.PlayerEntity;
 import game.gameobjects.items.weapons.Weapon;
+import game.gamelogic.DamageModifier;
 
 public class Attack {
 
     private Entity attacker;
     private Entity defender;
-    private Weapon attackerWeapon;
+    private Weapon weapon;
     private boolean hit;
-    private DamageType attackerDamageType;
+    private DamageType damageType;
     private int damage;
-    private int modifiedAttackerRoll;
+    private int modifiedRoll;
     private boolean crit;
-    private int naturalAttackerRoll;
+    private int roll;
     private AttackInfo attackInfo;
-    private int defenderDodge;
+    private int dodge;
+
+    private List<PostAttackHook> postAttackHooks = new ArrayList<>();
+    private Deque<DodgeModifier> dodgeMods = new LinkedList<>();
+    private Deque<AccuracyModifier> accuracyMods = new LinkedList<>();
+    private Deque<DamageModifier> damageMods = new LinkedList<>();
+
+    public void attachPostAttackHook(PostAttackHook hook){
+        postAttackHooks.add(hook);
+    }
+
+    public void appendDodgeModifier(DodgeModifier mod){
+        dodgeMods.addFirst(mod);
+    }
+    public void prependDodgeModifier(DodgeModifier mod){
+        dodgeMods.addLast(mod);
+    }
+    public void appendAccuracyModifier(AccuracyModifier mod){
+        accuracyMods.addFirst(mod);
+    }
+    public void prependAccuracyModifier(AccuracyModifier mod){
+        accuracyMods.addLast(mod);
+    }
+    public void appendDamageModifier(DamageModifier mod){
+        damageMods.addFirst(mod);
+    }
+    public void prependDamageModifier(DamageModifier mod){
+        damageMods.addLast(mod);
+    }
+
+    public Entity getDefender() {
+        return defender;
+    }
+
+    public Entity getAttacker() {
+        return attacker;
+    }
+
+    public Weapon getWeapon() {
+        return weapon;
+    }
+
+    public boolean isCrit() {
+        return crit;
+    }
 
     public Attack(Entity attacker, Entity defender, Weapon attackerWeapon){
         this.attacker = attacker;
         this.defender = defender;
-        this.attackerWeapon = attackerWeapon;
+        this.weapon = attackerWeapon;
 
         attackInfo = new AttackInfo(attacker, defender, attackerWeapon);
-        defenderDodge = 0;
+        dodge = 0;
 
-        defenderDodge += getDodge(defender);
+        dodge += getDodge(defender);
 
-        attackInfo.setDefenderDodge(defenderDodge);
+        attackInfo.setDefenderDodge(dodge);
 
-        naturalAttackerRoll = App.randomNumber(1, 20);
+        roll = App.randomNumber(1, 20);
 
-        attackInfo.setBaseRoll(naturalAttackerRoll);
+        attackInfo.setBaseRoll(roll);
 
-        crit = naturalAttackerRoll == 20;
+        crit = roll == 20;
 
         attackInfo.setCrit(crit);
 
-        modifiedAttackerRoll = naturalAttackerRoll;
+        modifiedRoll = roll;
 
-        modifiedAttackerRoll += getAccuracy(attacker, attackerWeapon);
+        modifiedRoll += getAccuracy(attacker, attackerWeapon);
 
-        attackInfo.setModifiedRoll(modifiedAttackerRoll);
+        attackInfo.setModifiedRoll(modifiedRoll);
         
         damage = attackerWeapon.generateDamage();
 
@@ -63,25 +112,32 @@ public class Attack {
 
         attackInfo.setDamage(damage);
 
-        attackerDamageType = attackerWeapon.getDamageType();
+        damageType = attackerWeapon.getDamageType();
         
-        attackInfo.setDamageType(attackerDamageType);
+        attackInfo.setDamageType(damageType);
 
-        hit = modifiedAttackerRoll >= defenderDodge;
+        hit = modifiedRoll >= dodge;
 
         attackInfo.setHit(hit);
     }
 
     public AttackResult execute(){
         
-        List<CombatModifier> attackerCombatMods = getCombatModifiers(attacker);
-
-        List<CombatModifier> defenderCombatMods = getCombatModifiers(defender);
-
         int damageDelt = 0;
 
         attackInfo.setDamageDelt(damageDelt);
         
+        Stream.concat(getAttackModifiers(attacker).stream(), getAttackModifiers(defender).stream()).forEach(am -> am.modifyAttack(this));
+
+        for (AccuracyModifier accuracyModifier : accuracyMods)
+            modifiedRoll = accuracyModifier.modifyAccuracy(modifiedRoll);
+
+        for (DodgeModifier dodgeModifier : dodgeMods)
+            dodge = dodgeModifier.modifyDodge(dodge);
+
+        for (DamageModifier damageModifier : damageMods)
+            damage = damageModifier.calculateDamage(damage, damageType);
+
         if (hit){
 
             if (crit) {
@@ -94,7 +150,7 @@ public class Attack {
                 }
             }
 
-            damageDelt = defender.dealDamage(damage, attackerDamageType, attacker);
+            damageDelt = defender.dealDamage(damage, damageType, attacker);
 
             attackInfo.setDamageDelt(damageDelt);
 
@@ -110,65 +166,15 @@ public class Attack {
 
         }
 
-        for (CombatModifier modifier : attackerCombatMods) {
-            switch (modifier) {
-                case OnAttack onAttack -> {
-                    onAttack.doOnAttack(attacker, defender, attackInfo);
-                }
-                case OnHit onHit -> {
-                    if (hit)
-                        onHit.doOnHit(attacker, defender, attackInfo);
-                }
-                case OnMiss onMiss -> {
-                    if (!hit)
-                        onMiss.doOnMiss(attacker, defender, attackInfo);
-                }
-                case OnCrit onCrit -> {
-                    if (crit)
-                        onCrit.doOnCrit(attacker, defender, attackInfo);
-                }
-                case OnKill onKill -> {
-                    if (!defender.isAlive())
-                        onKill.doOnKill(attacker, defender, attackInfo);
-                }
-                default -> { }
-            }
-        }
-
-        for (CombatModifier modifier : defenderCombatMods) {
-            switch (modifier) {
-                case OnAttacked onAttacked -> {
-                    onAttacked.doOnAttacked(defender, attacker, attackInfo);
-                }
-                case OnHitted onHitted -> {
-                    if (hit)
-                        onHitted.doOnHitted(defender, attacker, attackInfo);
-                }
-                case OnMissed onMissed -> {
-                    if (!hit)
-                        onMissed.doOnMissed(defender, attacker, attackInfo);
-                }
-                case OnCritted onCritted -> {
-                    if (crit)
-                        onCritted.doOnCritted(defender, attacker, attackInfo);
-                }
-                case OnDeath onDeath -> {
-                    if (!defender.isAlive())
-                        onDeath.doOnDeath(defender, attacker, attackInfo);
-                }
-                default -> { }
-            }
-        }
-
-        return new AttackResult(hit, crit, damageDelt, attackerDamageType, attacker, defender);
+        AttackResult result = new AttackResult(hit, crit, damage, damageDelt, damageType, attacker, defender);
+        for (PostAttackHook hook : postAttackHooks)
+            hook.apply(result);
+        return result;
     }
 
-    private static List<CombatModifier> getCombatModifiers(Entity entity){
+    private static List<AttackModifier> getAttackModifiers(Entity entity){
         return App.recursiveCheck(entity, getCombatModConditions(), (obj) -> {
-            if (obj instanceof CombatModifier cm){
-                return Optional.of(cm);
-            }
-            return Optional.empty();
+            return obj instanceof AttackModifier attackModifier ? Optional.of(attackModifier) : Optional.empty();
         });
     }
 
@@ -179,8 +185,8 @@ public class Attack {
 
     private static int getDodge(Entity entity){
         int dodge = 0;
-        for (ModifiesDodge modifiesDodge : App.recursiveCheck(entity, getDodgeConditions(), (obj) -> {
-            if (obj instanceof ModifiesDodge md) {
+        for (DodgeModifier modifiesDodge : App.recursiveCheck(entity, getDodgeConditions(), (obj) -> {
+            if (obj instanceof DodgeModifier md) {
                 return Optional.of(md);
             }
             return Optional.empty();
@@ -199,8 +205,8 @@ public class Attack {
 
         int accuracy = 0;
 
-        for (ModifiesAccuracy modifiesAccuracy : App.recursiveCheck(entity, getAccuracyConditions(), (obj) -> {
-            if (obj instanceof ModifiesAccuracy ma) {
+        for (AccuracyModifier modifiesAccuracy : App.recursiveCheck(entity, getAccuracyConditions(), (obj) -> {
+            if (obj instanceof AccuracyModifier ma) {
                 return Optional.of(ma);
             }
             return Optional.empty();
@@ -208,7 +214,7 @@ public class Attack {
             accuracy = modifiesAccuracy.modifyAccuracy(accuracy);
         };
 
-        if (activeWeapon instanceof ModifiesAccuracy ma) {
+        if (activeWeapon instanceof AccuracyModifier ma) {
             accuracy = ma.modifyAccuracy(accuracy);
         }
 

@@ -1,5 +1,5 @@
 package game.gamelogic;
 
-public interface ModifiesDodge {
+public interface DodgeModifier {
     public int modifyDodge(int dodge);
 }

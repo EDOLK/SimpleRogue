@@ -4,23 +4,15 @@ import static game.App.randomNumber;
 
 import org.hexworks.zircon.api.data.Tile;
 
-import game.gamelogic.combat.AttackInfo;
-import game.gamelogic.combat.OnHit;
-import game.gameobjects.entities.Entity;
+import game.gamelogic.combat.Attack;
+import game.gamelogic.combat.AttackModifier;
 import game.gameobjects.statuses.Burning;
 import game.gameobjects.terrains.Fire;
 
-public class Flaming extends WeaponEnchantment implements OnHit{
+public class Flaming extends WeaponEnchantment implements AttackModifier{
     
     public Flaming(){
         this.prefix = "Flaming";
-    }
-
-    @Override
-    public void doOnHit(Entity self, Entity other, AttackInfo attackInfo) {
-        if (randomNumber(1, 4) == 4){
-            other.addStatus(new Burning());
-        }
     }
 
     @Override
@@ -36,6 +28,15 @@ public class Flaming extends WeaponEnchantment implements OnHit{
     @Override
     public String getName() {
         return "Flaming";
+    }
+
+    @Override
+    public void modifyAttack(Attack attack) {
+        if (attack.getWeapon().getEnchantment() == this) {
+            if (randomNumber(1, 4) == 4) {
+                attack.getDefender().addStatus(new Burning());
+            }
+        }
     }
     
 }

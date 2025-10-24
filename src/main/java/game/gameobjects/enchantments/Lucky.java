@@ -5,14 +5,14 @@ import static game.App.randomNumber;
 import org.hexworks.zircon.api.data.Tile;
 
 import game.floorgeneration.Shopper;
+import game.gamelogic.Armed;
 import game.gamelogic.Attribute;
 import game.gamelogic.HasDrops;
-import game.gamelogic.combat.AttackInfo;
-import game.gamelogic.combat.OnKill;
-import game.gameobjects.entities.Entity;
+import game.gamelogic.combat.Attack;
+import game.gamelogic.combat.AttackModifier;
 import game.gameobjects.items.Item;
 
-public class Lucky extends WeaponEnchantment implements OnKill{
+public class Lucky extends WeaponEnchantment implements AttackModifier{
 
     public Lucky(){
         this.prefix = "Lucky";
@@ -34,26 +34,29 @@ public class Lucky extends WeaponEnchantment implements OnKill{
     }
 
     @Override
-    public void doOnKill(Entity self, Entity other, AttackInfo attackInfo) {
+    public void modifyAttack(Attack attack) {
+        attack.attachPostAttackHook((ar) -> {
+            if (ar.attacker() instanceof Armed armed && armed.getWeapons().stream().anyMatch(w -> w.getEnchantment() == this && ar.hit() && !ar.defender().isAlive())) {
 
-        int lowerBound = 0;
-        int upperBound = 0;
+                int lowerBound = 0;
+                int upperBound = 0;
 
-        if (other instanceof HasDrops hasDrops) {
-            upperBound = hasDrops.getDropPoints();
-            upperBound *= randomNumber(0d, 1d + (Attribute.getAttribute(Attribute.LUCK, self)/10d));
-            Shopper<Item> shopper = new Shopper<Item>(
-                randomNumber(lowerBound, upperBound),
-                hasDrops.getItemPool()
-            );
-            while (shopper.hasPoints()) {
-                Item generated = shopper.generate();
-                if (generated != null) {
-                    other.getSpace().addItem(generated);
+                if (ar.defender() instanceof HasDrops hasDrops) {
+                    upperBound = hasDrops.getDropPoints();
+                    upperBound *= randomNumber(0d, 1d + (Attribute.getAttribute(Attribute.LUCK, ar.attacker())/10d));
+                    Shopper<Item> shopper = new Shopper<Item>(
+                        randomNumber(lowerBound, upperBound),
+                        hasDrops.getItemPool()
+                    );
+                    while (shopper.hasPoints()) {
+                        Item generated = shopper.generate();
+                        if (generated != null) {
+                            ar.defender().getSpace().addItem(generated);
+                        }
+                    }
                 }
             }
-        }
-
+        });
     }
 
 }

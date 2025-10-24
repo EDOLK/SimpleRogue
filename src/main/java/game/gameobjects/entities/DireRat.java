@@ -8,15 +8,15 @@ import org.hexworks.zircon.api.color.TileColor;
 
 import game.gamelogic.HasAccuracy;
 import game.gamelogic.HasResistances;
-import game.gamelogic.combat.AttackInfo;
-import game.gamelogic.combat.OnHit;
+import game.gamelogic.combat.Attack;
+import game.gamelogic.combat.AttackModifier;
 import game.gamelogic.resistances.RangeResistance;
 import game.gamelogic.resistances.Resistance;
 import game.gameobjects.DamageType;
 import game.gameobjects.items.weapons.Weapon;
 import game.gameobjects.statuses.Bleeding;
 
-public class DireRat extends Rat implements HasResistances, HasAccuracy, OnHit{
+public class DireRat extends Rat implements HasResistances, HasAccuracy, AttackModifier{
 
     public DireRat(){
         super();
@@ -56,10 +56,11 @@ public class DireRat extends Rat implements HasResistances, HasAccuracy, OnHit{
     }
 
     @Override
-    public void doOnHit(Entity self, Entity other, AttackInfo attackInfo) {
-        if (randomNumber(1, 4) == 4) {
-            other.addStatus(new Bleeding(randomNumber(1, 5), 0, 1));
-        }
+    public void modifyAttack(Attack attack) {
+        attack.attachPostAttackHook((attackResult) -> {
+            if (attackResult.attacker() == this && attackResult.hit() && randomNumber(1,4) == 4)
+                attackResult.defender().addStatus(new Bleeding(randomNumber(1, 5), 0, 1));
+        });
     }
     
 }

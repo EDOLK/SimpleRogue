@@ -11,8 +11,10 @@ import game.gameobjects.Space;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.entities.PlayerEntity;
 import game.gameobjects.entities.Rat;
+import game.gameobjects.entities.Slime;
 import game.gameobjects.entities.Wall;
-import game.gameobjects.statuses.Flying;
+import game.gameobjects.items.armor.LeatherArmor;
+import game.gameobjects.items.weapons.ShortSword;
 import game.gameobjects.terrains.SpreadableTerrain;
 import game.gameobjects.terrains.Terrain;
 
@@ -30,10 +32,9 @@ public class DebugFloorGenerator extends FloorGenerator {
         generateSpaces();
         generateRectangle(1,1,48,48);
         spaces[20][20].setOccupant(playerEntity);
-        Flying f = new Flying();
-        f.setPerminent(true);
-        playerEntity.addStatus(f);
-        spaces[22][20].setOccupant(new Rat());
+        playerEntity.addItemToInventory(new ShortSword());
+        playerEntity.addItemToInventory(new LeatherArmor());
+        spaces[22][20].setOccupant(new Slime());
     }
 
     protected void generateSpaces(){

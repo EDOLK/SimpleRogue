@@ -3,16 +3,16 @@ package game.gamelogic.skilltrees.warrior;
 import game.Dungeon;
 import game.display.Display;
 import game.gamelogic.Levelable;
-import game.gamelogic.ModifiesAccuracy;
+import game.gamelogic.AccuracyModifier;
 import game.gamelogic.abilities.Ability;
 import game.gamelogic.behavior.Behavable;
-import game.gamelogic.combat.AttackInfo;
-import game.gamelogic.combat.OnHit;
+import game.gamelogic.combat.Attack;
+import game.gamelogic.combat.AttackModifier;
 import game.gameobjects.Floor;
 import game.gameobjects.entities.Animal;
 import game.gameobjects.entities.Entity;
 
-public class ReliableCombatant implements Ability, Behavable, ModifiesAccuracy, Levelable, OnHit {
+public class ReliableCombatant implements Ability, Behavable, AccuracyModifier, Levelable, AttackModifier {
 
     private int combo = 0;
     private int level = 1;
@@ -64,15 +64,20 @@ public class ReliableCombatant implements Ability, Behavable, ModifiesAccuracy, 
     }
 
     @Override
-    public void doOnHit(Entity self, Entity other, AttackInfo attackInfo) {
-        if (other instanceof Animal && attackInfo.isHit()){
-            if (combo < getAccuracyLimit())
-                combo++;
-            // TODO: roll into attack during combatmod rework
-            // other.dealDamage((int)Math.log(combo), attackInfo.getDamageType());
-            hit = true;
-        } else {
-            hit = false;
+    public void modifyAttack(Attack attack) {
+        if (attack.getAttacker() == owner && attack.getDefender() instanceof Animal) {
+            attack.attachPostAttackHook((attackResult) -> {
+                if (attackResult.hit()) {
+                    if (combo < getAccuracyLimit())
+                        combo++;
+                    hit = true;
+                    return;
+                }
+                hit = false;
+            });
+            attack.prependDamageModifier((damage, type) -> {
+                return damage + (int)Math.log(combo);
+            });
         }
     }
 

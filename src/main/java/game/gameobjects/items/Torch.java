@@ -10,15 +10,15 @@ import game.gamelogic.Interactable;
 import game.gamelogic.LightSource;
 import game.gamelogic.SelfAware;
 import game.gamelogic.behavior.Behavable;
-import game.gamelogic.combat.AttackInfo;
-import game.gamelogic.combat.OnCrit;
+import game.gamelogic.combat.Attack;
+import game.gamelogic.combat.AttackModifier;
 import game.gameobjects.DamageType;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.items.weapons.Weapon;
 import game.gameobjects.statuses.Burning;
 
-public class Torch extends Weapon implements Flammable, LightSource, SelfAware, Behavable, Interactable, OnCrit{
+public class Torch extends Weapon implements Flammable, LightSource, SelfAware, Behavable, Interactable, AttackModifier{
     
     private boolean lit = false;
     private int maxFuel = 500;
@@ -127,17 +127,17 @@ public class Torch extends Weapon implements Flammable, LightSource, SelfAware, 
     }
 
     @Override
-    public void doOnCrit(Entity self, Entity other, AttackInfo attackInfo) {
-        if (lit)
-            other.addStatus(new Burning());
-    }
-
-    @Override
     public boolean canStack(Item otherItem) {
         if (otherItem instanceof Torch torch) {
             return this.lit == torch.lit && this.fuel == torch.fuel;
         }
         return super.canStack(otherItem);
+    }
+
+    @Override
+    public void modifyAttack(Attack attack) {
+        if (attack.getWeapon() == this && attack.isCrit() && lit)
+            attack.getDefender().addStatus(new Burning());
     }
 
 }
