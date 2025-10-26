@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.Map.Entry;
 import java.util.stream.Stream;
 
@@ -117,7 +118,7 @@ public class Attack {
         
         int damageDelt = 0;
         
-        Stream.concat(getAttackModifiers(attacker).stream(), getAttackModifiers(defender).stream()).forEach(am -> am.modifyAttack(this));
+        getAttackModifiers(attacker, defender, weapon).forEach(am -> am.modifyAttack(this));
 
         for (AccuracyModifier accuracyModifier : accuracyMods)
             modifiedRoll = accuracyModifier.modifyAccuracy(modifiedRoll);
@@ -210,15 +211,13 @@ public class Attack {
         return result;
     }
 
-    private static List<AttackModifier> getAttackModifiers(Entity entity){
-        return App.recursiveCheck(entity, getCombatModConditions(), (obj) -> {
-            return obj instanceof AttackModifier attackModifier ? Optional.of(attackModifier) : Optional.empty();
-        });
-    }
-
-    private static CheckConditions getCombatModConditions(){
-        return CheckConditions.all()
-            .withInventory(false);
+    private static Stream<AttackModifier> getAttackModifiers(Entity attacker, Entity defender, Weapon weapon){
+        Function<Object, Optional<AttackModifier>> function = (obj) -> obj instanceof AttackModifier attackModifier ? Optional.of(attackModifier) : Optional.empty();
+        return concatStreams(
+            App.recursiveCheck(attacker, CheckConditions.all().withInventory(false).withArmedWeapons(false).withUnarmedWeapon(false), function).stream(),
+            App.recursiveCheck(weapon, CheckConditions.all(), function).stream(),
+            App.recursiveCheck(defender, CheckConditions.all().withInventory(false), function).stream()
+        );
     }
 
     private static int getDodge(Entity entity){
@@ -265,5 +264,17 @@ public class Attack {
             .withInventory(false)
             .withArmedWeapons(false)
             .withUnarmedWeapon(false);
+    }
+
+    @SafeVarargs
+    private static <T> Stream<T> concatStreams(Stream<T>... streams){
+        if (streams.length > 0) {
+            Stream<T> stream = streams[0];
+            for (int i = 1; i < streams.length; i++) {
+                stream = Stream.concat(stream, streams[i]);
+            }
+            return stream;
+        }
+        return Stream.of();
     }
 }
