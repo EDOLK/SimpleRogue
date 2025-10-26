@@ -91,27 +91,23 @@ public class Attack {
         this.defender = defender;
         this.weapon = attackerWeapon;
 
-        dodge = 0;
-
-        dodge += getDodge(defender);
-
         roll = App.randomNumber(1, 20);
 
         crit = roll == 20;
 
         modifiedRoll = roll;
 
-        modifiedRoll += getAccuracy(attacker, attackerWeapon);
+        getDodge(defender);
+
+        getAccuracy(attacker, attackerWeapon);
         
         damage = attackerWeapon.generateDamage();
 
-        damage += Attribute.getAttribute(Attribute.STRENGTH, attacker);
-        
-        damage = crit ? damage * 2 : damage;
-
         damageType = attackerWeapon.getDamageType();
 
-        hit = modifiedRoll >= dodge;
+        prependDamageModifier((dmg,type) -> dmg + Attribute.getAttribute(Attribute.STRENGTH, attacker));
+
+        appendDamageModifier((dmg,type) -> crit ? dmg * 2 : dmg);
     }
 
     public AttackResult execute(){
@@ -128,6 +124,8 @@ public class Attack {
 
         for (DamageModifier damageModifier : damageMods)
             damage = damageModifier.calculateDamage(damage, damageType);
+
+        hit = modifiedRoll >= dodge;
 
         if (hit){
 
@@ -220,17 +218,8 @@ public class Attack {
         );
     }
 
-    private static int getDodge(Entity entity){
-        int dodge = 0;
-        for (DodgeModifier modifiesDodge : App.recursiveCheck(entity, getDodgeConditions(), (obj) -> {
-            if (obj instanceof DodgeModifier md) {
-                return Optional.of(md);
-            }
-            return Optional.empty();
-        })) {
-            dodge = modifiesDodge.modifyDodge(dodge);
-        }
-        return dodge;
+    private void getDodge(Entity entity){
+        App.recursiveCheck(entity, getDodgeConditions(), (obj) -> obj instanceof DodgeModifier md ? Optional.of(md) : Optional.empty()).forEach(this::appendDodgeModifier);
     }
 
     private static CheckConditions getDodgeConditions(){
@@ -238,25 +227,8 @@ public class Attack {
             .withInventory(false);
     }
 
-    private static int getAccuracy(Entity entity, Weapon activeWeapon){
-
-        int accuracy = 0;
-
-        for (AccuracyModifier modifiesAccuracy : App.recursiveCheck(entity, getAccuracyConditions(), (obj) -> {
-            if (obj instanceof AccuracyModifier ma) {
-                return Optional.of(ma);
-            }
-            return Optional.empty();
-        })){
-            accuracy = modifiesAccuracy.modifyAccuracy(accuracy);
-        };
-
-        if (activeWeapon instanceof AccuracyModifier ma) {
-            accuracy = ma.modifyAccuracy(accuracy);
-        }
-
-        return accuracy;
-
+    private void getAccuracy(Entity entity, Weapon activeWeapon){
+        App.recursiveCheck(entity, getAccuracyConditions(), (obj) -> obj instanceof AccuracyModifier ac ? Optional.of(ac) : Optional.empty()).forEach(this::appendAccuracyModifier);
     }
 
     private static CheckConditions getAccuracyConditions(){
