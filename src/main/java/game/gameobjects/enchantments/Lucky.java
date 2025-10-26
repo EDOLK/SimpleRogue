@@ -36,7 +36,7 @@ public class Lucky extends WeaponEnchantment implements AttackModifier{
     @Override
     public void modifyAttack(Attack attack) {
         attack.attachPostAttackHook((ar) -> {
-            if (ar.attacker() instanceof Armed armed && armed.getWeapons().stream().anyMatch(w -> w.getEnchantment() == this && ar.hit() && !ar.defender().isAlive())) {
+            if (attack.getWeapon().getEnchantment() == this && ar.hit() && !ar.defender().isAlive()) {
 
                 int lowerBound = 0;
                 int upperBound = 0;

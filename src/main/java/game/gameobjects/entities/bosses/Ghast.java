@@ -14,6 +14,7 @@ import game.gamelogic.HasInventory;
 import game.gamelogic.HasResistances;
 import game.gamelogic.combat.Attack;
 import game.gamelogic.combat.AttackModifier;
+import game.gamelogic.combat.PostAttackHook;
 import game.gamelogic.resistances.PercentageResistance;
 import game.gamelogic.resistances.Resistance;
 import game.gameobjects.DamageType;
@@ -81,9 +82,8 @@ public class Ghast extends Animal implements HasInventory, DropsXP, HasResistanc
     @Override
     public void modifyAttack(Attack attack) {
         attack.attachPostAttackHook((ar) -> {
-            if (ar.defender() == this && ar.hit())
-                ar.defender().getSpace().addTerrain(new Miasma(randomNumber(1, 5)));
-        });
+            ar.defender().getSpace().addTerrain(new Miasma(randomNumber(1, 5)));
+        }, PostAttackHook.onHitted(this));
     }
 
     @Override

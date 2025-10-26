@@ -32,11 +32,10 @@ public class Flaming extends WeaponEnchantment implements AttackModifier{
 
     @Override
     public void modifyAttack(Attack attack) {
-        if (attack.getWeapon().getEnchantment() == this) {
-            if (randomNumber(1, 4) == 4) {
-                attack.getDefender().addStatus(new Burning());
-            }
-        }
+        attack.attachPostAttackHook((attackResult) -> {
+            if (attack.getWeapon().getEnchantment() == this && attackResult.hit() && randomNumber(1, 4) == 4)
+                attackResult.defender().addStatus(new Burning());
+        });
     }
     
 }

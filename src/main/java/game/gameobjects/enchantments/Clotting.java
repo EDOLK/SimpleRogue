@@ -12,6 +12,7 @@ import game.gamelogic.Armored;
 import game.gamelogic.behavior.Behavable;
 import game.gamelogic.combat.Attack;
 import game.gamelogic.combat.AttackModifier;
+import game.gamelogic.combat.PostAttackHook;
 import game.gameobjects.DamageType;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Entity;
@@ -68,9 +69,9 @@ public class Clotting extends ArmorEnchantment implements AttackModifier {
         @Override
         public void modifyAttack(Attack attack) {
             attack.attachPostAttackHook((attackResult) -> {
-                if (attackResult.defender() == this && !this.isAlive() && attackResult.attacker() == owner)
+                if (attackResult.attacker() == owner)
                     owner.heal(healthStored);
-            });
+            }, PostAttackHook.onDeath(this));
         }
         
     }

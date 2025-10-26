@@ -136,8 +136,10 @@ public class Torch extends Weapon implements Flammable, LightSource, SelfAware, 
 
     @Override
     public void modifyAttack(Attack attack) {
-        if (attack.getWeapon() == this && attack.isCrit() && lit)
-            attack.getDefender().addStatus(new Burning());
+        attack.attachPostAttackHook((attackResult) -> {
+            if (attackResult.weapon() == this && attackResult.hit() && attackResult.crit() && lit)
+                attackResult.defender().addStatus(new Burning());
+        });
     }
 
 }

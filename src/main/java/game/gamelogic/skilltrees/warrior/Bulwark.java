@@ -6,6 +6,7 @@ import game.gamelogic.abilities.Ability;
 import game.gamelogic.behavior.Behavable;
 import game.gamelogic.combat.Attack;
 import game.gamelogic.combat.AttackModifier;
+import game.gamelogic.combat.PostAttackHook;
 import game.gameobjects.AttackResult;
 import game.gameobjects.DamageType;
 import game.gameobjects.Floor;
@@ -73,9 +74,9 @@ public class Bulwark implements Ability, Behavable, Levelable, AttackModifier{
     @Override
     public void modifyAttack(Attack attack) {
         attack.attachPostAttackHook(attackResult -> {
-            if (attackResult.defender() == owner && attackResult.hit() && accumulatedDamage < getDamageLimit() && turnsLeftInCooldown <= 0)
+            if (accumulatedDamage < getDamageLimit() && turnsLeftInCooldown <= 0)
                 accumulatedDamage += Math.min(Math.abs(attackResult.damage() - attackResult.damageDelt()), Math.abs(accumulatedDamage - getDamageLimit()));
-        });
+        }, PostAttackHook.onHitted(owner));
     }
 
     @Override

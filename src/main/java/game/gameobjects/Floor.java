@@ -375,7 +375,7 @@ public class Floor{
                 } else {
                     Display.log(attacker.getName() + " tries to attack the " + defender.getName() + ".", defender.getSpace());
                 }
-                return List.of(new AttackResult(false, false, 0, 0, null, attacker, defender));
+                return List.of(new AttackResult(attacker, defender));
             } else {
                 attackerActiveWeapons.add(attacker.getUnarmedWeapon());
             }

@@ -2,9 +2,12 @@ package game.gamelogic.combat;
 
 import java.util.ArrayList;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Map.Entry;
 import java.util.stream.Stream;
 
 import game.App;
@@ -31,16 +34,20 @@ public class Attack {
     private int modifiedRoll;
     private boolean crit;
     private int roll;
-    private AttackInfo attackInfo;
     private int dodge;
 
     private List<PostAttackHook> postAttackHooks = new ArrayList<>();
+    private Map<PostAttackHook, PostAttackHook.Type> postAttackHookMap = new HashMap<>();
     private Deque<DodgeModifier> dodgeMods = new LinkedList<>();
     private Deque<AccuracyModifier> accuracyMods = new LinkedList<>();
     private Deque<DamageModifier> damageMods = new LinkedList<>();
 
     public void attachPostAttackHook(PostAttackHook hook){
-        postAttackHooks.add(hook);
+        attachPostAttackHook(hook, PostAttackHook.generic());
+    }
+
+    public void attachPostAttackHook(PostAttackHook hook, PostAttackHook.Type type){
+        postAttackHookMap.put(hook, type);
     }
 
     public void appendDodgeModifier(DodgeModifier mod){
@@ -83,26 +90,17 @@ public class Attack {
         this.defender = defender;
         this.weapon = attackerWeapon;
 
-        attackInfo = new AttackInfo(attacker, defender, attackerWeapon);
         dodge = 0;
 
         dodge += getDodge(defender);
 
-        attackInfo.setDefenderDodge(dodge);
-
         roll = App.randomNumber(1, 20);
 
-        attackInfo.setBaseRoll(roll);
-
         crit = roll == 20;
-
-        attackInfo.setCrit(crit);
 
         modifiedRoll = roll;
 
         modifiedRoll += getAccuracy(attacker, attackerWeapon);
-
-        attackInfo.setModifiedRoll(modifiedRoll);
         
         damage = attackerWeapon.generateDamage();
 
@@ -110,22 +108,14 @@ public class Attack {
         
         damage = crit ? damage * 2 : damage;
 
-        attackInfo.setDamage(damage);
-
         damageType = attackerWeapon.getDamageType();
-        
-        attackInfo.setDamageType(damageType);
 
         hit = modifiedRoll >= dodge;
-
-        attackInfo.setHit(hit);
     }
 
     public AttackResult execute(){
         
         int damageDelt = 0;
-
-        attackInfo.setDamageDelt(damageDelt);
         
         Stream.concat(getAttackModifiers(attacker).stream(), getAttackModifiers(defender).stream()).forEach(am -> am.modifyAttack(this));
 
@@ -152,8 +142,6 @@ public class Attack {
 
             damageDelt = defender.dealDamage(damage, damageType, attacker);
 
-            attackInfo.setDamageDelt(damageDelt);
-
         } else {
 
             if (attacker instanceof PlayerEntity){
@@ -166,9 +154,59 @@ public class Attack {
 
         }
 
-        AttackResult result = new AttackResult(hit, crit, damage, damageDelt, damageType, attacker, defender);
+        AttackResult result = new AttackResult(hit, crit, damage, damageDelt, damageType, attacker, defender, weapon);
         for (PostAttackHook hook : postAttackHooks)
             hook.apply(result);
+
+        for (Entry<PostAttackHook, PostAttackHook.Type> entry : postAttackHookMap.entrySet()) {
+            switch (entry.getValue().condition) {
+                case ON_ATTACK:
+                    if (entry.getValue().target == result.attacker())
+                        entry.getKey().apply(result);
+                    break;
+                case ON_ATTACKED:
+                    if (entry.getValue().target == result.defender())
+                        entry.getKey().apply(result);
+                    break;
+                case ON_CRIT:
+                    if (entry.getValue().target == result.attacker() && result.crit())
+                        entry.getKey().apply(result);
+                    break;
+                case ON_CRITTED:
+                    if (entry.getValue().target == result.defender() && result.crit())
+                        entry.getKey().apply(result);
+                    break;
+                case ON_DEATH:
+                    if (entry.getValue().target == result.defender() && !result.defender().isAlive())
+                        entry.getKey().apply(result);
+                    break;
+                case ON_HIT:
+                    if (entry.getValue().target == result.attacker() && result.hit())
+                        entry.getKey().apply(result);
+                    break;
+                case ON_HITTED:
+                    if (entry.getValue().target == result.defender() && result.hit())
+                        entry.getKey().apply(result);
+                    break;
+                case ON_KILL:
+                    if (entry.getValue().target == result.attacker() && !result.defender().isAlive())
+                        entry.getKey().apply(result);
+                    break;
+                case ON_MISS:
+                    if (entry.getValue().target == result.attacker() && !result.hit())
+                        entry.getKey().apply(result);
+                    break;
+                case ON_MISSED:
+                    if (entry.getValue().target == result.defender() && !result.hit())
+                        entry.getKey().apply(result);
+                    break;
+                default:
+                    entry.getKey().apply(result);
+                    break;
+
+            }
+        }
+
         return result;
     }
 

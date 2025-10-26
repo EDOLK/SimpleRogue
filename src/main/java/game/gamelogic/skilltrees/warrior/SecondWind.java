@@ -12,6 +12,7 @@ import game.gamelogic.abilities.Ability;
 import game.gamelogic.behavior.Behavable;
 import game.gamelogic.combat.Attack;
 import game.gamelogic.combat.AttackModifier;
+import game.gamelogic.combat.PostAttackHook;
 import game.gamelogic.time.ModifiesAttackTime;
 import game.gamelogic.time.ModifiesMoveTime;
 import game.gameobjects.entities.Entity;
@@ -68,12 +69,10 @@ public class SecondWind implements Ability, AttackModifier, Behavable {
     @Override
     public void modifyAttack(Attack attack) {
         attack.attachPostAttackHook((ar) -> {
-            if (ar.hit() && ar.damageDelt() > 0) {
-                hit = true;
-                lastHitDamage = Math.max(ar.damageDelt(), lastHitDamage);
-                timeSinceHit = 0;
-            }
-        });
+            hit = true;
+            lastHitDamage = Math.max(ar.damageDelt(), lastHitDamage);
+            timeSinceHit = 0;
+        }, PostAttackHook.onHitted(owner));
     }
 
     @Override

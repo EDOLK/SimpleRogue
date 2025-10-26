@@ -16,6 +16,7 @@ import game.gamelogic.HasResistances;
 import game.gamelogic.Levelable;
 import game.gamelogic.combat.Attack;
 import game.gamelogic.combat.AttackModifier;
+import game.gamelogic.combat.PostAttackHook;
 import game.gamelogic.resistances.RangeResistance;
 import game.gamelogic.resistances.Resistance;
 import game.gameobjects.DamageType;
@@ -164,9 +165,8 @@ public class RatKing extends Animal implements HasInventory, DropsXP{
         @Override
         public void modifyAttack(Attack attack) {
             attack.attachPostAttackHook((ar) -> {
-                if (ar.defender() == this && !this.isAlive())
-                    RatKing.this.ratCount--;
-            });
+                RatKing.this.ratCount--;
+            }, PostAttackHook.onDeath(this));
         }
 
         @Override

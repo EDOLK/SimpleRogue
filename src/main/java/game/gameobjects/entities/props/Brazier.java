@@ -11,6 +11,7 @@ import game.gamelogic.HasResistances;
 import game.gamelogic.LightSource;
 import game.gamelogic.combat.Attack;
 import game.gamelogic.combat.AttackModifier;
+import game.gamelogic.combat.PostAttackHook;
 import game.gamelogic.resistances.PercentageResistance;
 import game.gamelogic.resistances.Resistance;
 import game.gameobjects.DamageType;
@@ -80,9 +81,8 @@ public class Brazier extends Entity implements HasResistances {
         @Override
         public void modifyAttack(Attack attack) {
             attack.attachPostAttackHook((ar) -> {
-                if (ar.defender() == owner && !ar.defender().isAlive())
-                    ar.defender().getSpace().addTerrain(new Fire(1));
-            });
+                ar.defender().getSpace().addTerrain(new Fire(1));
+            }, PostAttackHook.onDeath(owner));
         }
 
         @Override

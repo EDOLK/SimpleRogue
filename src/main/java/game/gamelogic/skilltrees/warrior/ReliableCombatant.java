@@ -8,6 +8,7 @@ import game.gamelogic.abilities.Ability;
 import game.gamelogic.behavior.Behavable;
 import game.gamelogic.combat.Attack;
 import game.gamelogic.combat.AttackModifier;
+import game.gamelogic.combat.PostAttackHook;
 import game.gameobjects.Floor;
 import game.gameobjects.entities.Animal;
 import game.gameobjects.entities.Entity;
@@ -65,18 +66,17 @@ public class ReliableCombatant implements Ability, Behavable, AccuracyModifier, 
 
     @Override
     public void modifyAttack(Attack attack) {
-        if (attack.getAttacker() == owner && attack.getDefender() instanceof Animal) {
+        if (attack.getDefender() instanceof Animal) {
             attack.attachPostAttackHook((attackResult) -> {
-                if (attackResult.hit()) {
-                    if (combo < getAccuracyLimit())
-                        combo++;
-                    hit = true;
-                    return;
-                }
+                if (combo < getAccuracyLimit())
+                    combo++;
+                hit = true;
+            }, PostAttackHook.onHit(owner));
+            attack.attachPostAttackHook((attackResult) -> {
                 hit = false;
-            });
+            }, PostAttackHook.onMiss(owner));
             attack.prependDamageModifier((damage, type) -> {
-                return damage + (int)Math.log(combo);
+                return combo > 0 ? damage + (int)(Math.log(combo)/Math.log(2)) : damage;
             });
         }
     }

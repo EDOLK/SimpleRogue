@@ -11,6 +11,7 @@ import game.gamelogic.HasDodge;
 import game.gamelogic.HasDrops;
 import game.gamelogic.combat.Attack;
 import game.gamelogic.combat.AttackModifier;
+import game.gamelogic.combat.PostAttackHook;
 import game.gameobjects.DamageType;
 import game.gameobjects.items.Item;
 import game.gameobjects.items.weapons.Weapon;
@@ -57,10 +58,8 @@ public class Snake extends Animal implements DropsXP, HasDodge, HasDrops, Attack
     @Override
     public void modifyAttack(Attack attack) {
         attack.attachPostAttackHook(ar -> {
-            if (ar.attacker() == this && ar.hit()) {
-                ar.defender().addStatus(new Poisoned(1, 3, 3));
-            }
-        });
+            ar.defender().addStatus(new Poisoned(1, 3, 3));
+        }, PostAttackHook.onHit(this));
     }
 
 }

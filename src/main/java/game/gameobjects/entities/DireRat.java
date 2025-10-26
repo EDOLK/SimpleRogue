@@ -10,6 +10,7 @@ import game.gamelogic.HasAccuracy;
 import game.gamelogic.HasResistances;
 import game.gamelogic.combat.Attack;
 import game.gamelogic.combat.AttackModifier;
+import game.gamelogic.combat.PostAttackHook;
 import game.gamelogic.resistances.RangeResistance;
 import game.gamelogic.resistances.Resistance;
 import game.gameobjects.DamageType;
@@ -58,9 +59,9 @@ public class DireRat extends Rat implements HasResistances, HasAccuracy, AttackM
     @Override
     public void modifyAttack(Attack attack) {
         attack.attachPostAttackHook((attackResult) -> {
-            if (attackResult.attacker() == this && attackResult.hit() && randomNumber(1,4) == 4)
+            if (randomNumber(1,4) == 4)
                 attackResult.defender().addStatus(new Bleeding(randomNumber(1, 5), 0, 1));
-        });
+        }, PostAttackHook.onHit(this));
     }
     
 }

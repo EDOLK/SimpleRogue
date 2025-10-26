@@ -17,6 +17,7 @@ import game.gameobjects.entities.Animal;
 import game.gameobjects.entities.Entity;
 import game.gamelogic.combat.Attack;
 import game.gamelogic.combat.AttackModifier;
+import game.gamelogic.combat.PostAttackHook;
 public class Sleeping extends Status implements OverridesBehavable, Behavable, AttackModifier {
 
     public Sleeping() {
@@ -78,10 +79,8 @@ public class Sleeping extends Status implements OverridesBehavable, Behavable, A
     @Override
     public void modifyAttack(Attack attack) {
         attack.attachPostAttackHook(ar -> {
-            if (ar.defender() == owner && ar.hit()){
-                Display.log("The " + owner.getName() + " wakes up.", owner.getSpace());
-                owner.removeStatus(this);
-            }
-        });
+            Display.log("The " + owner.getName() + " wakes up.", owner.getSpace());
+            owner.removeStatus(this);
+        }, PostAttackHook.onHitted(owner));
     }
 }
