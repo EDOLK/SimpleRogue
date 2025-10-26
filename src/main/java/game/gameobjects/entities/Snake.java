@@ -9,14 +9,15 @@ import game.floorgeneration.pools.Pool;
 import game.gamelogic.DropsXP;
 import game.gamelogic.HasDodge;
 import game.gamelogic.HasDrops;
-import game.gamelogic.combat.AttackInfo;
-import game.gamelogic.combat.OnHit;
+import game.gamelogic.combat.Attack;
+import game.gamelogic.combat.AttackModifier;
+import game.gamelogic.combat.PostAttackHook;
 import game.gameobjects.DamageType;
 import game.gameobjects.items.Item;
 import game.gameobjects.items.weapons.Weapon;
 import game.gameobjects.statuses.Poisoned;
 
-public class Snake extends Animal implements DropsXP, HasDodge, OnHit, HasDrops{
+public class Snake extends Animal implements DropsXP, HasDodge, HasDrops, AttackModifier{
     
     public Snake() {
         super(TileColor.transparent(), TileColor.create(38, 125, 34, 255), 's');
@@ -55,8 +56,10 @@ public class Snake extends Animal implements DropsXP, HasDodge, OnHit, HasDrops{
     }
 
     @Override
-    public void doOnHit(Entity self, Entity other, AttackInfo attackInfo) {
-        other.addStatus(new Poisoned(1, 3, 3));
+    public void modifyAttack(Attack attack) {
+        attack.attachPostAttackHook(ar -> {
+            ar.defender().addStatus(new Poisoned(1, 3, 3));
+        }, PostAttackHook.onHit(this));
     }
 
 }

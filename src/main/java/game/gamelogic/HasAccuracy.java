@@ -1,6 +1,6 @@
 package game.gamelogic;
 
-public interface HasAccuracy extends ModifiesAccuracy {
+public interface HasAccuracy extends AccuracyModifier {
     public int getAccuracy();
 
     @Override

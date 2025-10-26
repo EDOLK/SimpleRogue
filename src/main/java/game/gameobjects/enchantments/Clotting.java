@@ -8,19 +8,20 @@ import java.util.stream.Collectors;
 import org.hexworks.zircon.api.color.TileColor;
 import org.hexworks.zircon.api.data.Tile;
 
+import game.gamelogic.Armored;
 import game.gamelogic.behavior.Behavable;
-import game.gamelogic.combat.AttackInfo;
-import game.gamelogic.combat.OnDeath;
-import game.gamelogic.combat.OnHitted;
+import game.gamelogic.combat.Attack;
+import game.gamelogic.combat.AttackModifier;
+import game.gamelogic.combat.PostAttackHook;
 import game.gameobjects.DamageType;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.items.Item;
 import game.gameobjects.items.weapons.Weapon;
 
-public class Clotting extends ArmorEnchantment implements OnHitted {
+public class Clotting extends ArmorEnchantment implements AttackModifier {
 
-    private class BloodPolyp extends Entity implements Behavable, OnDeath{
+    private class BloodPolyp extends Entity implements Behavable, AttackModifier{
 
         private int healthStored;
         private Entity owner;
@@ -50,13 +51,6 @@ public class Clotting extends ArmorEnchantment implements OnHitted {
         }
 
         @Override
-        public void doOnDeath(Entity self, Entity other, AttackInfo attackInfo) {
-            if (other == owner){
-                owner.heal(healthStored);
-            }
-        }
-
-        @Override
         public int behave() {
             if (randomNumber(1,10) <= 5){
                 List<Space> adjacentSpaces = Space.getAdjacentSpaces(this.getSpace()).stream().filter((s) -> !s.isOccupied()).collect(Collectors.toList());
@@ -71,6 +65,14 @@ public class Clotting extends ArmorEnchantment implements OnHitted {
         public boolean isActive() {
             return isAlive();
         }
+
+        @Override
+        public void modifyAttack(Attack attack) {
+            attack.attachPostAttackHook((attackResult) -> {
+                if (attackResult.attacker() == owner)
+                    owner.heal(healthStored);
+            }, PostAttackHook.onDeath(this));
+        }
         
     }
 
@@ -79,17 +81,14 @@ public class Clotting extends ArmorEnchantment implements OnHitted {
     }
 
     @Override
-    public void doOnHitted(Entity self, Entity other, AttackInfo attackInfo) {
-        if (randomNumber(1,5) == 1 && attackInfo.getDamageDelt() != 0){
-            List<Space> adjacentSpaces = Space.getAdjacentSpaces(self.getSpace()).stream().filter((s) -> !s.isOccupied()).collect(Collectors.toList());
-            if (adjacentSpaces.size() != 0){
-                adjacentSpaces.get(
-                    randomNumber(0,adjacentSpaces.size()-1)
-                ).setOccupant(
-                    new BloodPolyp(attackInfo.getDamageDelt(), self)
-                );
+    public void modifyAttack(Attack attack) {
+        attack.attachPostAttackHook((ar) -> {
+            if (ar.defender() instanceof Armored armored && armored.getArmor().stream().anyMatch(a -> a.getEnchantment() == this) && ar.damageDelt() != 0 && randomNumber(1, 5) == 1){
+                List<Space> adjacentSpaces = Space.getAdjacentSpaces(ar.defender().getSpace()).stream().filter((s) -> !s.isOccupied()).collect(Collectors.toList());
+                if (adjacentSpaces.size() != 0)
+                    adjacentSpaces.get(randomNumber(0,adjacentSpaces.size()-1)).setOccupant(new BloodPolyp(ar.damageDelt(), ar.defender()));
             }
-        }
+        });
     }
 
     @Override

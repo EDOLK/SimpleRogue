@@ -14,14 +14,14 @@ import game.gamelogic.DropsXP;
 import game.gamelogic.HasInventory;
 import game.gamelogic.HasResistances;
 import game.gamelogic.Levelable;
-import game.gamelogic.combat.AttackInfo;
-import game.gamelogic.combat.OnDeath;
+import game.gamelogic.combat.Attack;
+import game.gamelogic.combat.AttackModifier;
+import game.gamelogic.combat.PostAttackHook;
 import game.gamelogic.resistances.RangeResistance;
 import game.gamelogic.resistances.Resistance;
 import game.gameobjects.DamageType;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Animal;
-import game.gameobjects.entities.Entity;
 import game.gameobjects.entities.Rat;
 import game.gameobjects.items.Item;
 import game.gameobjects.items.weapons.Weapon;
@@ -96,7 +96,7 @@ public class RatKing extends Animal implements HasInventory, DropsXP{
         return 20;
     }
 
-    public class SummonedRat extends Rat implements Levelable, HasResistances, OnDeath {
+    public class SummonedRat extends Rat implements Levelable, HasResistances, AttackModifier {
 
         public SummonedRat() {
             super();
@@ -163,8 +163,10 @@ public class RatKing extends Animal implements HasInventory, DropsXP{
         }
 
         @Override
-        public void doOnDeath(Entity self, Entity other, AttackInfo attackInfo) {
-            RatKing.this.ratCount--;
+        public void modifyAttack(Attack attack) {
+            attack.attachPostAttackHook((ar) -> {
+                RatKing.this.ratCount--;
+            }, PostAttackHook.onDeath(this));
         }
 
         @Override

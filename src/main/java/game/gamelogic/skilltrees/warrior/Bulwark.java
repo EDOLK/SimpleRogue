@@ -4,15 +4,16 @@ import game.display.Display;
 import game.gamelogic.Levelable;
 import game.gamelogic.abilities.Ability;
 import game.gamelogic.behavior.Behavable;
-import game.gamelogic.combat.AttackInfo;
-import game.gamelogic.combat.OnHitted;
+import game.gamelogic.combat.Attack;
+import game.gamelogic.combat.AttackModifier;
+import game.gamelogic.combat.PostAttackHook;
 import game.gameobjects.AttackResult;
 import game.gameobjects.DamageType;
 import game.gameobjects.Floor;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.items.weapons.Weapon;
 
-public class Bulwark implements Ability, OnHitted, Behavable, Levelable {
+public class Bulwark implements Ability, Behavable, Levelable, AttackModifier{
 
     private int turnsLeftInCooldown;
     private int turnsLeftForDecay;
@@ -71,9 +72,11 @@ public class Bulwark implements Ability, OnHitted, Behavable, Levelable {
     }
 
     @Override
-    public void doOnHitted(Entity self, Entity other, AttackInfo attackInfo) {
-        if (accumulatedDamage < getDamageLimit() && turnsLeftInCooldown <= 0)
-            accumulatedDamage += Math.min(Math.abs(attackInfo.getDamage() - attackInfo.getDamageDelt()), Math.abs(accumulatedDamage - getDamageLimit()));
+    public void modifyAttack(Attack attack) {
+        attack.attachPostAttackHook(attackResult -> {
+            if (accumulatedDamage < getDamageLimit() && turnsLeftInCooldown <= 0)
+                accumulatedDamage += Math.min(Math.abs(attackResult.damage() - attackResult.damageDelt()), Math.abs(accumulatedDamage - getDamageLimit()));
+        }, PostAttackHook.onHitted(owner));
     }
 
     @Override

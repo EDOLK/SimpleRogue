@@ -401,7 +401,7 @@ public class Spider extends Animal implements HasDodge, HasInventory, HasDrops, 
             } else {
                 Display.log("The " + attacker.getName() + " struggles against the webs", attacker.getSpace());
             }
-            return new AttackResult(false, false, 0, null, attacker, attackee);
+            return new AttackResult(attacker, attackee);
         }
 
         @Override

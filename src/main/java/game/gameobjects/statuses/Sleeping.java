@@ -15,9 +15,10 @@ import game.gamelogic.behavior.Behavable;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Animal;
 import game.gameobjects.entities.Entity;
-import game.gamelogic.combat.AttackInfo;
-import game.gamelogic.combat.OnHitted;
-public class Sleeping extends Status implements OverridesBehavable, Behavable, OnHitted {
+import game.gamelogic.combat.Attack;
+import game.gamelogic.combat.AttackModifier;
+import game.gamelogic.combat.PostAttackHook;
+public class Sleeping extends Status implements OverridesBehavable, Behavable, AttackModifier {
 
     public Sleeping() {
         super();
@@ -76,8 +77,10 @@ public class Sleeping extends Status implements OverridesBehavable, Behavable, O
     }
 
     @Override
-    public void doOnHitted(Entity self, Entity other, AttackInfo attackInfo) {
-        Display.log("The " + owner.getName() + " wakes up.", owner.getSpace());
-        owner.removeStatus(this);
+    public void modifyAttack(Attack attack) {
+        attack.attachPostAttackHook(ar -> {
+            Display.log("The " + owner.getName() + " wakes up.", owner.getSpace());
+            owner.removeStatus(this);
+        }, PostAttackHook.onHitted(owner));
     }
 }

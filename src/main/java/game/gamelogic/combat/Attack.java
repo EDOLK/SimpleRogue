@@ -1,87 +1,132 @@
 package game.gamelogic.combat;
 
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.Map.Entry;
+import java.util.stream.Stream;
 
 import game.App;
 import game.CheckConditions;
 import game.display.Display;
 import game.gamelogic.Attribute;
-import game.gamelogic.ModifiesAccuracy;
-import game.gamelogic.ModifiesDodge;
+import game.gamelogic.AccuracyModifier;
+import game.gamelogic.DodgeModifier;
 import game.gameobjects.AttackResult;
 import game.gameobjects.DamageType;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.entities.PlayerEntity;
 import game.gameobjects.items.weapons.Weapon;
+import game.gamelogic.DamageModifier;
 
 public class Attack {
 
     private Entity attacker;
     private Entity defender;
-    private Weapon attackerWeapon;
+    private Weapon weapon;
     private boolean hit;
-    private DamageType attackerDamageType;
+    private DamageType damageType;
     private int damage;
-    private int modifiedAttackerRoll;
+    private int modifiedRoll;
     private boolean crit;
-    private int naturalAttackerRoll;
-    private AttackInfo attackInfo;
-    private int defenderDodge;
+    private int roll;
+    private int dodge;
+
+    private List<PostAttackHook> postAttackHooks = new ArrayList<>();
+    private Map<PostAttackHook, PostAttackHook.Type> postAttackHookMap = new HashMap<>();
+    private Deque<DodgeModifier> dodgeMods = new LinkedList<>();
+    private Deque<AccuracyModifier> accuracyMods = new LinkedList<>();
+    private Deque<DamageModifier> damageMods = new LinkedList<>();
+
+    public void attachPostAttackHook(PostAttackHook hook){
+        attachPostAttackHook(hook, PostAttackHook.generic());
+    }
+
+    public void attachPostAttackHook(PostAttackHook hook, PostAttackHook.Type type){
+        postAttackHookMap.put(hook, type);
+    }
+
+    public void appendDodgeModifier(DodgeModifier mod){
+        dodgeMods.addFirst(mod);
+    }
+    public void prependDodgeModifier(DodgeModifier mod){
+        dodgeMods.addLast(mod);
+    }
+    public void appendAccuracyModifier(AccuracyModifier mod){
+        accuracyMods.addFirst(mod);
+    }
+    public void prependAccuracyModifier(AccuracyModifier mod){
+        accuracyMods.addLast(mod);
+    }
+    public void appendDamageModifier(DamageModifier mod){
+        damageMods.addFirst(mod);
+    }
+    public void prependDamageModifier(DamageModifier mod){
+        damageMods.addLast(mod);
+    }
+
+    public Entity getDefender() {
+        return defender;
+    }
+
+    public Entity getAttacker() {
+        return attacker;
+    }
+
+    public Weapon getWeapon() {
+        return weapon;
+    }
+
+    public boolean isCrit() {
+        return crit;
+    }
 
     public Attack(Entity attacker, Entity defender, Weapon attackerWeapon){
         this.attacker = attacker;
         this.defender = defender;
-        this.attackerWeapon = attackerWeapon;
+        this.weapon = attackerWeapon;
 
-        attackInfo = new AttackInfo(attacker, defender, attackerWeapon);
-        defenderDodge = 0;
+        roll = App.randomNumber(1, 20);
 
-        defenderDodge += getDodge(defender);
+        crit = roll == 20;
 
-        attackInfo.setDefenderDodge(defenderDodge);
+        modifiedRoll = roll;
 
-        naturalAttackerRoll = App.randomNumber(1, 20);
+        getDodge(defender);
 
-        attackInfo.setBaseRoll(naturalAttackerRoll);
-
-        crit = naturalAttackerRoll == 20;
-
-        attackInfo.setCrit(crit);
-
-        modifiedAttackerRoll = naturalAttackerRoll;
-
-        modifiedAttackerRoll += getAccuracy(attacker, attackerWeapon);
-
-        attackInfo.setModifiedRoll(modifiedAttackerRoll);
+        getAccuracy(attacker, attackerWeapon);
         
         damage = attackerWeapon.generateDamage();
 
-        damage += Attribute.getAttribute(Attribute.STRENGTH, attacker);
-        
-        damage = crit ? damage * 2 : damage;
+        damageType = attackerWeapon.getDamageType();
 
-        attackInfo.setDamage(damage);
+        prependDamageModifier((dmg,type) -> dmg + Attribute.getAttribute(Attribute.STRENGTH, attacker));
 
-        attackerDamageType = attackerWeapon.getDamageType();
-        
-        attackInfo.setDamageType(attackerDamageType);
-
-        hit = modifiedAttackerRoll >= defenderDodge;
-
-        attackInfo.setHit(hit);
+        appendDamageModifier((dmg,type) -> crit ? dmg * 2 : dmg);
     }
 
     public AttackResult execute(){
         
-        List<CombatModifier> attackerCombatMods = getCombatModifiers(attacker);
-
-        List<CombatModifier> defenderCombatMods = getCombatModifiers(defender);
-
         int damageDelt = 0;
-
-        attackInfo.setDamageDelt(damageDelt);
         
+        getAttackModifiers(attacker, defender, weapon).forEach(am -> am.modifyAttack(this));
+
+        for (AccuracyModifier accuracyModifier : accuracyMods)
+            modifiedRoll = accuracyModifier.modifyAccuracy(modifiedRoll);
+
+        for (DodgeModifier dodgeModifier : dodgeMods)
+            dodge = dodgeModifier.modifyDodge(dodge);
+
+        for (DamageModifier damageModifier : damageMods)
+            damage = damageModifier.calculateDamage(damage, damageType);
+
+        hit = modifiedRoll >= dodge;
+
         if (hit){
 
             if (crit) {
@@ -94,9 +139,7 @@ public class Attack {
                 }
             }
 
-            damageDelt = defender.dealDamage(damage, attackerDamageType, attacker);
-
-            attackInfo.setDamageDelt(damageDelt);
+            damageDelt = defender.dealDamage(damage, damageType, attacker);
 
         } else {
 
@@ -110,84 +153,73 @@ public class Attack {
 
         }
 
-        for (CombatModifier modifier : attackerCombatMods) {
-            switch (modifier) {
-                case OnAttack onAttack -> {
-                    onAttack.doOnAttack(attacker, defender, attackInfo);
-                }
-                case OnHit onHit -> {
-                    if (hit)
-                        onHit.doOnHit(attacker, defender, attackInfo);
-                }
-                case OnMiss onMiss -> {
-                    if (!hit)
-                        onMiss.doOnMiss(attacker, defender, attackInfo);
-                }
-                case OnCrit onCrit -> {
-                    if (crit)
-                        onCrit.doOnCrit(attacker, defender, attackInfo);
-                }
-                case OnKill onKill -> {
-                    if (!defender.isAlive())
-                        onKill.doOnKill(attacker, defender, attackInfo);
-                }
-                default -> { }
+        AttackResult result = new AttackResult(hit, crit, damage, damageDelt, damageType, attacker, defender, weapon);
+        for (PostAttackHook hook : postAttackHooks)
+            hook.apply(result);
+
+        for (Entry<PostAttackHook, PostAttackHook.Type> entry : postAttackHookMap.entrySet()) {
+            switch (entry.getValue().condition) {
+                case ON_ATTACK:
+                    if (entry.getValue().target == result.attacker())
+                        entry.getKey().apply(result);
+                    break;
+                case ON_ATTACKED:
+                    if (entry.getValue().target == result.defender())
+                        entry.getKey().apply(result);
+                    break;
+                case ON_CRIT:
+                    if (entry.getValue().target == result.attacker() && result.crit())
+                        entry.getKey().apply(result);
+                    break;
+                case ON_CRITTED:
+                    if (entry.getValue().target == result.defender() && result.crit())
+                        entry.getKey().apply(result);
+                    break;
+                case ON_DEATH:
+                    if (entry.getValue().target == result.defender() && !result.defender().isAlive())
+                        entry.getKey().apply(result);
+                    break;
+                case ON_HIT:
+                    if (entry.getValue().target == result.attacker() && result.hit())
+                        entry.getKey().apply(result);
+                    break;
+                case ON_HITTED:
+                    if (entry.getValue().target == result.defender() && result.hit())
+                        entry.getKey().apply(result);
+                    break;
+                case ON_KILL:
+                    if (entry.getValue().target == result.attacker() && !result.defender().isAlive())
+                        entry.getKey().apply(result);
+                    break;
+                case ON_MISS:
+                    if (entry.getValue().target == result.attacker() && !result.hit())
+                        entry.getKey().apply(result);
+                    break;
+                case ON_MISSED:
+                    if (entry.getValue().target == result.defender() && !result.hit())
+                        entry.getKey().apply(result);
+                    break;
+                default:
+                    entry.getKey().apply(result);
+                    break;
+
             }
         }
 
-        for (CombatModifier modifier : defenderCombatMods) {
-            switch (modifier) {
-                case OnAttacked onAttacked -> {
-                    onAttacked.doOnAttacked(defender, attacker, attackInfo);
-                }
-                case OnHitted onHitted -> {
-                    if (hit)
-                        onHitted.doOnHitted(defender, attacker, attackInfo);
-                }
-                case OnMissed onMissed -> {
-                    if (!hit)
-                        onMissed.doOnMissed(defender, attacker, attackInfo);
-                }
-                case OnCritted onCritted -> {
-                    if (crit)
-                        onCritted.doOnCritted(defender, attacker, attackInfo);
-                }
-                case OnDeath onDeath -> {
-                    if (!defender.isAlive())
-                        onDeath.doOnDeath(defender, attacker, attackInfo);
-                }
-                default -> { }
-            }
-        }
-
-        return new AttackResult(hit, crit, damageDelt, attackerDamageType, attacker, defender);
+        return result;
     }
 
-    private static List<CombatModifier> getCombatModifiers(Entity entity){
-        return App.recursiveCheck(entity, getCombatModConditions(), (obj) -> {
-            if (obj instanceof CombatModifier cm){
-                return Optional.of(cm);
-            }
-            return Optional.empty();
-        });
+    private static Stream<AttackModifier> getAttackModifiers(Entity attacker, Entity defender, Weapon weapon){
+        Function<Object, Optional<AttackModifier>> function = (obj) -> obj instanceof AttackModifier attackModifier ? Optional.of(attackModifier) : Optional.empty();
+        return App.concatStreams(
+            App.recursiveCheck(attacker, CheckConditions.all().withInventory(false).withArmedWeapons(false).withUnarmedWeapon(false), function).stream(),
+            App.recursiveCheck(weapon, CheckConditions.all(), function).stream(),
+            App.recursiveCheck(defender, CheckConditions.all().withInventory(false), function).stream()
+        );
     }
 
-    private static CheckConditions getCombatModConditions(){
-        return CheckConditions.all()
-            .withInventory(false);
-    }
-
-    private static int getDodge(Entity entity){
-        int dodge = 0;
-        for (ModifiesDodge modifiesDodge : App.recursiveCheck(entity, getDodgeConditions(), (obj) -> {
-            if (obj instanceof ModifiesDodge md) {
-                return Optional.of(md);
-            }
-            return Optional.empty();
-        })) {
-            dodge = modifiesDodge.modifyDodge(dodge);
-        }
-        return dodge;
+    private void getDodge(Entity entity){
+        App.recursiveCheck(entity, getDodgeConditions(), (obj) -> obj instanceof DodgeModifier md ? Optional.of(md) : Optional.empty()).forEach(this::appendDodgeModifier);
     }
 
     private static CheckConditions getDodgeConditions(){
@@ -195,25 +227,8 @@ public class Attack {
             .withInventory(false);
     }
 
-    private static int getAccuracy(Entity entity, Weapon activeWeapon){
-
-        int accuracy = 0;
-
-        for (ModifiesAccuracy modifiesAccuracy : App.recursiveCheck(entity, getAccuracyConditions(), (obj) -> {
-            if (obj instanceof ModifiesAccuracy ma) {
-                return Optional.of(ma);
-            }
-            return Optional.empty();
-        })){
-            accuracy = modifiesAccuracy.modifyAccuracy(accuracy);
-        };
-
-        if (activeWeapon instanceof ModifiesAccuracy ma) {
-            accuracy = ma.modifyAccuracy(accuracy);
-        }
-
-        return accuracy;
-
+    private void getAccuracy(Entity entity, Weapon activeWeapon){
+        App.recursiveCheck(entity, getAccuracyConditions(), (obj) -> obj instanceof AccuracyModifier ac ? Optional.of(ac) : Optional.empty()).forEach(this::appendAccuracyModifier);
     }
 
     private static CheckConditions getAccuracyConditions(){

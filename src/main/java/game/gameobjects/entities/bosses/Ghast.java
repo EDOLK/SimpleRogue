@@ -12,18 +12,18 @@ import game.gamelogic.DropsXP;
 import game.gamelogic.HasDodge;
 import game.gamelogic.HasInventory;
 import game.gamelogic.HasResistances;
-import game.gamelogic.combat.AttackInfo;
-import game.gamelogic.combat.OnHitted;
+import game.gamelogic.combat.Attack;
+import game.gamelogic.combat.AttackModifier;
+import game.gamelogic.combat.PostAttackHook;
 import game.gamelogic.resistances.PercentageResistance;
 import game.gamelogic.resistances.Resistance;
 import game.gameobjects.DamageType;
 import game.gameobjects.entities.Animal;
-import game.gameobjects.entities.Entity;
 import game.gameobjects.items.Item;
 import game.gameobjects.items.weapons.Weapon;
 import game.gameobjects.terrains.gasses.Miasma;
 
-public class Ghast extends Animal implements HasInventory, DropsXP, HasResistances, OnHitted, HasDodge{
+public class Ghast extends Animal implements HasInventory, DropsXP, HasResistances, HasDodge, AttackModifier{
 
     private List<Item> inventory = new ArrayList<>();
     private List<Resistance> resistances = new ArrayList<>();
@@ -80,8 +80,10 @@ public class Ghast extends Animal implements HasInventory, DropsXP, HasResistanc
     }
 
     @Override
-    public void doOnHitted(Entity self, Entity other, AttackInfo attackInfo) {
-        self.getSpace().addTerrain(new Miasma(randomNumber(1,5)));
+    public void modifyAttack(Attack attack) {
+        attack.attachPostAttackHook((ar) -> {
+            ar.defender().getSpace().addTerrain(new Miasma(randomNumber(1, 5)));
+        }, PostAttackHook.onHitted(this));
     }
 
     @Override
