@@ -213,7 +213,7 @@ public class Attack {
 
     private static Stream<AttackModifier> getAttackModifiers(Entity attacker, Entity defender, Weapon weapon){
         Function<Object, Optional<AttackModifier>> function = (obj) -> obj instanceof AttackModifier attackModifier ? Optional.of(attackModifier) : Optional.empty();
-        return concatStreams(
+        return App.concatStreams(
             App.recursiveCheck(attacker, CheckConditions.all().withInventory(false).withArmedWeapons(false).withUnarmedWeapon(false), function).stream(),
             App.recursiveCheck(weapon, CheckConditions.all(), function).stream(),
             App.recursiveCheck(defender, CheckConditions.all().withInventory(false), function).stream()
@@ -264,17 +264,5 @@ public class Attack {
             .withInventory(false)
             .withArmedWeapons(false)
             .withUnarmedWeapon(false);
-    }
-
-    @SafeVarargs
-    private static <T> Stream<T> concatStreams(Stream<T>... streams){
-        if (streams.length > 0) {
-            Stream<T> stream = streams[0];
-            for (int i = 1; i < streams.length; i++) {
-                stream = Stream.concat(stream, streams[i]);
-            }
-            return stream;
-        }
-        return Stream.of();
     }
 }

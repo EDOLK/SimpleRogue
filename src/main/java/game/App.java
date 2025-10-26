@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import game.display.Display;
 import game.gamelogic.Armed;
@@ -44,6 +45,18 @@ public class App
 
     public static <T> T removeRandom(List<T> list){
         return list.isEmpty() ? null : list.remove(randomNumber(0,list.size()-1));
+    }
+
+    @SafeVarargs
+    public static <T> Stream<T> concatStreams(Stream<T>... streams){
+        if (streams.length > 0) {
+            Stream<T> stream = streams[0];
+            for (int i = 1; i < streams.length; i++) {
+                stream = Stream.concat(stream, streams[i]);
+            }
+            return stream;
+        }
+        return Stream.of();
     }
 
     public static <T> List<T> recursiveCheck(Object object, Function<Object, Optional<T>> function){
