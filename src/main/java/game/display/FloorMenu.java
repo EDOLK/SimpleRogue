@@ -259,8 +259,11 @@ public final class FloorMenu extends Menu{
     private void drawStatuses(List<Status> statuses, int x, int y, double darkness) {
         for (Status status : statuses) {
             Tile t = statusLayer.getTileAtOrNull(Position.create(x + status.getxOffset(), y + status.getyOffset()));
-            if (t == null)
-                statusLayer.draw(status.getTile(status.isFullBright() ? 0.0 : darkness), Position.create(x + status.getxOffset(), y + status.getyOffset()));
+            if (t == null){
+                Tile tile = status.getTile(status.isFullBright() ? 0.0 : darkness); 
+                if (tile != null && tile != Tile.empty())
+                    statusLayer.draw(tile, Position.create(x + status.getxOffset(), y + status.getyOffset()));
+            }
         }
     }
 

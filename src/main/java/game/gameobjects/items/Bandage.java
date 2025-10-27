@@ -3,14 +3,12 @@ package game.gameobjects.items;
 import org.hexworks.zircon.api.color.TileColor;
 
 import game.App;
-import game.display.Display;
 import game.gamelogic.Consumable;
 import game.gamelogic.Flammable;
 import game.gamelogic.SelfAware;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Entity;
-import game.gameobjects.entities.PlayerEntity;
-import game.gameobjects.statuses.Bleeding;
+import game.gameobjects.statuses.BleedImmune;
 
 public class Bandage extends Item implements Consumable, Flammable, SelfAware {
 
@@ -28,13 +26,7 @@ public class Bandage extends Item implements Consumable, Flammable, SelfAware {
     @Override
     public boolean consume(Entity consumer) {
         consumer.heal(App.randomNumber(1,2));
-        Bleeding bleeding = (Bleeding)consumer.getStatusByClass(Bleeding.class);
-        if (bleeding != null) {
-            consumer.removeStatus(bleeding);
-            if (consumer instanceof PlayerEntity) {
-                Display.log("The Bandage staves some of your bleeding.");
-            }
-        }
+        consumer.addStatus(new BleedImmune(App.randomNumber(5, 15)));
         return true;
     }
     @Override
