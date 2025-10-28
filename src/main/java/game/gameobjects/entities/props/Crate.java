@@ -16,7 +16,6 @@ public class Crate extends ContainerProp{
         setHP(5);
         setWeight(5);
         setName("Crate");
-        setTileName("Crate");
         setDescription("A crate. It probably has things in it.");
         for (Item item : new HasDrops() {
 

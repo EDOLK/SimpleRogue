@@ -3,6 +3,7 @@ package game.display;
 import static game.App.lerp;
 import static game.gameobjects.Space.moveEntity;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,7 +13,6 @@ import org.hexworks.zircon.api.builder.component.LabelBuilder;
 import org.hexworks.zircon.api.builder.component.LogAreaBuilder;
 import org.hexworks.zircon.api.builder.component.PanelBuilder;
 import org.hexworks.zircon.api.builder.component.ProgressBarBuilder;
-import org.hexworks.zircon.api.builder.graphics.LayerBuilder;
 import org.hexworks.zircon.api.builder.graphics.TileGraphicsBuilder;
 import org.hexworks.zircon.api.color.TileColor;
 import org.hexworks.zircon.api.component.Header;
@@ -24,10 +24,11 @@ import org.hexworks.zircon.api.data.Position;
 import org.hexworks.zircon.api.data.Tile;
 import org.hexworks.zircon.api.graphics.BoxType;
 import org.hexworks.zircon.api.graphics.Layer;
+import org.hexworks.zircon.api.graphics.LayerHandle;
 import org.hexworks.zircon.api.uievent.KeyboardEvent;
 import org.hexworks.zircon.api.uievent.UIEventPhase;
 import org.hexworks.zircon.api.uievent.UIEventResponse;
-import game.gamelogic.OverridesPlayerInput;
+import org.jetbrains.annotations.NotNull;
 
 import game.App;
 import game.CheckConditions;
@@ -39,10 +40,12 @@ import game.gamelogic.Aimable;
 import game.gamelogic.Experiential;
 import game.gamelogic.Interactable;
 import game.gamelogic.Levelable;
+import game.gamelogic.OverridesPlayerInput;
 import game.gamelogic.floorinteraction.Selector;
 import game.gamelogic.floorinteraction.SimpleSelector;
 import game.gameobjects.DisplayableTile;
 import game.gameobjects.Floor;
+import game.gameobjects.ItemStack;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Door;
 import game.gameobjects.entities.Entity;
@@ -51,31 +54,14 @@ import game.gameobjects.entities.ThrownItem;
 import game.gameobjects.entities.Wall;
 import game.gameobjects.items.Item;
 import game.gameobjects.statuses.Status;
-import game.gameobjects.terrains.Fire;
 import game.gameobjects.terrains.OpenDoor;
 import game.gameobjects.terrains.Staircase;
 import game.gameobjects.terrains.Terrain;
-import game.gameobjects.terrains.Trap;
-import game.gameobjects.terrains.gasses.Gas;
-import game.gameobjects.terrains.liquids.Liquid;
 
 public final class FloorMenu extends Menu{
 
-    private Layer spaceLayer;
-    private Layer trapLayer;
-    private Layer terrainLayer;
-    private Layer fireLayer;
-    private Layer lowLiquidLayer;
-    private Layer itemLayer;
-    private Layer midLiquidLayer;
-    private Layer entityLayer;
-    private Layer statusLayer;
-    private Layer highLiquidLayer;
-    private Layer gasLayer;
-    private Layer cursorLayer;
-    private Layer healthBarLayer;
-    private Layer darknessLayer;
-    private Layer memoryLayer;
+    private LayerHandle memoryLayer;
+    private List<LayerHandle> layers = new ArrayList<>();
     private Floor currentFloor;
     private LogArea logMessageArea;
     private Header hpText;
@@ -130,30 +116,33 @@ public final class FloorMenu extends Menu{
             }
         }
         PlayerEntity playerEntity = currentFloor.getPlayer();
-        spaceLayer.clear();
-        terrainLayer.clear();
-        fireLayer.clear();
-        trapLayer.clear();
-        lowLiquidLayer.clear();
-        itemLayer.clear();
-        midLiquidLayer.clear();
-        entityLayer.clear();
-        statusLayer.clear();
-        highLiquidLayer.clear();
-        gasLayer.clear();
-        cursorLayer.clear();
-        if (Display.getMode() == Mode.GRAPHICAL){
-            healthBarLayer.clear();
-            darknessLayer.clear();
-        }
+        layers.forEach((lh) -> lh.removeLayer());
+        layers.clear();
 
-        for (Space space : playerEntity.getSpacesInVision(true)) {
+        for (Space space : playerEntity.getSpacesInVision(true)){
+            memoryLayer.draw(Tile.empty(), Position.create(space.getX(), space.getY()));
             addToLayers(space, playerEntity);
         }
 
         updatePlayerStatus(playerEntity);
         drawCursor(playerEntity);
 
+    }
+
+    public void draw(Tile tile, Position position){
+        if (tile == null || tile == Tile.empty()) {
+            return;
+        }
+        for (LayerHandle layerHandle : layers) {
+            Tile t = layerHandle.getTileAtOrNull(position);
+            if (t == null) {
+                layerHandle.draw(tile, position);
+                return;
+            }
+        }
+        LayerHandle layer = screen.addLayer(Layer.newBuilder().withSize(currentFloor.SIZE_X, currentFloor.SIZE_Y).build());
+        layer.draw(tile, position);
+        layers.add(layer);
     }
 
     public void toggleMemory(){
@@ -168,19 +157,19 @@ public final class FloorMenu extends Menu{
 
         darkness = Math.min(darkness, darknessCeil);
 
-        spaceLayer.draw(current.getTile(darkness), Position.create(x, y));
-
-        if (!current.getItems().isEmpty()){
-            itemLayer.draw(current.getItems().get(0).getTile(darkness), Position.create(x, y));
-        }
-
-        if (current.isOccupied()){
-            drawEntity(current.getOccupant(), x, y, darkness);
-        }
+        draw(current.getTile(darkness), Position.create(x,y));
 
         for (Terrain terrain : current.getTerrains()) {
-            drawTerrain(terrain, x, y, darkness);
+            if (terrain instanceof OpenDoor || terrain instanceof Staircase)
+                drawInMemory(terrain, Position.create(x,y));
+            draw(terrain.getTile((double) darkness), Position.create(x, y));
         }
+
+        for (Item item : current.getItems())
+            draw(item.getTile(darkness), Position.create(x, y));
+
+        if (current.isOccupied())
+            drawEntity(current.getOccupant(), x, y, darkness);
 
         if (Display.getMode() == Mode.GRAPHICAL){
             int darkValue = (int)(darkness * 10);
@@ -188,14 +177,14 @@ public final class FloorMenu extends Menu{
                 .withName("Darkness " + darkValue)
                 .withTileset(Display.getGraphicalTileSet())
                 .buildGraphicalTile();
-            darknessLayer.draw(darknessTile, Position.create(x, y));
+            draw(darknessTile, Position.create(x, y));
         }
     }
 
     private void drawCursor(PlayerEntity playerEntity) {
         if (cursor != null){
             Space cursorSpace = cursor.getSelectedSpace();
-            cursorLayer.draw(cursor.getTile(), Position.create(cursorSpace.getX(), cursorSpace.getY()));
+            draw(cursor.getTile(), Position.create(cursorSpace.getX(), cursorSpace.getY()));
             if (
                 (cursor.getSelectedSpace().getLight() > 0 && playerEntity.isWithinVision(cursorSpace)) || 
                 (playerEntity.isWithinVision(cursorSpace) && Space.getDistance(playerEntity.getSpace(), cursorSpace) <= playerEntity.getNightVisionRange())
@@ -206,65 +195,26 @@ public final class FloorMenu extends Menu{
         }
     }
 
-    private void drawTerrain(Terrain terrain, int x, int y, double darkness) {
-        switch (terrain) {
-            case Liquid liquid -> {
-                if (liquid.getAmount() <= 1){
-                    lowLiquidLayer.draw(liquid.getTile(darkness), Position.create(x, y));
-                    return;
-                }
-                if (liquid.getAmount() <= 5){
-                    midLiquidLayer.draw(liquid.getTile(darkness), Position.create(x, y));
-                    return;
-                }
-                if (liquid.getAmount() <= 10){
-                    highLiquidLayer.draw(liquid.getTile(darkness), Position.create(x, y));
-                    return;
-                }
-            }
-            case Gas gas -> {
-                gasLayer.draw(gas.getTile(darkness), Position.create(x, y));
-            }
-            case Trap trap -> {
-                trapLayer.draw(trap.getTile(darkness), Position.create(x, y));
-            }
-            case Fire fire -> {
-                fireLayer.draw(fire.getTile(darkness), Position.create(x, y));
-            }
-            default -> {
-                terrainLayer.draw(terrain.getTile(darkness), Position.create(x, y));
-            }
-        }
-        if (terrain instanceof OpenDoor || terrain instanceof Staircase) {
-            drawInMemory(terrain, Position.create(x,y));
-        }
-    }
-
     private void drawEntity(Entity occupant, int x, int y, double darkness) {
-        entityLayer.draw(occupant.getTile(darkness), Position.create(x, y));
-        drawStatuses(occupant.getStatuses(), x, y, darkness);
+
+        if (occupant instanceof Wall || occupant instanceof Door)
+            drawInMemory(occupant, Position.create(x,y));
+
+        draw(occupant.getTile(darkness), Position.create(x, y));
+
+        for (Status status : occupant.getStatuses()) {
+            draw(status.getTile(status.isFullBright() ? 0.0 : darkness), Position.create(x + status.getxOffset(), y + status.getyOffset()));
+        }
+
         if (Display.getMode() == Mode.GRAPHICAL && occupant.getHP() < occupant.getMaxHP()){
             int healthBarValue = (int)lerp(0, 7, occupant.getMaxHP(), 1, occupant.getHP());
             Tile healthBar = Tile.newBuilder()
                 .withName("Health Bar " + healthBarValue)
                 .withTileset(Display.getGraphicalTileSet())
                 .buildGraphicalTile();
-            healthBarLayer.draw(healthBar, Position.create(x, y));
+            draw(healthBar, Position.create(x, y));
         }
-        if (occupant instanceof Wall || occupant instanceof Door) {
-            drawInMemory(occupant, Position.create(x,y));
-        }
-    }
 
-    private void drawStatuses(List<Status> statuses, int x, int y, double darkness) {
-        for (Status status : statuses) {
-            Tile t = statusLayer.getTileAtOrNull(Position.create(x + status.getxOffset(), y + status.getyOffset()));
-            if (t == null){
-                Tile tile = status.getTile(status.isFullBright() ? 0.0 : darkness); 
-                if (tile != null && tile != Tile.empty())
-                    statusLayer.draw(tile, Position.create(x + status.getxOffset(), y + status.getyOffset()));
-            }
-        }
     }
 
     public void drawInMemory(DisplayableTile tile, Position position) {
@@ -506,88 +456,7 @@ public final class FloorMenu extends Menu{
             .build()
         );
 
-        memoryLayer = Layer.newBuilder()
-            .withSize(currentFloor.SIZE_X, currentFloor.SIZE_Y)
-            .build();
-        screen.addLayer(memoryLayer);
-        if (Display.getMode() == Mode.GRAPHICAL) {
-            memoryLayer.setHidden(true);
-        }
-
-        spaceLayer = Layer.newBuilder()
-            .withSize(currentFloor.SIZE_X, currentFloor.SIZE_Y)
-            .build();
-        screen.addLayer(spaceLayer);
-        
-        trapLayer = Layer.newBuilder()
-            .withSize(currentFloor.SIZE_X, currentFloor.SIZE_Y)
-            .build();
-        screen.addLayer(trapLayer);
-        
-        terrainLayer = Layer.newBuilder()
-            .withSize(currentFloor.SIZE_X, currentFloor.SIZE_Y)
-            .build();
-        screen.addLayer(terrainLayer);
-
-        fireLayer = Layer.newBuilder()
-            .withSize(currentFloor.SIZE_X, currentFloor.SIZE_Y)
-            .build();
-        screen.addLayer(fireLayer);
-        
-        lowLiquidLayer = Layer.newBuilder()
-            .withSize(currentFloor.SIZE_X, currentFloor.SIZE_Y)
-            .build();
-        screen.addLayer(lowLiquidLayer);
-
-        itemLayer = Layer.newBuilder()
-            .withSize(currentFloor.SIZE_X, currentFloor.SIZE_Y)
-            .build();
-        screen.addLayer(itemLayer);
-        
-        midLiquidLayer = Layer.newBuilder()
-            .withSize(currentFloor.SIZE_X, currentFloor.SIZE_Y)
-            .build();
-        screen.addLayer(midLiquidLayer);
-
-        entityLayer = Layer.newBuilder()
-            .withSize(currentFloor.SIZE_X, currentFloor.SIZE_Y)
-            .build();
-        screen.addLayer(entityLayer);
-        
-        statusLayer = Layer.newBuilder()
-            .withSize(currentFloor.SIZE_X, currentFloor.SIZE_Y)
-            .build();
-        screen.addLayer(statusLayer);
-
-        if (Display.getMode() == Mode.GRAPHICAL) {
-            healthBarLayer = Layer.newBuilder()
-                .withSize(currentFloor.SIZE_X, currentFloor.SIZE_Y)
-                .build();
-            screen.addLayer(healthBarLayer);
-        }
-        
-        highLiquidLayer = Layer.newBuilder()
-            .withSize(currentFloor.SIZE_X, currentFloor.SIZE_Y)
-            .build();
-        screen.addLayer(highLiquidLayer);
-        
-        gasLayer = Layer.newBuilder()
-            .withSize(currentFloor.SIZE_X, currentFloor.SIZE_Y)
-            .build();
-        screen.addLayer(gasLayer);
-
-        if (Display.getMode() == Mode.GRAPHICAL){
-            darknessLayer = Layer.newBuilder()
-                .withSize(currentFloor.SIZE_X, currentFloor.SIZE_Y)
-                .build();
-            screen.addLayer(darknessLayer);
-        }
-
-        cursorLayer = LayerBuilder.newBuilder()
-            .withSize(currentFloor.SIZE_X, currentFloor.SIZE_Y)
-            .build();
-        screen.addLayer(cursorLayer);
-
+        memoryLayer = screen.addLayer(Layer.newBuilder().withSize(currentFloor.SIZE_X, currentFloor.SIZE_Y).build());
     }
     
     private void updatePlayerStatus(PlayerEntity player){

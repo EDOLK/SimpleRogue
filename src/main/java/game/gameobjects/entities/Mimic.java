@@ -87,6 +87,7 @@ public class Mimic extends Animal implements Interactable, DropsXP, HasInventory
         setUnarmedWeapon(mass);
         setBaseMaxHP(10);
         setHP(10);
+        setWeight(5);
         new ArrayList<>(super.getStatuses()).stream().filter(s -> s instanceof Sleeping).forEach(this::removeStatus);
         if (disguise instanceof HasInventory hi)
             inventory.addAll(hi.getInventory());
@@ -98,7 +99,7 @@ public class Mimic extends Animal implements Interactable, DropsXP, HasInventory
             if (activeTimer > 0) {
                 activeTimer--;
             } else {
-                deActivate();
+                deactivate();
                 return this.getTimeToWait();
             }
         }
@@ -131,7 +132,7 @@ public class Mimic extends Animal implements Interactable, DropsXP, HasInventory
         }
     }
 
-    private void deActivate(){
+    private void deactivate(){
         boolean t = false;
         if (Math.random() < 0.25){
             List<Entity> entitiesInVision = getEntitiesInVision();
