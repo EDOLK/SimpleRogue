@@ -16,7 +16,6 @@ public class Barrel extends ContainerProp{
         setHP(5);
         setWeight(5);
         setName("Barrel");
-        setTileName("Barrel");
         setDescription("A barrel. It probably has things in it.");
         for (Item item : new HasDrops() {
 

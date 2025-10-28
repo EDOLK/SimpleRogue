@@ -41,7 +41,7 @@ public class Display {
 
     private static Menu currentMenu;
     private static FloorMenu rootMenu;
-    //private static Mode mode = Mode.GRAPHICAL;
+    // private static Mode mode = Mode.GRAPHICAL;
     private static Mode mode = Mode.ASCII;
 
     private static KeyMap keyMap = new KeyMap();
@@ -110,6 +110,8 @@ public class Display {
                 .withSize(screenX,screenY)
                 .withDefaultTileset(getCharacterTileSet())
                 .withDefaultGraphicalTileset(getGraphicalTileSet())
+                .withTitle("Simple Rogue")
+                .withFpsLimit(60)
                 .build()
         );
         FloorMenu floorMenu = new FloorMenu();
