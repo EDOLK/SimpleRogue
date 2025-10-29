@@ -229,6 +229,13 @@ public class Attack {
         ).forEach(
             (a) -> attachAccuracyModifier(a, BASE_PRIORITY)
         );
+        App.recursiveCheck(
+            activeWeapon,
+            getAccuracyConditions(),
+            (obj) -> obj instanceof AccuracyModifier ac ? Optional.of(ac) : Optional.empty()
+        ).forEach(
+            (a) -> attachAccuracyModifier(a, BASE_PRIORITY)
+        );
     }
 
     private static CheckConditions getAccuracyConditions(){
