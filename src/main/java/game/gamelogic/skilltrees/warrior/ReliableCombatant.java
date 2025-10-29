@@ -30,7 +30,8 @@ public class ReliableCombatant implements Ability, Behavable, AccuracyModifier, 
     public int behave() {
         if (!hit){
             if (decay <= 0) {
-                combo--;
+                if (combo > 0)
+                    combo--;
                 decay = getDecayRate();
             } else {
                 decay--;
