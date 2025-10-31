@@ -1,12 +1,9 @@
 package game.gamelogic.combat;
 
-import java.util.ArrayList;
-import java.util.Deque;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.PriorityQueue;
 import java.util.function.Function;
 import java.util.Map.Entry;
 import java.util.stream.Stream;
@@ -14,7 +11,6 @@ import java.util.stream.Stream;
 import game.App;
 import game.CheckConditions;
 import game.display.Display;
-import game.gamelogic.Attribute;
 import game.gamelogic.AccuracyModifier;
 import game.gamelogic.DodgeModifier;
 import game.gameobjects.AttackResult;
@@ -22,6 +18,7 @@ import game.gameobjects.DamageType;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.entities.PlayerEntity;
 import game.gameobjects.items.weapons.Weapon;
+import kotlin.Pair;
 import game.gamelogic.DamageModifier;
 
 public class Attack {
@@ -37,37 +34,29 @@ public class Attack {
     private int roll;
     private int dodge;
 
-    private List<PostAttackHook> postAttackHooks = new ArrayList<>();
     private Map<PostAttackHook, PostAttackHook.Type> postAttackHookMap = new HashMap<>();
-    private Deque<DodgeModifier> dodgeMods = new LinkedList<>();
-    private Deque<AccuracyModifier> accuracyMods = new LinkedList<>();
-    private Deque<DamageModifier> damageMods = new LinkedList<>();
+    private PriorityQueue<Pair<DodgeModifier, Integer>> dodgeModifierQueue = new PriorityQueue<>((p1,p2) -> p1.getSecond() - p2.getSecond());
+    private PriorityQueue<Pair<AccuracyModifier, Integer>> accuracyModifierQueue = new PriorityQueue<>((p1,p2) -> p1.getSecond() - p2.getSecond());
+    private PriorityQueue<Pair<DamageModifier, Integer>> damageModifierQueue = new PriorityQueue<>((p1,p2) -> p1.getSecond() - p2.getSecond());
+
+    public static final int BASE_PRIORITY = 0;
+    public static final int CRIT_PRIORITY = 10;
 
     public void attachPostAttackHook(PostAttackHook hook){
         attachPostAttackHook(hook, PostAttackHook.generic());
     }
-
     public void attachPostAttackHook(PostAttackHook hook, PostAttackHook.Type type){
         postAttackHookMap.put(hook, type);
     }
 
-    public void appendDodgeModifier(DodgeModifier mod){
-        dodgeMods.addFirst(mod);
+    public void attachDodgeModifier(DodgeModifier mod, int priority){
+        dodgeModifierQueue.add(new Pair<DodgeModifier, Integer>(mod, priority));
     }
-    public void prependDodgeModifier(DodgeModifier mod){
-        dodgeMods.addLast(mod);
+    public void attachAccuracyModifier(AccuracyModifier mod, int priority){
+        accuracyModifierQueue.add(new Pair<AccuracyModifier, Integer>(mod, priority));
     }
-    public void appendAccuracyModifier(AccuracyModifier mod){
-        accuracyMods.addFirst(mod);
-    }
-    public void prependAccuracyModifier(AccuracyModifier mod){
-        accuracyMods.addLast(mod);
-    }
-    public void appendDamageModifier(DamageModifier mod){
-        damageMods.addFirst(mod);
-    }
-    public void prependDamageModifier(DamageModifier mod){
-        damageMods.addLast(mod);
+    public void attachDamageModifier(DamageModifier mod, int priority){
+        damageModifierQueue.add(new Pair<DamageModifier, Integer>(mod, priority));
     }
 
     public Entity getDefender() {
@@ -101,13 +90,11 @@ public class Attack {
 
         getAccuracy(attacker, attackerWeapon);
         
-        damage = attackerWeapon.generateDamage();
+        attachDamageModifier((dmg,type) -> attackerWeapon.generateDamage(), BASE_PRIORITY);
 
         damageType = attackerWeapon.getDamageType();
 
-        prependDamageModifier((dmg,type) -> dmg + Attribute.getAttribute(Attribute.STRENGTH, attacker));
-
-        appendDamageModifier((dmg,type) -> crit ? dmg * 2 : dmg);
+        attachDamageModifier((dmg,type) -> crit ? dmg * 2 : dmg, CRIT_PRIORITY);
     }
 
     public AttackResult execute(){
@@ -116,14 +103,17 @@ public class Attack {
         
         getAttackModifiers(attacker, defender, weapon).forEach(am -> am.modifyAttack(this));
 
-        for (AccuracyModifier accuracyModifier : accuracyMods)
-            modifiedRoll = accuracyModifier.modifyAccuracy(modifiedRoll);
+        while (!accuracyModifierQueue.isEmpty()) {
+            modifiedRoll = accuracyModifierQueue.poll().getFirst().modifyAccuracy(modifiedRoll);
+        }
 
-        for (DodgeModifier dodgeModifier : dodgeMods)
-            dodge = dodgeModifier.modifyDodge(dodge);
+        while (!dodgeModifierQueue.isEmpty()) {
+            dodge = dodgeModifierQueue.poll().getFirst().modifyDodge(dodge);
+        }
 
-        for (DamageModifier damageModifier : damageMods)
-            damage = damageModifier.calculateDamage(damage, damageType);
+        while (!damageModifierQueue.isEmpty()) {
+            damage = damageModifierQueue.poll().getFirst().calculateDamage(damage, damageType);
+        }
 
         hit = modifiedRoll >= dodge;
 
@@ -154,8 +144,6 @@ public class Attack {
         }
 
         AttackResult result = new AttackResult(hit, crit, damage, damageDelt, damageType, attacker, defender, weapon);
-        for (PostAttackHook hook : postAttackHooks)
-            hook.apply(result);
 
         for (Entry<PostAttackHook, PostAttackHook.Type> entry : postAttackHookMap.entrySet()) {
             switch (entry.getValue().condition) {
@@ -219,7 +207,13 @@ public class Attack {
     }
 
     private void getDodge(Entity entity){
-        App.recursiveCheck(entity, getDodgeConditions(), (obj) -> obj instanceof DodgeModifier md ? Optional.of(md) : Optional.empty()).forEach(this::appendDodgeModifier);
+        App.recursiveCheck(
+            entity,
+            getDodgeConditions(),
+            (obj) -> obj instanceof DodgeModifier md ? Optional.of(md) : Optional.empty()
+        ).forEach(
+            (d) -> attachDodgeModifier(d, BASE_PRIORITY)
+        );
     }
 
     private static CheckConditions getDodgeConditions(){
@@ -228,7 +222,20 @@ public class Attack {
     }
 
     private void getAccuracy(Entity entity, Weapon activeWeapon){
-        App.recursiveCheck(entity, getAccuracyConditions(), (obj) -> obj instanceof AccuracyModifier ac ? Optional.of(ac) : Optional.empty()).forEach(this::appendAccuracyModifier);
+        App.recursiveCheck(
+            entity,
+            getAccuracyConditions(),
+            (obj) -> obj instanceof AccuracyModifier ac ? Optional.of(ac) : Optional.empty()
+        ).forEach(
+            (a) -> attachAccuracyModifier(a, BASE_PRIORITY)
+        );
+        App.recursiveCheck(
+            activeWeapon,
+            getAccuracyConditions(),
+            (obj) -> obj instanceof AccuracyModifier ac ? Optional.of(ac) : Optional.empty()
+        ).forEach(
+            (a) -> attachAccuracyModifier(a, BASE_PRIORITY)
+        );
     }
 
     private static CheckConditions getAccuracyConditions(){
