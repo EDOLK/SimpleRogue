@@ -1,11 +1,16 @@
 package game.gameobjects.entities;
 
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.hexworks.zircon.api.color.TileColor;
 
 import game.PathConditions;
 import game.gamelogic.AttributeMap;
 import game.gamelogic.HasAttributes;
+import game.gamelogic.IsDeterrent;
+import game.gamelogic.IsForbidden;
 import game.gamelogic.behavior.AnimalWandering;
 import game.gamelogic.behavior.Behavior;
 import game.gamelogic.behavior.HasBehavior;
@@ -50,11 +55,33 @@ public abstract class Animal extends Entity implements HasBehavior, HasAttribute
     }
 
     public PathConditions getConditionsToSpace(){
-        return new PathConditions().addDeterrentConditions(
-            (space) -> {
-                return !space.getTerrains().isEmpty() ? 10d : 0d;
-            }
-        );
+        return new PathConditions()
+            .addDeterrentConditions(
+                (space) -> {
+                    double det = 0.0d;
+                    List<IsDeterrent> deterrents = space.getTerrains().stream()
+                        .filter((terrain) -> terrain instanceof IsDeterrent)
+                        .map(terrain -> (IsDeterrent)terrain)
+                        .collect(Collectors.toList());
+                    for (IsDeterrent isDeterrent : deterrents) {
+                        det += isDeterrent.getDeterrent(this);
+                    }
+                    return det;
+                }
+            )
+            .addForbiddenConditions(
+                (space) -> {
+                    boolean forb = false;
+                    List<IsForbidden> forbiddens = space.getTerrains().stream()
+                        .filter(terrain -> terrain instanceof IsForbidden)
+                        .map(terrain -> (IsForbidden)terrain)
+                        .collect(Collectors.toList());
+                    for (IsForbidden isForbidden : forbiddens) {
+                        forb = forb | isForbidden.getForbidden(this);
+                    }
+                    return forb;
+                }
+            );
     }
 
     public PathConditions getConditionsToEntity(){

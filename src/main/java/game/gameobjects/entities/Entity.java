@@ -199,8 +199,18 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
         currentSpace = newSpace;
     }
 
-    protected boolean isVulnerable(Status status){
+    protected boolean baseVulnerable(Status status){
         return true;
+    }
+
+    public boolean isVulnerable(Status status){
+        boolean vuln = baseVulnerable(status);
+        for (Status stat : statuses) {
+            if (stat instanceof HasStatusVulns sv && sv.isVulnerable(status)) {
+                return true;
+            }
+        }
+        return vuln;
     }
 
     public List<Status> getStatuses() {
@@ -209,19 +219,14 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
     
     public boolean addStatus(Status status){
 
-        if (status == null)
+        if (status == null || !isVulnerable(status))
             return false;
-
-        boolean vulnerable = isVulnerable(status);
 
         List<Status> statusesToCheck = List.copyOf(statuses);
 
         boolean filteredOut = false; boolean filteredIn = false;
 
         for (Status st : statusesToCheck) {
-
-            if (!vulnerable && st instanceof HasStatusVulns v && v.isVulnerable(status))
-                vulnerable = true;
 
             if (st instanceof FiltersOut sOut && sOut.filterOut(status))
                 filteredOut = true;
@@ -231,7 +236,7 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
 
         }
 
-        if (!vulnerable || filteredOut || filteredIn)
+        if (filteredOut || filteredIn)
             return false;
 
         if (statuses.add(status)){
@@ -394,8 +399,7 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
             return dealDamage(damage, damageType);
         }
 
-        damage = doResistances(damage, damageType);
-        damage = doVulnerabilities(damage, damageType);
+        damage = doResistancesAndVulns(damage, damageType);
 
         if (attacker instanceof PlayerEntity){
             Display.log("You attack the " + getName() + " for " + damage + " " + damageType + " damage.");
@@ -416,8 +420,7 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
 
     public int dealDamage(int damage, DamageType damageType){
 
-        damage = doResistances(damage, damageType);
-        damage = doVulnerabilities(damage, damageType);
+        damage = doResistancesAndVulns(damage, damageType);
 
         logDamage(damage, damageType);
 
@@ -457,15 +460,16 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
             }
         }
     }
+
+    public int doResistancesAndVulns(int damage, DamageType damageType) {
+        damage = doResistances(damage, damageType);
+        damage = doVulnerabilities(damage, damageType);
+        return damage;
+    }
     
     public int doResistances(int damage, DamageType damageType){
 
-        for (HasResistances hasResistances : App.recursiveCheck(this, getConditionsForResAndVulns(), (obj) -> {
-            if (obj instanceof HasResistances hResistances) {
-                return Optional.of(hResistances);
-            }
-            return Optional.empty();
-        })) {
+        for (HasResistances hasResistances : getHasResistances() ) {
             damage = hasResistances.applyResistances(damage, damageType);
         }
 
@@ -473,19 +477,32 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
 
     }
 
-    public int doVulnerabilities(int damage, DamageType damageType){
-
-        for (HasVulnerabilities hr : App.recursiveCheck(this, getConditionsForResAndVulns(), (obj) -> {
-            if (obj instanceof HasVulnerabilities has) {
-                return Optional.of(has);
+    public List<HasResistances> getHasResistances(){
+        return App.recursiveCheck(this, getConditionsForResAndVulns(), (obj) -> {
+            if (obj instanceof HasResistances hResistances) {
+                return Optional.of(hResistances);
             }
             return Optional.empty();
-        })) {
+        });
+    }
+
+    public int doVulnerabilities(int damage, DamageType damageType){
+
+        for (HasVulnerabilities hr : getHasVulnerabilities() ) {
             damage = hr.applyVulnerabilities(damage, damageType);
         }
 
         return damage;
 
+    }
+
+    public List<HasVulnerabilities> getHasVulnerabilities(){
+        return App.recursiveCheck(this, getConditionsForResAndVulns(), (obj) -> {
+            if (obj instanceof HasVulnerabilities has) {
+                return Optional.of(has);
+            }
+            return Optional.empty();
+        });
     }
 
     private CheckConditions getConditionsForResAndVulns(){

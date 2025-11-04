@@ -5,10 +5,12 @@ import static game.App.randomNumber;
 import org.hexworks.zircon.api.color.TileColor;
 
 import game.gamelogic.Flammable;
+import game.gamelogic.IsDeterrent;
 import game.gameobjects.DamageType;
+import game.gameobjects.entities.Entity;
 import game.gameobjects.terrains.liquids.Liquid;
 
-public class Miasma extends Gas implements Flammable{
+public class Miasma extends Gas implements Flammable, IsDeterrent{
 
     public Miasma(int initialDensity){
         super(initialDensity);
@@ -53,6 +55,11 @@ public class Miasma extends Gas implements Flammable{
     @Override
     public boolean condenses() {
         return false;
+    }
+
+    @Override
+    public double getDeterrent(Entity entity) {
+        return entity.doResistancesAndVulns(100, DamageType.SUFFICATION)/10d;
     }
     
 }

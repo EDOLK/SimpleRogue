@@ -11,14 +11,16 @@ import org.hexworks.zircon.api.modifier.Modifier;
 
 import game.gamelogic.Examinable;
 import game.gamelogic.Flammable;
+import game.gamelogic.IsDeterrent;
 import game.gamelogic.LightSource;
 import game.gamelogic.SelfAware;
 import game.gamelogic.behavior.Behavable;
 import game.gameobjects.Space;
+import game.gameobjects.entities.Entity;
 import game.gameobjects.items.Item;
 import game.gameobjects.statuses.Burning;
 
-public class Fire extends Terrain implements Behavable, SelfAware, Examinable, LightSource{
+public class Fire extends Terrain implements Behavable, SelfAware, Examinable, LightSource, IsDeterrent{
     
     protected static final int MAX_FUEL = 20;
 
@@ -192,6 +194,11 @@ public class Fire extends Terrain implements Behavable, SelfAware, Examinable, L
     @Override
     public int getLightSourceIntensity() {
         return (int)lerp(1, 5, MAX_FUEL, 20, fuel);
+    }
+
+    @Override
+    public double getDeterrent(Entity entity) {
+        return entity.isVulnerable(new Burning()) ? 10d : 0d;
     }
 
 }

@@ -2,13 +2,15 @@ package game.gameobjects.terrains.liquids;
 
 import org.hexworks.zircon.api.color.TileColor;
 
+import game.gamelogic.IsDeterrent;
+import game.gameobjects.entities.Entity;
 import game.gameobjects.statuses.Slimed;
 import game.gameobjects.statuses.Status;
 import game.gameobjects.terrains.SpreadableTerrain;
 import game.gameobjects.terrains.Terrain;
 import game.gameobjects.terrains.gasses.Gas;
 
-public class SlimeLiquid extends Liquid {
+public class SlimeLiquid extends Liquid implements IsDeterrent {
 
     public SlimeLiquid(int amount) {
         super(amount);
@@ -16,7 +18,6 @@ public class SlimeLiquid extends Liquid {
         setFgColor(TileColor.transparent());
         setBgColor(TileColor.create(50, 255, 50, 255));
         setName("Slime");
-        // setTileName("Water");
         setSpreadFactor(0.20f);
         setDisapparationRate(10);
     }
@@ -54,6 +55,11 @@ public class SlimeLiquid extends Liquid {
     @Override
     public Status getWetStatus(int amount) {
         return new Slimed(this);
+    }
+
+    @Override
+    public double getDeterrent(Entity entity) {
+        return entity.isVulnerable(new Slimed(this)) ? 10d : 0d;
     }
 
 }

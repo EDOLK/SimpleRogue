@@ -70,7 +70,7 @@ public class Statue extends Entity implements HasResistances {
     }
 
     @Override
-    protected boolean isVulnerable(Status status) {
+    protected boolean baseVulnerable(Status status) {
         return status instanceof Mossy;
     }
 
