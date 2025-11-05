@@ -1,17 +1,20 @@
 package game.gameobjects.statuses;
 
+import org.hexworks.zircon.api.builder.component.ParagraphBuilder;
 import org.hexworks.zircon.api.color.TileColor;
+import org.hexworks.zircon.api.graphics.StyleSet;
 import org.hexworks.zircon.api.uievent.KeyboardEvent;
 import org.hexworks.zircon.api.uievent.UIEventPhase;
 import org.hexworks.zircon.api.uievent.UIEventResponse;
 
+import game.Dungeon;
+import game.display.Display;
 import game.display.KeyMap.Action;
 import game.gamelogic.OverridesBehavable;
 import game.gamelogic.OverridesPlayerInput;
 import game.gamelogic.behavior.Behavable;
+import game.gameobjects.entities.PlayerEntity;
 import game.gameobjects.terrains.gasses.Steam;
-import game.Dungeon;
-import game.display.Display;
 
 public class Frozen extends Status implements FiltersIn, FiltersOut, Behavable, OverridesBehavable, OverridesPlayerInput {
 
@@ -99,4 +102,19 @@ public class Frozen extends Status implements FiltersIn, FiltersOut, Behavable, 
         }
     }
 
+    @Override
+    public void onStatusAdd() {
+        if (this.owner instanceof PlayerEntity) {
+            StyleSet style = Display.getLogStyleSet();
+            style = style
+                .withForegroundColor(style.getForegroundColor().withBlue(255));
+            Display.log(
+                ParagraphBuilder.newBuilder()
+                    .withText("You are frozen!")
+                    .withComponentStyleSet(
+                        Display.composeComponentStyleSet(style)
+                    )
+            );
+        }
+    }
 }

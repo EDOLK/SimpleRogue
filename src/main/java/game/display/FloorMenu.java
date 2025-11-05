@@ -4,17 +4,23 @@ import static game.App.lerp;
 import static game.gameobjects.Space.moveEntity;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
+import org.hexworks.zircon.api.ColorThemes;
 import org.hexworks.zircon.api.ComponentDecorations;
+import org.hexworks.zircon.api.Modifiers;
 import org.hexworks.zircon.api.builder.component.HeaderBuilder;
 import org.hexworks.zircon.api.builder.component.LabelBuilder;
 import org.hexworks.zircon.api.builder.component.LogAreaBuilder;
 import org.hexworks.zircon.api.builder.component.PanelBuilder;
+import org.hexworks.zircon.api.builder.component.ParagraphBuilder;
 import org.hexworks.zircon.api.builder.component.ProgressBarBuilder;
 import org.hexworks.zircon.api.builder.graphics.TileGraphicsBuilder;
 import org.hexworks.zircon.api.color.TileColor;
+import org.hexworks.zircon.api.component.ColorTheme;
+import org.hexworks.zircon.api.component.ComponentStyleSet;
 import org.hexworks.zircon.api.component.Header;
 import org.hexworks.zircon.api.component.Label;
 import org.hexworks.zircon.api.component.LogArea;
@@ -25,6 +31,9 @@ import org.hexworks.zircon.api.data.Tile;
 import org.hexworks.zircon.api.graphics.BoxType;
 import org.hexworks.zircon.api.graphics.Layer;
 import org.hexworks.zircon.api.graphics.LayerHandle;
+import org.hexworks.zircon.api.graphics.StyleSet;
+import org.hexworks.zircon.api.modifier.Border;
+import org.hexworks.zircon.api.modifier.BorderType;
 import org.hexworks.zircon.api.uievent.KeyboardEvent;
 import org.hexworks.zircon.api.uievent.UIEventPhase;
 import org.hexworks.zircon.api.uievent.UIEventResponse;
@@ -104,6 +113,10 @@ public final class FloorMenu extends Menu{
         screen.addComponent(examineName);
         
         update();
+    }
+
+    public StyleSet getLogStyleSet(){
+        return logMessageArea.getCurrentStyle();
     }
 
     public void update(){
@@ -246,12 +259,22 @@ public final class FloorMenu extends Menu{
     }
     
     public void addToLog(String message){
-        logMessageArea.addListItem(message);
+        logMessageArea.addParagraph(message, false, 0l);
     }
     
     public void addToLog(String message, Space space){
         if (currentFloor.getPlayer().isWithinVision(space)){
             addToLog(message);
+        }
+    }
+
+    public void addToLog(ParagraphBuilder paragraph){
+        logMessageArea.addParagraph(paragraph, false);
+    }
+
+    public void addToLog(ParagraphBuilder paragraph, Space space){
+        if (currentFloor.getPlayer().isWithinVision(space)){
+            addToLog(paragraph);
         }
     }
 

@@ -4,14 +4,22 @@ import static game.App.randomNumber;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import org.hexworks.zircon.api.Modifiers;
+import org.hexworks.zircon.api.builder.component.ParagraphBuilder;
 import org.hexworks.zircon.api.color.TileColor;
+import org.hexworks.zircon.api.component.ComponentStyleSet;
+import org.hexworks.zircon.api.component.data.ComponentState;
+import org.hexworks.zircon.api.graphics.StyleSet;
 import org.hexworks.zircon.api.modifier.Modifier;
 
+import game.display.Display;
 import game.gamelogic.LightSource;
 import game.gamelogic.behavior.Behavable;
 import game.gameobjects.DamageType;
 import game.gameobjects.Space;
+import game.gameobjects.entities.PlayerEntity;
 import game.gameobjects.terrains.Fire;
 
 public class Burning extends Status implements Behavable, LightSource, FiltersIn{
@@ -90,6 +98,23 @@ public class Burning extends Status implements Behavable, LightSource, FiltersIn
     @Override
     public boolean filterIn(Status status) {
         return status instanceof Burning ? true : false;
+    }
+
+    @Override
+    public void onStatusAdd() {
+        if (this.owner instanceof PlayerEntity) {
+            StyleSet style = Display.getLogStyleSet();
+            style = style
+                .withForegroundColor(style.getForegroundColor().withRed(255).withGreen(105).withBlue(41))
+                .withAddedModifiers(Modifiers.glow());
+            Display.log(
+                ParagraphBuilder.newBuilder()
+                    .withText("You are burning!")
+                    .withComponentStyleSet(
+                        Display.composeComponentStyleSet(style)
+                    )
+            );
+        }
     }
     
 }

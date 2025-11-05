@@ -7,7 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.hexworks.zircon.api.Modifiers;
+import org.hexworks.zircon.api.builder.component.ParagraphBuilder;
 import org.hexworks.zircon.api.color.TileColor;
+import org.hexworks.zircon.api.graphics.StyleSet;
 
 import game.App;
 import game.CheckConditions;
@@ -237,6 +240,7 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
 
         if (statuses.add(status)){
             status.setOwner(this);
+            status.onStatusAdd();
             return true;
         }
 
@@ -419,14 +423,7 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
         damage = doResistances(damage, damageType);
         damage = doVulnerabilities(damage, damageType);
 
-        if (damage > 0) {
-            if (this instanceof PlayerEntity){
-                Display.log("You take " + damage + " " + damageType + " damage.");
-            } else {
-                Display.log(getName() + " takes " + damage + " " + damageType + " damage.", getSpace());
-            }
-        }
-
+        logDamage(damage, damageType);
 
         HP -= damage;
 
@@ -435,6 +432,45 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
             kill(null);
         }
         return damage;
+    }
+
+    private void logDamage(int damage, DamageType damageType) {
+        if (damage > 0) {
+            if (this instanceof PlayerEntity){
+                StyleSet style = Display.getLogStyleSet();
+                switch (damageType) {
+                    case BLEED:
+                        style = style.withForegroundColor(style.getForegroundColor().withRed(255));
+                        break;
+                    case FIRE:
+                        style = style
+                            .withForegroundColor(style.getForegroundColor().withRed(255).withGreen(149).withBlue(101));
+                        break;
+                    case FROST:
+                        style = style
+                            .withForegroundColor(style.getForegroundColor().withBlue(255));
+                        break;
+                    case POISON:
+                        style = style
+                            .withForegroundColor(style.getForegroundColor().withGreen(255));
+                        break;
+                    case SUFFICATION:
+                        style = style
+                            .withForegroundColor(style.getForegroundColor().withGreen(100));
+                        break;
+                    default:
+                        break;
+
+                }
+                Display.log(
+                    ParagraphBuilder.newBuilder()
+                        .withText("You take " + damage + " " + damageType + " damage.")
+                        .withComponentStyleSet(Display.composeComponentStyleSet(style))
+                );
+            } else {
+                Display.log(getName() + " takes " + damage + " " + damageType + " damage.", getSpace());
+            }
+        }
     }
     
     public int doResistances(int damage, DamageType damageType){
