@@ -12,6 +12,7 @@ import org.hexworks.zircon.api.builder.component.HeaderBuilder;
 import org.hexworks.zircon.api.builder.component.LabelBuilder;
 import org.hexworks.zircon.api.builder.component.LogAreaBuilder;
 import org.hexworks.zircon.api.builder.component.PanelBuilder;
+import org.hexworks.zircon.api.builder.component.ParagraphBuilder;
 import org.hexworks.zircon.api.builder.component.ProgressBarBuilder;
 import org.hexworks.zircon.api.builder.graphics.TileGraphicsBuilder;
 import org.hexworks.zircon.api.color.TileColor;
@@ -25,11 +26,10 @@ import org.hexworks.zircon.api.data.Tile;
 import org.hexworks.zircon.api.graphics.BoxType;
 import org.hexworks.zircon.api.graphics.Layer;
 import org.hexworks.zircon.api.graphics.LayerHandle;
+import org.hexworks.zircon.api.graphics.StyleSet;
 import org.hexworks.zircon.api.uievent.KeyboardEvent;
 import org.hexworks.zircon.api.uievent.UIEventPhase;
 import org.hexworks.zircon.api.uievent.UIEventResponse;
-import org.jetbrains.annotations.NotNull;
-
 import game.App;
 import game.CheckConditions;
 import game.Dungeon;
@@ -45,7 +45,6 @@ import game.gamelogic.floorinteraction.Selector;
 import game.gamelogic.floorinteraction.SimpleSelector;
 import game.gameobjects.DisplayableTile;
 import game.gameobjects.Floor;
-import game.gameobjects.ItemStack;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Door;
 import game.gameobjects.entities.Entity;
@@ -104,6 +103,10 @@ public final class FloorMenu extends Menu{
         screen.addComponent(examineName);
         
         update();
+    }
+
+    public StyleSet getLogStyleSet(){
+        return logMessageArea.getCurrentStyle();
     }
 
     public void update(){
@@ -246,12 +249,22 @@ public final class FloorMenu extends Menu{
     }
     
     public void addToLog(String message){
-        logMessageArea.addListItem(message);
+        logMessageArea.addParagraph(message, false, 0l);
     }
     
     public void addToLog(String message, Space space){
         if (currentFloor.getPlayer().isWithinVision(space)){
             addToLog(message);
+        }
+    }
+
+    public void addToLog(ParagraphBuilder paragraph){
+        logMessageArea.addParagraph(paragraph, false);
+    }
+
+    public void addToLog(ParagraphBuilder paragraph, Space space){
+        if (currentFloor.getPlayer().isWithinVision(space)){
+            addToLog(paragraph);
         }
     }
 

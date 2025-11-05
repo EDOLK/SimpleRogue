@@ -15,13 +15,16 @@ import org.hexworks.zircon.api.GraphicalTilesetResources;
 import org.hexworks.zircon.api.SwingApplications;
 import org.hexworks.zircon.api.application.AppConfig;
 import org.hexworks.zircon.api.builder.component.ButtonBuilder;
+import org.hexworks.zircon.api.builder.component.ParagraphBuilder;
 import org.hexworks.zircon.api.builder.component.VBoxBuilder;
 import org.hexworks.zircon.api.component.Button;
 import org.hexworks.zircon.api.component.ColorTheme;
 import org.hexworks.zircon.api.component.Component;
+import org.hexworks.zircon.api.component.ComponentStyleSet;
 import org.hexworks.zircon.api.component.Container;
 import org.hexworks.zircon.api.component.VBox;
 import org.hexworks.zircon.api.graphics.BoxType;
+import org.hexworks.zircon.api.graphics.StyleSet;
 import org.hexworks.zircon.api.grid.TileGrid;
 import org.hexworks.zircon.api.resource.TilesetResource;
 import org.hexworks.zircon.api.screen.Screen;
@@ -84,6 +87,10 @@ public class Display {
         return rootMenu;
     }
 
+    public static StyleSet getLogStyleSet(){
+        return getRootMenu().getLogStyleSet();
+    }
+
     public static Menu getCurrentMenu(){
         return currentMenu;
     }
@@ -125,6 +132,14 @@ public class Display {
     }
 
     public static void log(String message, Space space){
+        rootMenu.addToLog(message, space);
+    }
+
+    public static void log(ParagraphBuilder message){
+        rootMenu.addToLog(message);
+    }
+
+    public static void log(ParagraphBuilder message, Space space){
         rootMenu.addToLog(message, space);
     }
 
@@ -298,6 +313,12 @@ public class Display {
 
     public static enum Mode{
         ASCII, GRAPHICAL
+    }
+
+    public static ComponentStyleSet composeComponentStyleSet(StyleSet defaultStyleSet){
+        return ComponentStyleSet.newBuilder()
+            .withDefaultStyle(defaultStyleSet)
+            .build();
     }
 
 }
