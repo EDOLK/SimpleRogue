@@ -460,7 +460,6 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
                         break;
                     default:
                         break;
-
                 }
                 Display.log(
                     ParagraphBuilder.newBuilder()
