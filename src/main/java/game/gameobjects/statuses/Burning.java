@@ -4,13 +4,9 @@ import static game.App.randomNumber;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
 import org.hexworks.zircon.api.Modifiers;
 import org.hexworks.zircon.api.builder.component.ParagraphBuilder;
 import org.hexworks.zircon.api.color.TileColor;
-import org.hexworks.zircon.api.component.ComponentStyleSet;
-import org.hexworks.zircon.api.component.data.ComponentState;
 import org.hexworks.zircon.api.graphics.StyleSet;
 import org.hexworks.zircon.api.modifier.Modifier;
 

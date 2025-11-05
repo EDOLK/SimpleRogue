@@ -5,7 +5,6 @@ import static game.App.randomNumber;
 import org.hexworks.zircon.api.data.Tile;
 
 import game.floorgeneration.Shopper;
-import game.gamelogic.Armed;
 import game.gamelogic.Attribute;
 import game.gamelogic.HasDrops;
 import game.gamelogic.combat.Attack;
