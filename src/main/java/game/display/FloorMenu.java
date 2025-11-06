@@ -6,6 +6,8 @@ import static game.gameobjects.Space.moveEntity;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import org.hexworks.zircon.api.ComponentDecorations;
 import org.hexworks.zircon.api.builder.component.HeaderBuilder;
@@ -266,6 +268,21 @@ public final class FloorMenu extends Menu{
         if (currentFloor.getPlayer().isWithinVision(space)){
             addToLog(paragraph);
         }
+    }
+
+    public void addToLog(String message, Function<StyleSet, StyleSet> styleTransformer, Space space){
+        if (currentFloor.getPlayer().isWithinVision(space)){
+            addToLog(message, styleTransformer);
+        }
+    }
+
+    public void addToLog(String message, Function<StyleSet, StyleSet> styleTransformer){
+        StyleSet style = logMessageArea.getCurrentStyle();
+        style = styleTransformer.apply(style);
+        ParagraphBuilder paragraph = ParagraphBuilder.newBuilder()
+            .withText(message)
+            .withComponentStyleSet(Display.composeComponentStyleSet(style));
+        addToLog(paragraph);
     }
 
     public void addHeaderToLog(String message){

@@ -436,34 +436,24 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
     private void logDamage(int damage, DamageType damageType) {
         if (damage > 0) {
             if (this instanceof PlayerEntity){
-                StyleSet style = Display.getLogStyleSet();
-                switch (damageType) {
-                    case BLEED:
-                        style = style.withForegroundColor(style.getForegroundColor().withRed(255));
-                        break;
-                    case FIRE:
-                        style = style
-                            .withForegroundColor(style.getForegroundColor().withRed(255).withGreen(149).withBlue(101));
-                        break;
-                    case FROST:
-                        style = style
-                            .withForegroundColor(style.getForegroundColor().withBlue(255));
-                        break;
-                    case POISON:
-                        style = style
-                            .withForegroundColor(style.getForegroundColor().withGreen(255));
-                        break;
-                    case SUFFICATION:
-                        style = style
-                            .withForegroundColor(style.getForegroundColor().withGreen(100));
-                        break;
-                    default:
-                        break;
-                }
                 Display.log(
-                    ParagraphBuilder.newBuilder()
-                        .withText("You take " + damage + " " + damageType + " damage.")
-                        .withComponentStyleSet(Display.composeComponentStyleSet(style))
+                    "You take " + damage + " " + damageType + " damage.", 
+                    style -> {
+                        switch (damageType) {
+                            case BLEED:
+                                return style.withForegroundColor(style.getForegroundColor().withRed(255));
+                            case FIRE:
+                                return style.withForegroundColor(style.getForegroundColor().withRed(255).withGreen(149).withBlue(101));
+                            case FROST:
+                                return style.withForegroundColor(style.getForegroundColor().withBlue(255));
+                            case POISON:
+                                return style.withForegroundColor(style.getForegroundColor().withGreen(255));
+                            case SUFFICATION:
+                                return style.withForegroundColor(style.getForegroundColor().withGreen(100));
+                            default:
+                                return style;
+                        }
+                    }
                 );
             } else {
                 Display.log(getName() + " takes " + damage + " " + damageType + " damage.", getSpace());

@@ -69,16 +69,9 @@ public class Bleeding extends Status implements Behavable, FiltersOut{
     @Override
     public void onStatusAdd() {
         if (this.owner instanceof PlayerEntity) {
-            StyleSet style = Display.getLogStyleSet();
-            style = style
-                .withForegroundColor(style.getForegroundColor().withRed(218).withBlue(42).withGreen(42));
-            Display.log(
-                ParagraphBuilder.newBuilder()
-                    .withText("You are bleeding!")
-                    .withComponentStyleSet(
-                        Display.composeComponentStyleSet(style)
-                    )
-            );
+            Display.log("You are bleeding!", (style) -> {
+                return style.withForegroundColor(style.getForegroundColor().withRed(218).withBlue(42).withGreen(42));
+            });
         }
     }
 }

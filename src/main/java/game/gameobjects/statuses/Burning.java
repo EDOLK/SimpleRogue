@@ -99,17 +99,11 @@ public class Burning extends Status implements Behavable, LightSource, FiltersIn
     @Override
     public void onStatusAdd() {
         if (this.owner instanceof PlayerEntity) {
-            StyleSet style = Display.getLogStyleSet();
-            style = style
-                .withForegroundColor(style.getForegroundColor().withRed(255).withGreen(105).withBlue(41))
-                .withAddedModifiers(Modifiers.glow());
-            Display.log(
-                ParagraphBuilder.newBuilder()
-                    .withText("You are burning!")
-                    .withComponentStyleSet(
-                        Display.composeComponentStyleSet(style)
-                    )
-            );
+            Display.log("You are burning!", (style) -> {
+                return style
+                    .withForegroundColor(style.getForegroundColor().withRed(255).withGreen(105).withBlue(41))
+                    .withAddedModifiers(Modifiers.glow());
+            });
         }
     }
     
