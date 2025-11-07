@@ -6,9 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.hexworks.zircon.api.Modifiers;
-import org.hexworks.zircon.api.builder.component.ParagraphBuilder;
 import org.hexworks.zircon.api.color.TileColor;
-import org.hexworks.zircon.api.graphics.StyleSet;
 import org.hexworks.zircon.api.modifier.Modifier;
 
 import game.display.Display;

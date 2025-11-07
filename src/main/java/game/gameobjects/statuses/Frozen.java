@@ -1,8 +1,6 @@
 package game.gameobjects.statuses;
 
-import org.hexworks.zircon.api.builder.component.ParagraphBuilder;
 import org.hexworks.zircon.api.color.TileColor;
-import org.hexworks.zircon.api.graphics.StyleSet;
 import org.hexworks.zircon.api.uievent.KeyboardEvent;
 import org.hexworks.zircon.api.uievent.UIEventPhase;
 import org.hexworks.zircon.api.uievent.UIEventResponse;

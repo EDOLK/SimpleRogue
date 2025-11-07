@@ -7,10 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.hexworks.zircon.api.builder.component.ParagraphBuilder;
 import org.hexworks.zircon.api.color.TileColor;
-import org.hexworks.zircon.api.graphics.StyleSet;
-
 import game.App;
 import game.CheckConditions;
 import game.Line;
