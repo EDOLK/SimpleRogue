@@ -431,6 +431,14 @@ public class Spider extends Animal implements HasDodge, HasInventory, HasDrops, 
             }
             return false;
         }
+
+        @Override
+        public void onStatusAdd() {
+            if (this.owner instanceof PlayerEntity) {
+                Display.logHeader("You are webbed!");
+            }
+        }
+
     }
 
     @Override

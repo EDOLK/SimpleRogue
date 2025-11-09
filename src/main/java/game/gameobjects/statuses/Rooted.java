@@ -1,8 +1,6 @@
 package game.gameobjects.statuses;
 
-import org.hexworks.zircon.api.builder.component.ParagraphBuilder;
 import org.hexworks.zircon.api.color.TileColor;
-import org.hexworks.zircon.api.graphics.StyleSet;
 
 import game.display.Display;
 import game.gamelogic.HasStatusVulns;
@@ -69,16 +67,10 @@ public class Rooted extends Status implements OverridesMovement, Behavable, Filt
     @Override
     public void onStatusAdd() {
         if (this.owner instanceof PlayerEntity) {
-            StyleSet style = Display.getLogStyleSet();
-            style = style
-                .withForegroundColor(style.getForegroundColor().withRed(188).withGreen(104).withBlue(0));
-            Display.log(
-                ParagraphBuilder.newBuilder()
-                    .withText("You are rooted!")
-                    .withComponentStyleSet(
-                        Display.composeComponentStyleSet(style)
-                    )
-            );
+            Display.log("You are rooted!", (style) -> {
+                return style
+                    .withForegroundColor(style.getForegroundColor().withRed(188).withGreen(104).withBlue(0));
+            });
         }
     }
 }

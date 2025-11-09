@@ -143,6 +143,14 @@ public class Display {
         rootMenu.addToLog(message, space);
     }
 
+    public static void log(String message, Function<StyleSet, StyleSet> styleTransformer, Space space){
+        rootMenu.addToLog(message, styleTransformer, space);
+    }
+
+    public static void log(String message, Function<StyleSet, StyleSet> styleTransformer){
+        rootMenu.addToLog(message, styleTransformer);
+    }
+
     public static void logHeader(String message){
         rootMenu.addHeaderToLog(message);
     }

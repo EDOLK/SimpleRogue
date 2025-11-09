@@ -1,8 +1,6 @@
 package game.gameobjects.statuses;
 
-import org.hexworks.zircon.api.builder.component.ParagraphBuilder;
 import org.hexworks.zircon.api.color.TileColor;
-import org.hexworks.zircon.api.graphics.StyleSet;
 import org.hexworks.zircon.api.uievent.KeyboardEvent;
 import org.hexworks.zircon.api.uievent.UIEventPhase;
 import org.hexworks.zircon.api.uievent.UIEventResponse;
@@ -105,16 +103,10 @@ public class Frozen extends Status implements FiltersIn, FiltersOut, Behavable, 
     @Override
     public void onStatusAdd() {
         if (this.owner instanceof PlayerEntity) {
-            StyleSet style = Display.getLogStyleSet();
-            style = style
-                .withForegroundColor(style.getForegroundColor().withBlue(255));
-            Display.log(
-                ParagraphBuilder.newBuilder()
-                    .withText("You are frozen!")
-                    .withComponentStyleSet(
-                        Display.composeComponentStyleSet(style)
-                    )
-            );
+            Display.log("You are frozen!", (style) -> {
+                return style
+                    .withForegroundColor(style.getForegroundColor().withBlue(255));
+            });
         }
     }
 }
