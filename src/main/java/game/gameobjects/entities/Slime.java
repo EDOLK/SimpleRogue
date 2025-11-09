@@ -166,11 +166,11 @@ public class Slime extends Animal implements DropsXP, HasDodge, HasResistances, 
     }
 
     @Override
-    protected boolean isVulnerable(Status status) {
+    protected boolean baseVulnerable(Status status) {
         if (status instanceof Slimed) {
             return false;
         }
-        return super.isVulnerable(status);
+        return super.baseVulnerable(status);
     }
 
 }

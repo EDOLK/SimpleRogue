@@ -11,6 +11,7 @@ import org.hexworks.zircon.api.modifier.Modifier;
 
 import game.display.Display;
 import game.gamelogic.Examinable;
+import game.gamelogic.IsDeterrent;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.entities.PlayerEntity;
@@ -18,7 +19,7 @@ import game.gameobjects.statuses.Rooted;
 import game.gameobjects.terrains.liquids.Water;
 import kotlin.Pair;
 
-public class SpreadingMoss extends SpreadableTerrain implements Examinable{
+public class SpreadingMoss extends SpreadableTerrain implements Examinable, IsDeterrent{
 
     public SpreadingMoss(int amount) {
         super(amount);
@@ -108,6 +109,11 @@ public class SpreadingMoss extends SpreadableTerrain implements Examinable{
     @Override
     protected SpreadableTerrain createSelf(int amount) {
         return new SpreadingMoss(amount);
+    }
+
+    @Override
+    public double getDeterrent(Entity entity) {
+        return entity.isVulnerable(new Rooted()) ? 5d : 0d;
     }
 
 

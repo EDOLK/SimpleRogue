@@ -99,7 +99,7 @@ public class Door extends Entity implements Interactable, HasResistances{
     }
 
     @Override
-    protected boolean isVulnerable(Status status) {
+    protected boolean baseVulnerable(Status status) {
         return status instanceof Burning;
     }
     

@@ -2,11 +2,13 @@ package game.gameobjects.terrains.gasses;
 
 import org.hexworks.zircon.api.color.TileColor;
 
+import game.gamelogic.IsDeterrent;
 import game.gameobjects.Space;
+import game.gameobjects.entities.Entity;
 import game.gameobjects.statuses.Freezing;
 import game.gameobjects.terrains.liquids.Liquid;
 
-public class FreezingAir extends Gas{
+public class FreezingAir extends Gas implements IsDeterrent{
     
     private Space space;
 
@@ -52,6 +54,11 @@ public class FreezingAir extends Gas{
     @Override
     public boolean condenses() {
         return false;
+    }
+
+    @Override
+    public double getDeterrent(Entity entity) {
+        return entity.isVulnerable(new Freezing()) ? 10d : 0d;
     }
     
 }

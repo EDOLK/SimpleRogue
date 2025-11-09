@@ -48,11 +48,11 @@ public class EvaporatedSlime extends Animal implements HasResistances, HasDodge,
     }
 
     @Override
-    protected boolean isVulnerable(Status status) {
+    protected boolean baseVulnerable(Status status) {
         if (status instanceof Burning){
             return false;
         }
-        return super.isVulnerable(status);
+        return super.baseVulnerable(status);
     }
 
     @Override
