@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import game.App;
 import game.CheckConditions;
+import game.gameobjects.Space;
 import game.gameobjects.entities.Entity;
 
 public enum Skill {
@@ -43,6 +44,22 @@ public enum Skill {
             .withArmedWeapons(true)
             .withEnchantments(true)
             .withUnarmedWeapon(true);
+    }
+
+    public static Entity stealthCheck(Entity perceiver, Entity stealther){
+        int stealth = App.randomNumber(1, 20);
+        int perception = 10;
+        stealth += Skill.getSkill(Skill.STEALTH, stealther);
+        perception += Skill.getSkill(Skill.PERCEPTION, perceiver);
+        stealth += (int)((stealther.getSpace().getLight()-0.50f)*-15);
+        int distance = Space.getDistance(perceiver.getSpace(), stealther.getSpace());
+        if (distance <= 5) {
+            perception += Math.abs(distance-6);
+        }
+        if (perception >= stealth) {
+            return perceiver;
+        }
+        return stealther;
     }
 
 }

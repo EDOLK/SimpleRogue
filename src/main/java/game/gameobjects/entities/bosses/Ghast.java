@@ -13,7 +13,6 @@ import game.gamelogic.HasDodge;
 import game.gamelogic.HasInventory;
 import game.gamelogic.HasResistances;
 import game.gamelogic.combat.Attack;
-import game.gamelogic.combat.AttackModifier;
 import game.gamelogic.combat.PostAttackHook;
 import game.gamelogic.resistances.PercentageResistance;
 import game.gamelogic.resistances.Resistance;
@@ -23,7 +22,7 @@ import game.gameobjects.items.Item;
 import game.gameobjects.items.weapons.Weapon;
 import game.gameobjects.terrains.gasses.Miasma;
 
-public class Ghast extends Animal implements HasInventory, DropsXP, HasResistances, HasDodge, AttackModifier{
+public class Ghast extends Animal implements HasInventory, DropsXP, HasResistances, HasDodge{
 
     private List<Item> inventory = new ArrayList<>();
     private List<Resistance> resistances = new ArrayList<>();
@@ -84,6 +83,7 @@ public class Ghast extends Animal implements HasInventory, DropsXP, HasResistanc
         attack.attachPostAttackHook((ar) -> {
             ar.defender().getSpace().addTerrain(new Miasma(randomNumber(1, 5)));
         }, PostAttackHook.onHitted(this));
+        super.modifyAttack(attack);
     }
 
     @Override

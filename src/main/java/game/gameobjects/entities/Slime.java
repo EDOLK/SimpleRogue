@@ -19,7 +19,6 @@ import game.gamelogic.HasInventory;
 import game.gamelogic.HasResistances;
 import game.gamelogic.HasVulnerabilities;
 import game.gamelogic.combat.Attack;
-import game.gamelogic.combat.AttackModifier;
 import game.gamelogic.resistances.PercentageResistance;
 import game.gamelogic.resistances.Resistance;
 import game.gamelogic.vulnerabilities.PercentageVulnerability;
@@ -32,7 +31,7 @@ import game.gameobjects.statuses.Slimed;
 import game.gameobjects.statuses.Status;
 import game.gameobjects.terrains.liquids.SlimeLiquid;
 
-public class Slime extends Animal implements DropsXP, HasDodge, HasResistances, HasVulnerabilities, HasInventory, HasDrops, AttackModifier{
+public class Slime extends Animal implements DropsXP, HasDodge, HasResistances, HasVulnerabilities, HasInventory, HasDrops{
 
     private List<Item> inventory = new ArrayList<>();
     
@@ -152,6 +151,7 @@ public class Slime extends Animal implements DropsXP, HasDodge, HasResistances, 
                 }
             }
         });
+        super.modifyAttack(attack);
     }
 
 

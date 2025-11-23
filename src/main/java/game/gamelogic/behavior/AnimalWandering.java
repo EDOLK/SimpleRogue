@@ -7,7 +7,6 @@ import java.util.Optional;
 import game.App;
 import game.Dungeon;
 import game.Path;
-import game.gamelogic.Skill;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Animal;
 import game.gameobjects.entities.Entity;
@@ -72,12 +71,15 @@ public class AnimalWandering extends Behavior {
     }
 
     protected Optional<? extends Behavior> checkForHunt() {
+
         List<Entity> potentialTargets = new ArrayList<>();
+
         for (Entity entity : this.animal.getEntitiesInVision()) {
-            if (animal.isEnemy(entity) && checkForStealth(entity)) {
+            if (this.animal.getFromMemory(entity).isPresent() && this.animal.isEnemy(entity)) {
                 potentialTargets.add(entity);
             }
         }
+
         while (!potentialTargets.isEmpty()) {
             Entity random = App.getRandom(potentialTargets);
             Optional<? extends Behavior> hunting = getHuntingBehavior(random);
@@ -88,24 +90,6 @@ public class AnimalWandering extends Behavior {
             }
         }
         return Optional.empty();
-    }
-
-    private boolean checkForStealth(Entity entity) {
-        if (entity != null) {
-            int entityStealth = App.randomNumber(1,20);
-            int animalPerception = 10;
-            entityStealth += Skill.getSkill(Skill.STEALTH, entity);
-            animalPerception += Skill.getSkill(Skill.PERCEPTION, animal);
-            entityStealth += (int)((entity.getSpace().getLight()-0.50f)*-15);
-            int distance = Space.getDistance(animal.getSpace(), entity.getSpace());
-            if (distance <= 5) {
-                entityStealth -= Math.abs(distance-6);
-            }
-            if (animalPerception >= entityStealth) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private boolean generatePath(){
