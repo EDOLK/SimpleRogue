@@ -15,7 +15,6 @@ import game.gamelogic.HasInventory;
 import game.gamelogic.Interactable;
 import game.gamelogic.behavior.AnimalHunting;
 import game.gamelogic.combat.Attack;
-import game.gamelogic.combat.AttackModifier;
 import game.gameobjects.DamageType;
 import game.gameobjects.items.Item;
 import game.gameobjects.items.weapons.Weapon;
@@ -23,7 +22,7 @@ import game.gameobjects.statuses.PseudoStatus;
 import game.gameobjects.statuses.Sleeping;
 import game.gameobjects.statuses.Status;
 
-public class Mimic extends Animal implements Interactable, DropsXP, HasInventory, AttackModifier{
+public class Mimic extends Animal implements Interactable, DropsXP, HasInventory{
 
     private boolean activated;
     private int activeTimer;
@@ -149,6 +148,7 @@ public class Mimic extends Animal implements Interactable, DropsXP, HasInventory
     public void modifyAttack(Attack attack) {
         if (attack.getDefender() == this && !activated)
             activate(attack.getAttacker());
+        super.modifyAttack(attack);
     }
 
     @Override

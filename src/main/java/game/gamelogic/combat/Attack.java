@@ -1,17 +1,18 @@
 package game.gamelogic.combat;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.PriorityQueue;
 import java.util.function.Function;
-import java.util.Map.Entry;
 import java.util.stream.Stream;
 
 import game.App;
 import game.CheckConditions;
 import game.display.Display;
 import game.gamelogic.AccuracyModifier;
+import game.gamelogic.DamageModifier;
 import game.gamelogic.DodgeModifier;
 import game.gameobjects.AttackResult;
 import game.gameobjects.DamageType;
@@ -19,7 +20,6 @@ import game.gameobjects.entities.Entity;
 import game.gameobjects.entities.PlayerEntity;
 import game.gameobjects.items.weapons.Weapon;
 import kotlin.Pair;
-import game.gamelogic.DamageModifier;
 
 public class Attack {
 
@@ -34,7 +34,7 @@ public class Attack {
     private int roll;
     private int dodge;
 
-    private Map<PostAttackHook, PostAttackHook.Type> postAttackHookMap = new HashMap<>();
+    private Map<PostAttackHook, PostAttackHook.Type> postAttackHookMap = new LinkedHashMap<>();
     private PriorityQueue<Pair<DodgeModifier, Integer>> dodgeModifierQueue = new PriorityQueue<>((p1,p2) -> p1.getSecond() - p2.getSecond());
     private PriorityQueue<Pair<AccuracyModifier, Integer>> accuracyModifierQueue = new PriorityQueue<>((p1,p2) -> p1.getSecond() - p2.getSecond());
     private PriorityQueue<Pair<DamageModifier, Integer>> damageModifierQueue = new PriorityQueue<>((p1,p2) -> p1.getSecond() - p2.getSecond());

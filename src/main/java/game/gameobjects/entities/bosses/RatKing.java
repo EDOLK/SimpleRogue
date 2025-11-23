@@ -15,7 +15,6 @@ import game.gamelogic.HasInventory;
 import game.gamelogic.HasResistances;
 import game.gamelogic.Levelable;
 import game.gamelogic.combat.Attack;
-import game.gamelogic.combat.AttackModifier;
 import game.gamelogic.combat.PostAttackHook;
 import game.gamelogic.resistances.RangeResistance;
 import game.gamelogic.resistances.Resistance;
@@ -96,7 +95,7 @@ public class RatKing extends Animal implements HasInventory, DropsXP{
         return 20;
     }
 
-    public class SummonedRat extends Rat implements Levelable, HasResistances, AttackModifier {
+    public class SummonedRat extends Rat implements Levelable, HasResistances {
 
         public SummonedRat() {
             super();
@@ -167,6 +166,7 @@ public class RatKing extends Animal implements HasInventory, DropsXP{
             attack.attachPostAttackHook((ar) -> {
                 RatKing.this.ratCount--;
             }, PostAttackHook.onDeath(this));
+            super.modifyAttack(attack);
         }
 
         @Override
