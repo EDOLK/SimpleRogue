@@ -67,7 +67,7 @@ public class ReliableCombatant implements Ability, Behavable, AccuracyModifier, 
 
     @Override
     public void modifyAttack(Attack attack) {
-        if (attack.getDefender() instanceof Animal) {
+        if (attack.getAttacker() == owner && attack.getDefender() instanceof Animal) {
             attack.attachPostAttackHook(
                 (attackResult) -> {
                     if (combo < getAccuracyLimit())
