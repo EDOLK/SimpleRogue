@@ -118,7 +118,6 @@ public abstract class Animal extends Entity implements HasBehavior, HasAttribute
 
     @Override
     public void addToMemory(Entity entity){
-        System.out.println("Adding (0): " + entity);
         memoryMap.computeIfPresent(entity, (k,v) -> 0);
         memoryMap.putIfAbsent(entity, 0);
     }
@@ -137,11 +136,9 @@ public abstract class Animal extends Entity implements HasBehavior, HasAttribute
         Set<Entity> toBeIncremented = new HashSet<>();
         for (Entry<Entity, Integer> entry : memoryMap.entrySet()) {
             if (entry.getValue() >= this.getMaxMemoryTime()){
-                System.out.println("Removing (" + entry.getValue() + "): " + entry.getKey().getName());
                 toBeRemoved.add(entry.getKey());
                 continue;
             } 
-            System.out.println("Incrementing (" + entry.getValue() + " -> " + (entry.getValue()+1) + "): " + entry.getKey().getName());
             toBeIncremented.add(entry.getKey());
         }
         toBeIncremented.forEach((e) -> {

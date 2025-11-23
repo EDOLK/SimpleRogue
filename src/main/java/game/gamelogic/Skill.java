@@ -56,7 +56,6 @@ public enum Skill {
         if (distance <= 5) {
             perception += Math.abs(distance-6);
         }
-        System.out.println("PERC: " + perception + " vs STLTH:" + stealth);
         if (perception >= stealth) {
             return perceiver;
         }
