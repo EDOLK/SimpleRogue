@@ -1,9 +1,13 @@
 package game.gamelogic.skilltrees.warrior;
 
 import java.util.Optional;
+
 import game.gamelogic.Attribute;
 import game.gamelogic.abilities.HasAbilities;
+import game.gamelogic.skilltrees.MultiSkillEntryBuilder;
+import game.gamelogic.skilltrees.SkillEntryBuilder;
 import game.gamelogic.skilltrees.SkillTree;
+import kotlin.Pair;
 
 public class WarriorSkillTree extends SkillTree {
 
@@ -13,7 +17,7 @@ public class WarriorSkillTree extends SkillTree {
         this.name = "Warrior";
 
         this.addSkillEntry(
-            new SkillEntry.Builder()
+            new SkillEntryBuilder()
                 .addName("Clobber")
                 .addCostRequirement(1)
                 .addAttributeRequirement(Attribute.STRENGTH, 1)
@@ -25,7 +29,7 @@ public class WarriorSkillTree extends SkillTree {
         );
 
         this.addSkillEntry(
-            new SkillEntry.Builder()
+            new SkillEntryBuilder()
                 .addName("Second Wind")
                 .addCostRequirement(1)
                 .addAttributeRequirement(Attribute.DEXTERITY, 1)
@@ -36,88 +40,59 @@ public class WarriorSkillTree extends SkillTree {
                 .build()
         );
 
-        SkillEntry bulwarkThree = new SkillEntry.Builder()
-            .addName("Bulwark III")
-            .addCostRequirement(3)
-            .addAttributeRequirement(Attribute.ENDURANCE, 2)
-            .addOnApply((e) -> {
-                if (e instanceof HasAbilities hasAbilities){
-                    Optional<Bulwark> bulwark = hasAbilities.getAbilities().stream().filter(a->a instanceof Bulwark).map(a->(Bulwark)a).findFirst();
-                    if (bulwark.isPresent())
-                        bulwark.get().setLevel(3);
-                }
-            })
-            .build();
-
-        SkillEntry bulwarkTwo = new SkillEntry.Builder()
-            .addName("Bulwark II")
-            .addCostRequirement(2)
-            .addAttributeRequirement(Attribute.ENDURANCE, 1)
-            .addOnApply((e) -> {
-                if (e instanceof HasAbilities hasAbilities){
-                    Optional<Bulwark> bulwark = hasAbilities.getAbilities().stream().filter(a->a instanceof Bulwark).map(a->(Bulwark)a).findFirst();
-                    if (bulwark.isPresent())
-                        bulwark.get().setLevel(2);
-                    this.addSkillEntry(bulwarkThree);
-                }
-            })
-            .build();
-
-        this.addSkillEntry(
-            new SkillEntry.Builder()
-                .addName("Bulwark I")
-                .addCostRequirement(1)
-                .addAttributeRequirement(Attribute.ENDURANCE, 1)
-                .addOnApply((e) -> {
-                    if (e instanceof HasAbilities hasAbilities) {
-                        hasAbilities.addAbility(new Bulwark(e));
+        addSkillEntry(
+            new MultiSkillEntryBuilder()
+                .setNamingStrategy((i) -> {
+                    String str = "Bulwark ";
+                    for (int j = 0; j < i; j++) {
+                        str += "I";
                     }
-                    this.addSkillEntry(bulwarkTwo);
+                    return str;
                 })
-                .build()
+                .setCostStrategy((i) -> i)
+                .addAttributeRequirementStrategy((i) -> {
+                    return new Pair<Attribute, Integer>(Attribute.ENDURANCE, i <= 2 ? 1 : 2);
+                })
+                .addApplyFunctionStrategy((i) -> {
+                    return (e) -> {
+                        if (e instanceof HasAbilities hasAbilities){
+                            Optional<Bulwark> bulwark = hasAbilities.getAbilityByClass(Bulwark.class);
+                            if (bulwark.isPresent()) {
+                                bulwark.get().setLevel(i);
+                            } else {
+                                hasAbilities.addAbility(new Bulwark(e));
+                            }
+                        }
+                    };
+                }).chainBuild(this, 1, 3).build()
         );
 
-        SkillEntry reliableCombatant3 = new SkillEntry.Builder()
-            .addName("Reliable Combatant III")
-            .addCostRequirement(3)
-            .addAttributeRequirement(Attribute.DEXTERITY, 2)
-            .addOnApply((e) -> {
-                if (e instanceof HasAbilities hasAbilities){
-                    Optional<ReliableCombatant> reliableCombatant = hasAbilities.getAbilities().stream().filter(a->a instanceof ReliableCombatant).map(a->(ReliableCombatant)a).findFirst();
-                    if (reliableCombatant.isPresent())
-                        reliableCombatant.get().setLevel(3);
-                }
-            })
-            .build();
-
-        SkillEntry reliableCombatant2 = new SkillEntry.Builder()
-            .addName("Reliable Combatant II")
-            .addCostRequirement(2)
-            .addAttributeRequirement(Attribute.DEXTERITY, 1)
-            .addOnApply((e) -> {
-                if (e instanceof HasAbilities hasAbilities){
-                    Optional<ReliableCombatant> reliableCombatant = hasAbilities.getAbilities().stream().filter(a->a instanceof ReliableCombatant).map(a->(ReliableCombatant)a).findFirst();
-                    if (reliableCombatant.isPresent())
-                        reliableCombatant.get().setLevel(2);
-                    this.addSkillEntry(reliableCombatant3);
-                }
-            })
-            .build();
-
-        this.addSkillEntry(
-            new SkillEntry.Builder()
-                .addName("Reliable Combatant I")
-                .addCostRequirement(1)
-                .addAttributeRequirement(Attribute.DEXTERITY, 1)
-                .addOnApply((e) -> {
-                    if (e instanceof HasAbilities hasAbilities)
-                        hasAbilities.addAbility(new ReliableCombatant(e));
-                    this.addSkillEntry(reliableCombatant2);
+        addSkillEntry(
+            new MultiSkillEntryBuilder()
+                .setNamingStrategy((i) -> {
+                    String str = "Reliable Combatant ";
+                    for (int j = 0; j < i; j++) {
+                        str += "I";
+                    }
+                    return str;
                 })
-                .build()
+                .setCostStrategy((i) -> i)
+                .addAttributeRequirementStrategy((i) -> {
+                    return new Pair<Attribute, Integer>(Attribute.DEXTERITY, i <= 2 ? 1 : 2);
+                })
+                .addApplyFunctionStrategy((i) -> {
+                    return (e) -> {
+                        if (e instanceof HasAbilities hasAbilities){
+                            Optional<ReliableCombatant> reliableCombatant = hasAbilities.getAbilityByClass(ReliableCombatant.class);
+                            if (reliableCombatant.isPresent()) {
+                                reliableCombatant.get().setLevel(i);
+                            } else {
+                                hasAbilities.addAbility(new ReliableCombatant(e));
+                            }
+                        }
+                    };
+                }).chainBuild(this, 1, 3).build()
         );
-
-
     }
 
 }

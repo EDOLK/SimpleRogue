@@ -4,13 +4,14 @@ import game.gamelogic.Attribute;
 import game.gamelogic.HasSkills;
 import game.gamelogic.Skill;
 import game.gamelogic.abilities.HasAbilities;
+import game.gamelogic.skilltrees.SkillEntryBuilder;
 import game.gamelogic.skilltrees.SkillTree;
 
 public class RogueSkillTree extends SkillTree {
     public RogueSkillTree() {
         super();
         this.name = "Rogue";
-        this.skillEntries.add(new SkillEntry.Builder()
+        this.skillEntries.add(new SkillEntryBuilder()
             .addName("Skulking 101")
             .addCostRequirement(1)
             .addAttributeRequirement(Attribute.DEXTERITY, 1)
@@ -23,10 +24,9 @@ public class RogueSkillTree extends SkillTree {
                 }
             })
         .build());
-        this.skillEntries.add(new SkillEntry.Builder()
+        this.skillEntries.add(new SkillEntryBuilder()
             .addName("Natural Nightvision")
             .addCostRequirement(1)
-            .addSkillTreeRequirement(this, 1)
             .addOnApply((e) -> {
                 e.setNightVisionRange(e.getNightVisionRange()+1);
                 if (e instanceof HasSkills hSkills) {
