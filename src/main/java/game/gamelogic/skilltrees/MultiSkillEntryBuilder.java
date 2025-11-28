@@ -59,8 +59,25 @@ public class MultiSkillEntryBuilder {
         return this;
     }
 
+    public static SkillEntryBuilder chain(SkillTree tree, SkillEntryBuilder... entries){
+        if (entries.length <= 0) {
+            return null;
+        }
+        SkillEntryBuilder current = entries[entries.length-1];
+        for (int i = entries.length-2; i >= 0; i--) {
+            SkillEntry currentBuilt = current.build();
+            SkillEntryBuilder b = entries[i];
+            b.addOnApply((e) -> {
+                tree.addSkillEntry(currentBuilt);
+            });
+            current = b;
+        }
+        return current;
+    }
+    
+
     public SkillEntryBuilder chainBuild(SkillTree tree, int from, int to){
-        return SkillTree.chain(tree, preBuild(from, to));
+        return chain(tree, preBuild(from, to));
     }
 
     public SkillEntry[] build(int from, int to){
