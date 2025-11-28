@@ -4,6 +4,7 @@ import org.hexworks.zircon.api.color.TileColor;
 
 import game.display.AbilitySelectMenu;
 import game.display.Display;
+import game.gamelogic.Levelable;
 import game.gamelogic.ModifiesSkills;
 import game.gamelogic.Skill;
 import game.gamelogic.time.ModifiesMoveTime;
@@ -13,11 +14,13 @@ import game.gameobjects.entities.Entity;
 import game.gameobjects.entities.PlayerEntity;
 import game.gameobjects.statuses.Status;
 
-public class Sneak implements Ability, Behavable {
+public class Sneak implements Ability, Behavable, Levelable {
 
     private Entity owner;
 
     private int cooldown = 0;
+    
+    private int level = 1;
 
     public Sneak(Entity owner) {
         this.owner = owner;
@@ -49,10 +52,7 @@ public class Sneak implements Ability, Behavable {
         if (Display.getCurrentMenu() instanceof AbilitySelectMenu) {
             Display.revertMenu();
         }
-        if (this.owner instanceof PlayerEntity) {
-            Display.log("You start sneaking.");
-        }
-        this.owner.addStatus(new Sneaking());
+        this.owner.addStatus(this.new Sneaking());
         this.cooldown = 50;
         Display.update();
     }
@@ -62,9 +62,9 @@ public class Sneak implements Ability, Behavable {
         return cooldown <= 0;
     }
 
-    private static class Sneaking extends Status implements Behavable, ModifiesSkills, ModifiesMoveTime{
+    private class Sneaking extends Status implements Behavable, ModifiesSkills, ModifiesMoveTime{
 
-        private int timer = 10;
+        private int timer = 10 + (getLevel() * 5);
 
         private Sneaking() {
             super();
@@ -76,7 +76,7 @@ public class Sneak implements Ability, Behavable {
         @Override
         public int modifySkill(Skill skill, int value) {
             if (skill == Skill.STEALTH) {
-                return value*2;
+                return value*(getLevel()+1);
             }
             return value;
         }
@@ -95,14 +95,33 @@ public class Sneak implements Ability, Behavable {
 
         @Override
         public boolean isActive() {
-            return timer >= 0;
+            return Status.isActiveHelper(this) && timer >= 0;
         }
 
         @Override
         public int modifyMoveTime(int time) {
             return (int)(time + (time*0.10));
         }
+
+        @Override
+        public void onStatusAdd() {
+            if (this.owner instanceof PlayerEntity) {
+                Display.logHeader("You start sneaking.");
+            }
+        }
+
         
+    }
+
+    @Override
+    public int getLevel() {
+        return level;
+    }
+
+    @Override
+    public boolean setLevel(int level) {
+        this.level = level;
+        return true;
     }
 
 }
