@@ -21,8 +21,8 @@ import org.hexworks.zircon.api.uievent.ComponentEventType;
 import org.hexworks.zircon.api.uievent.MouseEventType;
 import org.hexworks.zircon.api.uievent.UIEventResponse;
 
+import game.gamelogic.skilltrees.SkillEntry;
 import game.gamelogic.skilltrees.SkillTree;
-import game.gamelogic.skilltrees.SkillTree.SkillEntry;
 import game.gamelogic.skilltrees.UsesSkillTrees;
 import game.gameobjects.entities.Entity;
 import kotlin.Pair;
