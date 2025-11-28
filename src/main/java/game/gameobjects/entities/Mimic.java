@@ -40,41 +40,62 @@ public class Mimic extends Animal implements Interactable, DropsXP, HasInventory
         return super.getStatuses();
     }
 
+    @Override
     public Tile getTile(double percent) {
         if (!activated)
             return disguise.getTile(percent);
         return super.getTile(percent);
     }
 
+    @Override
     public String getOriginalName() {
         if (!activated)
             return disguise.getOriginalName();
         return super.getOriginalName();
     }
 
+    @Override
     public String getDescription() {
         if (!activated)
             return disguise.getDescription();
         return "It looks like a " + disguise.getOriginalName() + ", but wrong...";
     }
 
+    @Override
     public boolean isLiquidBlocker() {
         if (!activated)
             return disguise.isLiquidBlocker();
         return super.isLiquidBlocker();
     }
 
+    @Override
     public boolean isLightBlocker() {
         if (!activated)
             return disguise.isLightBlocker();
         return super.isLightBlocker();
     }
 
+    @Override
     public boolean isGasBlocker() {
+        if (!activated)
+            return disguise.isGasBlocker();
+        return super.isGasBlocker();
+    }
+
+    @Override
+    public boolean isSightBlocker(){
         if (!activated)
             return disguise.isSightBlocker();
         return super.isSightBlocker();
     }
+
+    // TODO: implement when implementing entities blocking items
+    //
+    // public boolean isItemBlocker(){
+    //     if (!activated)
+    //         return disguise.isItemBlocker();
+    //     return super.isItemBlocker();
+    // }
 
     public Mimic(Entity disguise){
         super(TileColor.transparent(), TileColor.create(150, 10, 150, 255), 'M');
