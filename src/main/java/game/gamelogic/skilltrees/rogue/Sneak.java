@@ -19,7 +19,7 @@ public class Sneak implements Ability, Behavable, Levelable {
     private Entity owner;
 
     private int cooldown = 0;
-    
+
     private int level = 1;
 
     public Sneak(Entity owner) {
@@ -100,7 +100,8 @@ public class Sneak implements Ability, Behavable, Levelable {
 
         @Override
         public int modifyMoveTime(int time) {
-            return (int)(time + (time*0.10));
+            double p = 0.10 - (0.10*(getLevel()-1));
+            return (int)(time + (time*p));
         }
 
         @Override

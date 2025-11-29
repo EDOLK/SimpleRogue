@@ -23,8 +23,10 @@ public class RogueSkillTree extends SkillTree {
                         .addCostRequirement(i <= 2 ? 1 : 2)
                         .addAttributeRequirement(Attribute.DEXTERITY, i <= 2 ? 1 : 2)
                         .addOnApply((e) -> {
-                            if (e instanceof HasSkills hasSkills) {
-                                hasSkills.incrementSkill(Skill.STEALTH);
+                            for (int j = 0; j < i; j++) {
+                                if (e instanceof HasSkills hasSkills) {
+                                    hasSkills.incrementSkill(Skill.STEALTH);
+                                }
                             }
                             if (e instanceof HasAbilities hasAbilities) {
                                 Optional<Sneak> sneak = hasAbilities.getAbilityByClass(Sneak.class);
