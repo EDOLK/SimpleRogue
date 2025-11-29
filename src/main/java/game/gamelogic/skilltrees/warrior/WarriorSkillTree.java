@@ -49,6 +49,7 @@ public class WarriorSkillTree extends SkillTree {
                     return new SkillEntryBuilder()
                         .addName(str)
                         .addAttributeRequirement(Attribute.ENDURANCE, i <= 2 ? 1 : 2)
+                        .addCostRequirement(i)
                         .addOnApply((e) -> {
                             if (e instanceof HasAbilities hasAbilities){
                                 Optional<Bulwark> bulwark = hasAbilities.getAbilityByClass(Bulwark.class);

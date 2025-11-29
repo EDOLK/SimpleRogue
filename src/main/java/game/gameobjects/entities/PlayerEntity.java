@@ -102,7 +102,11 @@ public class PlayerEntity extends Entity implements Armored, Armed, Levelable, E
 
     @Override
     public boolean addAbility(Ability ability){
-        return abilities.add(ability);
+        if (abilities.add(ability)){
+            Display.logHeader("You gain the " + "\"" + ability.getName() + "\" ability.");
+            return true;
+        }
+        return false;
     }
 
     @Override
