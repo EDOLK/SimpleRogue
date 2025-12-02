@@ -27,10 +27,31 @@ public class Door extends Entity implements Interactable, HasResistances{
         setTileName("Closed Door");
         setDescription("A door.");
         setWeight(10);
-        setSightBlocker(true);
-        setGasBlocker(true);
-        setLiquidBlocker(true);
-        setLightBlocker(true);
+    }
+
+    @Override
+    public boolean isLiquidBlocker() {
+        return true;
+    }
+
+    @Override
+    public boolean isLightBlocker() {
+        return true;
+    }
+
+    @Override
+    public boolean isSightBlocker() {
+        return true;
+    }
+
+    @Override
+    public boolean isItemBlocker() {
+        return true;
+    }
+
+    @Override
+    public boolean isGasBlocker() {
+        return true;
     }
 
     @Override

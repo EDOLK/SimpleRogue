@@ -89,13 +89,12 @@ public class Mimic extends Animal implements Interactable, DropsXP, HasInventory
         return super.isSightBlocker();
     }
 
-    // TODO: implement when implementing entities blocking items
-    //
-    // public boolean isItemBlocker(){
-    //     if (!activated)
-    //         return disguise.isItemBlocker();
-    //     return super.isItemBlocker();
-    // }
+    @Override
+    public boolean isItemBlocker(){
+        if (!activated)
+            return disguise.isItemBlocker();
+        return super.isItemBlocker();
+    }
 
     public Mimic(Entity disguise){
         super(TileColor.transparent(), TileColor.create(150, 10, 150, 255), 'M');

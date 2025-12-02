@@ -23,10 +23,6 @@ public class Wall extends Entity implements HasResistances{
         setName("Wall");
         setTileName("Wall");
         setDescription("it's... a wall.");
-        setSightBlocker(true);
-        setGasBlocker(true);
-        setLiquidBlocker(true);
-        setLightBlocker(true);
         setWeight(100);
         for (DamageType damageType : DamageType.values()) {
             if (damageType == DamageType.PIERCING){
@@ -35,6 +31,31 @@ public class Wall extends Entity implements HasResistances{
                 resistances.add(new PercentageResistance(damageType, 1.00));
             }
         }
+    }
+
+    @Override
+    public boolean isLiquidBlocker() {
+        return true;
+    }
+
+    @Override
+    public boolean isLightBlocker() {
+        return true;
+    }
+
+    @Override
+    public boolean isSightBlocker() {
+        return true;
+    }
+
+    @Override
+    public boolean isGasBlocker() {
+        return true;
+    }
+
+    @Override
+    public boolean isItemBlocker() {
+        return true;
     }
 
     @Override

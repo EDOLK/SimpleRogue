@@ -51,11 +51,6 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
     private int nightVisionRange = 1;
     private int weight;
     private List<Status> statuses = new ArrayList<Status>();
-    protected boolean sightBlocker = false;
-    protected boolean gasBlocker = false;
-    protected boolean liquidBlocker = false;
-    protected boolean lightBlocker = false;
-    protected boolean itemBlocker = false;
     private Weapon unarmedWeapon;
     private boolean alive = true;
     protected int enduranceHPMult = 0;
@@ -77,19 +72,23 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
     }
 
     public boolean isLiquidBlocker() {
-        return liquidBlocker;
-    }
-
-    public void setLiquidBlocker(boolean liquidBlocker) {
-        this.liquidBlocker = liquidBlocker;
+        return false;
     }
 
     public boolean isLightBlocker() {
-        return lightBlocker;
+        return false;
     }
 
-    public void setLightBlocker(boolean lightBlocker) {
-        this.lightBlocker = lightBlocker;
+    public boolean isSightBlocker() {
+        return false;
+    }
+
+    public boolean isItemBlocker() {
+        return false;
+    }
+
+    public boolean isGasBlocker() {
+        return false;
     }
 
     public Entity(TileColor bGColor, TileColor fGColor, char character) {
@@ -100,14 +99,6 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
         super();
     }
 
-    public boolean isGasBlocker() {
-        return gasBlocker;
-    }
-
-    public void setGasBlocker(boolean gasBlocker) {
-        this.gasBlocker = gasBlocker;
-    }
-    
     public int getWeight() {
         int w = weight;
         if (this instanceof HasInventory hasInventory){
@@ -118,14 +109,6 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
 
     public void setWeight(int weight) {
         this.weight = weight;
-    }
-
-    public boolean isSightBlocker() {
-        return sightBlocker;
-    }
-
-    public void setSightBlocker(boolean blockSight) {
-        this.sightBlocker = blockSight; 
     }
 
     public int getVisionRange() {
