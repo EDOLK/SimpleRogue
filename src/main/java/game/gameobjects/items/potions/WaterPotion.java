@@ -4,7 +4,6 @@ import org.hexworks.zircon.api.color.TileColor;
 
 import game.gamelogic.Aimable;
 import game.gameobjects.Space;
-import game.gameobjects.entities.Entity;
 import game.gameobjects.items.Item;
 import game.gameobjects.statuses.Wet;
 import game.gameobjects.terrains.liquids.Water;

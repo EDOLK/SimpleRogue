@@ -99,8 +99,6 @@ public class PlayerEntity extends Entity implements Armored, Armed, Levelable, E
 
         this.enduranceHPMult = 3;
 
-        incrementAttribute(Attribute.STRENGTH);
-
     }
 
     @Override

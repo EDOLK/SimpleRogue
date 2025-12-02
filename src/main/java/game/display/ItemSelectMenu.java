@@ -7,7 +7,6 @@ import java.util.stream.Stream;
 
 import org.hexworks.zircon.api.uievent.UIEventResponse;
 
-import game.gamelogic.Aimable;
 import game.gamelogic.Consumable;
 import game.gamelogic.Examinable;
 import game.gamelogic.HasInventory;
