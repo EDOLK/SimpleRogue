@@ -74,6 +74,22 @@ public abstract class Projectile extends Terrain implements Behavable, SelfAware
         this.space = space;
     }
 
+    public Iterator<Space> getSpaceIterator() {
+        return spaceIterator;
+    }
+
+    public void setSpaceIterator(Iterator<Space> spaceIterator) {
+        this.spaceIterator = spaceIterator;
+    }
+
+    public int getTimeToMove() {
+        return timeToMove;
+    }
+
+    public void setTimeToMove(int timeToMove) {
+        this.timeToMove = timeToMove;
+    }
+
     public abstract boolean collides(Space space);
 
     public abstract void onCollision(Space beforeSpace, Space collidingSpace);
