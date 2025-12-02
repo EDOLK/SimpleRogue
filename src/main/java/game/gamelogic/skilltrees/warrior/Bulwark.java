@@ -9,7 +9,6 @@ import game.gamelogic.combat.AttackModifier;
 import game.gamelogic.combat.PostAttackHook;
 import game.gameobjects.AttackResult;
 import game.gameobjects.DamageType;
-import game.gameobjects.Floor;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.items.weapons.Weapon;
 
@@ -55,7 +54,7 @@ public class Bulwark implements Ability, Behavable, Levelable, AttackModifier{
                     Weapon bulwarkWeapon = new Weapon();
                     bulwarkWeapon.setDamage(accumulatedDamage, accumulatedDamage);
                     bulwarkWeapon.setDamageType(DamageType.BLUNT);
-                    AttackResult result = Floor.doAttack(owner, space.getOccupant(), bulwarkWeapon);
+                    AttackResult result = Attack.doAttack(owner, space.getOccupant(), bulwarkWeapon);
                     if (result.hit())
                         accumulatedDamage = 0;
                     turnsLeftInCooldown = getCooldown();

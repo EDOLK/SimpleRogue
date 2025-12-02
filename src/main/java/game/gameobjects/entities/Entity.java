@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.hexworks.zircon.api.color.TileColor;
+
 import game.App;
 import game.CheckConditions;
 import game.Line;
@@ -24,11 +25,11 @@ import game.gamelogic.HasResistances;
 import game.gamelogic.HasStatusVulns;
 import game.gamelogic.HasVulnerabilities;
 import game.gamelogic.SelfAware;
-import game.gamelogic.time.ModifiesMoveTime;
+import game.gamelogic.combat.Attack;
 import game.gamelogic.time.ModifiesAttackTime;
+import game.gamelogic.time.ModifiesMoveTime;
 import game.gameobjects.DamageType;
 import game.gameobjects.DisplayableTile;
-import game.gameobjects.Floor;
 import game.gameobjects.Space;
 import game.gameobjects.items.Corpse;
 import game.gameobjects.items.Item;
@@ -561,7 +562,7 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
 
     // what this entity will do by default if another walks into it (should reference one of the other behavioral functions, perhaps after determining what the other entity is)
     public int defaultInteraction(Entity interactor){
-        Floor.doAttack(interactor, this);
+        Attack.doAttack(interactor, this);
         return interactor.getTimeToAttack();
     };
 

@@ -9,7 +9,6 @@ import game.gamelogic.behavior.Behavable;
 import game.gamelogic.combat.Attack;
 import game.gamelogic.combat.AttackModifier;
 import game.gamelogic.combat.PostAttackHook;
-import game.gameobjects.Floor;
 import game.gameobjects.entities.Animal;
 import game.gameobjects.entities.Entity;
 
@@ -102,7 +101,7 @@ public class ReliableCombatant implements Ability, Behavable, AccuracyModifier, 
             if (space.isOccupied()) {
                 for (int i = 0; i < Math.max(combo/3, 1); i++)
                     if (space.isOccupied()) {
-                        Floor.doAttack(owner, space.getOccupant());
+                        Attack.doAttack(owner, space.getOccupant());
                     }
                 combo = 0;
                 turns = getCoolDown();

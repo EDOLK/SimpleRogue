@@ -1,6 +1,8 @@
 package game.gamelogic.combat;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -12,10 +14,13 @@ import game.App;
 import game.CheckConditions;
 import game.display.Display;
 import game.gamelogic.AccuracyModifier;
+import game.gamelogic.Armed;
 import game.gamelogic.DamageModifier;
 import game.gamelogic.DodgeModifier;
+import game.gamelogic.OverridesAttack;
 import game.gameobjects.AttackResult;
 import game.gameobjects.DamageType;
+import game.gameobjects.WeaponSlot;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.entities.PlayerEntity;
 import game.gameobjects.items.weapons.Weapon;
@@ -195,6 +200,73 @@ public class Attack {
         }
 
         return result;
+    }
+
+    public static List<AttackResult> doAttack(Entity attacker, Entity defender){
+
+        // TODO: add support for multiple OverridesAttack at the same time
+        OverridesAttack overridesAttack = (OverridesAttack)attacker.getStatusByClass(OverridesAttack.class);
+        if (overridesAttack != null){
+            return overridesAttack.overrideAttack(attacker, defender);
+        }
+
+        List<Weapon> attackerActiveWeapons = new ArrayList<Weapon>();
+        
+        if (attacker instanceof Armed armedAttacker){
+            for (WeaponSlot weaponSlot : armedAttacker.getWeaponSlots()) {
+                if (weaponSlot.getEquippedWeapon() != null && Math.random() < weaponSlot.getChance()){
+                    attackerActiveWeapons.add(weaponSlot.getEquippedWeapon());
+                }
+            }
+        }
+
+        if (attackerActiveWeapons.isEmpty()){
+            if (attacker.getUnarmedWeapon() == null){
+                if (attacker instanceof PlayerEntity){
+                    Display.log("You have no weapon!");
+                } else if (defender instanceof PlayerEntity){
+                    Display.log("The " + attacker.getName() + " tries to attack you.");
+                } else {
+                    Display.log(attacker.getName() + " tries to attack the " + defender.getName() + ".", defender.getSpace());
+                }
+                return List.of(new AttackResult(attacker, defender));
+            } else {
+                attackerActiveWeapons.add(attacker.getUnarmedWeapon());
+            }
+        }
+
+        List<AttackResult> results = new ArrayList<>();
+
+        for (Weapon weapon : attackerActiveWeapons) {
+            results.add(attackWithWeapon(attacker, defender, weapon));
+        }
+
+        if (attacker instanceof PlayerEntity) {
+            Display.getRootMenu().writeEnemyInfo(defender);
+        }
+
+        return results;
+
+    }
+
+    public static AttackResult doAttack(Entity attacker, Entity defender, Weapon attackerWeapon){
+        // TODO: add support for multiple OverridesAttack at the same time
+        OverridesAttack overridesAttack = (OverridesAttack)attacker.getStatusByClass(OverridesAttack.class);
+        if (overridesAttack != null){
+            return overridesAttack.overrideAttack(attacker, defender, attackerWeapon);
+        }
+
+        AttackResult result = attackWithWeapon(attacker, defender, attackerWeapon);
+
+        if (attacker instanceof PlayerEntity && result.hit()) {
+            Display.getRootMenu().writeEnemyInfo(defender);
+        }
+
+        return result;
+    }
+
+    private static AttackResult attackWithWeapon(Entity attacker, Entity defender, Weapon attackerWeapon){
+        return new Attack(attacker, defender, attackerWeapon).execute();
     }
 
     private static Stream<AttackModifier> getAttackModifiers(Entity attacker, Entity defender, Weapon weapon){

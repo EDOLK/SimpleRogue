@@ -17,10 +17,10 @@ import game.gamelogic.Armed;
 import game.gamelogic.OverridesBehavable;
 import game.gamelogic.abilities.Ability;
 import game.gamelogic.behavior.Behavable;
+import game.gamelogic.combat.Attack;
 import game.gamelogic.floorinteraction.SimpleSelector;
 import game.gameobjects.AttackResult;
 import game.gameobjects.DamageType;
-import game.gameobjects.Floor;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Animal;
 import game.gameobjects.entities.Entity;
@@ -104,7 +104,7 @@ public class Clobber implements Ability, Behavable{
                     clobberee.getY() + yOffset
                 );
 
-                AttackResult result = Floor.doAttack(Clobber.this.owner, clobberee, weaponToUse);
+                AttackResult result = Attack.doAttack(Clobber.this.owner, clobberee, weaponToUse);
 
                 if (result.hit() && result.defender().isAlive()) {
                     if (nextSpace.isOccupied()) {

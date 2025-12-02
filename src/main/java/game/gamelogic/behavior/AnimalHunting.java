@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import game.Path;
 import game.Path.PathNotFoundException;
-import game.gameobjects.Floor;
+import game.gamelogic.combat.Attack;
 import game.gameobjects.MovementResult;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Animal;
@@ -38,7 +38,7 @@ public class AnimalHunting extends Behavior {
             }
         }
         if (animal.isAdjacent(target)) {
-            Floor.doAttack(animal, target);
+            Attack.doAttack(animal, target);
             return animal.getTimeToAttack();
         }
         if (this.pathIsValid()) {

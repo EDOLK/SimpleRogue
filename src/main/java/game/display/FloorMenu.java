@@ -42,6 +42,7 @@ import game.gamelogic.Experiential;
 import game.gamelogic.Interactable;
 import game.gamelogic.Levelable;
 import game.gamelogic.OverridesPlayerInput;
+import game.gamelogic.combat.Attack;
 import game.gamelogic.floorinteraction.Selector;
 import game.gamelogic.floorinteraction.SimpleSelector;
 import game.gameobjects.DisplayableTile;
@@ -672,7 +673,7 @@ public final class FloorMenu extends Menu{
         Space potentialSpace = currentFloor.getSpace(x+toX, y+toY);
         if (potentialSpace.isOccupied()){
             Entity entity = potentialSpace.getOccupant();
-            Floor.doAttack(playerEntity, entity);
+            Attack.doAttack(playerEntity, entity);
         } else {
             addToLog("You swing at the air.");
         }
