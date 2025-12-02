@@ -11,9 +11,13 @@ import game.gameobjects.Space;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.entities.PlayerEntity;
 import game.gameobjects.entities.Rat;
-import game.gameobjects.entities.Slime;
 import game.gameobjects.entities.Wall;
 import game.gameobjects.items.armor.LeatherArmor;
+import game.gameobjects.items.potions.FirePotion;
+import game.gameobjects.items.potions.FreezingPotion;
+import game.gameobjects.items.potions.HealingPotion;
+import game.gameobjects.items.potions.WaterPotion;
+import game.gameobjects.items.weapons.Dagger;
 import game.gameobjects.items.weapons.ShortSword;
 import game.gameobjects.terrains.SpreadableTerrain;
 import game.gameobjects.terrains.Terrain;
@@ -34,7 +38,11 @@ public class DebugFloorGenerator extends FloorGenerator {
         spaces[20][20].setOccupant(playerEntity);
         playerEntity.addItemToInventory(new ShortSword());
         playerEntity.addItemToInventory(new LeatherArmor());
-        spaces[22][20].setOccupant(new Slime());
+        playerEntity.addItemToInventory(new Dagger());
+        playerEntity.addItemToInventory(new WaterPotion());
+        playerEntity.addItemToInventory(new FirePotion());
+        playerEntity.addItemToInventory(new FreezingPotion());
+        playerEntity.addItemToInventory(new HealingPotion());
     }
 
     protected void generateSpaces(){

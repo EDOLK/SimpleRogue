@@ -7,6 +7,7 @@ import game.gamelogic.behavior.Behavable;
 import game.gamelogic.combat.Attack;
 import game.gamelogic.combat.AttackModifier;
 import game.gamelogic.combat.PostAttackHook;
+import game.gamelogic.floorinteraction.SelectionResult;
 import game.gameobjects.AttackResult;
 import game.gameobjects.DamageType;
 import game.gameobjects.entities.Entity;
@@ -58,9 +59,9 @@ public class Bulwark implements Ability, Behavable, Levelable, AttackModifier{
                     if (result.hit())
                         accumulatedDamage = 0;
                     turnsLeftInCooldown = getCooldown();
-                    return true;
+                    return new SelectionResult(true, 0);
                 }
-                return false;
+                return new SelectionResult(false, 0);
             }
         );
     }

@@ -18,6 +18,7 @@ import game.gamelogic.OverridesBehavable;
 import game.gamelogic.abilities.Ability;
 import game.gamelogic.behavior.Behavable;
 import game.gamelogic.combat.Attack;
+import game.gamelogic.floorinteraction.SelectionResult;
 import game.gamelogic.floorinteraction.SimpleSelector;
 import game.gameobjects.AttackResult;
 import game.gameobjects.DamageType;
@@ -75,7 +76,7 @@ public class Clobber implements Ability, Behavable{
         private ClobberSelector(){};
 
         @Override
-        public boolean simpleSelect(Space space) {
+        public SelectionResult simpleSelect(Space space) {
 
             List<Weapon> validWeapons = new ArrayList<>();
 
@@ -92,7 +93,7 @@ public class Clobber implements Ability, Behavable{
             if (!validWeapons.isEmpty()) {
                 weaponToUse = App.getRandom(validWeapons);
             } else {
-                return true;
+                return new SelectionResult(true, 0);
             }
 
             if (space.isOccupied() && space.getOccupant() instanceof Animal) {
@@ -117,7 +118,7 @@ public class Clobber implements Ability, Behavable{
                 }
                 Clobber.this.cooldown = 50;
             }
-            return true;
+            return new SelectionResult(true, 0);
         }
         
     }

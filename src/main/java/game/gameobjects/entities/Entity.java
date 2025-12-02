@@ -299,7 +299,7 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
     }
 
     private boolean isBeyondNightVision(Space potentialSpace) {
-        return Space.getDistance(getSpace(), potentialSpace) > getNightVisionRange() && potentialSpace.getLight() <= 0;
+        return Space.manDist(getSpace(), potentialSpace) > getNightVisionRange() && potentialSpace.getLight() <= 0;
     }
 
     public int getNightVisionRange() {

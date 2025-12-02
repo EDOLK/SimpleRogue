@@ -99,7 +99,7 @@ public class Spider extends Animal implements HasDodge, HasInventory, HasDrops, 
     }
 
     protected int getDistanceFromNest(Space space){
-        return Space.getDistance(space, this.nestSpace);
+        return Space.manDist(space, this.nestSpace);
     }
 
     /**

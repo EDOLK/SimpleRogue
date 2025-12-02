@@ -27,7 +27,6 @@ public class ItemContextMenu extends Menu{
 
     private boolean consumable = false;
     private boolean interactable = false;
-    private boolean aimable = false;
     private boolean readable = false;
     private boolean weapon = false;
     private boolean armor = false;
@@ -41,7 +40,7 @@ public class ItemContextMenu extends Menu{
         this.playerEntity = playerEntity;
 
         int width = item.getName().length() > 8 ? item.getName().length()+5 : 15;
-        int height = 8;
+        int height = 10;
         if (item instanceof Interactable){
             height+=2;
             interactable = true;
@@ -49,10 +48,6 @@ public class ItemContextMenu extends Menu{
         if (item instanceof Consumable){
             height+=2;
             consumable = true;
-        }
-        if (item instanceof Aimable){
-            height+=2;
-            aimable = true;
         }
         if (item instanceof Scrollable){
             height+=2;
@@ -179,18 +174,18 @@ public class ItemContextMenu extends Menu{
             pos+=2;
         }
         
-        if (aimable){
-            Button throwButton = new ButtonBuilder()
-                .withText("Throw")
-                .withPosition(2,pos)
-                .build();
-            throwButton.handleComponentEvents(ComponentEventType.ACTIVATED, (event) ->{
-                Display.getRootMenu().startSelecting(Display.getRootMenu().new AimSelector((Aimable)item));
-                return UIEventResponse.processed();
-            });
-            itemPanel.addComponent(throwButton);
-            pos+=2;
-        }
+        Button throwButton = new ButtonBuilder()
+            .withText("Throw")
+            .withPosition(2,pos)
+            .build();
+        throwButton.handleComponentEvents(ComponentEventType.ACTIVATED, (event) ->{
+            Display.getRootMenu().startSelecting(
+                Display.getRootMenu().new AimSelector(item, playerEntity)
+            );
+            return UIEventResponse.processed();
+        });
+        itemPanel.addComponent(throwButton);
+        pos+=2;
         
         if (readable){
             Button readButton = new ButtonBuilder()

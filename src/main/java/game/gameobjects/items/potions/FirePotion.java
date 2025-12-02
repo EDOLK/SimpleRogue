@@ -25,8 +25,9 @@ public class FirePotion extends Item implements Aimable, Consumable{
     }
 
     @Override
-    public void onHit(Entity target) {
-        target.addStatus(new Burning());
+    public void onCollision(Space beforeSpace, Space collidingSpace) {
+        onLand(collidingSpace);
+        collidingSpace.getOccupant().addStatus(new Burning());
     }
 
     @Override
@@ -35,8 +36,8 @@ public class FirePotion extends Item implements Aimable, Consumable{
     }
 
     @Override
-    public boolean landsOnHit() {
-        return true;
+    public boolean collides(Space space) {
+        return space.isOccupied();
     }
 
     @Override

@@ -1,13 +1,10 @@
 package game.gameobjects.items.weapons;
 
-import static game.App.randomNumber;
-
 import org.hexworks.zircon.api.color.TileColor;
 
 import game.gamelogic.Aimable;
 import game.gameobjects.DamageType;
 import game.gameobjects.Space;
-import game.gameobjects.entities.Entity;
 
 public class Dagger extends Weapon implements Aimable {
     public Dagger(){
@@ -22,9 +19,10 @@ public class Dagger extends Weapon implements Aimable {
         setDamageType(DamageType.PIERCING);
     }
 
+
     @Override
-    public void onHit(Entity target) {
-        target.dealDamage(randomNumber(getMinDamage(), getMaxDamage()), getDamageType());
+    public boolean collides(Space space) {
+        return space.isOccupied();
     }
 
     @Override
@@ -33,7 +31,8 @@ public class Dagger extends Weapon implements Aimable {
     }
 
     @Override
-    public boolean landsOnHit() {
-        return true;
+    public void onCollision(Space beforeSpace, Space collidingSpace) {
+        collidingSpace.getOccupant().dealDamage(this.generateDamage(), this.getDamageType());
+        onLand(beforeSpace);
     }
 }

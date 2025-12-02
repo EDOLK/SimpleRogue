@@ -52,7 +52,7 @@ public enum Skill {
         stealth += Skill.getSkill(Skill.STEALTH, stealther);
         perception += Skill.getSkill(Skill.PERCEPTION, perceiver);
         stealth += (int)((stealther.getSpace().getLight()-0.50f)*-15);
-        int distance = Space.getDistance(perceiver.getSpace(), stealther.getSpace());
+        int distance = Space.manDist(perceiver.getSpace(), stealther.getSpace());
         if (distance <= 5) {
             perception += Math.abs(distance-6);
         }

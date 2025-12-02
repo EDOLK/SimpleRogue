@@ -10,6 +10,7 @@ import org.hexworks.zircon.api.color.TileColor;
 import game.display.Display;
 import game.display.FloorMenu;
 import game.floorgeneration.BossFloorGenerator;
+import game.floorgeneration.DebugFloorGenerator;
 import game.floorgeneration.DefaultFloorGenerator;
 import game.floorgeneration.pools.LayerPool;
 import game.floorgeneration.pools.Pool;

@@ -236,15 +236,15 @@ public class ItemSelectMenu extends Menu{
         Display.populateMenu(
             menu,
             (stack) -> {
-                Item item = stack.getItem();
-                if (item instanceof Aimable aimable) {
-                    Display.getRootMenu().startSelecting(Display.getRootMenu().new AimSelector(aimable));
+                if (hasInventory instanceof Entity entity) {
+                    Item item = stack.getItem();
+                    Display.getRootMenu().startSelecting(Display.getRootMenu().new AimSelector(item, entity));
                     return UIEventResponse.processed();
                 }
                 return UIEventResponse.pass();
             },
             "Throw",
-            ItemStack.toItemStackSet(hasInventory.getInventory().stream().filter(i -> i instanceof Aimable).collect(Collectors.toList()))
+            ItemStack.toItemStackSet(hasInventory.getInventory())
         );
         return menu;
     }

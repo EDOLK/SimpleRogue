@@ -17,6 +17,7 @@ import game.gamelogic.abilities.HasAbilities;
 import game.gamelogic.abilities.HasAbility;
 import game.gamelogic.abilities.HasPassives;
 import game.gameobjects.entities.Entity;
+import game.gameobjects.entities.PlayerEntity;
 import game.gameobjects.items.armor.Armor;
 import game.gameobjects.items.weapons.Weapon;
 
