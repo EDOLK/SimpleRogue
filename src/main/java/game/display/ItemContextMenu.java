@@ -103,7 +103,7 @@ public class ItemContextMenu extends Menu{
             .build();
         
         dropButton.handleComponentEvents(ComponentEventType.ACTIVATED, (event) -> {
-            Display.getRootMenu().startSelecting(Display.getRootMenu().new DropDirectSelector(item));
+            Display.getRootMenu().startSelecting(new DropDirectSelector(item, playerEntity));
             return UIEventResponse.processed();
         });
 
