@@ -1,7 +1,6 @@
 package game.gameobjects;
 import static game.App.lerp;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -11,21 +10,18 @@ import java.util.WeakHashMap;
 import org.hexworks.zircon.api.color.TileColor;
 
 import game.Line;
-import game.display.Display;
 import game.floorgeneration.FloorGenerator;
 import game.gamelogic.Angle;
 import game.gamelogic.Armed;
 import game.gamelogic.Armored;
 import game.gamelogic.HasOffHand;
 import game.gamelogic.LightSource;
-import game.gamelogic.OverridesAttack;
 import game.gamelogic.OverridesBehavable;
 import game.gamelogic.abilities.Ability;
 import game.gamelogic.abilities.HasAbilities;
 import game.gamelogic.abilities.HasPassives;
 import game.gamelogic.abilities.Passive;
 import game.gamelogic.behavior.Behavable;
-import game.gamelogic.combat.Attack;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.entities.PlayerEntity;
 import game.gameobjects.items.Item;
@@ -348,73 +344,6 @@ public class Floor{
             }
         }
         return strongestLightSource;
-    }
-
-    public static List<AttackResult> doAttack(Entity attacker, Entity defender){
-
-        // TODO: add support for multiple OverridesAttack at the same time
-        OverridesAttack overridesAttack = (OverridesAttack)attacker.getStatusByClass(OverridesAttack.class);
-        if (overridesAttack != null){
-            return overridesAttack.overrideAttack(attacker, defender);
-        }
-
-        List<Weapon> attackerActiveWeapons = new ArrayList<Weapon>();
-        
-        if (attacker instanceof Armed armedAttacker){
-            for (WeaponSlot weaponSlot : armedAttacker.getWeaponSlots()) {
-                if (weaponSlot.getEquippedWeapon() != null && Math.random() < weaponSlot.getChance()){
-                    attackerActiveWeapons.add(weaponSlot.getEquippedWeapon());
-                }
-            }
-        }
-
-        if (attackerActiveWeapons.isEmpty()){
-            if (attacker.getUnarmedWeapon() == null){
-                if (attacker instanceof PlayerEntity){
-                    Display.log("You have no weapon!");
-                } else if (defender instanceof PlayerEntity){
-                    Display.log("The " + attacker.getName() + " tries to attack you.");
-                } else {
-                    Display.log(attacker.getName() + " tries to attack the " + defender.getName() + ".", defender.getSpace());
-                }
-                return List.of(new AttackResult(attacker, defender));
-            } else {
-                attackerActiveWeapons.add(attacker.getUnarmedWeapon());
-            }
-        }
-
-        List<AttackResult> results = new ArrayList<>();
-
-        for (Weapon weapon : attackerActiveWeapons) {
-            results.add(attackWithWeapon(attacker, defender, weapon));
-        }
-
-        if (attacker instanceof PlayerEntity) {
-            Display.getRootMenu().writeEnemyInfo(defender);
-        }
-
-        return results;
-
-    }
-
-    public static AttackResult doAttack(Entity attacker, Entity defender, Weapon attackerWeapon){
-        // TODO: add support for multiple OverridesAttack at the same time
-        OverridesAttack overridesAttack = (OverridesAttack)attacker.getStatusByClass(OverridesAttack.class);
-        if (overridesAttack != null){
-            return overridesAttack.overrideAttack(attacker, defender, attackerWeapon);
-        }
-
-        AttackResult result = attackWithWeapon(attacker, defender, attackerWeapon);
-
-        if (attacker instanceof PlayerEntity && result.hit()) {
-            Display.getRootMenu().writeEnemyInfo(defender);
-        }
-
-        return result;
-    }
-
-    private static AttackResult attackWithWeapon(Entity attacker, Entity defender, Weapon attackerWeapon){
-        return new Attack(attacker, defender, attackerWeapon).execute();
     }
 
     public Optional<Space> getSpaceByAngle(Space origin, Angle angle, int offset){
