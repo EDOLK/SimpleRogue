@@ -31,18 +31,18 @@ import org.hexworks.zircon.api.graphics.StyleSet;
 import org.hexworks.zircon.api.uievent.KeyboardEvent;
 import org.hexworks.zircon.api.uievent.UIEventPhase;
 import org.hexworks.zircon.api.uievent.UIEventResponse;
+
 import game.App;
 import game.CheckConditions;
 import game.Dungeon;
-import game.Line;
 import game.display.Display.Mode;
 import game.display.KeyMap.Action;
-import game.gamelogic.Aimable;
 import game.gamelogic.Experiential;
 import game.gamelogic.Interactable;
 import game.gamelogic.Levelable;
 import game.gamelogic.OverridesPlayerInput;
 import game.gamelogic.combat.Attack;
+import game.gamelogic.floorinteraction.SelectionResult;
 import game.gamelogic.floorinteraction.Selector;
 import game.gamelogic.floorinteraction.SimpleSelector;
 import game.gameobjects.DisplayableTile;
@@ -51,7 +51,6 @@ import game.gameobjects.Space;
 import game.gameobjects.entities.Door;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.entities.PlayerEntity;
-import game.gameobjects.entities.ThrownItem;
 import game.gameobjects.entities.Wall;
 import game.gameobjects.items.Item;
 import game.gameobjects.statuses.Status;
@@ -192,7 +191,7 @@ public final class FloorMenu extends Menu{
             draw(cursor.getTile(), Position.create(cursorSpace.getX(), cursorSpace.getY()));
             if (
                 (cursor.getSelectedSpace().getLight() > 0 && playerEntity.isWithinVision(cursorSpace)) || 
-                (playerEntity.isWithinVision(cursorSpace) && Space.getDistance(playerEntity.getSpace(), cursorSpace) <= playerEntity.getNightVisionRange())
+                (playerEntity.isWithinVision(cursorSpace) && Space.manDist(playerEntity.getSpace(), cursorSpace) <= playerEntity.getNightVisionRange())
             ) {
                 cursor.collectExaminables();
                 setExamineTooltip();
@@ -753,9 +752,13 @@ public final class FloorMenu extends Menu{
                 break;
             case INTERACT_TOGGLE: //select current
             case SUBMIT: //select current
-                if (selector.select(getCursor())) {
+                SelectionResult result = selector.select(getCursor());
+                if (result.isSubmitted()) {
                     toggleExamination();
                     currentState = State.INGAME;
+                    if (result.getTimeTaken() > 0) {
+                        Dungeon.update(result.getTimeTaken());
+                    }
                     Display.update();
                 }
                 break;
@@ -778,73 +781,54 @@ public final class FloorMenu extends Menu{
     }
 
     private UIEventResponse handleSelectingSimple(KeyboardEvent event, UIEventPhase phase, SimpleSelector simpleSelector) {
+        SelectionResult result = null;
         switch (Display.getKeyMap().getAction(event.getCode())) {
             case ESCAPE:
                 currentState = State.INGAME;
                 break;
             case CENTER:
-                if (attemptSelect(0, 0, simpleSelector)) {
-                    currentState = State.INGAME;
-                    Display.update();
-                }
+                result = attemptSelect(0, 0, simpleSelector);
                 break;
             case UP: //up
-                if (attemptSelect(0, -1, simpleSelector)) {
-                    currentState = State.INGAME;
-                    Display.update();
-                }
+                result = attemptSelect(0, -1, simpleSelector);
                 break;
             case DOWN: //down
-                if (attemptSelect(0, 1, simpleSelector)) {
-                    currentState = State.INGAME;
-                    Display.update();
-                }
+                result = attemptSelect(0, 1, simpleSelector);
                 break;
             case LEFT: //left
-                if (attemptSelect(-1, 0, simpleSelector)) {
-                    currentState = State.INGAME;
-                    Display.update();
-                }
+                result = attemptSelect(-1, 0, simpleSelector);
                 break;
             case RIGHT: //right
-                if (attemptSelect(1, 0, simpleSelector)) {
-                    currentState = State.INGAME;
-                    Display.update();
-                }
+                result = attemptSelect(1, 0, simpleSelector);
                 break;
             case UP_LEFT: //up-left
-                if (attemptSelect(-1, -1, simpleSelector)) {
-                    currentState = State.INGAME;
-                    Display.update();
-                }
+                result = attemptSelect(-1, -1, simpleSelector);
                 break;
             case UP_RIGHT: //up-right
-                if (attemptSelect(1, -1, simpleSelector)) {
-                    currentState = State.INGAME;
-                    Display.update();
-                }
+                result = attemptSelect(1, -1, simpleSelector);
                 break;
             case DOWN_LEFT: //down-left
-                if (attemptSelect(-1, 1, simpleSelector)) {
-                    currentState = State.INGAME;
-                    Display.update();
-                }
+                result = attemptSelect(-1, 1, simpleSelector);
                 break;
             case DOWN_RIGHT: //down-right
-                if (attemptSelect(1, 1, simpleSelector)) {
-                    currentState = State.INGAME;
-                    Display.update();
-                }
+                result = attemptSelect(1, 1, simpleSelector);
                 break;
             default:
                 break;
         }
+        if (result != null && result.isSubmitted()) {
+            currentState = State.INGAME;
+            if (result.getTimeTaken() > 0) {
+                Dungeon.update(result.getTimeTaken());
+            }
+            Display.update();
+        }
         return UIEventResponse.processed();
     }
 
-    private boolean attemptSelect(int toX, int toY, SimpleSelector simpleSelector){
+    private SelectionResult attemptSelect(int toX, int toY, SimpleSelector simpleSelector){
         if (toX < -1 || toX > 1 || toY < -1 || toY > 1){
-            return false;
+            return new SelectionResult(false, 0);
         }
         PlayerEntity playerEntity = currentFloor.getPlayer();
         int x = playerEntity.getX();
@@ -892,20 +876,20 @@ public final class FloorMenu extends Menu{
     public class InteractSelector implements SimpleSelector{
 
         @Override
-        public boolean simpleSelect(Space space) {
+        public SelectionResult simpleSelect(Space space) {
             PlayerEntity playerEntity = currentFloor.getPlayer();
 
             if (space.isOccupied() && space.getOccupant() instanceof Interactable interactibleEntity){
                 interactibleEntity.onInteract(playerEntity);
                 Dungeon.update(50);
-                return true;
+                return new SelectionResult(true, 0);
             }
 
             for (Item item : space.getItems()) {
                 if (item instanceof Interactable interactibleItem){
                     interactibleItem.onInteract(playerEntity);
                     Dungeon.update(50);
-                    return true;
+                    return new SelectionResult(true, 0);
                 }
             }
             
@@ -913,11 +897,11 @@ public final class FloorMenu extends Menu{
                 if (terrain instanceof Interactable interactibleTerrain){
                     interactibleTerrain.onInteract(playerEntity);
                     Dungeon.update(50);
-                    return true;
+                    return new SelectionResult(true, 0);
                 }
             }
 
-            return true;
+            return new SelectionResult(true, 0);
 
         }
 
@@ -926,11 +910,11 @@ public final class FloorMenu extends Menu{
     public class ExamineSelector implements Selector{
 
         @Override
-        public boolean select(Cursor cursor) {
+        public SelectionResult select(Cursor cursor) {
             if (cursor.getExamined() != null){
                 Display.setMenu(new ExamineMenu(getCursor().getExamined()));
             }
-            return false;
+            return new SelectionResult(false, 0);
         }
 
         @Override
@@ -943,9 +927,9 @@ public final class FloorMenu extends Menu{
     public class GetSelector implements SimpleSelector{
 
         @Override
-        public boolean simpleSelect(Space space) {
+        public SelectionResult simpleSelect(Space space) {
             Display.setMenu(ItemSelectMenu.createPickupMenu(space, currentFloor.getPlayer()));
-            return true;
+            return new SelectionResult(true, 0);
         }
 
     }
@@ -953,9 +937,9 @@ public final class FloorMenu extends Menu{
     public class DropSelector implements SimpleSelector{
 
         @Override
-        public boolean simpleSelect(Space space) {
+        public SelectionResult simpleSelect(Space space) {
             Display.setMenu(ItemSelectMenu.createDropMenu(space, currentFloor.getPlayer()));
-            return true;
+            return new SelectionResult(true, 0);
         }
 
     }
@@ -969,53 +953,10 @@ public final class FloorMenu extends Menu{
         }
 
         @Override
-        public boolean simpleSelect(Space space) {
+        public SelectionResult simpleSelect(Space space) {
             space.addItem(item);
             currentFloor.getPlayer().removeItemFromInventory(item);
-            return true;
-        }
-
-    }
-
-    public class AimSelector implements Selector {
-
-        private Aimable throwingItem;
-
-        public AimSelector(Aimable throwingItem) {
-            this.throwingItem = throwingItem;
-        }
-
-        @Override
-        public boolean select(Cursor cursor) {
-            Space aimingSpace = cursor.getSelectedSpace();
-            if (currentFloor.getPlayer().getSpace() == aimingSpace){
-                throwingItem.onHit(currentFloor.getPlayer());
-                if (throwingItem.landsOnHit()){
-                    throwingItem.onLand(currentFloor.getPlayer().getSpace());
-                }
-            } else {
-                List<Space> path = Line.getLineAsListInclusive(currentFloor.getPlayer().getSpace(), aimingSpace);
-                path.remove(0);
-                Space spawnSpace = path.get(0);
-                ThrownItem thrownItem = new ThrownItem(throwingItem, spawnSpace, aimingSpace, 6);
-                if (!spawnSpace.isOccupied()){
-                    spawnSpace.setOccupant(thrownItem);
-                } else {
-                    throwingItem.onHit(spawnSpace.getOccupant());
-                    if (throwingItem.landsOnHit()){
-                        throwingItem.onLand(spawnSpace);
-                    }
-                }
-            }
-            if (throwingItem instanceof Item item){
-                currentFloor.getPlayer().removeItemFromInventory(item);
-            }
-            return true;
-        }
-
-        @Override
-        public boolean canMove(Cursor cursor, Space toSpace) {
-            return true;
+            return new SelectionResult(true, 0);
         }
 
     }

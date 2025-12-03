@@ -7,12 +7,12 @@ import java.util.stream.Stream;
 
 import org.hexworks.zircon.api.uievent.UIEventResponse;
 
-import game.gamelogic.Aimable;
 import game.gamelogic.Consumable;
 import game.gamelogic.Examinable;
 import game.gamelogic.HasInventory;
 import game.gamelogic.Upgradable;
 import game.gamelogic.Upgrader;
+import game.gamelogic.floorinteraction.AimSelector;
 import game.gameobjects.ArmorSlot;
 import game.gameobjects.ItemSlot;
 import game.gameobjects.ItemStack;
@@ -236,15 +236,15 @@ public class ItemSelectMenu extends Menu{
         Display.populateMenu(
             menu,
             (stack) -> {
-                Item item = stack.getItem();
-                if (item instanceof Aimable aimable) {
-                    Display.getRootMenu().startSelecting(Display.getRootMenu().new AimSelector(aimable));
+                if (hasInventory instanceof Entity entity) {
+                    Item item = stack.getItem();
+                    Display.getRootMenu().startSelecting(new AimSelector(item, entity));
                     return UIEventResponse.processed();
                 }
                 return UIEventResponse.pass();
             },
             "Throw",
-            ItemStack.toItemStackSet(hasInventory.getInventory().stream().filter(i -> i instanceof Aimable).collect(Collectors.toList()))
+            ItemStack.toItemStackSet(hasInventory.getInventory())
         );
         return menu;
     }

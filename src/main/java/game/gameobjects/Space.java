@@ -18,31 +18,6 @@ import game.gameobjects.terrains.Terrain;
 
 public class Space extends DisplayableTile{
 
-    public static class SpaceOccupiedException extends Exception {
-
-        private final Entity occupant;
-        private final Space occupiedSpace;
-
-        public SpaceOccupiedException(Entity occupant){
-            this.occupant = occupant;
-            this.occupiedSpace = occupant.getSpace();
-        }
-
-        public SpaceOccupiedException(Space space){
-            this.occupiedSpace = space;
-            this.occupant = space.getOccupant();
-        }
-
-        public Entity getOccupant() {
-            return occupant;
-        }
-
-        public Space getOccupiedSpace(){
-            return occupiedSpace;
-        }
-
-    }
-
     public static MovementResult moveEntity(Entity entity, Space toSpace){
 
         MovementResult result = new MovementResult()
@@ -272,8 +247,12 @@ public class Space extends DisplayableTile{
         return list;
     }
 
-    public static int getDistance(Space s1, Space s2){
+    public static int manDist(Space s1, Space s2){
         return Math.max(Math.abs(s1.getX()-s2.getX()),Math.abs(s1.getY()-s2.getY()));
+    }
+
+    public static int euclidDist(Space s1, Space s2){
+        return (int)Math.sqrt(Math.pow(Math.abs(s1.getX() - s2.getX()),2) + Math.pow(Math.abs(s1.getY() - s2.getY()),2));
     }
 
 }

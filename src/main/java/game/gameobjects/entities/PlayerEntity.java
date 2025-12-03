@@ -98,6 +98,7 @@ public class PlayerEntity extends Entity implements Armored, Armed, Levelable, E
         offHandSlot.setEquippedItem(new Torch(true));
 
         this.enduranceHPMult = 3;
+
     }
 
     @Override

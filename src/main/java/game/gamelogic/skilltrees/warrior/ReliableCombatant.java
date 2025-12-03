@@ -9,6 +9,7 @@ import game.gamelogic.behavior.Behavable;
 import game.gamelogic.combat.Attack;
 import game.gamelogic.combat.AttackModifier;
 import game.gamelogic.combat.PostAttackHook;
+import game.gamelogic.floorinteraction.SelectionResult;
 import game.gameobjects.entities.Animal;
 import game.gameobjects.entities.Entity;
 
@@ -107,7 +108,7 @@ public class ReliableCombatant implements Ability, Behavable, AccuracyModifier, 
                 turns = getCoolDown();
                 Dungeon.update(owner.getTimeToAttack());
             }
-            return true;
+            return new SelectionResult(true, 0);
         });
     }
 

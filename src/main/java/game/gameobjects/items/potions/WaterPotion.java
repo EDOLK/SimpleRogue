@@ -4,13 +4,14 @@ import org.hexworks.zircon.api.color.TileColor;
 
 import game.gamelogic.Aimable;
 import game.gameobjects.Space;
-import game.gameobjects.entities.Entity;
 import game.gameobjects.items.Item;
 import game.gameobjects.statuses.Wet;
 import game.gameobjects.terrains.liquids.Water;
 
 public class WaterPotion extends Item implements Aimable{
     
+    private Water water;
+
     public WaterPotion(){
         setName("Water Potion");
         setTileName("Blue Potion");
@@ -22,18 +23,22 @@ public class WaterPotion extends Item implements Aimable{
     }
 
     @Override
-    public void onHit(Entity target) {
-        target.addStatus(new Wet(new Water(1)));
+    public boolean collides(Space space) {
+        return space.isOccupied();
     }
 
     @Override
     public void onLand(Space space) {
-        space.addTerrain(new Water(10));
+        this.water = new Water(10);
+        space.addTerrain(this.water);
     }
 
     @Override
-    public boolean landsOnHit() {
-        return true;
+    public void onCollision(Space beforeSpace, Space collidingSpace) {
+        onLand(collidingSpace);
+        if (this.water != null) {
+            collidingSpace.getOccupant().addStatus(new Wet(this.water));
+        }
     }
-    
+
 }
