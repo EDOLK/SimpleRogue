@@ -1,6 +1,5 @@
 package game.gameobjects.terrains.projectiles;
 
-import java.util.Iterator;
 import java.util.List;
 
 import org.hexworks.zircon.api.data.Tile;
@@ -23,8 +22,9 @@ public class ThrownItem extends Projectile implements LightSource, Examinable{
     private Item item;
     private Integer throwerStrength;
 
-    private ThrownItem(Iterator<Space> spaceIterator, Item item) {
-        super(spaceIterator);
+    private ThrownItem(List<Space> list, int throwerStrength, Item item) {
+        super(list.iterator());
+        this.throwerStrength = throwerStrength;
         this.item = item;
     }
 
@@ -32,9 +32,8 @@ public class ThrownItem extends Projectile implements LightSource, Examinable{
 
         int perception = Skill.getSkill(Skill.PERCEPTION, thrower);
         int strength = Attribute.getAttribute(Attribute.STRENGTH, thrower);
-        int timeToMove = (int)App.lerp(0, 30, 20, 5, strength);
 
-        int maxDistAllowed = 5 + (strength * 3) - (item.getWeight()/5);
+        int maxDistAllowed = 6 + (strength * 3) - (item.getWeight()/5);
 
         List<Space> path = Line.getLineAsListInclusive(thrower.getSpace(), toSpace);
 
@@ -56,11 +55,7 @@ public class ThrownItem extends Projectile implements LightSource, Examinable{
         );
         path = path.subList(1, path.size());
 
-        ThrownItem t = new ThrownItem(path.iterator(), item);
-        t.throwerStrength = strength;
-        t.timeToMove = timeToMove;
-
-        return t;
+        return new ThrownItem(path, strength, item);
     }
 
     @Override
@@ -114,6 +109,11 @@ public class ThrownItem extends Projectile implements LightSource, Examinable{
     @Override
     public String getDescription() {
         return item.getDescription();
+    }
+
+    @Override
+    public int getTimeToMove() {
+        return (int)App.lerp(0, 30, 20, 5, throwerStrength);
     }
 
 }

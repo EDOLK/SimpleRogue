@@ -19,9 +19,8 @@ public class LimitedIterator<T> implements Iterator<T> {
 
     @Override
     public T next() {
-        T next = iterator.next();
         limit--;
-        return next;
+        return iterator.next();
     }
 
 }

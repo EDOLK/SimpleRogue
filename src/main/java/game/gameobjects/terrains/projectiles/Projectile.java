@@ -14,8 +14,6 @@ public abstract class Projectile extends Terrain implements Behavable, SelfAware
     
     private Space space;
 
-    protected int timeToMove;
-
     public Projectile(Iterator<Space> spaceIterator){
         this.spaceIterator = spaceIterator;
     }
@@ -42,7 +40,7 @@ public abstract class Projectile extends Terrain implements Behavable, SelfAware
         } else {
             onLand(currSpace);
         }
-        return timeToMove;
+        return getTimeToMove();
     }
 
     @Override
@@ -68,13 +66,7 @@ public abstract class Projectile extends Terrain implements Behavable, SelfAware
         this.spaceIterator = spaceIterator;
     }
 
-    public int getTimeToMove() {
-        return timeToMove;
-    }
-
-    public void setTimeToMove(int timeToMove) {
-        this.timeToMove = timeToMove;
-    }
+    public abstract int getTimeToMove();
 
     public abstract boolean collides(Space space);
 

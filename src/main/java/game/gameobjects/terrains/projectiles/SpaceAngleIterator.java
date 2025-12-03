@@ -7,22 +7,19 @@ import game.gameobjects.Space;
 
 public class SpaceAngleIterator extends AngleIterator {
 
-    private Optional<Space> ls;
+    private Optional<Space> ls = Optional.empty();
 
     public SpaceAngleIterator(Space origin, Angle angle) {
         super(origin, angle);
+        ls = Optional.of(origin);
     }
 
     @Override
     public boolean hasNext() {
-        if (ns != null) {
-            boolean n = super.hasNext();
-            while (ns.get() == ls.get()) {
-                n = super.hasNext();
-            }
-            return n;
-        }
         boolean n = super.hasNext();
+        while (ls.get() == ns.get()) {
+            n = super.hasNext();
+        }
         ls = ns;
         return n;
     }
