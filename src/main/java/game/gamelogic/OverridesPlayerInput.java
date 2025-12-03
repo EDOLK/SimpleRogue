@@ -7,6 +7,7 @@ import org.hexworks.zircon.api.uievent.UIEventResponse;
 import game.display.Display;
 import game.display.KeyMap.Action;
 import game.display.PauseMenu;
+import game.gamelogic.floorinteraction.ExamineSelector;
 
 public interface OverridesPlayerInput {
     default UIEventResponse handleKeyboardEvent(KeyboardEvent event, UIEventPhase phase){
@@ -16,7 +17,7 @@ public interface OverridesPlayerInput {
             return UIEventResponse.processed();
         }
         if (action == Action.EXAMINE_TOGGLE){
-            Display.getRootMenu().startSelecting(Display.getRootMenu().new ExamineSelector());
+            Display.getRootMenu().startSelecting(new ExamineSelector());
             return UIEventResponse.processed();
         }
         return UIEventResponse.pass();

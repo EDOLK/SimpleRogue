@@ -38,10 +38,13 @@ import game.Dungeon;
 import game.display.Display.Mode;
 import game.display.KeyMap.Action;
 import game.gamelogic.Experiential;
-import game.gamelogic.Interactable;
 import game.gamelogic.Levelable;
 import game.gamelogic.OverridesPlayerInput;
 import game.gamelogic.combat.Attack;
+import game.gamelogic.floorinteraction.DropSelector;
+import game.gamelogic.floorinteraction.ExamineSelector;
+import game.gamelogic.floorinteraction.GetSelector;
+import game.gamelogic.floorinteraction.InteractSelector;
 import game.gamelogic.floorinteraction.SelectionResult;
 import game.gamelogic.floorinteraction.Selector;
 import game.gamelogic.floorinteraction.SimpleSelector;
@@ -596,10 +599,10 @@ public final class FloorMenu extends Menu{
                 break;
             case CENTER: //wait
                 addToLog("waiting...");
-                time = Dungeon.getCurrentFloor().getPlayer().getTimeToWait();
+                time = currentFloor.getPlayer().getTimeToWait();
                 break;
             case INTERACT_TOGGLE: //Interact
-                startSelecting(new InteractSelector());
+                startSelecting(new InteractSelector(currentFloor.getPlayer()));
                 break;
             case ESCAPE: //pause
                 Display.setMenu(new PauseMenu());
@@ -608,13 +611,13 @@ public final class FloorMenu extends Menu{
                 startSelecting(new ExamineSelector());
                 break;
             case GET_TOGGLE: //getting
-                startSelecting(new GetSelector());
+                startSelecting(new GetSelector(currentFloor.getPlayer()));
                 break;
             case EQUIPMENT: //equiping
                 Display.setMenu(EquipmentMenu.createEquipEquipmentMenu(currentFloor.getPlayer()));
                 break;
             case DROP_TOGGLE: //dropping
-                startSelecting(new DropSelector());
+                startSelecting(new DropSelector(currentFloor.getPlayer()));
                 break;
             case CONSUME: //consuming
                 Display.setMenu(ItemSelectMenu.createConsumableSelectMenu(currentFloor.getPlayer()));
@@ -872,94 +875,5 @@ public final class FloorMenu extends Menu{
         this.update();
         return this;
     }
-
-    public class InteractSelector implements SimpleSelector{
-
-        @Override
-        public SelectionResult simpleSelect(Space space) {
-            PlayerEntity playerEntity = currentFloor.getPlayer();
-
-            if (space.isOccupied() && space.getOccupant() instanceof Interactable interactibleEntity){
-                interactibleEntity.onInteract(playerEntity);
-                Dungeon.update(50);
-                return new SelectionResult(true, 0);
-            }
-
-            for (Item item : space.getItems()) {
-                if (item instanceof Interactable interactibleItem){
-                    interactibleItem.onInteract(playerEntity);
-                    Dungeon.update(50);
-                    return new SelectionResult(true, 0);
-                }
-            }
-            
-            for (Terrain terrain : space.getTerrains()){
-                if (terrain instanceof Interactable interactibleTerrain){
-                    interactibleTerrain.onInteract(playerEntity);
-                    Dungeon.update(50);
-                    return new SelectionResult(true, 0);
-                }
-            }
-
-            return new SelectionResult(true, 0);
-
-        }
-
-    }
-
-    public class ExamineSelector implements Selector{
-
-        @Override
-        public SelectionResult select(Cursor cursor) {
-            if (cursor.getExamined() != null){
-                Display.setMenu(new ExamineMenu(getCursor().getExamined()));
-            }
-            return new SelectionResult(false, 0);
-        }
-
-        @Override
-        public boolean canMove(Cursor cursor, Space toSpace) {
-            return true;
-        }
-
-    }
-
-    public class GetSelector implements SimpleSelector{
-
-        @Override
-        public SelectionResult simpleSelect(Space space) {
-            Display.setMenu(ItemSelectMenu.createPickupMenu(space, currentFloor.getPlayer()));
-            return new SelectionResult(true, 0);
-        }
-
-    }
-
-    public class DropSelector implements SimpleSelector{
-
-        @Override
-        public SelectionResult simpleSelect(Space space) {
-            Display.setMenu(ItemSelectMenu.createDropMenu(space, currentFloor.getPlayer()));
-            return new SelectionResult(true, 0);
-        }
-
-    }
-
-    public class DropDirectSelector implements SimpleSelector {
-
-        private Item item;
-
-        public DropDirectSelector(Item item) {
-            this.item = item;
-        }
-
-        @Override
-        public SelectionResult simpleSelect(Space space) {
-            space.addItem(item);
-            currentFloor.getPlayer().removeItemFromInventory(item);
-            return new SelectionResult(true, 0);
-        }
-
-    }
-    
  
 }
