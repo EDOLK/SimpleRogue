@@ -12,6 +12,7 @@ import game.gamelogic.Examinable;
 import game.gamelogic.HasInventory;
 import game.gamelogic.Upgradable;
 import game.gamelogic.Upgrader;
+import game.gamelogic.floorinteraction.AimSelector;
 import game.gameobjects.ArmorSlot;
 import game.gameobjects.ItemSlot;
 import game.gameobjects.ItemStack;
@@ -237,7 +238,7 @@ public class ItemSelectMenu extends Menu{
             (stack) -> {
                 if (hasInventory instanceof Entity entity) {
                     Item item = stack.getItem();
-                    Display.getRootMenu().startSelecting(Display.getRootMenu().new AimSelector(item, entity));
+                    Display.getRootMenu().startSelecting(new AimSelector(item, entity));
                     return UIEventResponse.processed();
                 }
                 return UIEventResponse.pass();

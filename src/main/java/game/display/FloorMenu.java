@@ -38,7 +38,6 @@ import game.Dungeon;
 import game.display.Display.Mode;
 import game.display.KeyMap.Action;
 import game.gamelogic.Experiential;
-import game.gamelogic.HasInventory;
 import game.gamelogic.Interactable;
 import game.gamelogic.Levelable;
 import game.gamelogic.OverridesPlayerInput;
@@ -58,7 +57,6 @@ import game.gameobjects.statuses.Status;
 import game.gameobjects.terrains.OpenDoor;
 import game.gameobjects.terrains.Staircase;
 import game.gameobjects.terrains.Terrain;
-import game.gameobjects.terrains.projectiles.ThrownItem;
 
 public final class FloorMenu extends Menu{
 
@@ -959,33 +957,6 @@ public final class FloorMenu extends Menu{
             space.addItem(item);
             currentFloor.getPlayer().removeItemFromInventory(item);
             return new SelectionResult(true, 0);
-        }
-
-    }
-
-    public class AimSelector implements Selector {
-
-        private Item item;
-        private Entity thrower;
-
-        public AimSelector(Item item, Entity thrower) {
-            this.item = item;
-            this.thrower = thrower;
-        }
-
-        @Override
-        public SelectionResult select(Cursor cursor) {
-            Space aimingSpace = cursor.getSelectedSpace();
-            if (ThrownItem.throwItem(thrower, aimingSpace, item) != null && thrower instanceof HasInventory hi && hi.getInventory().contains(item))
-                hi.removeItemFromInventory(item);
-
-            //TODO: different throwing times based on item weight, thrower strength, etc.
-            return new SelectionResult(true, 100);
-        }
-
-        @Override
-        public boolean canMove(Cursor cursor, Space toSpace) {
-            return true;
         }
 
     }

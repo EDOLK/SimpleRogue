@@ -1,12 +1,14 @@
 package game.gameobjects.terrains.projectiles;
 
 import java.util.Iterator;
+import java.util.List;
 
 import org.hexworks.zircon.api.data.Tile;
 
 import game.App;
+import game.Dungeon;
+import game.Line;
 import game.gamelogic.Aimable;
-import game.gamelogic.Angle;
 import game.gamelogic.Attribute;
 import game.gamelogic.Examinable;
 import game.gamelogic.LightSource;
@@ -21,25 +23,43 @@ public class ThrownItem extends Projectile implements LightSource, Examinable{
     private Item item;
     private Integer throwerStrength;
 
-    private ThrownItem(Space origin, Iterator<Space> spaceIterator, Item item) {
-        super(origin, spaceIterator);
+    private ThrownItem(Iterator<Space> spaceIterator, Item item) {
+        super(spaceIterator);
         this.item = item;
     }
 
-    // FIXME: Overshoots by one when perception is 20
     public static ThrownItem throwItem(Entity thrower, Space toSpace, Item item){
+
         int perception = Skill.getSkill(Skill.PERCEPTION, thrower);
-        int inaccuracy = (int)App.lerp(0, 45, 20, 0, perception);
-        int variation = App.randomNumber(inaccuracy*-1, inaccuracy);
         int strength = Attribute.getAttribute(Attribute.STRENGTH, thrower);
         int timeToMove = (int)App.lerp(0, 30, 20, 5, strength);
-        Space origin = thrower.getSpace();
-        Angle angle = Angle.of(origin, toSpace);
-        angle.setDegree(angle.getDegree() + variation);
-        int dist = Math.min(Space.euclidDist(origin, toSpace), 5 + (strength * 3) - (item.getWeight()/5));
-        ThrownItem t = new ThrownItem(origin, new LimitedAngleIterator(origin, angle, dist), item);
+
+        int maxDistAllowed = 5 + (strength * 3) - (item.getWeight()/5);
+
+        List<Space> path = Line.getLineAsListInclusive(thrower.getSpace(), toSpace);
+
+        int dist = Math.min(path.size(), maxDistAllowed);
+
+        path = path.subList(0, dist);
+
+        Space finalPathSpace = path.get(path.size()-1);
+
+        int manDist = Space.manDist(thrower.getSpace(), finalPathSpace);
+        int inaccuracyRange = (int)App.lerp(0, manDist/5, 20, 0, perception);
+
+        int x = finalPathSpace.getX() + (App.randomNumber(-inaccuracyRange, inaccuracyRange));
+        int y = finalPathSpace.getY() + (App.randomNumber(-inaccuracyRange, inaccuracyRange));
+
+        path = Line.getLineAsListInclusive(
+            thrower.getSpace(),
+            Dungeon.getCurrentFloor().getClampedSpace(x, y)
+        );
+        path = path.subList(1, path.size());
+
+        ThrownItem t = new ThrownItem(path.iterator(), item);
         t.throwerStrength = strength;
         t.timeToMove = timeToMove;
+
         return t;
     }
 

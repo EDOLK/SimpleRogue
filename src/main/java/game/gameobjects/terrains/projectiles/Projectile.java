@@ -1,7 +1,6 @@
 package game.gameobjects.terrains.projectiles;
 
 import java.util.Iterator;
-import java.util.List;
 
 import game.gamelogic.Angle;
 import game.gamelogic.SelfAware;
@@ -17,22 +16,9 @@ public abstract class Projectile extends Terrain implements Behavable, SelfAware
 
     protected int timeToMove;
 
-    public Projectile(Space origin, Iterator<Space> spaceIterator){
-        origin.addTerrain(this);
+    public Projectile(Iterator<Space> spaceIterator){
         this.spaceIterator = spaceIterator;
     }
-
-    public Projectile(Space origin, Angle angle, int limit){
-        this(origin, new LimitedAngleIterator(origin, angle, limit));
-    };
-
-    public Projectile(Space origin, Angle angle){
-        this(origin, new AngleIterator(origin, angle));
-    };
-
-    public Projectile(List<Space> path){
-        this(path.get(0), path.subList(1, path.size()).iterator());
-    };
 
     @Override
     public int behave() {

@@ -16,6 +16,7 @@ import org.hexworks.zircon.api.uievent.UIEventResponse;
 import game.gamelogic.Consumable;
 import game.gamelogic.Interactable;
 import game.gamelogic.Scrollable;
+import game.gamelogic.floorinteraction.AimSelector;
 import game.gameobjects.ArmorSlot;
 import game.gameobjects.entities.PlayerEntity;
 import game.gameobjects.items.Item;
@@ -179,7 +180,7 @@ public class ItemContextMenu extends Menu{
             .build();
         throwButton.handleComponentEvents(ComponentEventType.ACTIVATED, (event) ->{
             Display.getRootMenu().startSelecting(
-                Display.getRootMenu().new AimSelector(item, playerEntity)
+                new AimSelector(item, playerEntity)
             );
             return UIEventResponse.processed();
         });
