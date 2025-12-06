@@ -7,18 +7,17 @@ import org.hexworks.zircon.api.color.TileColor;
 import game.display.Display;
 import game.gamelogic.Examinable;
 import game.gamelogic.Flammable;
-import game.gamelogic.Interactable;
+import game.gamelogic.interactions.HasInteraction;
+import game.gamelogic.interactions.Interaction;
+import game.gamelogic.interactions.InteractionResult;
 import game.gameobjects.DamageType;
 import game.gameobjects.entities.Door;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.statuses.Burning;
 
-public class OpenDoor extends Terrain implements Interactable, Examinable, Flammable{
+public class OpenDoor extends Terrain implements Examinable, Flammable, HasInteraction{
     
     private Door door;
-    public String name;
-    public String description;
-    public String stats;
 
     public OpenDoor(Door door){
         super(TileColor.transparent(), TileColor.create(181, 88, 45, 255), '\\');
@@ -26,15 +25,27 @@ public class OpenDoor extends Terrain implements Interactable, Examinable, Flamm
         this.door = door;
     }
 
-    @Override
-    public void onInteract(Entity interactor) {
+    public int closeDoor(Entity interactor){
         if (door.getSpace().isOccupied()){
-            Display.log("Something is in the way.");
-        } else {
-            door.getSpace().removeTerrain(this);
-            door.getSpace().setOccupant(door);
-            Display.update();
+            Display.log("Something is in the way.", door.getSpace());
+            return 0;
         }
+        door.getSpace().removeTerrain(this);
+        door.getSpace().setOccupant(door);
+        Display.update();
+        return interactor.getTimeToMove();
+    }
+
+    @Override
+    public Interaction getInteraction() {
+        return new Interaction.Builder()
+            .withName("Close")
+            .withOnInteract((interactor) -> {
+                return InteractionResult.create()
+                    .withTimeTaken(closeDoor(interactor))
+                    .withRevertMenu();
+            })
+            .build();
     }
 
     @Override

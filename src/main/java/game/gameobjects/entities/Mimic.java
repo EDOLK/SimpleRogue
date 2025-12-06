@@ -12,9 +12,11 @@ import game.App;
 import game.display.Display;
 import game.gamelogic.DropsXP;
 import game.gamelogic.HasInventory;
-import game.gamelogic.Interactable;
 import game.gamelogic.behavior.AnimalHunting;
 import game.gamelogic.combat.Attack;
+import game.gamelogic.interactions.HasInteraction;
+import game.gamelogic.interactions.Interaction;
+import game.gamelogic.interactions.InteractionResult;
 import game.gameobjects.DamageType;
 import game.gameobjects.items.Item;
 import game.gameobjects.items.weapons.Weapon;
@@ -22,7 +24,7 @@ import game.gameobjects.statuses.PseudoStatus;
 import game.gameobjects.statuses.Sleeping;
 import game.gameobjects.statuses.Status;
 
-public class Mimic extends Animal implements Interactable, DropsXP, HasInventory{
+public class Mimic extends Animal implements DropsXP, HasInventory, HasInteraction{
 
     private boolean activated;
     private int activeTimer;
@@ -130,15 +132,6 @@ public class Mimic extends Animal implements Interactable, DropsXP, HasInventory
         return super.isActive() && activated;
     }
 
-    @Override
-    public int defaultInteraction(Entity interactor) {
-        if (!activated) {
-            activate(interactor);
-            return interactor.getTimeToWait();
-        }
-        return super.defaultInteraction(interactor);
-    }
-
     private void activate(Entity activator){
         Display.log("The " + getName() + " is a mimic!", getSpace());
         activated = true;
@@ -172,9 +165,12 @@ public class Mimic extends Animal implements Interactable, DropsXP, HasInventory
     }
 
     @Override
-    public void onInteract(Entity interactor) {
-        if (!activated)
+    public int defaultInteraction(Entity interactor) {
+        if (!activated) {
             activate(interactor);
+            return interactor.getTimeToWait();
+        }
+        return super.defaultInteraction(interactor);
     }
 
     @Override
@@ -190,6 +186,19 @@ public class Mimic extends Animal implements Interactable, DropsXP, HasInventory
     @Override
     public int getHardWeightLimit() {
         return 999;
+    }
+
+    @Override
+    public Interaction getInteraction() {
+        return new Interaction.Builder()
+            .withName("???")
+            .withOnInteract((interactor) -> {
+                if (!activated)
+                    activate(interactor);
+                return InteractionResult.create()
+                    .withTimeTaken(interactor.getTimeToWait());
+            })
+            .build();
     }
 
 }

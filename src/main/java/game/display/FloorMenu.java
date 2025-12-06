@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
-
+import java.util.stream.Collectors;
 import org.hexworks.zircon.api.ComponentDecorations;
 import org.hexworks.zircon.api.builder.component.HeaderBuilder;
 import org.hexworks.zircon.api.builder.component.LabelBuilder;
@@ -48,6 +48,7 @@ import game.gamelogic.floorinteraction.InteractSelector;
 import game.gamelogic.floorinteraction.SelectionResult;
 import game.gamelogic.floorinteraction.Selector;
 import game.gamelogic.floorinteraction.SimpleSelector;
+import game.gamelogic.interactions.HasInteractions;
 import game.gameobjects.DisplayableTile;
 import game.gameobjects.Floor;
 import game.gameobjects.Space;
@@ -639,6 +640,20 @@ public final class FloorMenu extends Menu{
                 break;
             case SKILL_TREES:
                 Display.setMenu(new SkillTreesMenu(currentFloor.getPlayer()));
+                break;
+            case USE:
+                Entity entity = currentFloor.getPlayer();
+                List<HasInteractions> interactables = App.concatStreams(
+                    HasInteractions.gather(entity, false).stream(),
+                    HasInteractions.gather(entity.getSpace()).stream(),
+                    Space.getAdjacentSpaces(entity.getSpace()).stream()
+                        .map(HasInteractions::gather)
+                        .flatMap(c -> c.stream())
+                    )
+                        .collect(Collectors.toList());
+                if (interactables.size() > 0) {
+                    Display.setMenu(new UseMenu(entity, interactables));
+                }
                 break;
             default:
                 return UIEventResponse.pass();

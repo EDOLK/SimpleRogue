@@ -1,10 +1,16 @@
 package game.gamelogic.floorinteraction;
 
-import game.gamelogic.Interactable;
+import java.util.Collection;
+import java.util.Optional;
+
+import game.display.Display;
+import game.display.UseMenu;
+import game.display.UseSubMenu;
+import game.gamelogic.interactions.HasInteractions;
+import game.gamelogic.interactions.Interaction;
+import game.gamelogic.interactions.InteractionResult;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Entity;
-import game.gameobjects.items.Item;
-import game.gameobjects.terrains.Terrain;
 
 public class InteractSelector implements SimpleSelector{
 
@@ -16,28 +22,25 @@ public class InteractSelector implements SimpleSelector{
 
     @Override
     public SelectionResult simpleSelect(Space space) {
-
-        if (space.isOccupied() && space.getOccupant() instanceof Interactable interactibleEntity){
-            interactibleEntity.onInteract(entity);
-            return new SelectionResult(true, 50);
-        }
-
-        for (Item item : space.getItems()) {
-            if (item instanceof Interactable interactibleItem){
-                interactibleItem.onInteract(entity);
-                return new SelectionResult(true, 50);
+        Collection<HasInteractions> his = HasInteractions.gather(space);
+        if (his.size() > 1) {
+            Display.setMenu(new UseMenu(entity, his));
+        } else {
+            Optional<HasInteractions> first = his.stream().findFirst();
+            if (first.isPresent()) {
+                Collection<Interaction> interactions = first.get().getInteractions();
+                if (interactions.size() > 1) {
+                    Display.setMenu(new UseSubMenu(entity, interactions));
+                } else {
+                    Optional<Interaction> fInter = interactions.stream().findFirst();
+                    if (fInter.isPresent()) {
+                        InteractionResult result = fInter.get().doInteract(entity);
+                        return new SelectionResult(true, result.timeTaken());
+                    }
+                }
             }
         }
-        
-        for (Terrain terrain : space.getTerrains()){
-            if (terrain instanceof Interactable interactibleTerrain){
-                interactibleTerrain.onInteract(entity);
-                return new SelectionResult(true, 50);
-            }
-        }
-
         return new SelectionResult(true, 0);
-
     }
 
 }

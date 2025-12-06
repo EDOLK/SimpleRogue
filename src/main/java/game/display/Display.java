@@ -212,18 +212,19 @@ public class Display {
     }
 
     @SafeVarargs
-    public static <L extends HasName> void populateMenu(Menu menu, Function<L,UIEventResponse> function, String label,L... l){
+    public static <L extends HasName> List<Pair<Button,L>> populateMenu(Menu menu, Function<L,UIEventResponse> function, String label,L... l){
         List<L> list = new ArrayList<L>();
         for (L l2 : l) {
             list.add(l2);
         }
-        populateMenu(menu, function, label, list);
+        return populateMenu(menu, function, label, list);
     }
 
-    public static <L extends HasName> void populateMenu(Menu menu, Function<L,UIEventResponse> function, String label, Collection<L> list){
+    public static <L extends HasName> List<Pair<Button,L>> populateMenu(Menu menu, Function<L,UIEventResponse> function, String label, Collection<L> list){
         Container container = createFittedContainer(menu.screen,label,list);
-        populateContainer(container, function, list);
+        List<Pair<Button,L>> l = populateContainer(container, function, list);
         menu.screen.addComponent(container);
+        return l;
     }
     
     @SafeVarargs

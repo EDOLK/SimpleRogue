@@ -4,12 +4,13 @@ import org.hexworks.zircon.api.color.TileColor;
 
 import game.Dungeon;
 import game.gamelogic.Examinable;
-import game.gamelogic.Interactable;
 import game.gamelogic.SelfAware;
+import game.gamelogic.interactions.HasInteraction;
+import game.gamelogic.interactions.Interaction;
+import game.gamelogic.interactions.InteractionResult;
 import game.gameobjects.Space;
-import game.gameobjects.entities.Entity;
 
-public class Staircase extends Terrain implements SelfAware, Interactable, Examinable{
+public class Staircase extends Terrain implements SelfAware, HasInteraction, Examinable{
 
     private Space space;
     private String name = "Staircase";
@@ -33,11 +34,6 @@ public class Staircase extends Terrain implements SelfAware, Interactable, Exami
     }
 
     @Override
-    public void onInteract(Entity interactor) {
-        Dungeon.goDownFloor(this);
-    }
-
-    @Override
     public String getName() {
         return name;
     }
@@ -45,6 +41,18 @@ public class Staircase extends Terrain implements SelfAware, Interactable, Exami
     @Override
     public String getDescription() {
         return description;
+    }
+
+    @Override
+    public Interaction getInteraction() {
+        return new Interaction.Builder()
+            .withName("Descend")
+            .withOnInteract((interactor) -> {
+                Dungeon.goDownFloor(Staircase.this);
+                return InteractionResult.create()
+                    .withTimeTaken(0);
+            })
+            .build();
     }
     
 }

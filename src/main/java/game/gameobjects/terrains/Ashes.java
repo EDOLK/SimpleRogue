@@ -3,12 +3,10 @@ package game.gameobjects.terrains;
 import org.hexworks.zircon.api.color.TileColor;
 
 import game.gamelogic.Examinable;
-import game.gamelogic.Interactable;
 import game.gamelogic.SelfAware;
 import game.gameobjects.Space;
-import game.gameobjects.entities.Entity;
 
-public class Ashes extends Terrain implements Examinable, Interactable, SelfAware {
+public class Ashes extends Terrain implements Examinable, SelfAware {
 
     private Space space;
 
@@ -22,11 +20,6 @@ public class Ashes extends Terrain implements Examinable, Interactable, SelfAwar
     @Override
     public String getName() {
         return "Ashes";
-    }
-
-    @Override
-    public void onInteract(Entity interactor) {
-
     }
 
     @Override

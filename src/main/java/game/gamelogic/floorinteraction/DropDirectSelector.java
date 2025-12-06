@@ -1,8 +1,6 @@
-package game.display;
+package game.gamelogic.floorinteraction;
 
 import game.gamelogic.HasInventory;
-import game.gamelogic.floorinteraction.SelectionResult;
-import game.gamelogic.floorinteraction.SimpleSelector;
 import game.gameobjects.Space;
 import game.gameobjects.items.Item;
 
