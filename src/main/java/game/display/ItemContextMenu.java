@@ -221,8 +221,8 @@ public class ItemContextMenu extends Menu{
                     .build();
                 b.handleComponentEvents(ComponentEventType.ACTIVATED, (event) -> {
                     InteractionResult res = interaction.doInteract(playerEntity);
-                    if (res.timeTaken() > 0) {
-                        Dungeon.update(res.timeTaken());
+                    if (res.getTimeTaken() > 0) {
+                        Dungeon.update(res.getTimeTaken());
                     }
                     return UIEventResponse.processed();
                 });

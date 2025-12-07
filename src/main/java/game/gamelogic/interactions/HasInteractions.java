@@ -27,12 +27,12 @@ public interface HasInteractions {
             .map(o -> (HasInteractions)o);
     }
 
-    public static Collection<HasInteractions> gather(Entity entity, boolean include){
+    public static Collection<HasInteractions> gather(Entity entity){
         return App.recursiveCheck(
             entity,
             CheckConditions.none().withInventory(true).withOffHand(true),
             obj -> obj instanceof HasInteractions ha ? Optional.of(ha) : Optional.empty()
-        ).stream().filter(r -> include ? true : r != entity).collect(Collectors.toList());
+        ).stream().filter(r -> r != entity).collect(Collectors.toList());
     }
 
 }

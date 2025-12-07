@@ -20,16 +20,15 @@ public class UseSubMenu extends Menu {
     public UseSubMenu(Entity interactor, Collection<Interaction> interactions) {
         this.interactor = interactor;
         this.interactions = interactions;
-        // interactions size is guaranteed to be > 1
         List<Pair<Button,Interaction>> pairs = Display.populateMenu(
             this,
             (interaction) -> {
                 InteractionResult result = interaction.doInteract(interactor);
-                if (result.revertMenu()){
+                if (result.isRevertMenu()){
                     Display.revertMenu();
                 }
-                if (result.timeTaken() > 0) {
-                    Dungeon.update(result.timeTaken());
+                if (result.getTimeTaken() > 0) {
+                    Dungeon.update(result.getTimeTaken());
                     Display.update();
                 }
                 return UIEventResponse.processed();

@@ -6,11 +6,11 @@ public class InteractionResult {
 
     private boolean revertMenu = false;
 
-    public int timeTaken() {
+    public int getTimeTaken() {
         return timeTaken;
     }
 
-    public boolean revertMenu() {
+    public boolean isRevertMenu() {
         return revertMenu;
     }
 

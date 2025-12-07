@@ -35,7 +35,7 @@ public class InteractSelector implements SimpleSelector{
                     Optional<Interaction> fInter = interactions.stream().findFirst();
                     if (fInter.isPresent()) {
                         InteractionResult result = fInter.get().doInteract(entity);
-                        return new SelectionResult(true, result.timeTaken());
+                        return new SelectionResult(true, result.getTimeTaken());
                     }
                 }
             }

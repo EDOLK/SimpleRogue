@@ -34,11 +34,11 @@ public class UseMenu extends Menu {
                         Optional<Interaction> first = interactions.stream().findFirst();
                         if (first.isPresent() && !first.get().isDisabled(interactor)) {
                             InteractionResult result = first.get().doInteract(interactor);
-                            if (result.revertMenu()){
+                            if (result.isRevertMenu()){
                                 Display.revertMenu();
                             }
-                            if (result.timeTaken() > 0) {
-                                Dungeon.update(result.timeTaken());
+                            if (result.getTimeTaken() > 0) {
+                                Dungeon.update(result.getTimeTaken());
                                 Display.update();
                             }
                         }
