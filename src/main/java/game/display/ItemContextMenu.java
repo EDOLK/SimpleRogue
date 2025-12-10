@@ -224,6 +224,9 @@ public class ItemContextMenu extends Menu{
                     if (res.getTimeTaken() > 0) {
                         Dungeon.update(res.getTimeTaken());
                     }
+                    if (res.isRevertMenu()) {
+                        Display.revertMenu();
+                    }
                     return UIEventResponse.processed();
                 });
                 itemPanel.addComponent(b);

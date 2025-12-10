@@ -196,7 +196,8 @@ public class Mimic extends Animal implements DropsXP, HasInventory, HasInteracti
                 if (!activated)
                     activate(interactor);
                 return InteractionResult.create()
-                    .withTimeTaken(interactor.getTimeToWait());
+                    .withTimeTaken(interactor.getTimeToWait())
+                    .withRevertMenu();
             })
             .build();
     }

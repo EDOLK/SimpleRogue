@@ -49,8 +49,7 @@ public class Staircase extends Terrain implements SelfAware, HasInteraction, Exa
             .withName("Descend")
             .withOnInteract((interactor) -> {
                 Dungeon.goDownFloor(Staircase.this);
-                return InteractionResult.create()
-                    .withTimeTaken(0);
+                return InteractionResult.create();
             })
             .build();
     }

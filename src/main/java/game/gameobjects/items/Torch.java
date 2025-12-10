@@ -120,7 +120,6 @@ public class Torch extends Weapon implements Flammable, LightSource, SelfAware, 
                         setLit();
                     }
                     return InteractionResult.create()
-                        .withTimeTaken(0)
                         .withRevertMenu();
                 })
                 .withIsDisabled((interactor) -> {
@@ -132,7 +131,6 @@ public class Torch extends Weapon implements Flammable, LightSource, SelfAware, 
                 .withOnInteract((interactor) -> {
                     Display.getRootMenu().startSelecting(new KindleSelector());
                     return InteractionResult.create()
-                        .withTimeTaken(0)
                         .withRevertMenu();
                 })
                 .withIsDisabled((interactor) -> {

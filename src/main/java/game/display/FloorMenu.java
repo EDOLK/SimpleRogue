@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.hexworks.zircon.api.ComponentDecorations;
 import org.hexworks.zircon.api.builder.component.HeaderBuilder;
 import org.hexworks.zircon.api.builder.component.LabelBuilder;
@@ -643,13 +645,7 @@ public final class FloorMenu extends Menu{
                 Display.setMenu(new SkillTreesMenu(player));
                 break;
             case USE:
-                List<HasInteractions> interactables = App.concatStreams(
-                    HasInteractions.gather(player).stream(),
-                    HasInteractions.gather(player.getSpace()).stream(),
-                    Space.getAdjacentSpaces(player.getSpace()).stream()
-                        .map(HasInteractions::gather)
-                        .flatMap(c -> c.stream()))
-                        .collect(Collectors.toList());
+                List<HasInteractions> interactables = getNearbyInteractables(player).collect(Collectors.toList());
                 if (interactables.size() > 0) {
                     Display.setMenu(new UseMenu(player, interactables));
                 }
@@ -662,6 +658,15 @@ public final class FloorMenu extends Menu{
         }
         update();
         return UIEventResponse.processed();
+    }
+
+    private Stream<HasInteractions> getNearbyInteractables(PlayerEntity player) {
+        return App.concatStreams(
+            HasInteractions.gather(player).stream(),
+            HasInteractions.gather(player.getSpace()).stream(),
+            Space.getAdjacentSpaces(player.getSpace()).stream()
+                .map(HasInteractions::gather)
+                .flatMap(c -> c.stream()));
     }
 
     public int tryMoveToAdjacent(int toX, int toY){
