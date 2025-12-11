@@ -29,7 +29,7 @@ public class ResistanceMenu extends Menu{
                 finalString = " " + finalString;
             }
             headers.add(
-                new HeaderBuilder()
+                HeaderBuilder.newBuilder()
                     .withText(finalString)
                     .build()
             );

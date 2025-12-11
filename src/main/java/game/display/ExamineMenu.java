@@ -52,7 +52,7 @@ public class ExamineMenu extends Menu{
         }
 
         Panel panel = PanelBuilder.newBuilder()
-            .withSize((int)(screen.getWidth()/2.5), (int)(screen.getHeight()/2.5))
+            .withPreferredSize((int)(screen.getWidth()/2.5), (int)(screen.getHeight()/2.5))
             .withDecorations(
                 ComponentDecorations.box(BoxType.SINGLE, "Examine")
             )
@@ -63,7 +63,7 @@ public class ExamineMenu extends Menu{
 
         Header nameHeader = HeaderBuilder.newBuilder()
             .withText(name)
-            .withSize(panel.getWidth()-5, 1)
+            .withPreferredSize(panel.getWidth()-5, 1)
             .withPosition(3,1)
             .build();
         panel.addComponent(nameHeader);
@@ -247,7 +247,7 @@ public class ExamineMenu extends Menu{
 
         Paragraph descriptionParagraph = ParagraphBuilder.newBuilder()
             .withText(description)
-            .withSize(panel.getWidth()-4, descriptionHeight)
+            .withPreferredSize(panel.getWidth()-4, descriptionHeight)
             .withPosition(1, 3)
             .build();
 
@@ -256,7 +256,7 @@ public class ExamineMenu extends Menu{
         if (weightString != null){
             Header weightHeader = HeaderBuilder.newBuilder()
                 .withText(weightString)            
-                .withSize(weightString.length(), 1)
+                .withPreferredSize(weightString.length(), 1)
                 .withPosition(Position.bottomLeftOf(descriptionParagraph).minus(Position.create(1,0)))
                 .build();
             panel.addComponent(weightHeader);
@@ -269,7 +269,7 @@ public class ExamineMenu extends Menu{
             panelWidthOffset = -(int)Math.ceil(infoWidth/2);
 
             infoPanel = PanelBuilder.newBuilder()
-                .withSize(infoWidth, panel.getHeight())
+                .withPreferredSize(infoWidth, panel.getHeight())
                 .withDecorations(
                     type != null ? ComponentDecorations.box(BoxType.SINGLE,type) : null
                 )
