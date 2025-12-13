@@ -257,7 +257,7 @@ public class Display {
         }
 
         return VBoxBuilder.newBuilder()
-            .withSize(width, height)
+            .withPreferredSize(width, height)
             .withPosition(screen.getWidth()/2 - (width/2) , screen.getHeight()/2 - (height/2))
             .withDecorations(ComponentDecorations.box(BoxType.SINGLE, label))
             .build();
@@ -288,7 +288,7 @@ public class Display {
 
                 button = ButtonBuilder.newBuilder()
                     .withText(protoString)
-                    .withSize(length, width)
+                    .withPreferredSize(length, width)
                     .build();
 
             } else {
@@ -304,7 +304,7 @@ public class Display {
                 }
                 button = ButtonBuilder.newBuilder()
                     .withText(protoString)
-                    .withSize(length, width)
+                    .withPreferredSize(length, width)
                     .withPosition(0,i+count)
                     .build();
             }

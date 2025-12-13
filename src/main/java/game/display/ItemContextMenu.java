@@ -64,7 +64,7 @@ public class ItemContextMenu extends Menu{
 
         Panel itemPanel = PanelBuilder.newBuilder()
             .withDecorations(ComponentDecorations.box(BoxType.SINGLE))
-            .withSize(width, height)
+            .withPreferredSize(width, height)
             .withPosition(getScreen().getWidth()/2 - width/2, getScreen().getHeight()/2 - height/2)
             .build();
         
@@ -83,7 +83,7 @@ public class ItemContextMenu extends Menu{
         
         int pos = 2;
 
-        Button examineButton = new ButtonBuilder()
+        Button examineButton = ButtonBuilder.newBuilder()
             .withText("Examine")
             .withPosition(2, pos)
             .build();
@@ -97,7 +97,7 @@ public class ItemContextMenu extends Menu{
         
         pos += 2;
         
-        Button dropButton = new ButtonBuilder()
+        Button dropButton = ButtonBuilder.newBuilder()
             .withText("Drop")
             .withPosition(2, pos)
             .build();
@@ -112,7 +112,7 @@ public class ItemContextMenu extends Menu{
         pos += 2;
 
         if (weapon){
-            Button equipButton = new ButtonBuilder()
+            Button equipButton = ButtonBuilder.newBuilder()
                 .withText("Equip")
                 .withPosition(2, pos)
                 .build();
@@ -139,7 +139,7 @@ public class ItemContextMenu extends Menu{
             }
             if (itemArmorSlot != null){
                 final ArmorSlot thisArmorSlot = itemArmorSlot;
-                Button equipButton = new ButtonBuilder()
+                Button equipButton = ButtonBuilder.newBuilder()
                     .withText("Equip")
                     .withPosition(2, pos)
                     .build();
@@ -159,7 +159,7 @@ public class ItemContextMenu extends Menu{
         }
         
         if (consumable){
-            Button consumeButton = new ButtonBuilder()
+            Button consumeButton = ButtonBuilder.newBuilder()
                 .withText("Consume")
                 .withPosition(2, pos)
                 .build();
@@ -174,7 +174,7 @@ public class ItemContextMenu extends Menu{
             pos+=2;
         }
         
-        Button throwButton = new ButtonBuilder()
+        Button throwButton = ButtonBuilder.newBuilder()
             .withText("Throw")
             .withPosition(2,pos)
             .build();
@@ -188,7 +188,7 @@ public class ItemContextMenu extends Menu{
         pos+=2;
         
         if (readable){
-            Button readButton = new ButtonBuilder()
+            Button readButton = ButtonBuilder.newBuilder()
                 .withText("Read")
                 .withPosition(2, pos)
                 .build();
@@ -205,7 +205,7 @@ public class ItemContextMenu extends Menu{
         }
         
         if (interactable){
-            Button interactButton = new ButtonBuilder()
+            Button interactButton = ButtonBuilder.newBuilder()
                 .withText("Interact")
                 .withPosition(2, pos)
                 .build();
