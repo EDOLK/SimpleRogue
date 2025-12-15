@@ -22,7 +22,7 @@ public class PauseMenu extends Menu{
 
         this.pausePanel = PanelBuilder.newBuilder()
             .withPosition(screen.getWidth()/2 - 6, screen.getHeight()/2 - 5)
-            .withPreferredSize(12,11)
+            .withSize(12,11)
             .withDecorations(
                 ComponentDecorations.box(BoxType.SINGLE, "Paused")
             )

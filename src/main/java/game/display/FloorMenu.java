@@ -101,7 +101,7 @@ public final class FloorMenu extends Menu{
         examineName = HeaderBuilder.newBuilder()
             .withText("")
             .withPosition(Position.create(0, currentFloor.SIZE_Y))
-            .withPreferredSize(currentFloor.SIZE_X,1)
+            .withSize(currentFloor.SIZE_X,1)
             .build();
 
         screen.addComponent(examineName);
@@ -321,12 +321,12 @@ public final class FloorMenu extends Menu{
                 ComponentDecorations.box(BoxType.SINGLE, "log")
             )
             .withPosition(0, currentFloor.SIZE_Y+1)
-            .withPreferredSize(55, 10)
+            .withSize(55, 10)
             .build();
         
         logMessageArea = LogAreaBuilder.newBuilder()
             .withPosition(0, 0)
-            .withPreferredSize(logPanel.getWidth()-2, logPanel.getHeight()-2)
+            .withSize(logPanel.getWidth()-2, logPanel.getHeight()-2)
             .build();
         
         logPanel.addComponent(logMessageArea);
@@ -340,7 +340,7 @@ public final class FloorMenu extends Menu{
                 ComponentDecorations.box(BoxType.SINGLE, "Status")
             )
             .withPosition(50, 0)
-            .withPreferredSize(20,20)
+            .withSize(20,20)
             .build();
 
         Label hpLabel = LabelBuilder.newBuilder()
@@ -351,7 +351,7 @@ public final class FloorMenu extends Menu{
 
         hpText = HeaderBuilder.newBuilder()
             .withPosition(Position.create(3, 0))
-            .withPreferredSize(7, 1)
+            .withSize(7, 1)
             .withText("")
             .build();
 
@@ -366,7 +366,7 @@ public final class FloorMenu extends Menu{
         
         mpText = HeaderBuilder.newBuilder()
             .withPosition(Position.create(3, 1))
-            .withPreferredSize(7,1)
+            .withSize(7,1)
             .withText("")
             .build();
 
@@ -381,7 +381,7 @@ public final class FloorMenu extends Menu{
 
         lvlText = HeaderBuilder.newBuilder()
             .withPosition(Position.create(4, 2))
-            .withPreferredSize(3,1)
+            .withSize(3,1)
             .withText("1")
             .build();
 
@@ -396,7 +396,7 @@ public final class FloorMenu extends Menu{
 
         xpText = HeaderBuilder.newBuilder()
             .withPosition(Position.create(3, 3))
-            .withPreferredSize(6,1)
+            .withSize(6,1)
             .withText("2/2")
             .build();
 
@@ -411,7 +411,7 @@ public final class FloorMenu extends Menu{
 
         depthText = HeaderBuilder.newBuilder()
             .withPosition(Position.create(6, 4))
-            .withPreferredSize(3,1)
+            .withSize(3,1)
             .withText("")
             .build();
 
@@ -426,14 +426,14 @@ public final class FloorMenu extends Menu{
         
         weightText = HeaderBuilder.newBuilder()
             .withPosition(7,5)
-            .withPreferredSize(7,1)
+            .withSize(7,1)
             .build();
 
         statusPanel.addComponent(weightText);
 
         timeText = HeaderBuilder.newBuilder()
             .withPosition(0,6)
-            .withPreferredSize(7,1)
+            .withSize(7,1)
             .build();
 
         statusPanel.addComponent(timeText);
@@ -449,24 +449,24 @@ public final class FloorMenu extends Menu{
                 ComponentDecorations.box(BoxType.SINGLE, "Enemy")
             )
             .withPosition(Position.bottomLeftOf(this.statusPanel))
-            .withPreferredSize(20,20)
+            .withSize(20,20)
             .build();
 
         this.nameHeader = HeaderBuilder.newBuilder()
-            .withPreferredSize(this.enemyPanel.getWidth()-2,1)
+            .withSize(this.enemyPanel.getWidth()-2,1)
             .withPosition(0,3)
             .build();
         this.enemyPanel.addComponent(this.nameHeader);
 
         this.enemyBar = ProgressBarBuilder.newBuilder()
             .withPosition(3,1)
-            .withPreferredSize(this.enemyPanel.getWidth()-5,1)
+            .withSize(this.enemyPanel.getWidth()-5,1)
             .withNumberOfSteps(this.enemyPanel.getWidth()-5)
             .build();
         this.enemyPanel.addComponent(this.enemyBar);
 
         this.enemyHpHeader = HeaderBuilder.newBuilder()
-            .withPreferredSize(this.enemyBar.getWidth(),1)
+            .withSize(this.enemyBar.getWidth(),1)
             .withPosition(3,0)
             .build();
         this.enemyPanel.addComponent(this.enemyHpHeader);

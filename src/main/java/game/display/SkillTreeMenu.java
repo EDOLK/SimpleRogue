@@ -100,7 +100,7 @@ public class SkillTreeMenu extends Menu {
     private void generateSkillEntryBox(SkillEntry entry, Entity entity){
 
         this.entryBox = VBoxBuilder.newBuilder()
-            .withPreferredSize((int)(screen.getWidth()/2.5), (int)(screen.getHeight()/2.5))
+            .withSize((int)(screen.getWidth()/2.5), (int)(screen.getHeight()/2.5))
             .withDecorations(
                 ComponentDecorations.box(BoxType.SINGLE, entry.getName())
             )
@@ -125,7 +125,7 @@ public class SkillTreeMenu extends Menu {
 
         Paragraph p = ParagraphBuilder.newBuilder()
             .withText(entry.getDescription())
-            .withPreferredSize(
+            .withSize(
                 entryBox.getWidth()-2,
                 entryBox.getHeight() - ((fulfilled.size() + unFulfilled.size())*2)-2
             )
