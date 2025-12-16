@@ -39,7 +39,7 @@ public class AttributeMenu extends Menu {
         int y = 0;
         Panel panel = PanelBuilder.newBuilder()
             .withPosition(Position.create(this.screen.getWidth()/2 - (this.screen.getWidth()/3/2), this.screen.getHeight()/2 - (this.screen.getHeight()/3/2)))
-            .withPreferredSize(this.screen.getWidth()/3, this.screen.getHeight()/3)
+            .withSize(this.screen.getWidth()/3, this.screen.getHeight()/3)
             .withDecorations(ComponentDecorations.box(BoxType.SINGLE, "Attributes"))
             .build();
         Header pointHeader = HeaderBuilder.newBuilder()
@@ -154,7 +154,7 @@ public class AttributeMenu extends Menu {
             attributeLabel = LabelBuilder.newBuilder()
                 .withText(String.valueOf(value + addedValue))
                 .withPosition(Position.bottomRightOf(decrementButton).minus(Position.create(0,1)))
-                .withPreferredSize(3,1)
+                .withSize(3,1)
                 .build();
 
             incrementButton = ButtonBuilder.newBuilder()

@@ -94,7 +94,7 @@ public class EquipmentMenu extends Menu{
         equipmentMenu.equip = equip;
         Panel equipmentPanel = PanelBuilder.newBuilder()
             .withPosition(Position.create(equipmentMenu.screen.getWidth()/2 - (equipmentMenu.screen.getWidth()/3/2), equipmentMenu.screen.getHeight()/2 - (equipmentMenu.screen.getHeight()/3/2)))
-            .withPreferredSize(equipmentMenu.screen.getWidth()/3, equipmentMenu.screen.getHeight()/3)
+            .withSize(equipmentMenu.screen.getWidth()/3, equipmentMenu.screen.getHeight()/3)
             .withDecorations(ComponentDecorations.box(BoxType.SINGLE, "Equipment"))
             .build();
 
@@ -112,7 +112,7 @@ public class EquipmentMenu extends Menu{
                 equipmentPanel.addComponent(weaponHeader);
                 Button weaponButton = ButtonBuilder.newBuilder()
                     .withText(weaponSlot.getEquippedWeapon() != null ? weaponSlot.getEquippedWeapon().getName() : "Nothing")
-                    .withPreferredSize(equipmentPanel.getWidth()-3, 1)
+                    .withSize(equipmentPanel.getWidth()-3, 1)
                     .withDecorations()
                     .withPosition(1, pos)
                     .build();
@@ -134,7 +134,7 @@ public class EquipmentMenu extends Menu{
             equipmentPanel.addComponent(itemHeader);
             Button itemButton = ButtonBuilder.newBuilder()
                 .withText(itemSlot.getEquippedItem() != null ? itemSlot.getEquippedItem().getName() : "Nothing")
-                .withPreferredSize(equipmentPanel.getWidth()-3, 1)
+                .withSize(equipmentPanel.getWidth()-3, 1)
                 .withDecorations()
                 .withPosition(1, pos)
                 .build();
@@ -160,7 +160,7 @@ public class EquipmentMenu extends Menu{
 
                 Button armorButton = ButtonBuilder.newBuilder()
                     .withText(equipedArmor != null ? equipedArmor.getName() : "Nothing")
-                    .withPreferredSize(equipmentPanel.getWidth()-3, 1)
+                    .withSize(equipmentPanel.getWidth()-3, 1)
                     .withDecorations()
                     .withPosition(1, pos)
                     .build();
