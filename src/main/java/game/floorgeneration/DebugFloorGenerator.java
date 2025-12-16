@@ -4,7 +4,9 @@ import java.util.function.Supplier;
 
 import game.PathConditions;
 import game.gamelogic.Examinable;
-import game.gamelogic.Interactable;
+import game.gamelogic.interactions.HasInteraction;
+import game.gamelogic.interactions.Interaction;
+import game.gamelogic.interactions.InteractionResult;
 import game.gamelogic.SelfAware;
 import game.gamelogic.behavior.Behavable;
 import game.gameobjects.Space;
@@ -173,7 +175,7 @@ public class DebugFloorGenerator extends FloorGenerator {
 
     }
 
-    private class DebugSpawner extends Terrain implements Examinable, Behavable, SelfAware, Interactable{
+    private class DebugSpawner extends Terrain implements Examinable, Behavable, SelfAware, HasInteraction{
 
         private Supplier<Entity> generator;
         private int timer;
@@ -232,8 +234,14 @@ public class DebugFloorGenerator extends FloorGenerator {
         }
 
         @Override
-        public void onInteract(Entity interactor) {
-            this.toggled = !this.toggled;
+        public Interaction getInteraction() {
+            return new Interaction.Builder()
+                .withName("Toggle")
+                .withOnInteract((ent) -> {
+                    this.toggled = !this.toggled;
+                    return InteractionResult.create();
+                })
+                .build();
         }
 
     }

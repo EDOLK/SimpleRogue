@@ -13,6 +13,7 @@ import game.display.Display;
 import game.gamelogic.Armed;
 import game.gamelogic.Armored;
 import game.gamelogic.HasInventory;
+import game.gamelogic.HasOffHand;
 import game.gamelogic.abilities.HasAbilities;
 import game.gamelogic.abilities.HasAbility;
 import game.gamelogic.abilities.HasPassives;
@@ -86,6 +87,10 @@ public class App
                 if (conditions.includesUnarmedWeapon())
                     helper.accept(entity.getUnarmedWeapon());
 
+            }
+
+            if (object instanceof HasOffHand hoh && conditions.includesOffHand()) {
+                helper.accept(hoh.getOffHandSlot().getEquippedItem());
             }
 
             if (object instanceof HasInventory hasInventory && conditions.includesInventory())

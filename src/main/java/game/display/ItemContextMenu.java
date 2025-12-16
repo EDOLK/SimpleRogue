@@ -1,5 +1,8 @@
 package game.display;
 
+import java.util.Collection;
+import java.util.stream.Collectors;
+
 import org.hexworks.zircon.api.ComponentDecorations;
 import org.hexworks.zircon.api.builder.component.ButtonBuilder;
 import org.hexworks.zircon.api.builder.component.HeaderBuilder;
@@ -13,10 +16,14 @@ import org.hexworks.zircon.api.graphics.BoxType;
 import org.hexworks.zircon.api.uievent.ComponentEventType;
 import org.hexworks.zircon.api.uievent.UIEventResponse;
 
+import game.Dungeon;
 import game.gamelogic.Consumable;
-import game.gamelogic.Interactable;
+import game.gamelogic.interactions.HasInteractions;
+import game.gamelogic.interactions.Interaction;
+import game.gamelogic.interactions.InteractionResult;
 import game.gamelogic.Scrollable;
 import game.gamelogic.floorinteraction.AimSelector;
+import game.gamelogic.floorinteraction.DropDirectSelector;
 import game.gameobjects.ArmorSlot;
 import game.gameobjects.entities.PlayerEntity;
 import game.gameobjects.items.Item;
@@ -26,7 +33,6 @@ import game.gameobjects.items.weapons.Weapon;
 public class ItemContextMenu extends Menu{
 
     private boolean consumable = false;
-    private boolean interactable = false;
     private boolean readable = false;
     private boolean weapon = false;
     private boolean armor = false;
@@ -41,9 +47,9 @@ public class ItemContextMenu extends Menu{
 
         int width = item.getName().length() > 8 ? item.getName().length()+5 : 15;
         int height = 10;
-        if (item instanceof Interactable){
-            height+=2;
-            interactable = true;
+
+        if (item instanceof HasInteractions hi){
+            height += hi.getInteractions().stream().filter(i -> i.isAvailable(playerEntity)).count() * 2;
         }
         if (item instanceof Consumable){
             height+=2;
@@ -204,17 +210,29 @@ public class ItemContextMenu extends Menu{
             pos+=2;
         }
         
-        if (interactable){
-            Button interactButton = new ButtonBuilder()
-                .withText("Interact")
-                .withPosition(2, pos)
-                .build();
-            interactButton.handleComponentEvents(ComponentEventType.ACTIVATED, (event) ->{
-                ((Interactable)item).onInteract(playerEntity);
-                return UIEventResponse.processed();
-            });
-            itemPanel.addComponent(interactButton);
-            pos+=2;
+        if (item instanceof HasInteractions hi) {
+            Collection<Interaction> interactions = hi.getInteractions().stream()
+                .filter(i -> i.isAvailable(playerEntity))
+                .collect(Collectors.toList());
+            for (Interaction interaction : interactions) {
+                Button b = ButtonBuilder.newBuilder()
+                    .withText(interaction.getName())
+                    .withPosition(2, pos)
+                    .build();
+                b.handleComponentEvents(ComponentEventType.ACTIVATED, (event) -> {
+                    InteractionResult res = interaction.doInteract(playerEntity);
+                    if (res.getTimeTaken() > 0) {
+                        Dungeon.update(res.getTimeTaken());
+                    }
+                    if (res.isRevertMenu()) {
+                        Display.revertMenu();
+                    }
+                    return UIEventResponse.processed();
+                });
+                itemPanel.addComponent(b);
+                b.setDisabled(interaction.isDisabled(playerEntity));
+                pos+=2;
+            }
         }
 
     }

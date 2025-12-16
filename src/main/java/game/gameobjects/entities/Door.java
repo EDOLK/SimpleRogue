@@ -6,8 +6,10 @@ import org.hexworks.zircon.api.color.TileColor;
 
 import game.gamelogic.Flammable;
 import game.gamelogic.HasResistances;
-import game.gamelogic.Interactable;
 import game.gamelogic.SelfAware;
+import game.gamelogic.interactions.HasInteraction;
+import game.gamelogic.interactions.Interaction;
+import game.gamelogic.interactions.InteractionResult;
 import game.gamelogic.resistances.PercentageResistance;
 import game.gamelogic.resistances.Resistance;
 import game.gameobjects.DamageType;
@@ -17,7 +19,7 @@ import game.gameobjects.statuses.Burning;
 import game.gameobjects.statuses.Status;
 import game.gameobjects.terrains.OpenDoor;
 
-public class Door extends Entity implements Interactable, HasResistances{
+public class Door extends Entity implements HasResistances, HasInteraction{
     
     public Door(Character c){
         super(TileColor.transparent(), TileColor.create(181, 88, 45, 255), c);
@@ -92,16 +94,27 @@ public class Door extends Entity implements Interactable, HasResistances{
 
     }
 
-    @Override
-    public void onInteract(Entity interactor) {
+    public int openDoor(Entity entity){
         getSpace().setOccupant(null);
         getSpace().addTerrain(new OpenDoor(this));
+        return entity.getTimeToMove();
     }
 
     @Override
     public int defaultInteraction(Entity interactor) {
-        onInteract(interactor);
-        return interactor.getTimeToMove();
+        return openDoor(interactor);
+    }
+
+    @Override
+    public Interaction getInteraction() {
+        return new Interaction.Builder()
+            .withName("Open")
+            .withOnInteract((interactor) -> {
+                return InteractionResult.create()
+                    .withTimeTaken(openDoor(interactor))
+                    .withRevertMenu();
+            })
+            .build();
     }
 
     @Override
@@ -123,5 +136,5 @@ public class Door extends Entity implements Interactable, HasResistances{
     protected boolean baseVulnerable(Status status) {
         return status instanceof Burning;
     }
-    
+
 }

@@ -10,6 +10,16 @@ public class CheckConditions {
     private boolean inventory;
     private boolean ability;
     private boolean passive;
+    private boolean offHand;
+
+    public boolean includesOffHand() {
+        return offHand;
+    }
+
+    public CheckConditions withOffHand(boolean offHand) {
+        this.offHand = offHand;
+        return this;
+    }
 
     public boolean includesAbility() {
         return ability;
@@ -94,6 +104,7 @@ public class CheckConditions {
         this.inventory = all;
         this.ability = all;
         this.passive = all;
+        this.offHand = all;
     }
 
     public static CheckConditions all(){

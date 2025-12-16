@@ -39,6 +39,7 @@ public class KeyMap {
         map.put(KeyCode.KEY_A, Action.ABILITIES);
         map.put(KeyCode.KEY_L, Action.ATTRIBUTES);
         map.put(KeyCode.KEY_S, Action.SKILL_TREES);
+        map.put(KeyCode.KEY_U, Action.USE);
     }
     
     public KeyMap(File keyMapFile){
@@ -101,6 +102,7 @@ public class KeyMap {
         ABILITIES,
         ATTRIBUTES,
         SKILL_TREES,
+        USE,
         NOTHING
     }
 

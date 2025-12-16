@@ -1,24 +1,30 @@
 package game.gameobjects.items;
 
+import java.util.Collection;
+import java.util.List;
+
 import org.hexworks.zircon.api.color.TileColor;
 
 import game.App;
 import game.display.Display;
-import game.display.ItemContextMenu;
 import game.gamelogic.Flammable;
-import game.gamelogic.Interactable;
 import game.gamelogic.LightSource;
 import game.gamelogic.SelfAware;
 import game.gamelogic.behavior.Behavable;
 import game.gamelogic.combat.Attack;
 import game.gamelogic.combat.AttackModifier;
+import game.gamelogic.floorinteraction.SelectionResult;
+import game.gamelogic.floorinteraction.SimpleSelector;
+import game.gamelogic.interactions.HasInteractions;
+import game.gamelogic.interactions.Interaction;
+import game.gamelogic.interactions.InteractionResult;
 import game.gameobjects.DamageType;
 import game.gameobjects.Space;
-import game.gameobjects.entities.Entity;
 import game.gameobjects.items.weapons.Weapon;
 import game.gameobjects.statuses.Burning;
+import game.gameobjects.terrains.Fire;
 
-public class Torch extends Weapon implements Flammable, LightSource, SelfAware, Behavable, Interactable, AttackModifier{
+public class Torch extends Weapon implements Flammable, LightSource, SelfAware, Behavable, AttackModifier, HasInteractions{
     
     private boolean lit = false;
     private int maxFuel = 500;
@@ -83,12 +89,20 @@ public class Torch extends Weapon implements Flammable, LightSource, SelfAware, 
     @Override
     public int behave() {
         if (lit) {
-            fuel--;
-        }
-        if (fuel <= 0) {
-            setBurnt();
+            decrementFuel();
         }
         return 100;
+    }
+
+    private void decrementFuel(){
+        decrementFuel(1);
+    }
+
+    private void decrementFuel(int amount){
+        this.fuel -= amount;
+        if (this.fuel <= 0) {
+            setBurnt();
+        }
     }
 
     @Override
@@ -97,14 +111,33 @@ public class Torch extends Weapon implements Flammable, LightSource, SelfAware, 
     }
 
     @Override
-    public void onInteract(Entity interactor) {
-        if (!lit){
-            setLit();
-        } else {
-            Display.log("The torch is already lit.");
-        }
-        if (Display.getCurrentMenu() instanceof ItemContextMenu)
-            Display.revertMenu();
+    public Collection<Interaction> getInteractions() {
+        return List.of(
+            new Interaction.Builder()
+                .withName("Light")
+                .withOnInteract((interactor) -> {
+                    if (!lit){
+                        setLit();
+                    }
+                    return InteractionResult.create()
+                        .withRevertMenu();
+                })
+                .withIsDisabled((interactor) -> {
+                    return lit || fuel <= 0;
+                })
+                .build(),
+            new Interaction.Builder()
+                .withName("Kindle")
+                .withOnInteract((interactor) -> {
+                    Display.getRootMenu().startSelecting(new KindleSelector());
+                    return InteractionResult.create()
+                        .withRevertMenu();
+                })
+                .withIsDisabled((interactor) -> {
+                    return !lit;
+                })
+                .build()
+        );
     }
 
     private void setLit(){
@@ -140,6 +173,20 @@ public class Torch extends Weapon implements Flammable, LightSource, SelfAware, 
             if (attackResult.weapon() == this && attackResult.hit() && attackResult.crit() && lit)
                 attackResult.defender().addStatus(new Burning());
         });
+    }
+
+    private class KindleSelector implements SimpleSelector {
+
+        @Override
+        public SelectionResult simpleSelect(Space space) {
+            if (Torch.this.lit && Fire.isFlammable(space)) {
+                Torch.this.decrementFuel(100);
+                space.addFire(new Fire(1));
+                return new SelectionResult(true, 100);
+            }
+            return new SelectionResult(true, 0);
+        }
+
     }
 
 }

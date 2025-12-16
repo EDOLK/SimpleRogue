@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.hexworks.zircon.api.ComponentDecorations;
 import org.hexworks.zircon.api.builder.component.HeaderBuilder;
@@ -48,6 +50,7 @@ import game.gamelogic.floorinteraction.InteractSelector;
 import game.gamelogic.floorinteraction.SelectionResult;
 import game.gamelogic.floorinteraction.Selector;
 import game.gamelogic.floorinteraction.SimpleSelector;
+import game.gamelogic.interactions.HasInteractions;
 import game.gameobjects.DisplayableTile;
 import game.gameobjects.Floor;
 import game.gameobjects.Space;
@@ -531,8 +534,9 @@ public final class FloorMenu extends Menu{
     
 
     public UIEventResponse handleInGame(KeyboardEvent event, UIEventPhase phase){
+        PlayerEntity player = currentFloor.getPlayer();
         List<OverridesPlayerInput> overridesInput = App.recursiveCheck(
-            currentFloor.getPlayer(),
+            player,
             CheckConditions.none().withStatuses(true),
             (obj -> obj instanceof OverridesPlayerInput op ? Optional.of(op) : Optional.empty())
         );
@@ -599,10 +603,10 @@ public final class FloorMenu extends Menu{
                 break;
             case CENTER: //wait
                 addToLog("waiting...");
-                time = currentFloor.getPlayer().getTimeToWait();
+                time = player.getTimeToWait();
                 break;
             case INTERACT_TOGGLE: //Interact
-                startSelecting(new InteractSelector(currentFloor.getPlayer()));
+                startSelecting(new InteractSelector(player));
                 break;
             case ESCAPE: //pause
                 Display.setMenu(new PauseMenu());
@@ -611,34 +615,40 @@ public final class FloorMenu extends Menu{
                 startSelecting(new ExamineSelector());
                 break;
             case GET_TOGGLE: //getting
-                startSelecting(new GetSelector(currentFloor.getPlayer()));
+                startSelecting(new GetSelector(player));
                 break;
             case EQUIPMENT: //equiping
-                Display.setMenu(EquipmentMenu.createEquipEquipmentMenu(currentFloor.getPlayer()));
+                Display.setMenu(EquipmentMenu.createEquipEquipmentMenu(player));
                 break;
             case DROP_TOGGLE: //dropping
-                startSelecting(new DropSelector(currentFloor.getPlayer()));
+                startSelecting(new DropSelector(player));
                 break;
             case CONSUME: //consuming
-                Display.setMenu(ItemSelectMenu.createConsumableSelectMenu(currentFloor.getPlayer()));
+                Display.setMenu(ItemSelectMenu.createConsumableSelectMenu(player));
                 break;
             case INVENTORY: //inventory
-                Display.setMenu(ItemSelectMenu.createInventoryMenu(currentFloor.getPlayer()));
+                Display.setMenu(ItemSelectMenu.createInventoryMenu(player));
                 break;
             case THROWING: //throwing
-                Display.setMenu(ItemSelectMenu.createThrowMenu(currentFloor.getPlayer()));
+                Display.setMenu(ItemSelectMenu.createThrowMenu(player));
                 break;
             case MEMORY_TOGGLE: //toggle memory
                 toggleMemory();
                 break;
             case ABILITIES:
-                Display.setMenu(new AbilitySelectMenu(currentFloor.getPlayer()));
+                Display.setMenu(new AbilitySelectMenu(player));
                 break;
             case ATTRIBUTES:
-                Display.setMenu(new AttributeMenu(currentFloor.getPlayer()));
+                Display.setMenu(new AttributeMenu(player));
                 break;
             case SKILL_TREES:
-                Display.setMenu(new SkillTreesMenu(currentFloor.getPlayer()));
+                Display.setMenu(new SkillTreesMenu(player));
+                break;
+            case USE:
+                List<HasInteractions> interactables = getNearbyInteractables(player).collect(Collectors.toList());
+                if (interactables.size() > 0) {
+                    Display.setMenu(new UseMenu(player, interactables));
+                }
                 break;
             default:
                 return UIEventResponse.pass();
@@ -648,6 +658,15 @@ public final class FloorMenu extends Menu{
         }
         update();
         return UIEventResponse.processed();
+    }
+
+    private Stream<HasInteractions> getNearbyInteractables(PlayerEntity player) {
+        return App.concatStreams(
+            HasInteractions.gather(player).stream(),
+            HasInteractions.gather(player.getSpace()).stream(),
+            Space.getAdjacentSpaces(player.getSpace()).stream()
+                .map(HasInteractions::gather)
+                .flatMap(c -> c.stream()));
     }
 
     public int tryMoveToAdjacent(int toX, int toY){

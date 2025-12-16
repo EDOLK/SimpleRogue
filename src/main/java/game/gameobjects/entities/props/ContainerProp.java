@@ -7,11 +7,12 @@ import org.hexworks.zircon.api.color.TileColor;
 
 import game.Dungeon;
 import game.display.Display;
-import game.display.ItemSelectMenu;
 import game.gamelogic.Attribute;
 import game.gamelogic.HasInventory;
 import game.gamelogic.HasResistances;
-import game.gamelogic.Interactable;
+import game.gamelogic.interactions.HasInteraction;
+import game.gamelogic.interactions.Interaction;
+import game.gamelogic.interactions.OpenInventoryInteraction;
 import game.gamelogic.resistances.PercentageResistance;
 import game.gamelogic.resistances.Resistance;
 import game.gameobjects.DamageType;
@@ -20,7 +21,7 @@ import game.gameobjects.entities.Entity;
 import game.gameobjects.entities.PlayerEntity;
 import game.gameobjects.items.Item;
 
-public abstract class ContainerProp extends Entity implements Interactable, HasInventory, HasResistances{
+public abstract class ContainerProp extends Entity implements HasInteraction, HasInventory, HasResistances{
 
     private List<Item> inventory = new ArrayList<Item>();
 
@@ -72,13 +73,6 @@ public abstract class ContainerProp extends Entity implements Interactable, HasI
     }
 
     @Override
-    public void onInteract(Entity interactor) {
-        if (interactor instanceof HasInventory interactorWithInventory){
-            Display.setMenu(ItemSelectMenu.createInventoryTransferMenu(this, interactorWithInventory));
-        }
-    }
-
-    @Override
     public String getDeathMessage() {
         return "The " + getName() + " breaks.";
     }
@@ -94,4 +88,10 @@ public abstract class ContainerProp extends Entity implements Interactable, HasI
         }
         return rList;
     }
+
+    @Override
+    public Interaction getInteraction() {
+        return new OpenInventoryInteraction(this);
+    }
+
 }
