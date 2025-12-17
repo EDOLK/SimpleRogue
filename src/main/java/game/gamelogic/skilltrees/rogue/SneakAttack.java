@@ -38,6 +38,7 @@ public class SneakAttack implements Passive, AttackModifier, Levelable{
             switch (level) {
                 case 1:
                     attack.attachAccuracyModifier((a) -> (a + Skill.getSkill(Skill.STEALTH, owner)), Attack.BASE_PRIORITY+1);
+                    attack.attachDamageModifier((d, dt) -> (int)(d*1.5), Attack.BASE_PRIORITY+1);
                     break;
                 case 2:
                     attack.attachAccuracyModifier((a) -> (a + Skill.getSkill(Skill.STEALTH, owner)), Attack.BASE_PRIORITY+1);

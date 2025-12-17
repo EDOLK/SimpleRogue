@@ -47,6 +47,7 @@ import game.gamelogic.floorinteraction.DropSelector;
 import game.gamelogic.floorinteraction.ExamineSelector;
 import game.gamelogic.floorinteraction.GetSelector;
 import game.gamelogic.floorinteraction.InteractSelector;
+import game.gamelogic.floorinteraction.SelectionCancelledResult;
 import game.gamelogic.floorinteraction.SelectionResult;
 import game.gamelogic.floorinteraction.Selector;
 import game.gamelogic.floorinteraction.SimpleSelector;
@@ -754,6 +755,9 @@ public final class FloorMenu extends Menu{
         }
         switch (Display.getKeyMap().getAction(event.getCode())) {
             case ESCAPE:
+                selector.getHooks().forEach((h) -> {
+                    h.accept(new SelectionCancelledResult());
+                });
                 toggleExamination();
                 currentState = State.INGAME;
                 update();
@@ -785,6 +789,9 @@ public final class FloorMenu extends Menu{
             case INTERACT_TOGGLE: //select current
             case SUBMIT: //select current
                 SelectionResult result = selector.select(getCursor());
+                selector.getHooks().forEach((h) ->{
+                    h.accept(result);
+                });
                 if (result.isSubmitted()) {
                     toggleExamination();
                     currentState = State.INGAME;
@@ -813,7 +820,7 @@ public final class FloorMenu extends Menu{
     }
 
     private UIEventResponse handleSelectingSimple(KeyboardEvent event, UIEventPhase phase, SimpleSelector simpleSelector) {
-        SelectionResult result = null;
+        SelectionResult result = new SelectionCancelledResult();
         switch (Display.getKeyMap().getAction(event.getCode())) {
             case ESCAPE:
                 currentState = State.INGAME;
@@ -848,6 +855,10 @@ public final class FloorMenu extends Menu{
             default:
                 break;
         }
+        SelectionResult res = result;
+        selector.getHooks().forEach((h) -> {
+            h.accept(res);
+        });
         if (result != null && result.isSubmitted()) {
             currentState = State.INGAME;
             if (result.getTimeTaken() > 0) {

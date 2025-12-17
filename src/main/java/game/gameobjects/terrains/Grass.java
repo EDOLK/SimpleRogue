@@ -14,6 +14,11 @@ public class Grass extends Moss implements Triggerable{
     }
 
     @Override
+    public int getFuelValue() {
+        return 2;
+    }
+
+    @Override
     public boolean isSightBlocker() {
         return true;
     }

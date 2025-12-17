@@ -3,6 +3,7 @@ package game.gamelogic.skilltrees.rogue;
 import java.util.Optional;
 
 import game.gamelogic.Attribute;
+import game.gamelogic.HasInventory;
 import game.gamelogic.HasSkills;
 import game.gamelogic.Skill;
 import game.gamelogic.abilities.HasAbilities;
@@ -23,7 +24,7 @@ public class RogueSkillTree extends SkillTree {
                         .addCostRequirement(i <= 2 ? 1 : 2)
                         .addAttributeRequirement(Attribute.DEXTERITY, i <= 2 ? 1 : 2)
                         .addOnApply((e) -> {
-                            for (int j = 0; j < i; j++) {
+                            for (int j = 0; j < i+1; j++) {
                                 if (e instanceof HasSkills hasSkills) {
                                     hasSkills.incrementSkill(Skill.STEALTH);
                                 }
@@ -56,6 +57,29 @@ public class RogueSkillTree extends SkillTree {
                             }
                         });
                 }).chainBuild(this, 1, 3).build()
+        );
+        addSkillEntry(
+            new MultiSkillEntryBuilder()
+                .withStrategy((i) -> {
+                    String str = "Smoke Bombs ";
+                    for (int j = 0; j < i; j++) {
+                        str += "I";
+                    }
+                    return new SkillEntryBuilder()
+                        .addName(str)
+                        .addCostRequirement(i <= 2 ? 1 : 2)
+                        .addOnApply((e) -> {
+                            if (e instanceof HasAbilities ha && e instanceof HasInventory hi) {
+                                Optional<SmokeBombAbility> sba = ha.getAbilityByClass(SmokeBombAbility.class);
+                                if (sba.isPresent()) {
+                                    sba.get().setLevel(i);
+                                } else {
+                                    ha.addAbility(new SmokeBombAbility(hi));
+                                }
+                            }
+                        });
+                })
+                .chainBuild(this, 1, 3).build()
         );
         addSkillEntry(
             new MultiSkillEntryBuilder()
