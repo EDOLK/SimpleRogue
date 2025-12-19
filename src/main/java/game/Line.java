@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import game.gameobjects.Space;
+import game.gameobjects.floors.Floor;
 
 public final class Line {
 
@@ -17,27 +18,27 @@ public final class Line {
     }
     
     public static List<Space> getLineAsListInclusive(Space p0, Space p1){
-        return getLineAsListInclusive(p0,p1,Dungeon.getCurrentFloor().getSpaces());
+        return getLineAsListInclusive(p0,p1,Dungeon.getCurrentFloor());
     }
 
     public static List<Space> getLineAsListExclusive(Space p0, Space p1){
-        return getLineAsListExclusive(p0,p1,Dungeon.getCurrentFloor().getSpaces());
+        return getLineAsListExclusive(p0,p1,Dungeon.getCurrentFloor());
     }
 
-    public static List<Space> getLineAsListInclusive(Space p0, Space p1, Space[][] spaces){
+    public static List<Space> getLineAsListInclusive(Space p0, Space p1, Floor floor){
         List<Point> pointList = line(new Point(p0.getX(), p0.getY()), new Point(p1.getX(), p1.getY()));
         List<Space> spaceList = new ArrayList<Space>();
         for (int i = 0; i < pointList.size(); i++) {
-            spaceList.add(spaces[(int)pointList.get(i).x][(int)pointList.get(i).y]);
+            spaceList.add(floor.getSpace((int)pointList.get(i).x,(int)pointList.get(i).y));
         }
         return spaceList;
     }
 
-    public static List<Space> getLineAsListExclusive(Space p0, Space p1, Space[][] spaces){
+    public static List<Space> getLineAsListExclusive(Space p0, Space p1, Floor floor){
         List<Point> pointList = line(new Point(p0.getX(), p0.getY()), new Point(p1.getX(), p1.getY()));
         List<Space> spaceList = new ArrayList<Space>();
         for (int i = 1; i < pointList.size()-1; i++) {
-            spaceList.add(spaces[(int)pointList.get(i).x][(int)pointList.get(i).y]);
+            spaceList.add(floor.getSpace((int)pointList.get(i).x,(int)pointList.get(i).y));
         }
         return spaceList;
     }

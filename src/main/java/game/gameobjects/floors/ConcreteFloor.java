@@ -1,4 +1,4 @@
-package game.gameobjects;
+package game.gameobjects.floors;
 import static game.App.lerp;
 
 import java.util.List;
@@ -22,6 +22,8 @@ import game.gamelogic.abilities.HasAbilities;
 import game.gamelogic.abilities.HasPassives;
 import game.gamelogic.abilities.Passive;
 import game.gamelogic.behavior.Behavable;
+import game.gameobjects.ItemSlot;
+import game.gameobjects.Space;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.entities.PlayerEntity;
 import game.gameobjects.items.Item;
@@ -30,10 +32,19 @@ import game.gameobjects.items.weapons.Weapon;
 import game.gameobjects.statuses.Status;
 import game.gameobjects.terrains.Terrain;
 
-public class Floor{
+public class ConcreteFloor implements Floor{
 
-    public final int SIZE_X;
-    public final int SIZE_Y;
+    private final int SIZE_X;
+
+    private final int SIZE_Y;
+
+    public int getSizeX() {
+        return SIZE_X;
+    }
+
+    public int getSizeY() {
+        return SIZE_Y;
+    }
 
     private Space[][] spaces;
     private PlayerEntity player;
@@ -41,27 +52,28 @@ public class Floor{
     private Map<Behavable, Integer> timeMap = new WeakHashMap<>();
     private int lastTime = 0;
 
-    public Floor(int SIZE_X, int SIZE_Y, FloorGenerator floorGenerator){
+    public ConcreteFloor(int SIZE_X, int SIZE_Y, FloorGenerator floorGenerator){
         this(SIZE_X, SIZE_Y, new PlayerEntity(TileColor.transparent(), TileColor.create(255, 255, 255, 255), '@'), floorGenerator);
     }
 
-    public Floor(int SIZE_X, int SIZE_Y, PlayerEntity player, FloorGenerator floorGenerator){
+    public ConcreteFloor(int SIZE_X, int SIZE_Y, PlayerEntity player, FloorGenerator floorGenerator){
 
         this.SIZE_X = SIZE_X;
         this.SIZE_Y = SIZE_Y;
         spaces = new Space[SIZE_X][SIZE_Y];
+        for (int x = 0; x < SIZE_X; x++) {
+            for (int y = 0; y < SIZE_Y; y++) {
+                spaces[x][y] = new Space(x, y);
+            }
+        }
         this.player = player;
-        floorGenerator.generateFloor(spaces, player);
+        floorGenerator.generateFloor(this, player);
         doLight();
 
     }
 
     public PlayerEntity getPlayer() {
         return player;
-    }
-
-    public Space[][] getSpaces() {
-        return spaces;
     }
 
     public Space getSpace(int x, int y){
@@ -78,10 +90,6 @@ public class Floor{
 
     public int clampY(int y){
         return y = y >= SIZE_Y ? SIZE_Y-1 : (y < 0 ? 0 : y);
-    }
-
-    public int getLastTime() {
-        return lastTime;
     }
 
     public void update(){
@@ -320,7 +328,7 @@ public class Floor{
     }
 
     private void doLineLight(Space fromSpace, int intensity, Space toSpace) {
-        List<Space> lineList = Line.getLineAsListInclusive(fromSpace, toSpace, spaces);
+        List<Space> lineList = Line.getLineAsListInclusive(fromSpace, toSpace, this);
         for (int i = 0; i < lineList.size(); i++) {
             Space space = lineList.get(i);
             int j = intensity - i;
@@ -346,15 +354,4 @@ public class Floor{
         return strongestLightSource;
     }
 
-    public Optional<Space> getSpaceByAngle(Space origin, Angle angle, int offset){
-        int degree = angle.getDegree();
-        double radians = Math.toRadians(degree);
-        int xOffset = (int)(Math.cos(radians) * offset);
-        int yOffset = (int)(Math.sin(radians) * offset)*-1;
-        try {
-            return Optional.of(getSpace(origin.getX() + xOffset, origin.getY() + yOffset));
-        } catch (Exception e) {
-            return Optional.empty();
-        }
-    }
 }

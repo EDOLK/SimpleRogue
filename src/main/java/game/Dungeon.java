@@ -17,12 +17,13 @@ import game.floorgeneration.pools.layers.LayerOnePool;
 import game.gamelogic.skilltrees.SkillTree;
 import game.gamelogic.skilltrees.rogue.RogueSkillTree;
 import game.gamelogic.skilltrees.warrior.WarriorSkillTree;
-import game.gameobjects.Floor;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.entities.PlayerEntity;
 import game.gameobjects.entities.Wall;
 import game.gameobjects.entities.props.Chest;
+import game.gameobjects.floors.ConcreteFloor;
+import game.gameobjects.floors.Floor;
 import game.gameobjects.items.Item;
 import game.gameobjects.terrains.Staircase;
 
@@ -138,9 +139,9 @@ public class Dungeon {
     
     public static Floor generateFloor(PlayerEntity playerEntity){
         if (currentDepth % 5 == 0) {
-            return new Floor(sX, sY, playerEntity, new BossFloorGenerator(currentDepth));
+            return new ConcreteFloor(sX, sY, playerEntity, new BossFloorGenerator(currentDepth));
         } else {
-            return new Floor(sX, sY, playerEntity, new DefaultFloorGenerator(currentDepth));
+            return new ConcreteFloor(sX, sY, playerEntity, new DefaultFloorGenerator(currentDepth));
         }
     }
     
@@ -149,11 +150,11 @@ public class Dungeon {
     }
 
     public static void spawnItem(Item item){
-        int x = randomNumber(0, currentFloor.SIZE_X-1);
-        int y = randomNumber(0, currentFloor.SIZE_Y-1);
+        int x = randomNumber(0, currentFloor.getSizeX()-1);
+        int y = randomNumber(0, currentFloor.getSizeY()-1);
         if (currentFloor.getSpace(x, y).isOccupied() && currentFloor.getSpace(x, y).getOccupant() instanceof Wall){
-            x = randomNumber(0, currentFloor.SIZE_X-1);
-            y = randomNumber(0, currentFloor.SIZE_Y-1);
+            x = randomNumber(0, currentFloor.getSizeX()-1);
+            y = randomNumber(0, currentFloor.getSizeY()-1);
         }
         currentFloor.getSpace(x, y).addItem(item);
     }
@@ -168,14 +169,14 @@ public class Dungeon {
     }
     
     public static boolean spawnEntity(Entity entity){
-        int x = randomNumber(0, currentFloor.SIZE_X-1);
-        int y = randomNumber(0, currentFloor.SIZE_Y-1);
+        int x = randomNumber(0, currentFloor.getSizeX()-1);
+        int y = randomNumber(0, currentFloor.getSizeY()-1);
         int tries = 0;
         if (currentFloor.getSpace(x, y).isOccupied()){
             if (tries > 100)
                 return false;
-            x = randomNumber(0, currentFloor.SIZE_X-1);
-            y = randomNumber(0, currentFloor.SIZE_Y-1);
+            x = randomNumber(0, currentFloor.getSizeX()-1);
+            y = randomNumber(0, currentFloor.getSizeY()-1);
             tries++;
         }
         return addEntity(entity, x, y);

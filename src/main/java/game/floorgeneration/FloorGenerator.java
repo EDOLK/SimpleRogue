@@ -1,7 +1,7 @@
 package game.floorgeneration;
 
-import game.gameobjects.Space;
 import game.gameobjects.entities.PlayerEntity;
+import game.gameobjects.floors.Floor;
 
 public abstract class FloorGenerator {
     
@@ -11,6 +11,6 @@ public abstract class FloorGenerator {
         this.depth = depth;
     }
 
-    public abstract void generateFloor(Space[][] spaces, PlayerEntity playerEntity);
+    public abstract void generateFloor(Floor floor, PlayerEntity playerEntity);
 
 }
