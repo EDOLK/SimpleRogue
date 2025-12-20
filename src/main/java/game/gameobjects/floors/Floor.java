@@ -27,8 +27,8 @@ public interface Floor {
     default void update(){
         update(100);
     };
+
     public void update(int time);
-    public void doLight();
 
     public PlayerEntity getPlayer();
 
