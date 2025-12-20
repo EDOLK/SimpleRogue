@@ -32,16 +32,16 @@ import game.gameobjects.terrains.Terrain;
 
 public class ConcreteFloor implements Floor{
 
-    private final int SIZE_X;
+    private final int sizeX;
 
-    private final int SIZE_Y;
+    private final int sizeY;
 
     public int getSizeX() {
-        return SIZE_X;
+        return sizeX;
     }
 
     public int getSizeY() {
-        return SIZE_Y;
+        return sizeY;
     }
 
     private Space[][] spaces;
@@ -53,13 +53,13 @@ public class ConcreteFloor implements Floor{
         this(SIZE_X, SIZE_Y, new PlayerEntity(TileColor.transparent(), TileColor.create(255, 255, 255, 255), '@'), floorGenerator);
     }
 
-    public ConcreteFloor(int SIZE_X, int SIZE_Y, PlayerEntity player, FloorGenerator floorGenerator){
+    public ConcreteFloor(int sizeX, int sizeY, PlayerEntity player, FloorGenerator floorGenerator){
 
-        this.SIZE_X = SIZE_X;
-        this.SIZE_Y = SIZE_Y;
-        spaces = new Space[SIZE_X][SIZE_Y];
-        for (int x = 0; x < SIZE_X; x++) {
-            for (int y = 0; y < SIZE_Y; y++) {
+        this.sizeX = sizeX;
+        this.sizeY = sizeY;
+        spaces = new Space[sizeX][sizeY];
+        for (int x = 0; x < sizeX; x++) {
+            for (int y = 0; y < sizeY; y++) {
                 spaces[x][y] = new Space(x, y);
             }
         }
@@ -80,7 +80,7 @@ public class ConcreteFloor implements Floor{
     public static class PreppedOverride implements Behavable{
         private OverridesBehavable override;
         private Behavable original;
-        private PreppedOverride(OverridesBehavable override, Behavable original){
+        public PreppedOverride(OverridesBehavable override, Behavable original){
             this.override = override;
             this.original = original;
         }
