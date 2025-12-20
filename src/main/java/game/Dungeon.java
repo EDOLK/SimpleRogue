@@ -1,7 +1,5 @@
 package game;
 
-import static game.App.randomNumber;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,10 +15,8 @@ import game.floorgeneration.pools.layers.LayerOnePool;
 import game.gamelogic.skilltrees.SkillTree;
 import game.gamelogic.skilltrees.rogue.RogueSkillTree;
 import game.gamelogic.skilltrees.warrior.WarriorSkillTree;
-import game.gameobjects.Space;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.entities.PlayerEntity;
-import game.gameobjects.entities.Wall;
 import game.gameobjects.entities.props.Chest;
 import game.gameobjects.floors.ConcreteFloor;
 import game.gameobjects.floors.Floor;
@@ -145,42 +141,5 @@ public class Dungeon {
         }
     }
     
-    public static void addItem(Item item, int x, int y){
-        currentFloor.getSpace(x, y).addItem(item);
-    }
-
-    public static void spawnItem(Item item){
-        int x = randomNumber(0, currentFloor.getSizeX()-1);
-        int y = randomNumber(0, currentFloor.getSizeY()-1);
-        if (currentFloor.getSpace(x, y).isOccupied() && currentFloor.getSpace(x, y).getOccupant() instanceof Wall){
-            x = randomNumber(0, currentFloor.getSizeX()-1);
-            y = randomNumber(0, currentFloor.getSizeY()-1);
-        }
-        currentFloor.getSpace(x, y).addItem(item);
-    }
-    
-    public static boolean addEntity(Entity entity, int x, int y){
-        Space space = currentFloor.getSpace(x, y);
-        if (!space.isOccupied()){
-            space.setOccupant(entity);
-            return true;
-        }
-        return false;
-    }
-    
-    public static boolean spawnEntity(Entity entity){
-        int x = randomNumber(0, currentFloor.getSizeX()-1);
-        int y = randomNumber(0, currentFloor.getSizeY()-1);
-        int tries = 0;
-        if (currentFloor.getSpace(x, y).isOccupied()){
-            if (tries > 100)
-                return false;
-            x = randomNumber(0, currentFloor.getSizeX()-1);
-            y = randomNumber(0, currentFloor.getSizeY()-1);
-            tries++;
-        }
-        return addEntity(entity, x, y);
-    }
-
 }
 
