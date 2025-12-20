@@ -1,9 +1,8 @@
-package game.gameobjects;
+package game.gameobjects.floors;
 import static game.App.lerp;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Stack;
 import java.util.WeakHashMap;
 
@@ -11,7 +10,6 @@ import org.hexworks.zircon.api.color.TileColor;
 
 import game.Line;
 import game.floorgeneration.FloorGenerator;
-import game.gamelogic.Angle;
 import game.gamelogic.Armed;
 import game.gamelogic.Armored;
 import game.gamelogic.HasOffHand;
@@ -22,6 +20,8 @@ import game.gamelogic.abilities.HasAbilities;
 import game.gamelogic.abilities.HasPassives;
 import game.gamelogic.abilities.Passive;
 import game.gamelogic.behavior.Behavable;
+import game.gameobjects.ItemSlot;
+import game.gameobjects.Space;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.entities.PlayerEntity;
 import game.gameobjects.items.Item;
@@ -30,28 +30,41 @@ import game.gameobjects.items.weapons.Weapon;
 import game.gameobjects.statuses.Status;
 import game.gameobjects.terrains.Terrain;
 
-public class Floor{
+public class ConcreteFloor implements Floor{
 
-    public final int SIZE_X;
-    public final int SIZE_Y;
+    private final int sizeX;
+
+    private final int sizeY;
+
+    public int getSizeX() {
+        return sizeX;
+    }
+
+    public int getSizeY() {
+        return sizeY;
+    }
 
     private Space[][] spaces;
     private PlayerEntity player;
 
     private Map<Behavable, Integer> timeMap = new WeakHashMap<>();
-    private int lastTime = 0;
 
-    public Floor(int SIZE_X, int SIZE_Y, FloorGenerator floorGenerator){
+    public ConcreteFloor(int SIZE_X, int SIZE_Y, FloorGenerator floorGenerator){
         this(SIZE_X, SIZE_Y, new PlayerEntity(TileColor.transparent(), TileColor.create(255, 255, 255, 255), '@'), floorGenerator);
     }
 
-    public Floor(int SIZE_X, int SIZE_Y, PlayerEntity player, FloorGenerator floorGenerator){
+    public ConcreteFloor(int sizeX, int sizeY, PlayerEntity player, FloorGenerator floorGenerator){
 
-        this.SIZE_X = SIZE_X;
-        this.SIZE_Y = SIZE_Y;
-        spaces = new Space[SIZE_X][SIZE_Y];
+        this.sizeX = sizeX;
+        this.sizeY = sizeY;
+        spaces = new Space[sizeX][sizeY];
+        for (int x = 0; x < sizeX; x++) {
+            for (int y = 0; y < sizeY; y++) {
+                spaces[x][y] = new Space(x, y);
+            }
+        }
         this.player = player;
-        floorGenerator.generateFloor(spaces, player);
+        floorGenerator.generateFloor(this, player);
         doLight();
 
     }
@@ -60,38 +73,14 @@ public class Floor{
         return player;
     }
 
-    public Space[][] getSpaces() {
-        return spaces;
-    }
-
     public Space getSpace(int x, int y){
         return spaces[x][y];
-    }
-
-    public Space getClampedSpace(int x, int y){
-        return spaces[clampX(x)][clampY(y)];
-    }
-
-    public int clampX(int x){
-        return x = x >= SIZE_X ? SIZE_X-1 : (x < 0 ? 0 : x);
-    }
-
-    public int clampY(int y){
-        return y = y >= SIZE_Y ? SIZE_Y-1 : (y < 0 ? 0 : y);
-    }
-
-    public int getLastTime() {
-        return lastTime;
-    }
-
-    public void update(){
-        update(100);
     }
 
     public static class PreppedOverride implements Behavable{
         private OverridesBehavable override;
         private Behavable original;
-        private PreppedOverride(OverridesBehavable override, Behavable original){
+        public PreppedOverride(OverridesBehavable override, Behavable original){
             this.override = override;
             this.original = original;
         }
@@ -113,8 +102,6 @@ public class Floor{
     }
 
     public void update(int time){
-
-        this.lastTime = time;
 
         Stack<Behavable> behavables = new Stack<Behavable>();
 
@@ -320,7 +307,7 @@ public class Floor{
     }
 
     private void doLineLight(Space fromSpace, int intensity, Space toSpace) {
-        List<Space> lineList = Line.getLineAsListInclusive(fromSpace, toSpace, spaces);
+        List<Space> lineList = Line.getLineAsListInclusive(fromSpace, toSpace, this);
         for (int i = 0; i < lineList.size(); i++) {
             Space space = lineList.get(i);
             int j = intensity - i;
@@ -346,15 +333,4 @@ public class Floor{
         return strongestLightSource;
     }
 
-    public Optional<Space> getSpaceByAngle(Space origin, Angle angle, int offset){
-        int degree = angle.getDegree();
-        double radians = Math.toRadians(degree);
-        int xOffset = (int)(Math.cos(radians) * offset);
-        int yOffset = (int)(Math.sin(radians) * offset)*-1;
-        try {
-            return Optional.of(getSpace(origin.getX() + xOffset, origin.getY() + yOffset));
-        } catch (Exception e) {
-            return Optional.empty();
-        }
-    }
 }

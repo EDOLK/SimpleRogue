@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import game.gameobjects.Space;
+import game.gameobjects.floors.Floor;
 
 class SimpleRectRoom implements Room{
 
@@ -13,16 +14,16 @@ class SimpleRectRoom implements Room{
     private int y1;
     private int x2;
     private int y2;
-    private Space[][] spaces;
+    private Floor floor;
 
-    public SimpleRectRoom(Space[][] spaces, int SIZE_X, int SIZE_Y) {
+    public SimpleRectRoom(Floor floor, int SIZE_X, int SIZE_Y) {
         int roomWidth = randomNumber(3,10);
         int roomHeight = randomNumber(3,10);
         this.x1 = randomNumber(1, SIZE_X-1-roomWidth);
         this.y1 = randomNumber(1, SIZE_Y-1-roomHeight);
         this.x2 = x1+roomWidth;
         this.y2 = y1+roomHeight;
-        this.spaces = spaces;
+        this.floor = floor;
     }
 
     @Override
@@ -30,7 +31,7 @@ class SimpleRectRoom implements Room{
         List<Space> rs = new ArrayList<Space>();
         for (int x = x1-1; x <= x2; x++) {
             for (int y = y1-1; y <= y2; y++) {
-                rs.add(spaces[x][y]);
+                rs.add(floor.getSpace(x,y));
             }
         }
         return rs;
@@ -41,17 +42,17 @@ class SimpleRectRoom implements Room{
         List<Space> potentialSpaces = new ArrayList<>();
 
         for (int x = x1; x < x2; x++) {
-            if (spaces[x][y1-1].isOccupied())
-                potentialSpaces.add(spaces[x][y1-1]);
-            if (spaces[x][y2].isOccupied())
-                potentialSpaces.add(spaces[x][y2]);
+            if (floor.getSpace(x,y1-1).isOccupied())
+                potentialSpaces.add(floor.getSpace(x,y1-1));
+            if (floor.getSpace(x,y2).isOccupied())
+                potentialSpaces.add(floor.getSpace(x,y2));
         }
 
         for (int y = y1; y < y2; y++) {
-            if (spaces[x1-1][y].isOccupied())
-                potentialSpaces.add(spaces[x1-1][y]);
-            if (spaces[x2][y].isOccupied())
-                potentialSpaces.add(spaces[x2][y]);
+            if (floor.getSpace(x1-1,y).isOccupied())
+                potentialSpaces.add(floor.getSpace(x1-1,y));
+            if (floor.getSpace(x2,y).isOccupied())
+                potentialSpaces.add(floor.getSpace(x2,y));
         }
 
         return potentialSpaces;
@@ -63,7 +64,7 @@ class SimpleRectRoom implements Room{
 
         for (int x = x1; x < x2; x++) {
             for (int y = y1; y < y2; y++) {
-                potentialSpaces.add(spaces[x][y]);
+                potentialSpaces.add(floor.getSpace(x,y));
             }
         }
 

@@ -7,6 +7,7 @@ import java.util.Stack;
 import java.util.function.BiFunction;
 
 import game.gameobjects.Space;
+import game.gameobjects.floors.Floor;
 
 public final class Path {
 
@@ -78,16 +79,16 @@ public final class Path {
 
     /** Returns our path from startingSpace to destinationSpace, with startingSpace and destinationSpace included. */
     public static Space[] getPathAsArray(Space startingSpace, Space destinationSpace, PathConditions conditions) throws PathNotFoundException{
-        return getPathAsArray(startingSpace, destinationSpace, Dungeon.getCurrentFloor().getSpaces(), conditions);
+        return getPathAsArray(startingSpace, destinationSpace, Dungeon.getCurrentFloor(), conditions);
     }
 
     /** Returns our path from startingSpace to destinationSpace, with startingSpace and destinationSpace included. */
-    public static Space[] getPathAsArray(Space startingSpace, Space destinationSpace, Space[][] spaces, PathConditions conditions) throws PathNotFoundException{
-        Node[][] grid = new Node[spaces.length][spaces[0].length];
-        for (int x = 0; x < spaces.length; x++) {
-            for (int y = 0; y < spaces[x].length; y++) {
+    public static Space[] getPathAsArray(Space startingSpace, Space destinationSpace, Floor floor, PathConditions conditions) throws PathNotFoundException{
+        Node[][] grid = new Node[floor.getSizeX()][floor.getSizeY()];
+        for (int x = 0; x < floor.getSizeX(); x++) {
+            for (int y = 0; y < floor.getSizeY(); y++) {
                 grid[x][y] = new Node(x, y);
-                Space space = spaces[x][y];
+                Space space = floor.getSpace(x,y);
                 if (space != destinationSpace && space != startingSpace){
                     if (conditions.evaluateForForbidden(space)) {
                         grid[x][y].passable = false;
@@ -102,7 +103,7 @@ public final class Path {
             Node[] nodePath = getPath(startingNode, destinationNode, grid, conditions.isDiagonal(), conditions.getHFunction());
             Space[] spacePath = new Space[nodePath.length];
             for (int i = 0; i < nodePath.length; i++) {
-                spacePath[i] = spaces[nodePath[i].x][nodePath[i].y];
+                spacePath[i] = floor.getSpace(nodePath[i].x,nodePath[i].y);
             }
             return spacePath;
         } catch (PathNotFoundException e) {

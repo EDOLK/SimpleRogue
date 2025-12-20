@@ -6,6 +6,7 @@ import java.util.Optional;
 import game.Dungeon;
 import game.gamelogic.Angle;
 import game.gameobjects.Space;
+import game.gameobjects.floors.AngleStrategy;
 
 public class AngleIterator implements Iterator<Space> {
     protected final Angle angle;
@@ -20,7 +21,7 @@ public class AngleIterator implements Iterator<Space> {
 
     @Override
     public boolean hasNext() {
-        ns = Dungeon.getCurrentFloor().getSpaceByAngle(origin, angle, i++);
+        ns = Dungeon.getCurrentFloor().getSpace(new AngleStrategy(origin, angle, i++));
         return this.ns.isPresent();
     }
 

@@ -22,6 +22,7 @@ import game.gameobjects.entities.Mimic;
 import game.gameobjects.entities.PlayerEntity;
 import game.gameobjects.entities.Wall;
 import game.gameobjects.entities.props.Chest;
+import game.gameobjects.floors.Floor;
 import game.gameobjects.statuses.Mossy;
 import game.gameobjects.terrains.Grass;
 import game.gameobjects.terrains.Moss;
@@ -30,7 +31,7 @@ import kotlin.Pair;
 
 public class DefaultFloorGenerator extends FloorGenerator {
 
-    protected Space[][] spaces;
+    protected Floor floor;
     protected PlayerEntity player;
     protected int SIZE_X;
     protected int SIZE_Y;
@@ -47,12 +48,11 @@ public class DefaultFloorGenerator extends FloorGenerator {
     }
 
     @Override
-    public void generateFloor(Space[][] spaces, PlayerEntity playerEntity) {
-        this.spaces = spaces;
+    public void generateFloor(Floor floor, PlayerEntity playerEntity) {
+        this.floor = floor;
         this.player = playerEntity;
-        this.SIZE_X = spaces.length;
-        this.SIZE_Y = spaces[0].length;
-        generateSpaces();
+        this.SIZE_X = floor.getSizeX();
+        this.SIZE_Y = floor.getSizeY();
         generateWalls();
         Pair<List<Room>,List<Space[]>> pair = generateRooms();
         spawnProps(pair);
@@ -60,20 +60,12 @@ public class DefaultFloorGenerator extends FloorGenerator {
         spawnEntities(pair);
     }
 
-    protected void generateSpaces(){
-        for (int x = 0; x < spaces.length; x++) {
-            for (int y = 0; y < spaces[x].length; y++) {
-                spaces[x][y] = new Space(x, y);
-            }
-        }
-    }
-
     protected void generateWalls() {
-        for (int x = 0; x < spaces.length; x++){
-            for (int y = 0; y < spaces[x].length; y++){
+        for (int x = 0; x < floor.getSizeX(); x++){
+            for (int y = 0; y < floor.getSizeY(); y++){
                 Wall wall = new Wall();
-                spaces[x][y].setOccupant(wall);
-                wall.setSpace(spaces[x][y]);
+                floor.getSpace(x,y).setOccupant(wall);
+                wall.setSpace(floor.getSpace(x,y));
             }
         }
     }
@@ -125,7 +117,7 @@ public class DefaultFloorGenerator extends FloorGenerator {
                             path = Path.getPathAsArray(
                                 cspace,
                                 pspace,
-                                spaces,
+                                floor,
                                 new PathConditions()
                                     .removeForbiddenCondition(0)
                                     .addForbiddenConditions(
@@ -135,8 +127,8 @@ public class DefaultFloorGenerator extends FloorGenerator {
                                                 previousSpaces.contains(space) ||
                                                 space.getX() <= 0 ||
                                                 space.getY() <= 0 ||
-                                                space.getX() >= spaces.length-1 ||
-                                                space.getY() >= spaces[space.getX()].length-1;
+                                                space.getX() >= floor.getSizeX()-1 ||
+                                                space.getY() >= floor.getSizeY()-1;
                                         }
                                     )
                                     .setDiagonal(false)
@@ -178,16 +170,21 @@ public class DefaultFloorGenerator extends FloorGenerator {
     }
 
     protected Room generateRoom() {
-        return new SimpleRectRoom(spaces, SIZE_X, SIZE_Y);
+        return new SimpleRectRoom(floor, SIZE_X, SIZE_Y);
     }
 
     protected void digOutPath(Space[] path){
-        generateDoor(spaces, path[0]);
+        generateDoor(floor, path[0]);
         for (int i = 1; i < path.length; i++) {
             Space prevSpace = path[i-1];
             Space space = path[i];
             List<Space> adjSpaces = new ArrayList<>();
-            adjSpaces.addAll(List.of(spaces[space.getX()-1][space.getY()],spaces[space.getX()+1][space.getY()],spaces[space.getX()][space.getY()+1],spaces[space.getX()][space.getY()-1]));
+            adjSpaces.addAll(List.of(
+                floor.getSpace(space.getX()-1,space.getY()),
+                floor.getSpace(space.getX()+1,space.getY()),
+                floor.getSpace(space.getX(),space.getY()+1),
+                floor.getSpace(space.getX(),space.getY()-1)
+            ));
             adjSpaces.remove(prevSpace);
             if (!space.isOccupied()) {
                 return;
@@ -200,11 +197,12 @@ public class DefaultFloorGenerator extends FloorGenerator {
             }
             space.setOccupant(null);
         }
-        generateDoor(spaces, path[path.length-1]);
+        generateDoor(floor, path[path.length-1]);
     }
 
-    private void generateDoor(Space[][] spaces, Space doorSpace) {
-        if (spaces[doorSpace.getX()-1][doorSpace.getY()].isOccupied() && spaces[doorSpace.getX()+1][doorSpace.getY()].isOccupied()) {
+    private void generateDoor(Floor floor, Space doorSpace) {
+        if (floor.getSpace(doorSpace.getX()-1,doorSpace.getY()).isOccupied() &&
+                floor.getSpace(doorSpace.getX()+1,doorSpace.getY()).isOccupied()) {
             Door door = new Door('-');
             doorSpace.setOccupant(door);
             replacableEntities.add(door);
@@ -238,8 +236,8 @@ public class DefaultFloorGenerator extends FloorGenerator {
             for (Space space : room.getInteriorSpaces()) {
                 if (!space.isOccupied()) {
                     double val = perlinCosine.evaluateNoise(
-                        App.lerp(0,0,spaces.length,1.0,space.getX()),
-                        App.lerp(0,0,spaces[space.getX()].length,1.0,space.getY())
+                        App.lerp(0,0,floor.getSizeX(),1.0,space.getX()),
+                        App.lerp(0,0,floor.getSizeY(),1.0,space.getY())
                     );
                     if (val >= 0.5) {
                         Entity prop = currentPropPool.getRandom(2,2).get();
@@ -265,11 +263,11 @@ public class DefaultFloorGenerator extends FloorGenerator {
             .perlin(App.randomNumber(0,9999),Interpolation.COSINE,FadeFunction.QUINTIC_POLY)
             .scale(10.0)
             .build();
-        for (int x = 0; x < spaces.length; x++) {
-            for (int y = 0; y < spaces[x].length; y++) {
-                Space space = spaces[x][y];
-                double noiseX = App.lerp(0,0,spaces.length,1.0,x);
-                double noiseY = App.lerp(0,0,spaces[x].length,1.0,y);
+        for (int x = 0; x < floor.getSizeX(); x++) {
+            for (int y = 0; y < floor.getSizeY(); y++) {
+                Space space = floor.getSpace(x,y);
+                double noiseX = App.lerp(0,0,floor.getSizeX(),1.0,x);
+                double noiseY = App.lerp(0,0,floor.getSizeY(),1.0,y);
                 double val = perlinCosine.evaluateNoise(noiseX, noiseY);
                 if (val > 0.33) {
                     if (space.isOccupied() && !(space.getOccupant() instanceof Animal)) {

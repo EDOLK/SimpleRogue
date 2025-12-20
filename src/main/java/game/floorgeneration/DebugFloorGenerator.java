@@ -14,6 +14,7 @@ import game.gameobjects.entities.Entity;
 import game.gameobjects.entities.PlayerEntity;
 import game.gameobjects.entities.Rat;
 import game.gameobjects.entities.Wall;
+import game.gameobjects.floors.Floor;
 import game.gameobjects.items.armor.LeatherArmor;
 import game.gameobjects.items.potions.FirePotion;
 import game.gameobjects.items.potions.FreezingPotion;
@@ -26,18 +27,17 @@ import game.gameobjects.terrains.Terrain;
 
 public class DebugFloorGenerator extends FloorGenerator {
 
-    private Space[][] spaces;
+    private Floor floor;
 
     public DebugFloorGenerator(int depth) {
         super(depth);
     }
 
     @Override
-    public void generateFloor(Space[][] spaces, PlayerEntity playerEntity) {
-        this.spaces = spaces;
-        generateSpaces();
+    public void generateFloor(Floor floor, PlayerEntity playerEntity) {
+        this.floor = floor;
         generateRectangle(1,1,48,48);
-        spaces[20][20].setOccupant(playerEntity);
+        floor.getSpace(20,20).setOccupant(playerEntity);
         playerEntity.addItemToInventory(new ShortSword());
         playerEntity.addItemToInventory(new LeatherArmor());
         playerEntity.addItemToInventory(new Dagger());
@@ -47,29 +47,21 @@ public class DebugFloorGenerator extends FloorGenerator {
         playerEntity.addItemToInventory(new HealingPotion());
     }
 
-    protected void generateSpaces(){
-        for (int x = 0; x < spaces.length; x++) {
-            for (int y = 0; y < spaces[x].length; y++) {
-                spaces[x][y] = new Space(x,y);
-            }
-        }
-    }
-
     protected void generateRectangle(int x, int y, int height, int width) {
 
         for (int dx = x-1; dx <= x+width; dx++) {
-            spaces[dx][y-1].setOccupant(new Wall());
-            spaces[dx][y+height].setOccupant(new Wall());
+            floor.getSpace(dx,y-1).setOccupant(new Wall());
+            floor.getSpace(dx,y+height).setOccupant(new Wall());
         }
 
         for (int dy = y-1; dy <= y+height; dy++) {
-            spaces[x-1][dy].setOccupant(new Wall());
-            spaces[x+width][dy].setOccupant(new Wall());
+            floor.getSpace(x-1,dy).setOccupant(new Wall());
+            floor.getSpace(x+width,dy).setOccupant(new Wall());
         }
 
         for (int dx = x; dx < x+width; dx++) {
             for (int dy = y; dy < y+height; dy++) {
-                spaces[dx][dy].setOccupant(null);
+                floor.getSpace(dx,dy).setOccupant(null);
             }
         }
 

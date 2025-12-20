@@ -52,12 +52,12 @@ import game.gamelogic.floorinteraction.Selector;
 import game.gamelogic.floorinteraction.SimpleSelector;
 import game.gamelogic.interactions.HasInteractions;
 import game.gameobjects.DisplayableTile;
-import game.gameobjects.Floor;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Door;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.entities.PlayerEntity;
 import game.gameobjects.entities.Wall;
+import game.gameobjects.floors.Floor;
 import game.gameobjects.items.Item;
 import game.gameobjects.statuses.Status;
 import game.gameobjects.terrains.OpenDoor;
@@ -103,8 +103,8 @@ public final class FloorMenu extends Menu{
 
         examineName = HeaderBuilder.newBuilder()
             .withText("")
-            .withPosition(Position.create(0, currentFloor.SIZE_Y))
-            .withSize(currentFloor.SIZE_X,1)
+            .withPosition(Position.create(0, currentFloor.getSizeY()))
+            .withSize(currentFloor.getSizeX(),1)
             .build();
 
         screen.addComponent(examineName);
@@ -117,6 +117,10 @@ public final class FloorMenu extends Menu{
     }
 
     public void update(){
+        update(-1);
+    }
+
+    public void update(int time){
         if (!enemyPanel.isHidden()) {
             if (timer <= 0) {
                 hideEnemyPanel();
@@ -136,6 +140,7 @@ public final class FloorMenu extends Menu{
 
         updatePlayerStatus(playerEntity);
         drawCursor(playerEntity);
+        setTimeText(time);
 
     }
 
@@ -150,7 +155,7 @@ public final class FloorMenu extends Menu{
                 return;
             }
         }
-        LayerHandle layer = screen.addLayer(Layer.newBuilder().withSize(currentFloor.SIZE_X, currentFloor.SIZE_Y).build());
+        LayerHandle layer = screen.addLayer(Layer.newBuilder().withSize(currentFloor.getSizeX(), currentFloor.getSizeY()).build());
         layer.draw(tile, position);
         layers.add(layer);
     }
@@ -323,7 +328,7 @@ public final class FloorMenu extends Menu{
             .withDecorations(
                 ComponentDecorations.box(BoxType.SINGLE, "log")
             )
-            .withPosition(0, currentFloor.SIZE_Y+1)
+            .withPosition(0, currentFloor.getSizeY()+1)
             .withSize(55, 10)
             .build();
         
@@ -481,7 +486,7 @@ public final class FloorMenu extends Menu{
     private void initializeFloorLayers(){
 
         screen.draw(TileGraphicsBuilder.newBuilder()
-            .withSize(currentFloor.SIZE_X, currentFloor.SIZE_Y)
+            .withSize(currentFloor.getSizeX(), currentFloor.getSizeY())
             .withFiller(Tile.newBuilder()
                 .withBackgroundColor(TileColor.create(0, 0, 0, 255))
                 .withForegroundColor(TileColor.create(0, 0, 0, 255))
@@ -491,7 +496,7 @@ public final class FloorMenu extends Menu{
             .build()
         );
 
-        memoryLayer = screen.addLayer(Layer.newBuilder().withSize(currentFloor.SIZE_X, currentFloor.SIZE_Y).build());
+        memoryLayer = screen.addLayer(Layer.newBuilder().withSize(currentFloor.getSizeX(), currentFloor.getSizeY()).build());
     }
     
     private void updatePlayerStatus(PlayerEntity player){
@@ -505,7 +510,12 @@ public final class FloorMenu extends Menu{
         }
         depthText.setText(Integer.toString(Dungeon.getCurrentDepth()));
         weightText.setText(Integer.toString(player.getInventoryWeight()) + "/" + Integer.toString(player.getHardWeightLimit()));
-        timeText.setText(Integer.toString(currentFloor.getLastTime()));
+    }
+
+    private void setTimeText(int time){
+        if (time != -1) {
+            timeText.setText(Integer.toString(time));
+        }
     }
 
 
@@ -656,7 +666,7 @@ public final class FloorMenu extends Menu{
         if (time != -1) {
             Dungeon.update(time);
         }
-        update();
+        update(time);
         return UIEventResponse.processed();
     }
 
@@ -746,7 +756,7 @@ public final class FloorMenu extends Menu{
             case ESCAPE:
                 toggleExamination();
                 currentState = State.INGAME;
-                Display.update();
+                update();
                 break;
             case UP: //up
                 moveCursorWithSelector(0, -1, selector);
@@ -781,7 +791,7 @@ public final class FloorMenu extends Menu{
                     if (result.getTimeTaken() > 0) {
                         Dungeon.update(result.getTimeTaken());
                     }
-                    Display.update();
+                    update(result.getTimeTaken());
                 }
                 break;
             case SCROLL_LEFT:
@@ -841,9 +851,9 @@ public final class FloorMenu extends Menu{
         if (result != null && result.isSubmitted()) {
             currentState = State.INGAME;
             if (result.getTimeTaken() > 0) {
-                Dungeon.update(result.getTimeTaken());
+                Dungeon.update();
             }
-            Display.update();
+            update(result.getTimeTaken());
         }
         return UIEventResponse.processed();
     }
