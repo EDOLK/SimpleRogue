@@ -3,7 +3,6 @@ import static game.App.lerp;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Stack;
 import java.util.WeakHashMap;
 
@@ -11,7 +10,6 @@ import org.hexworks.zircon.api.color.TileColor;
 
 import game.Line;
 import game.floorgeneration.FloorGenerator;
-import game.gamelogic.Angle;
 import game.gamelogic.Armed;
 import game.gamelogic.Armored;
 import game.gamelogic.HasOffHand;
@@ -50,7 +48,6 @@ public class ConcreteFloor implements Floor{
     private PlayerEntity player;
 
     private Map<Behavable, Integer> timeMap = new WeakHashMap<>();
-    private int lastTime = 0;
 
     public ConcreteFloor(int SIZE_X, int SIZE_Y, FloorGenerator floorGenerator){
         this(SIZE_X, SIZE_Y, new PlayerEntity(TileColor.transparent(), TileColor.create(255, 255, 255, 255), '@'), floorGenerator);
@@ -80,22 +77,6 @@ public class ConcreteFloor implements Floor{
         return spaces[x][y];
     }
 
-    public Space getClampedSpace(int x, int y){
-        return spaces[clampX(x)][clampY(y)];
-    }
-
-    public int clampX(int x){
-        return x = x >= SIZE_X ? SIZE_X-1 : (x < 0 ? 0 : x);
-    }
-
-    public int clampY(int y){
-        return y = y >= SIZE_Y ? SIZE_Y-1 : (y < 0 ? 0 : y);
-    }
-
-    public void update(){
-        update(100);
-    }
-
     public static class PreppedOverride implements Behavable{
         private OverridesBehavable override;
         private Behavable original;
@@ -121,8 +102,6 @@ public class ConcreteFloor implements Floor{
     }
 
     public void update(int time){
-
-        this.lastTime = time;
 
         Stack<Behavable> behavables = new Stack<Behavable>();
 

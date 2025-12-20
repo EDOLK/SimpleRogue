@@ -18,11 +18,9 @@ public class AngleStrategy implements SpaceGetterStrategy {
         this.angle = angle;
         this.offset = offset;
     }
+
     public AngleStrategy(Space space, Angle angle, int offset) {
-        this.x = space.getX();
-        this.y = space.getY();
-        this.angle = angle;
-        this.offset = offset;
+        this(space.getX(), space.getY(), angle, offset);
     }
 
     @Override
