@@ -14,7 +14,7 @@ import game.gamelogic.HasInventory;
 import game.gamelogic.Levelable;
 import game.gamelogic.abilities.Ability;
 import game.gamelogic.behavior.Behavable;
-import game.gameobjects.Floor;
+import game.gameobjects.floors.Floor;
 import game.gameobjects.ItemSlot;
 import game.gameobjects.Space;
 import game.gameobjects.entities.PlayerEntity;

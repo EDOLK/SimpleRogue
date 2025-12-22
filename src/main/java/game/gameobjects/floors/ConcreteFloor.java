@@ -93,10 +93,6 @@ public class ConcreteFloor implements Floor{
         return y = y >= getSizeY() ? getSizeY()-1 : (y < 0 ? 0 : y);
     }
 
-    public void update(){
-        update(100);
-    }
-
     public void attachHook(BiConsumer<Floor,Floor> hook){
         hooks.add(hook);
     }
@@ -131,6 +127,10 @@ public class ConcreteFloor implements Floor{
         public boolean isActive() {
             return override.overrideIsActive(original);
         }
+    }
+
+    public void update(){
+        update(100);
     }
 
     public void update(int time){
