@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Stack;
 import java.util.WeakHashMap;
 import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
 
 import org.hexworks.zircon.api.color.TileColor;
 
@@ -344,13 +343,14 @@ public class ConcreteFloor implements Floor{
         for (int i = 0; i < lineList.size(); i++) {
             Space space = lineList.get(i);
             int j = intensity - i;
+            j -= space.getTerrains().stream().mapToInt((t) -> t.getLightAbsorption()).sum();
             j = j > 10 ? 10 : j;
             if (j <= 0)
                 return;
             float light = (float)lerp(0,0,10,1,j);
             if (space.getLight() < light)
                 space.setLight(light);
-            if (space.isOccupied() && space.getOccupant().isLightBlocker())
+            if ((space.isOccupied() && space.getOccupant().isLightBlocker()) || space.getTerrains().stream().anyMatch((t) -> t.isLightBlocker()))
                 return;
         }
     }

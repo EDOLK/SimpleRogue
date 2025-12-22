@@ -76,7 +76,7 @@ public class Sneak implements Ability, Behavable, Levelable {
         @Override
         public int modifySkill(Skill skill, int value) {
             if (skill == Skill.STEALTH) {
-                return value*(getLevel()+1);
+                return (value + 1) * (getLevel()+1);
             }
             return value;
         }

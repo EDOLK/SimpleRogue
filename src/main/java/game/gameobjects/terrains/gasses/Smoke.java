@@ -15,7 +15,7 @@ public class Smoke extends Gas {
         setCharacter(' ');
         setFgColor(TileColor.transparent());
         setBgColor(TileColor.create(100, 100, 100, 255));
-        setSpreadFactor(0.5f);
+        setSpreadFactor(0.3f);
         setDisapparationRate(15);
     }
 
@@ -25,13 +25,17 @@ public class Smoke extends Gas {
     }
 
     @Override
+    public int getLightAbsorption() {
+        return this.amount / 2;
+    }
+
+    @Override
     public boolean condenses() {
         return false;
     }
 
     @Override
     public Liquid getCondensationLiquid(int amount) {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getCondensationLiquid'");
     }
 

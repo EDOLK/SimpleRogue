@@ -1,5 +1,6 @@
 package game.gamelogic.skilltrees.rogue;
 
+import game.App;
 import game.display.Display;
 import game.gamelogic.Levelable;
 import game.gamelogic.Skill;
@@ -25,9 +26,8 @@ public class SneakAttack implements Passive, AttackModifier, Levelable{
 
     @Override
     public boolean setLevel(int level) {
-        if (level >= 4) {
+        if (level > 3 || level < 1)
             return false;
-        }
         this.level = level;
         return true;
     }
@@ -35,19 +35,23 @@ public class SneakAttack implements Passive, AttackModifier, Levelable{
     @Override
     public void modifyAttack(Attack attack) {
         if (attack.getAttacker() == owner && attack.isSneak()) {
+            int stealth = Skill.getSkill(Skill.STEALTH, owner);
             switch (level) {
                 case 1:
-                    attack.attachAccuracyModifier((a) -> (a + Skill.getSkill(Skill.STEALTH, owner)), Attack.BASE_PRIORITY+1);
-                    attack.attachDamageModifier((d, dt) -> (int)(d*1.5), Attack.BASE_PRIORITY+1);
+                    attack.attachAccuracyModifier((a) -> (a + App.randomNumber(0, stealth)), Attack.BASE_PRIORITY+1);
+                    attack.attachDamageModifier((d, dt) -> (attack.getWeapon().getMaxDamage()), Attack.BASE_PRIORITY+1);
                     break;
                 case 2:
-                    attack.attachAccuracyModifier((a) -> (a + Skill.getSkill(Skill.STEALTH, owner)), Attack.BASE_PRIORITY+1);
+                    attack.attachAccuracyModifier((a) -> (a + stealth), Attack.BASE_PRIORITY+1);
                     attack.attachAccuracyModifier((a) -> a*2, Attack.BASE_PRIORITY+2);
-                    attack.attachDamageModifier((d, dt) -> (int)(d*2), Attack.BASE_PRIORITY+2);
+                    attack.attachDamageModifier((d, dt) -> (attack.getWeapon().getMaxDamage()), Attack.BASE_PRIORITY+1);
+                    attack.attachDamageModifier((d, dt) -> (d + App.randomNumber(0, stealth)), Attack.BASE_PRIORITY+2);
                     break;
                 case 3:
-                    attack.attachAccuracyModifier((a) -> (999), Attack.BASE_PRIORITY+3);
-                    attack.attachDamageModifier((d, dt) -> (d*3), Attack.BASE_PRIORITY+3);
+                    attack.attachAccuracyModifier((a) -> (999), Attack.BASE_PRIORITY+1);
+                    attack.attachDamageModifier((d, dt) -> (attack.getWeapon().getMaxDamage()), Attack.BASE_PRIORITY+1);
+                    attack.attachDamageModifier((d, dt) -> (d + stealth), Attack.BASE_PRIORITY+2);
+                    attack.attachDamageModifier((d, dt) -> (int)(d*2), Attack.BASE_PRIORITY+3);
                     break;
                 default:
                     break;
