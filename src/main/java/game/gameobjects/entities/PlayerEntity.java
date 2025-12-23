@@ -8,11 +8,13 @@ import java.util.Map;
 import org.hexworks.zircon.api.color.TileColor;
 
 import game.display.Display;
+import game.gamelogic.Affiliation;
 import game.gamelogic.Armed;
 import game.gamelogic.Armored;
 import game.gamelogic.Attribute;
 import game.gamelogic.AttributeMap;
 import game.gamelogic.Experiential;
+import game.gamelogic.HasAffiliation;
 import game.gamelogic.HasAttributes;
 import game.gamelogic.HasDodge;
 import game.gamelogic.HasInventory;
@@ -38,7 +40,7 @@ import game.gameobjects.items.armor.Armor;
 import game.gameobjects.items.armor.ArmorType;
 import game.gameobjects.items.weapons.Weapon;
 
-public class PlayerEntity extends Entity implements Armored, Armed, Levelable, Experiential, HasInventory, HasOffHand, HasAbilities, HasDodge, HasAttributes, HasSkills, UsesSkillTrees, HasPassives{
+public class PlayerEntity extends Entity implements Armored, Armed, Levelable, Experiential, HasInventory, HasOffHand, HasAbilities, HasDodge, HasAttributes, HasSkills, UsesSkillTrees, HasPassives, HasAffiliation{
 
     private int maxWeight = 60;
     private int maxMP;
@@ -289,6 +291,10 @@ public class PlayerEntity extends Entity implements Armored, Armed, Levelable, E
     public void incrementSkill(Skill skill){
         HasSkills.super.incrementSkill(skill);
         Display.logHeader("Your " + skill + " increases!");
+    }
+
+    public Affiliation getAffiliation(){
+        return Affiliation.FRIENDLY;
     }
 
 }
