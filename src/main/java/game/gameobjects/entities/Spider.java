@@ -59,7 +59,10 @@ public class Spider extends Animal implements HasDodge, HasInventory, HasDrops, 
         fangs.setDamage(1, 6);
         setUnarmedWeapon(fangs);
 
-        this.removeStatus(this.getStatusByClass(Sleeping.class));
+        Optional<Sleeping> sleep = this.getStatusByClass(Sleeping.class);
+        if (sleep.isPresent()) {
+            this.removeStatus(sleep.get());
+        }
 
     }
 
