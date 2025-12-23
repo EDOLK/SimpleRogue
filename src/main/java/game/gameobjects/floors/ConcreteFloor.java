@@ -1,10 +1,12 @@
 package game.gameobjects.floors;
 import static game.App.lerp;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 import java.util.WeakHashMap;
+import java.util.function.BiConsumer;
 
 import org.hexworks.zircon.api.color.TileColor;
 
@@ -49,6 +51,8 @@ public class ConcreteFloor implements Floor{
 
     private Map<Behavable, Integer> timeMap = new WeakHashMap<>();
 
+    private List<BiConsumer<Floor, Floor>> hooks = new ArrayList<>();
+
     public ConcreteFloor(int SIZE_X, int SIZE_Y, FloorGenerator floorGenerator){
         this(SIZE_X, SIZE_Y, new PlayerEntity(TileColor.transparent(), TileColor.create(255, 255, 255, 255), '@'), floorGenerator);
     }
@@ -77,6 +81,30 @@ public class ConcreteFloor implements Floor{
         return spaces[x][y];
     }
 
+    public Space getClampedSpace(int x, int y){
+        return spaces[clampX(x)][clampY(y)];
+    }
+
+    public int clampX(int x){
+        return x = x >= getSizeX() ? getSizeX()-1 : (x < 0 ? 0 : x);
+    }
+
+    public int clampY(int y){
+        return y = y >= getSizeY() ? getSizeY()-1 : (y < 0 ? 0 : y);
+    }
+
+    public void attachHook(BiConsumer<Floor,Floor> hook){
+        hooks.add(hook);
+    }
+
+    public void detachHook(BiConsumer<Floor,Floor> hook){
+        hooks.remove(hook);
+    }
+
+    public List<BiConsumer<Floor,Floor>> getHooks(){
+        return hooks;
+    }
+
     public static class PreppedOverride implements Behavable{
         private OverridesBehavable override;
         private Behavable original;
@@ -99,6 +127,10 @@ public class ConcreteFloor implements Floor{
         public boolean isActive() {
             return override.overrideIsActive(original);
         }
+    }
+
+    public void update(){
+        update(100);
     }
 
     public void update(int time){
@@ -311,13 +343,14 @@ public class ConcreteFloor implements Floor{
         for (int i = 0; i < lineList.size(); i++) {
             Space space = lineList.get(i);
             int j = intensity - i;
+            j -= space.getTerrains().stream().mapToInt((t) -> t.getLightAbsorption()).sum();
             j = j > 10 ? 10 : j;
             if (j <= 0)
                 return;
             float light = (float)lerp(0,0,10,1,j);
             if (space.getLight() < light)
                 space.setLight(light);
-            if (space.isOccupied() && space.getOccupant().isLightBlocker())
+            if ((space.isOccupied() && space.getOccupant().isLightBlocker()) || space.getTerrains().stream().anyMatch((t) -> t.isLightBlocker()))
                 return;
         }
     }

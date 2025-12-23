@@ -25,7 +25,6 @@ public class AimSelector implements Selector {
             hi.removeItemFromInventory(item);
             thrower.getSpace().addTerrain(thrownItem);
         }
-
         //TODO: different throwing times based on item weight, thrower strength, etc.
         return new SelectionResult(true, 100);
     }

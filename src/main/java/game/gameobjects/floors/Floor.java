@@ -1,7 +1,9 @@
 package game.gameobjects.floors;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 
 import game.gameobjects.Space;
 import game.gameobjects.entities.PlayerEntity;
@@ -39,5 +41,11 @@ public interface Floor {
     default Collection<Space> collectSpaces(SpaceCollectorStrategy strategy){
         return strategy.collectSpaces(this);
     };
+
+    public void attachHook(BiConsumer<Floor, Floor> hook);
+
+    public void detachHook(BiConsumer<Floor, Floor> hook);
+
+    public List<BiConsumer<Floor, Floor>> getHooks();
 
 }

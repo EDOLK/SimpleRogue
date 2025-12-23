@@ -1,5 +1,8 @@
 package game.gamelogic.floorinteraction;
 
+import java.util.List;
+import java.util.function.Consumer;
+
 import game.display.Cursor;
 import game.gameobjects.Space;
 
@@ -9,5 +12,17 @@ public interface Selector {
     public SelectionResult select(Cursor cursor);
 
     public boolean canMove(Cursor cursor, Space toSpace);
+
+    default void attachHook(Consumer<SelectionResult> hook){
+        SelectorHookMap.put(this, hook);
+    }
+
+    default void detachHook(Consumer<SelectionResult> hook){
+        SelectorHookMap.remove(this, hook);
+    }
+
+    default List<Consumer<SelectionResult>> getHooks(){
+        return SelectorHookMap.get(this);
+    }
 
 }

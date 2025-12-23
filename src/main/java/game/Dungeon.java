@@ -111,7 +111,8 @@ public class Dungeon {
     }
 
     public static void goDownFloor(Staircase staircase){
-        PlayerEntity playerEntity = currentFloor.getPlayer();
+        Floor prevFloor = currentFloor;
+        PlayerEntity playerEntity = prevFloor.getPlayer();
         if (playerEntity.isAdjacent(staircase)){
             currentDepth++;
             if (currentDepth > 5 && currentDepth <= 10) {
@@ -125,6 +126,11 @@ public class Dungeon {
             FloorMenu floorMenu = new FloorMenu();
             Display.setRootMenu(floorMenu);
             Display.replaceMenu(floorMenu);
+
+            prevFloor.getHooks().forEach((h) -> {
+                h.accept(prevFloor, currentFloor);
+            });
+
             floorMenu.update();
         }
     }

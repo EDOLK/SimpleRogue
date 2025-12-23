@@ -285,5 +285,10 @@ public class PlayerEntity extends Entity implements Armored, Armed, Levelable, E
         this.skillTreePoints = points;
     }
 
+    @Override
+    public void incrementSkill(Skill skill){
+        HasSkills.super.incrementSkill(skill);
+        Display.logHeader("Your " + skill + " increases!");
+    }
 
 }

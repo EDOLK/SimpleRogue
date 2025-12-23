@@ -18,6 +18,7 @@ import game.gamelogic.Armed;
 import game.gamelogic.DamageModifier;
 import game.gamelogic.DodgeModifier;
 import game.gamelogic.OverridesAttack;
+import game.gamelogic.HasMemory;
 import game.gameobjects.AttackResult;
 import game.gameobjects.DamageType;
 import game.gameobjects.WeaponSlot;
@@ -38,6 +39,7 @@ public class Attack {
     private boolean crit;
     private int roll;
     private int dodge;
+    private boolean sneak;
 
     private Map<PostAttackHook, PostAttackHook.Type> postAttackHookMap = new LinkedHashMap<>();
     private PriorityQueue<Pair<DodgeModifier, Integer>> dodgeModifierQueue = new PriorityQueue<>((p1,p2) -> p1.getSecond() - p2.getSecond());
@@ -80,6 +82,10 @@ public class Attack {
         return crit;
     }
 
+    public boolean isSneak() {
+        return sneak;
+    }
+
     public Attack(Entity attacker, Entity defender, Weapon attackerWeapon){
         this.attacker = attacker;
         this.defender = defender;
@@ -91,6 +97,8 @@ public class Attack {
 
         modifiedRoll = roll;
 
+        sneak = defender instanceof HasMemory hm ? hm.getFromMemory(attacker).isEmpty() : false;
+
         getDodge(defender);
 
         getAccuracy(attacker, attackerWeapon);
@@ -100,6 +108,7 @@ public class Attack {
         damageType = attackerWeapon.getDamageType();
 
         attachDamageModifier((dmg,type) -> crit ? dmg * 2 : dmg, CRIT_PRIORITY);
+
     }
 
     public AttackResult execute(){
@@ -148,7 +157,7 @@ public class Attack {
 
         }
 
-        AttackResult result = new AttackResult(hit, crit, damage, damageDelt, damageType, attacker, defender, weapon);
+        AttackResult result = new AttackResult(hit, crit, sneak, damage, damageDelt, damageType, attacker, defender, weapon);
 
         for (Entry<PostAttackHook, PostAttackHook.Type> entry : postAttackHookMap.entrySet()) {
             switch (entry.getValue().condition) {

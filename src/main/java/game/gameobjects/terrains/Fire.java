@@ -9,6 +9,7 @@ import org.hexworks.zircon.api.Modifiers;
 import org.hexworks.zircon.api.color.TileColor;
 import org.hexworks.zircon.api.modifier.Modifier;
 
+import game.App;
 import game.gamelogic.Examinable;
 import game.gamelogic.Flammable;
 import game.gamelogic.IsDeterrent;
@@ -19,6 +20,7 @@ import game.gameobjects.Space;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.items.Item;
 import game.gameobjects.statuses.Burning;
+import game.gameobjects.terrains.gasses.Smoke;
 
 public class Fire extends Terrain implements Behavable, SelfAware, Examinable, LightSource, IsDeterrent{
     
@@ -147,6 +149,10 @@ public class Fire extends Terrain implements Behavable, SelfAware, Examinable, L
             if (isFlammable(space)) {
                 space.addFire(new Fire(1));
             }
+        }
+
+        if (Math.random() < 0.5) {
+            getSpace().addTerrain(new Smoke(App.randomNumber(1,3)));
         }
 
         fuel--;

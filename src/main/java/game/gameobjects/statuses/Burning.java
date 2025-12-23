@@ -8,6 +8,7 @@ import org.hexworks.zircon.api.Modifiers;
 import org.hexworks.zircon.api.color.TileColor;
 import org.hexworks.zircon.api.modifier.Modifier;
 
+import game.App;
 import game.display.Display;
 import game.gamelogic.LightSource;
 import game.gamelogic.behavior.Behavable;
@@ -15,6 +16,7 @@ import game.gameobjects.DamageType;
 import game.gameobjects.Space;
 import game.gameobjects.entities.PlayerEntity;
 import game.gameobjects.terrains.Fire;
+import game.gameobjects.terrains.gasses.Smoke;
 
 public class Burning extends Status implements Behavable, LightSource, FiltersIn{
     
@@ -54,6 +56,9 @@ public class Burning extends Status implements Behavable, LightSource, FiltersIn
             if (space.isOccupied()) {
                 space.getOccupant().addStatus(new Burning());
             }
+        }
+        if (Math.random() < 0.5) {
+            owner.getSpace().addTerrain(new Smoke(App.randomNumber(1,3)));
         }
         turns--;
         minDamage += minIntensity;

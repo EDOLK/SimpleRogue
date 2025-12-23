@@ -6,6 +6,7 @@ import game.gameobjects.items.weapons.Weapon;
 public record AttackResult(
     boolean hit,
     boolean crit,
+    boolean sneakAttack,
     int damage,
     int damageDelt,
     DamageType damageType,
@@ -14,10 +15,10 @@ public record AttackResult(
     Weapon weapon
 ){
     public AttackResult() {
-        this(false, false, 0, 0, null, null, null, null);
+        this(false, false, false, 0, 0, null, null, null, null);
     }
 
     public AttackResult(Entity attacker, Entity defender) {
-        this(false, false, 0, 0, null, attacker, defender, null);
+        this(false, false, false, 0, 0, null, attacker, defender, null);
     }
 }
