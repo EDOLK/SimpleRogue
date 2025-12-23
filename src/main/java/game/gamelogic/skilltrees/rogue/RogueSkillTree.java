@@ -17,7 +17,7 @@ public class RogueSkillTree extends SkillTree {
         super();
         this.name = "Rogue";
         addSkillEntry(
-                new MultiSkillEntryBuilder()
+            new MultiSkillEntryBuilder()
                 .withStrategy((i) -> {
                     return new SkillEntryBuilder()
                         .addName("Skulking " + i + "01")
