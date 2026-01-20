@@ -214,9 +214,9 @@ public class Attack {
     public static List<AttackResult> doAttack(Entity attacker, Entity defender){
 
         // TODO: add support for multiple OverridesAttack at the same time
-        OverridesAttack overridesAttack = (OverridesAttack)attacker.getStatusByClass(OverridesAttack.class);
-        if (overridesAttack != null){
-            return overridesAttack.overrideAttack(attacker, defender);
+        Optional<OverridesAttack> overridesAttack = attacker.getStatusByClass(OverridesAttack.class);
+        if (overridesAttack.isPresent()){
+            return overridesAttack.get().overrideAttack(attacker, defender);
         }
 
         List<Weapon> attackerActiveWeapons = new ArrayList<Weapon>();
@@ -260,9 +260,9 @@ public class Attack {
 
     public static AttackResult doAttack(Entity attacker, Entity defender, Weapon attackerWeapon){
         // TODO: add support for multiple OverridesAttack at the same time
-        OverridesAttack overridesAttack = (OverridesAttack)attacker.getStatusByClass(OverridesAttack.class);
-        if (overridesAttack != null){
-            return overridesAttack.overrideAttack(attacker, defender, attackerWeapon);
+        Optional<OverridesAttack> overridesAttack = attacker.getStatusByClass(OverridesAttack.class);
+        if (overridesAttack.isPresent()){
+            return overridesAttack.get().overrideAttack(attacker, defender, attackerWeapon);
         }
 
         AttackResult result = attackWithWeapon(attacker, defender, attackerWeapon);

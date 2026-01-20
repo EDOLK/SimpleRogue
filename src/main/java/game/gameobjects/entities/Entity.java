@@ -240,22 +240,8 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
         return false;
     }
     
-    // public boolean hasStatus(Class<?> statusClass){
-    //     for (Status status : statuses) {
-    //         if (statusClass.isInstance(status)){
-    //             return true;
-    //         }
-    //     }
-    //     return false;
-    // }
-    
-    public Status getStatusByClass(Class<?> statusClass){
-        for (Status status : statuses) {
-            if (statusClass.isInstance(status)){
-                return status;
-            }
-        }
-        return null;
+    public <T> Optional<T> getStatusByClass(Class<T> clazz){
+        return statuses.stream().filter(clazz::isInstance).map(clazz::cast).findFirst();
     }
 
     public List<Entity> getEntitiesInVision(){
