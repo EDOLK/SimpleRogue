@@ -11,8 +11,8 @@ public class IronGreaves extends Armor {
         super(TileColor.transparent(), TileColor.create(200, 200, 200, 255), 'g');
         setName("Iron Greaves");
         setDescription("Iron greaves.");
-        getResistances().add(new RangeResistance(DamageType.PIERCING, this, 1, 3));
-        getResistances().add(new RangeResistance(DamageType.SLASHING, this, 1, 3));
+        getResistances().add(new RangeResistance(DamageType.PIERCING, 1, 3, this, 1, 3));
+        getResistances().add(new RangeResistance(DamageType.SLASHING, 1, 3, this, 1, 3));
         setDodge(-2);
         setWeight(5);
         setArmorType(ArmorType.LEGS);

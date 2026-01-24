@@ -12,8 +12,8 @@ public class Cloak extends Armor{
         setName("Cloak");
         setTileName("Cloak");
         setDescription("A simple linen cloak. Lightweight, though it doesn't offer much protection.");
-        getResistances().add(new RangeResistance(DamageType.FROST, this, 1, 3));
-        getResistances().add(new RangeResistance(DamageType.FIRE, this, 0, 3));
+        getResistances().add(new RangeResistance(DamageType.FROST, 1, 3, this, 1, 3));
+        getResistances().add(new RangeResistance(DamageType.FIRE, 0, 3, this, 1, 3));
         setArmorType(ArmorType.CHEST_OUTER);
         setWeight(1);
     }
