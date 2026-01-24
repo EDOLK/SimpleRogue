@@ -18,6 +18,7 @@ public class BoStaff extends Weapon implements SelfAware, Flammable{
         setDescription("A wooden Bo staff. Accurate and highly flammable.");
         setMinDamage(1);
         setMaxDamage(4);
+        setScale(1, 3);
         setWeight(5);
         setAccuracy(3);
         setDamageType(DamageType.BLUNT);
