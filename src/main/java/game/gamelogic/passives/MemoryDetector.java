@@ -32,7 +32,7 @@ public class MemoryDetector implements Passive, Behavable {
 
     @Override
     public boolean isActive() {
-        return owner != null && (owner instanceof Entity entity ? entity.isAlive() && entity.getStatusByClass(Sleeping.class) == null : true);
+        return owner != null && (owner instanceof Entity entity ? entity.isAlive() && entity.getStatusByClass(Sleeping.class).isEmpty() : true);
     }
 
     
