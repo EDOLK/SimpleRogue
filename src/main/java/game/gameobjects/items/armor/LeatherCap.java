@@ -11,9 +11,9 @@ public class LeatherCap extends Armor{
         setName("Leather Cap");
         setTileName("Leather Cap");
         setDescription("A simple leather cap.");
-        getResistances().add(new RangeResistance(DamageType.PIERCING, 0, 2, this, 1, 2));
-        getResistances().add(new RangeResistance(DamageType.SLASHING, 0, 2, this, 1, 2));
-        getResistances().add(new RangeResistance(DamageType.BLUNT, 0, 2, this, 1, 2));
+        resistances.add(new RangeResistance(DamageType.PIERCING, 0, 2, this, 1, 2));
+        resistances.add(new RangeResistance(DamageType.SLASHING, 0, 2, this, 1, 2));
+        resistances.add(new RangeResistance(DamageType.BLUNT, 0, 2, this, 1, 2));
         setArmorType(ArmorType.HEAD);
         setWeight(1);
     }

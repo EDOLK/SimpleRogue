@@ -11,8 +11,8 @@ public class PlateGauntlets extends Armor {
         super(TileColor.transparent(), TileColor.create(200, 200, 200, 255), 'g');
         setName("Plate Gauntlets");
         setDescription("Plate Gauntlets. Decent protection, though a bit heavy.");
-        getResistances().add(new RangeResistance(DamageType.PIERCING, 1, 2, this, 1, 2));
-        getResistances().add(new RangeResistance(DamageType.SLASHING, 1, 2, this, 1, 2));
+        resistances.add(new RangeResistance(DamageType.PIERCING, 1, 2, this, 1, 2));
+        resistances.add(new RangeResistance(DamageType.SLASHING, 1, 2, this, 1, 2));
         setArmorType(ArmorType.HANDS);
         setDodge(-1);
         setWeight(5);

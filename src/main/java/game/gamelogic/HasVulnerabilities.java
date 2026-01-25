@@ -23,43 +23,41 @@ public interface HasVulnerabilities{
             String finalString = damageType.toString().toUpperCase() + ": ";
             int min = 0;
             int max = 0;
-            int percent = 0;
+            double percent = 0;
             for (Vulnerability vulnerability : hasVulnerabilities.getVulnerabilities()) {
-                if (vulnerability.getType() != damageType){
+                if (vulnerability.getType() != damageType)
                     continue;
-                }
-                if (vulnerability instanceof RangeVulnerability rangeVulnerability){
-                    min += rangeVulnerability.getMinDamage() * rangeVulnerability.getLevel();
-                    max += rangeVulnerability.getMaxDamage() * rangeVulnerability.getLevel();
-                }
-                if (vulnerability instanceof FlatVulnerability flatVulnerability){
-                    min += flatVulnerability.getFlat() * flatVulnerability.getLevel();
-                }
-                if (vulnerability instanceof PercentageVulnerability percentageVulnerability){
-                    double t = 100.0;
-                    double p = 0.0;
-                    for (int i = 0; i < percentageVulnerability.getLevel(); i++) {
-                        p += percentageVulnerability.getPercentage() * t;
-                        t -= percentageVulnerability.getPercentage() * t;
+                switch (vulnerability) {
+                    case RangeVulnerability rangeVulnerability -> {
+                        min += rangeVulnerability.getMinDamage();
+                        max += rangeVulnerability.getMaxDamage();
                     }
-                    percent += (int)p;
-                }
-                if (max != 0) {
-                    finalString += min + " - " + max;
-                } else if (min != 0){
-                    finalString += min;
-                }
-                if (percent != 0){
-                    if (min != 0 || max != 0) {
-                        finalString += ", ";
+                    case FlatVulnerability flatVulnerability -> {
+                        min += flatVulnerability.getFlat();
                     }
-                    finalString += percent + "%";
+                    case PercentageVulnerability percentageVulnerability -> {
+                        percent += ((1 - percent) * percentageVulnerability.getPercentage());
+                    }
+                    default -> {
+
+                    }
                 }
             }
-            if (min != 0 || max != 0 || percent != 0){
+            percent *= 100;
+            if (min != 0 || max != 0) {
+                finalString += min;
+                if (max != 0)
+                    finalString += " - " + max;
+            }
+            if (percent != 0) {
+                if (min != 0 || max != 0)
+                    finalString += ", ";
+                finalString += (int)percent + "%";
+            }
+            if (min != 0 || max != 0 || percent != 0)
                 vulnerabilityStrings.add(finalString);
-            }
         }
         return vulnerabilityStrings;
+
     }
 }

@@ -55,6 +55,6 @@ public final class RangeResistance extends Resistance {
 
     @Override
     public String toString() {
-        return minDamage * getLevel() + " - " + maxDamage * getLevel() + " " + getType() + " damage";
+        return getMinDamage() + " - " + getMaxDamage() + " " + getType() + " damage";
     }
 }

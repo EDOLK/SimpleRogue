@@ -12,9 +12,9 @@ public class LeatherPants extends Armor {
         setName("Leather Pants");
         setTileName("Leather Pants");
         setDescription("Pants made of tanned leather.");
-        getResistances().add(new RangeResistance(DamageType.PIERCING, 0, 2, this, 1, 2));
-        getResistances().add(new RangeResistance(DamageType.SLASHING, 0, 2, this, 1, 2));
-        getResistances().add(new RangeResistance(DamageType.BLUNT, 1, 2, this, 1, 2));
+        resistances.add(new RangeResistance(DamageType.PIERCING, 0, 2, this, 1, 2));
+        resistances.add(new RangeResistance(DamageType.SLASHING, 0, 2, this, 1, 2));
+        resistances.add(new RangeResistance(DamageType.BLUNT, 1, 2, this, 1, 2));
         setArmorType(ArmorType.LEGS);
         setWeight(2);
     }

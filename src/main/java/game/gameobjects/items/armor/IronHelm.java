@@ -12,8 +12,8 @@ public class IronHelm extends Armor{
         setName("Iron Helm");
         setTileName("Iron Helm");
         setDescription("A sturdy iron helmet.");
-        getResistances().add(new RangeResistance(DamageType.PIERCING, 1, 3, this, 1, 3));
-        getResistances().add(new RangeResistance(DamageType.SLASHING, 1, 3, this, 1, 3));
+        resistances.add(new RangeResistance(DamageType.PIERCING, 1, 3, this, 1, 3));
+        resistances.add(new RangeResistance(DamageType.SLASHING, 1, 3, this, 1, 3));
         setArmorType(ArmorType.HEAD);
         setWeight(3);
         setDodge(-1);

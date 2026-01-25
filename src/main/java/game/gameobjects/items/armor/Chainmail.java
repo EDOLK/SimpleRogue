@@ -12,8 +12,8 @@ public class Chainmail extends Armor {
         setName("Chainmail");
         setTileName("Chainmail");
         setDescription("Armor made of interlocking metal chains. Effectively catches bladed weapons, though a bit heavy.");
-        getResistances().add(new RangeResistance(DamageType.PIERCING, 2, 6, this, 1, 3));
-        getResistances().add(new RangeResistance(DamageType.SLASHING, 2, 6, this, 1, 3));
+        resistances.add(new RangeResistance(DamageType.PIERCING, 2, 6, this, 1, 3));
+        resistances.add(new RangeResistance(DamageType.SLASHING, 2, 6, this, 1, 3));
         setDodge(-3);
         setArmorType(ArmorType.CHEST_INNER);
         setWeight(10);

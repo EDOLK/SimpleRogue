@@ -23,42 +23,39 @@ public interface HasResistances{
             String finalString = damageType.toString().toUpperCase() + ": ";
             int min = 0;
             int max = 0;
-            int percent = 0;
+            double percent = 0;
             for (Resistance resistance : hasResistances.getResistances()) {
-                if (resistance.getType() != damageType){
+                if (resistance.getType() != damageType)
                     continue;
-                }
-                if (resistance instanceof RangeResistance rangeResistance){
-                    min += rangeResistance.getMinDamage() * rangeResistance.getLevel();
-                    max += rangeResistance.getMaxDamage() * rangeResistance.getLevel();
-                }
-                if (resistance instanceof FlatResistance flatResistance){
-                    min += flatResistance.getFlat() * flatResistance.getLevel();
-                }
-                if (resistance instanceof PercentageResistance percentageResistance){
-                    double t = 100.0;
-                    double p = 0.0;
-                    for (int i = 0; i < percentageResistance.getLevel(); i++) {
-                        p += percentageResistance.getPercentage() * t;
-                        t -= percentageResistance.getPercentage() * t;
+                switch (resistance) {
+                    case RangeResistance rangeResistance -> {
+                        min += rangeResistance.getMinDamage();
+                        max += rangeResistance.getMaxDamage();
                     }
-                    percent += (int)p;
-                }
-                if (max != 0) {
-                    finalString += min + " - " + max;
-                } else if (min != 0){
-                    finalString += min;
-                }
-                if (percent != 0){
-                    if (min != 0 || max != 0) {
-                        finalString += ", ";
+                    case FlatResistance flatResistance -> {
+                        min += flatResistance.getFlat();
                     }
-                    finalString += percent + "%";
+                    case PercentageResistance percentageResistance -> {
+                        percent += ((1 - percent) * percentageResistance.getPercentage());
+                    }
+                    default -> {
+
+                    }
                 }
             }
-            if (min != 0 || max != 0 || percent != 0){
+            percent *= 100;
+            if (min != 0 || max != 0) {
+                finalString += min;
+                if (max != 0)
+                    finalString += " - " + max;
+            }
+            if (percent != 0) {
+                if (min != 0 || max != 0)
+                    finalString += ", ";
+                finalString += (int)percent + "%";
+            }
+            if (min != 0 || max != 0 || percent != 0)
                 resistanceStrings.add(finalString);
-            }
         }
         return resistanceStrings;
     }

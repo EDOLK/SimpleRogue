@@ -17,7 +17,7 @@ public abstract class AbstractDamageModifier implements DamageModifier {
     }
 
     public int getLevel(){
-        return levelable != null ? levelable.getLevel() : 0;
+        return levelable != null ? levelable.getLevel() - 1 : 0;
     }
 
     public DamageType getType() {
