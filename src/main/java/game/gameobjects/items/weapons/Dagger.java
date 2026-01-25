@@ -14,6 +14,7 @@ public class Dagger extends Weapon implements Aimable {
         setDescription("An iron dagger. Sharp, but a bit finicky.");
         setMinDamage(1);
         setMaxDamage(9);
+        setScale(0, 3);
         setWeight(3);
         setAccuracy(-3);
         setDamageType(DamageType.PIERCING);

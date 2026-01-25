@@ -13,6 +13,7 @@ public class ShortSword extends Weapon {
         setDescription("An iron shortsword.");
         setMinDamage(1);
         setMaxDamage(6);
+        setScale(1, 3);
         setWeight(5);
         setDamageType(DamageType.SLASHING);
     }

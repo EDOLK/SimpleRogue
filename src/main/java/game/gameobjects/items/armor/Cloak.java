@@ -2,6 +2,7 @@ package game.gameobjects.items.armor;
 
 import org.hexworks.zircon.api.color.TileColor;
 
+import game.gamelogic.resistances.PercentageResistance;
 import game.gamelogic.resistances.RangeResistance;
 import game.gameobjects.DamageType;
 
@@ -12,8 +13,9 @@ public class Cloak extends Armor{
         setName("Cloak");
         setTileName("Cloak");
         setDescription("A simple linen cloak. Lightweight, though it doesn't offer much protection.");
-        getResistances().add(new RangeResistance(DamageType.FROST, this, 1, 3));
-        getResistances().add(new RangeResistance(DamageType.FIRE, this, 0, 3));
+        resistances.add(new RangeResistance(DamageType.FROST, 1, 3, this, 1, 3));
+        resistances.add(new RangeResistance(DamageType.FIRE, 0, 3, this, 1, 3));
+        resistances.add(new PercentageResistance(DamageType.FIRE, 0.50, this, 0.50));
         setArmorType(ArmorType.CHEST_OUTER);
         setWeight(1);
     }

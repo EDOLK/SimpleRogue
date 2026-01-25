@@ -20,6 +20,8 @@ public class Weapon extends Item implements HasAccuracy, Levelable, Upgradable{
     private DamageType damageType;
     private int minDamage = 0;
     private int maxDamage = 0;
+    private int minScale = 0;
+    private int maxScale = 0;
     private int accuracy = 0;
     private int level = 1;
     private WeaponEnchantment enchantment;
@@ -46,7 +48,7 @@ public class Weapon extends Item implements HasAccuracy, Levelable, Upgradable{
     }
 
     public int getMinDamage() {
-        return minDamage;
+        return minDamage + (minScale * (getLevel()-1)) ;
     }
 
     public void setMinDamage(int minDamage) {
@@ -54,11 +56,24 @@ public class Weapon extends Item implements HasAccuracy, Levelable, Upgradable{
     }
 
     public int getMaxDamage() {
-        return maxDamage;
+        return maxDamage + (maxScale * (getLevel()-1)) ;
     }
 
     public void setMaxDamage(int maxDamage) {
         this.maxDamage = maxDamage;
+    }
+
+    public void setMinScale(int minScale) {
+        this.minScale = minScale;
+    }
+
+    public void setMaxScale(int maxScale) {
+        this.maxScale = maxScale;
+    }
+
+    public void setScale(int minScale, int maxScale) {
+        this.minScale = minScale;
+        this.maxScale = maxScale;
     }
 
     public DamageType getDamageType() {
@@ -70,7 +85,7 @@ public class Weapon extends Item implements HasAccuracy, Levelable, Upgradable{
     }
     
     public int generateDamage(){
-        return randomNumber(minDamage, maxDamage) * level;
+        return randomNumber(getMinDamage(), getMaxDamage());
     }
 
     @Override

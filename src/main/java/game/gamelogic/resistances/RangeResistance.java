@@ -9,9 +9,11 @@ public final class RangeResistance extends Resistance {
 
     private int minDamage;
     private int maxDamage;
+    private int minScale;
+    private int maxScale;
 
     public int getMinDamage() {
-        return minDamage;
+        return minDamage + (minScale * getLevel());
     }
 
     public void setMinDamage(int minDamage) {
@@ -19,7 +21,7 @@ public final class RangeResistance extends Resistance {
     }
 
     public int getMaxDamage() {
-        return maxDamage;
+        return maxDamage + (maxScale * getLevel());
     }
 
     public void setMaxDamage(int maxDamage) {
@@ -27,32 +29,32 @@ public final class RangeResistance extends Resistance {
     }
 
     public RangeResistance(DamageType type, int minDamage, int maxDamage) {
-        super(type);
-        this.minDamage = minDamage;
-        this.maxDamage = maxDamage;
+        this(type, minDamage, maxDamage, null, 0, 0);
     }
 
-    public RangeResistance(DamageType type, Levelable levelable, int minDamage, int maxDamage) {
+    public RangeResistance(DamageType type, int minDamage, int maxDamage, Levelable levelable, int minScale, int maxScale) {
         super(type, levelable);
         this.minDamage = minDamage;
         this.maxDamage = maxDamage;
+        this.minScale = minScale;
+        this.maxScale = maxScale;
     }
     
     private int generateDamage(){
-        return randomNumber(minDamage, maxDamage);
+        return randomNumber(getMinDamage(), getMaxDamage());
     }
 
 
     @Override
     public int calculateDamage(int damage, DamageType damageType) {
         if (this.type == damageType){
-            damage -= generateDamage() * getLevel();
+            damage -= generateDamage();
         }
         return Math.max(0, damage);
     }
 
     @Override
     public String toString() {
-        return minDamage * getLevel() + " - " + maxDamage * getLevel() + " " + getType() + " damage";
+        return getMinDamage() + " - " + getMaxDamage() + " " + getType() + " damage";
     }
 }

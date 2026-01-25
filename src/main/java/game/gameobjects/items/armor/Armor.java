@@ -19,7 +19,7 @@ import game.gameobjects.items.scrolls.ScrollOfUpgrade;
 public class Armor extends Item implements HasResistances, HasDodge, Levelable, Upgradable{
 
     private ArmorType armorType;
-    private List<Resistance> resistances = new ArrayList<Resistance>();
+    protected List<Resistance> resistances = new ArrayList<Resistance>();
     private int dodge = 0;
     private int level = 1;
     private ArmorEnchantment enchantment;

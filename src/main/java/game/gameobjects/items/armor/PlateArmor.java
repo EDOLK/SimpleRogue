@@ -12,9 +12,9 @@ public class PlateArmor extends Armor{
         setName("Plate Armor");
         setTileName("Chestplate");
         setDescription("Massive plate armor. Staggeringly heavy.");
-        getResistances().add(new RangeResistance(DamageType.PIERCING, this, 3, 9));
-        getResistances().add(new RangeResistance(DamageType.SLASHING, this, 3, 9));
-        getResistances().add(new RangeResistance(DamageType.BLUNT, this, 1, 3));
+        resistances.add(new RangeResistance(DamageType.PIERCING, 2, 6, this, 1, 3));
+        resistances.add(new RangeResistance(DamageType.SLASHING, 2, 6, this, 1, 3));
+        resistances.add(new RangeResistance(DamageType.BLUNT, 1, 3, this, 1, 3));
         setDodge(-7);
         setArmorType(ArmorType.CHEST_OUTER);
         setWeight(20);

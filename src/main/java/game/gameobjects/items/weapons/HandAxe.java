@@ -12,6 +12,7 @@ public class HandAxe extends Weapon{
         setDescription("A Hand axe. Reliable.");
         setMinDamage(3);
         setMaxDamage(4);
+        setScale(2, 2);
         setWeight(5);
         setDamageType(DamageType.SLASHING);
     }

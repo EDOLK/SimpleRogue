@@ -155,9 +155,9 @@ public class RatKing extends Animal implements HasInventory, DropsXP{
         @Override
         public List<Resistance> getResistances() {
             return List.of(
-                new RangeResistance(DamageType.BLUNT, this, 0,1),
-                new RangeResistance(DamageType.PIERCING, this, 0,1),
-                new RangeResistance(DamageType.SLASHING, this, 0,1)
+                new RangeResistance(DamageType.BLUNT, 0, 1,this, 0, 1),
+                new RangeResistance(DamageType.PIERCING, 0, 1,this, 0, 1),
+                new RangeResistance(DamageType.SLASHING, 0, 1,this, 0, 1)
             );
         }
 

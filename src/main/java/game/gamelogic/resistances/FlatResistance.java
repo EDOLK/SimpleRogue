@@ -6,25 +6,26 @@ import game.gameobjects.DamageType;
 public final class FlatResistance extends Resistance{
 
     private int flat;
+    private int scale;
 
     public int getFlat() {
-        return flat;
+        return flat * (scale * getLevel());
     }
 
     public FlatResistance(DamageType type, int flat) {
-        super(type);
-        this.flat = flat;
+        this(type, flat, null, 0);
     }
 
-    public FlatResistance(DamageType type, Levelable levelable, int flat) {
+    public FlatResistance(DamageType type, int flat, Levelable levelable, int scale) {
         super(type, levelable);
         this.flat = flat;
+        this.scale = scale;
     }
 
     @Override
     public int calculateDamage(int damage, DamageType damageType) {
         if (this.type == damageType){
-            damage -= flat * getLevel();
+            damage -= getFlat();
         }
         return Math.max(0, damage);
 
@@ -32,6 +33,6 @@ public final class FlatResistance extends Resistance{
 
     @Override
     public String toString() {
-        return getFlat() * getLevel() + " " + getType() + " damage";
+        return getFlat() + " " + getType() + " damage";
     }
 }
