@@ -4,7 +4,6 @@ import static game.App.getRandom;
 import static game.App.randomNumber;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.hexworks.zircon.api.color.TileColor;
@@ -25,7 +24,6 @@ import game.gameobjects.entities.Rat;
 import game.gameobjects.items.Item;
 import game.gameobjects.items.weapons.Weapon;
 import game.gameobjects.statuses.Sleeping;
-import game.gameobjects.statuses.Status;
 
 public class RatKing extends Animal implements HasInventory, DropsXP{
 
@@ -110,13 +108,7 @@ public class RatKing extends Animal implements HasInventory, DropsXP{
             fangs.setDamage(1, 3);
             setUnarmedWeapon(fangs);
 
-            Iterator<Status> it = this.getStatuses().iterator();
-            while (it.hasNext()) {
-                Status status = it.next();
-                if (status instanceof Sleeping) {
-                    it.remove();
-                }
-            }
+            this.getStatuses().stream().filter((status) -> status instanceof Sleeping).forEach(this::removeStatus);
 
         }
 

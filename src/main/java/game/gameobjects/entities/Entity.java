@@ -198,7 +198,7 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
     }
 
     public List<Status> getStatuses() {
-        return statuses;
+        return List.copyOf(statuses);
     }
     
     public boolean addStatus(Status status){
@@ -206,11 +206,9 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
         if (status == null || !isVulnerable(status))
             return false;
 
-        List<Status> statusesToCheck = List.copyOf(statuses);
-
         boolean filteredOut = false; boolean filteredIn = false;
 
-        for (Status st : statusesToCheck) {
+        for (Status st : getStatuses()) {
 
             if (st instanceof FiltersOut sOut && sOut.filterOut(status))
                 filteredOut = true;
@@ -234,6 +232,7 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
 
     public boolean removeStatus(Status status){
         if (status != null && statuses.remove(status)) {
+            status.onStatusRemove();
             status.setOwner(null);
             return true;
         }

@@ -37,9 +37,6 @@ public class Clobber implements Ability, Behavable{
         this.owner = owner;
     }
 
-    @SuppressWarnings("unused")
-    private Clobber(){}
-
     @Override
     public String getName() {
         if (cooldown > 0) {

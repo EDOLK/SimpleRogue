@@ -109,7 +109,7 @@ public class Mimic extends Animal implements DropsXP, HasInventory, HasInteracti
         setBaseMaxHP(10);
         setHP(10);
         setWeight(5);
-        new ArrayList<>(super.getStatuses()).stream().filter(s -> s instanceof Sleeping).forEach(this::removeStatus);
+        super.getStatuses().stream().filter(s -> s instanceof Sleeping).forEach(this::removeStatus);
         if (disguise instanceof HasInventory hi)
             inventory.addAll(hi.getInventory());
     }

@@ -62,5 +62,9 @@ public abstract class Status extends DisplayableTile{
     public void onStatusAdd(){
 
     }
+
+    public void onStatusRemove(){
+
+    }
     
 }

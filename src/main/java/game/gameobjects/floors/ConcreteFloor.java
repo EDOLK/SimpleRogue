@@ -112,7 +112,6 @@ public class ConcreteFloor implements Floor{
             this.override = override;
             this.original = original;
         }
-        private PreppedOverride(){}
         public OverridesBehavable getOverride() {
             return override;
         }
