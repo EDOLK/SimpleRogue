@@ -6,7 +6,8 @@ import java.util.List;
 import org.hexworks.zircon.api.color.TileColor;
 
 import game.Dungeon;
-import game.gamelogic.HasResistances;
+import game.gamelogic.DamageModifier;
+import game.gamelogic.HasDamageModifiers;
 import game.gamelogic.resistances.PercentageResistance;
 import game.gamelogic.resistances.Resistance;
 import game.gameobjects.DamageType;
@@ -15,7 +16,7 @@ import game.gameobjects.items.Item;
 import game.gameobjects.statuses.Mossy;
 import game.gameobjects.statuses.Status;
 
-public class Statue extends Entity implements HasResistances {
+public class Statue extends Entity implements HasDamageModifiers {
 
     private List<Resistance> resistances;
 
@@ -55,11 +56,6 @@ public class Statue extends Entity implements HasResistances {
     }
 
     @Override
-    public List<Resistance> getResistances() {
-        return this.resistances;
-    }
-
-    @Override
     public int defaultInteraction(Entity interactor) {
         return interactor.getTimeToWait();
     }
@@ -72,6 +68,11 @@ public class Statue extends Entity implements HasResistances {
     @Override
     protected boolean baseVulnerable(Status status) {
         return status instanceof Mossy;
+    }
+
+    @Override
+    public List<DamageModifier> getDamageModifiers() {
+        return List.copyOf(this.resistances);
     }
 
 }

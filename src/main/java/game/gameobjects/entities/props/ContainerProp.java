@@ -8,20 +8,20 @@ import org.hexworks.zircon.api.color.TileColor;
 import game.Dungeon;
 import game.display.Display;
 import game.gamelogic.Attribute;
+import game.gamelogic.DamageModifier;
+import game.gamelogic.HasDamageModifiers;
 import game.gamelogic.HasInventory;
-import game.gamelogic.HasResistances;
 import game.gamelogic.interactions.HasInteraction;
 import game.gamelogic.interactions.Interaction;
 import game.gamelogic.interactions.OpenInventoryInteraction;
 import game.gamelogic.resistances.PercentageResistance;
-import game.gamelogic.resistances.Resistance;
 import game.gameobjects.DamageType;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.entities.PlayerEntity;
 import game.gameobjects.items.Item;
 
-public abstract class ContainerProp extends Entity implements HasInteraction, HasInventory, HasResistances{
+public abstract class ContainerProp extends Entity implements HasInteraction, HasInventory, HasDamageModifiers{
 
     private List<Item> inventory = new ArrayList<Item>();
 
@@ -78,8 +78,8 @@ public abstract class ContainerProp extends Entity implements HasInteraction, Ha
     }
 
     @Override
-    public List<Resistance> getResistances() {
-        List<Resistance> rList = new ArrayList<>();
+    public List<DamageModifier> getDamageModifiers() {
+        List<DamageModifier> rList = new ArrayList<>();
         for (DamageType type : DamageType.values()) {
             if (type != DamageType.SLASHING && type != DamageType.PIERCING && type != DamageType.BLUNT
                     && type != DamageType.FIRE) {

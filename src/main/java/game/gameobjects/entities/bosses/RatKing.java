@@ -9,14 +9,14 @@ import java.util.List;
 import org.hexworks.zircon.api.color.TileColor;
 
 import game.Dungeon;
+import game.gamelogic.DamageModifier;
 import game.gamelogic.DropsXP;
+import game.gamelogic.HasDamageModifiers;
 import game.gamelogic.HasInventory;
-import game.gamelogic.HasResistances;
 import game.gamelogic.Levelable;
 import game.gamelogic.combat.Attack;
 import game.gamelogic.combat.PostAttackHook;
 import game.gamelogic.resistances.RangeResistance;
-import game.gamelogic.resistances.Resistance;
 import game.gameobjects.DamageType;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Animal;
@@ -93,7 +93,7 @@ public class RatKing extends Animal implements HasInventory, DropsXP{
         return 20;
     }
 
-    public class SummonedRat extends Rat implements Levelable, HasResistances {
+    public class SummonedRat extends Rat implements Levelable, HasDamageModifiers {
 
         public SummonedRat() {
             super();
@@ -145,15 +145,6 @@ public class RatKing extends Animal implements HasInventory, DropsXP{
         }
 
         @Override
-        public List<Resistance> getResistances() {
-            return List.of(
-                new RangeResistance(DamageType.BLUNT, 0, 1,this, 0, 1),
-                new RangeResistance(DamageType.PIERCING, 0, 1,this, 0, 1),
-                new RangeResistance(DamageType.SLASHING, 0, 1,this, 0, 1)
-            );
-        }
-
-        @Override
         public void modifyAttack(Attack attack) {
             attack.attachPostAttackHook((ar) -> {
                 RatKing.this.ratCount--;
@@ -164,6 +155,15 @@ public class RatKing extends Animal implements HasInventory, DropsXP{
         @Override
         public int getDropPoints() {
             return 0;
+        }
+
+        @Override
+        public List<DamageModifier> getDamageModifiers() {
+            return List.of(
+                new RangeResistance(DamageType.BLUNT, 0, 1,this, 0, 1),
+                new RangeResistance(DamageType.PIERCING, 0, 1,this, 0, 1),
+                new RangeResistance(DamageType.SLASHING, 0, 1,this, 0, 1)
+            );
         }
     }
 

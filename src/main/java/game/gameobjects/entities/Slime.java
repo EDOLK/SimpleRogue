@@ -12,17 +12,15 @@ import game.Dungeon;
 import game.display.Display;
 import game.floorgeneration.pools.Pool;
 import game.gamelogic.Consumable;
+import game.gamelogic.DamageModifier;
 import game.gamelogic.DropsXP;
+import game.gamelogic.HasDamageModifiers;
 import game.gamelogic.HasDodge;
 import game.gamelogic.HasDrops;
 import game.gamelogic.HasInventory;
-import game.gamelogic.HasResistances;
-import game.gamelogic.HasVulnerabilities;
 import game.gamelogic.combat.Attack;
 import game.gamelogic.resistances.PercentageResistance;
-import game.gamelogic.resistances.Resistance;
 import game.gamelogic.vulnerabilities.PercentageVulnerability;
-import game.gamelogic.vulnerabilities.Vulnerability;
 import game.gameobjects.DamageType;
 import game.gameobjects.Space;
 import game.gameobjects.items.Item;
@@ -31,7 +29,7 @@ import game.gameobjects.statuses.Slimed;
 import game.gameobjects.statuses.Status;
 import game.gameobjects.terrains.liquids.SlimeLiquid;
 
-public class Slime extends Animal implements DropsXP, HasDodge, HasResistances, HasVulnerabilities, HasInventory, HasDrops{
+public class Slime extends Animal implements DropsXP, HasDodge, HasDamageModifiers, HasInventory, HasDrops{
 
     private List<Item> inventory = new ArrayList<>();
     
@@ -88,16 +86,10 @@ public class Slime extends Animal implements DropsXP, HasDodge, HasResistances, 
     }
 
     @Override
-    public List<Resistance> getResistances() {
+    public List<DamageModifier> getDamageModifiers() {
         return List.of(
             new PercentageResistance(DamageType.BLUNT, 0.5),
-            new PercentageResistance(DamageType.SUFFICATION, 1.00)
-        );
-    }
-
-    @Override
-    public List<Vulnerability> getVulnerabilities() {
-        return List.of(
+            new PercentageResistance(DamageType.SUFFICATION, 1.00),
             new PercentageVulnerability(DamageType.PIERCING, .50),
             new PercentageVulnerability(DamageType.SLASHING, .50)
         );
