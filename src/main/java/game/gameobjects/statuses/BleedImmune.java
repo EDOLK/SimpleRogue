@@ -17,10 +17,7 @@ public class BleedImmune extends Status implements FiltersIn, FiltersOut, Behava
 
     @Override
     public boolean filterOut(Status status) {
-        if (status instanceof Bleeding) {
-            return true;
-        }
-        return false;
+        return status instanceof Bleeding;
     }
 
     @Override

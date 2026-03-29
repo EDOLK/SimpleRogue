@@ -16,11 +16,6 @@ public class CheckConditions {
         return offHand;
     }
 
-    public CheckConditions withOffHand(boolean offHand) {
-        this.offHand = offHand;
-        return this;
-    }
-
     public boolean includesAbility() {
         return ability;
     }
@@ -90,6 +85,11 @@ public class CheckConditions {
 
     public CheckConditions withPassive(boolean passive) {
         this.passive = passive;
+        return this;
+    }
+
+    public CheckConditions withOffHand(boolean offHand) {
+        this.offHand = offHand;
         return this;
     }
 

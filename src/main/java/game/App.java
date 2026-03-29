@@ -82,7 +82,7 @@ public class App
             if (object instanceof Entity entity) {
 
                 if (conditions.includesStatuses())
-                    entity.getStatuses().forEach(helper::accept);
+                    entity.getStatuses().forEach(helper);
 
                 if (conditions.includesUnarmedWeapon())
                     helper.accept(entity.getUnarmedWeapon());
@@ -94,16 +94,16 @@ public class App
             }
 
             if (object instanceof HasInventory hasInventory && conditions.includesInventory())
-                hasInventory.getInventory().forEach(helper::accept);
+                hasInventory.getInventory().forEach(helper);
 
             if (object instanceof Armed armed && conditions.includesArmedWeapons())
-                armed.getWeapons().forEach(helper::accept);
+                armed.getWeapons().forEach(helper);
 
             if (object instanceof Armored armored && conditions.includesArmors())
-                armored.getArmor().forEach(helper::accept);
+                armored.getArmor().forEach(helper);
 
             if (object instanceof HasAbilities hasAbilities && conditions.includesAbility())
-                hasAbilities.getAbilities().forEach(helper::accept);
+                hasAbilities.getAbilities().forEach(helper);
 
             if (object instanceof Weapon weapon && conditions.includesEnchantments())
                 helper.accept(weapon.getEnchantment());
@@ -112,12 +112,12 @@ public class App
                 helper.accept(armor.getEnchantment());
 
             if (object instanceof HasPassives hasPassives && conditions.includesPassive())
-                hasPassives.getPassives().forEach(helper::accept);
+                hasPassives.getPassives().forEach(helper);
             
             if (conditions.includesAbility()) {
 
                 if (object instanceof HasAbilities hasAbilities)
-                    hasAbilities.getAbilities().forEach(helper::accept);
+                    hasAbilities.getAbilities().forEach(helper);
 
                 if (object instanceof HasAbility hasAbility)
                     helper.accept(hasAbility.getAbility());
