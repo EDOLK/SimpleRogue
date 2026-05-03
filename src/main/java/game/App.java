@@ -90,7 +90,7 @@ public class App
             }
 
             if (object instanceof HasOffHand hoh && conditions.includesOffHand()) {
-                helper.accept(hoh.getOffHandSlot().getEquippedItem());
+                helper.accept(hoh.getOffHandSlot().getItem());
             }
 
             if (object instanceof HasInventory hasInventory && conditions.includesInventory())

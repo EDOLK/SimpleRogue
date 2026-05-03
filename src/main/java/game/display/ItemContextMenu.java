@@ -24,7 +24,7 @@ import game.gamelogic.interactions.InteractionResult;
 import game.gamelogic.Scrollable;
 import game.gamelogic.floorinteraction.AimSelector;
 import game.gamelogic.floorinteraction.DropDirectSelector;
-import game.gameobjects.ArmorSlot;
+import game.gameobjects.slots.ArmorSlot;
 import game.gameobjects.entities.PlayerEntity;
 import game.gameobjects.items.Item;
 import game.gameobjects.items.armor.Armor;
@@ -124,7 +124,7 @@ public class ItemContextMenu extends Menu{
                 .build();
             equipButton.handleComponentEvents(ComponentEventType.ACTIVATED, (event) -> {
                 if (playerEntity.getWeaponSlots().size() > 0){
-                    playerEntity.addItemToInventory(playerEntity.getWeaponSlots().get(0).setEquippedWeapon((Weapon)item));
+                    playerEntity.addItemToInventory(playerEntity.getWeaponSlots().get(0).setItem((Weapon)item));
                     playerEntity.removeItemFromInventory(item);
                 }
                 Display.revertMenu();
@@ -151,7 +151,7 @@ public class ItemContextMenu extends Menu{
                     .build();
                 equipButton.handleComponentEvents(ComponentEventType.ACTIVATED, (event) -> {
                     try {
-                        playerEntity.addItemToInventory(thisArmorSlot.setEquippedArmor((Armor)item));
+                        playerEntity.addItemToInventory(thisArmorSlot.setItem((Armor)item));
                         playerEntity.removeItemFromInventory(item);
                         Display.revertMenu();
                     } catch (Exception e) {

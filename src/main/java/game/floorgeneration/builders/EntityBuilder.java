@@ -4,12 +4,12 @@ import game.gamelogic.Armed;
 import game.gamelogic.Armored;
 import game.gamelogic.HasInventory;
 import game.gamelogic.Levelable;
-import game.gameobjects.ArmorSlot;
-import game.gameobjects.WeaponSlot;
+import game.gameobjects.slots.ArmorSlot;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.items.Item;
 import game.gameobjects.items.armor.Armor;
 import game.gameobjects.items.weapons.Weapon;
+import game.gameobjects.slots.WeaponSlot;
 import game.gameobjects.statuses.Status;
 
 public class EntityBuilder extends Builder<Entity>{
@@ -28,7 +28,7 @@ public class EntityBuilder extends Builder<Entity>{
             for (Armor armor : armors) {
                 for (ArmorSlot armorSlot : armoredEntity.getArmorSlots()) {
                     try {
-                        armorSlot.setEquippedArmor(armor);
+                        armorSlot.setItem(armor);
                         continue outer;
                     } catch (Exception e) {
 
@@ -44,10 +44,10 @@ public class EntityBuilder extends Builder<Entity>{
             outer:
             for (Armor armor : armors) {
                 for (ArmorSlot armorSlot : armoredEntity.getArmorSlots()) {
-                    Armor oldArmor = armorSlot.getEquippedArmor();
+                    Armor oldArmor = armorSlot.getItem();
                     if (oldArmor == null){
                         try {
-                            armorSlot.setEquippedArmor(armor);
+                            armorSlot.setItem(armor);
                             continue outer;
                         } catch (Exception e) {
 
@@ -64,7 +64,7 @@ public class EntityBuilder extends Builder<Entity>{
             outer:
             for (Weapon weapon : weapons) {
                 for (WeaponSlot weaponSlot : armedEntity.getWeaponSlots()) {
-                    weaponSlot.setEquippedWeapon(weapon);
+                    weaponSlot.setItem(weapon);
                     continue outer;
                 }
             }
@@ -77,9 +77,9 @@ public class EntityBuilder extends Builder<Entity>{
             outer:
             for (Weapon weapon : weapons) {
                 for (WeaponSlot weaponSlot : armedEntity.getWeaponSlots()) {
-                    Weapon oldWeapon = weaponSlot.getEquippedWeapon();
+                    Weapon oldWeapon = weaponSlot.getItem();
                     if (oldWeapon == null){
-                        weaponSlot.setEquippedWeapon(weapon);
+                        weaponSlot.setItem(weapon);
                         continue outer;
                     }
                 }

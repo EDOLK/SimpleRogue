@@ -27,16 +27,16 @@ import game.gamelogic.abilities.HasPassives;
 import game.gamelogic.abilities.Passive;
 import game.gamelogic.skilltrees.SkillTree;
 import game.gamelogic.skilltrees.UsesSkillTrees;
-import game.gameobjects.ArmorSlot;
 import game.gameobjects.DamageType;
-import game.gameobjects.ItemSlot;
 import game.gameobjects.Space;
-import game.gameobjects.WeaponSlot;
 import game.gameobjects.items.Item;
 import game.gameobjects.items.Torch;
 import game.gameobjects.items.armor.Armor;
 import game.gameobjects.items.armor.ArmorType;
 import game.gameobjects.items.weapons.Weapon;
+import game.gameobjects.slots.ArmorSlot;
+import game.gameobjects.slots.ItemSlot;
+import game.gameobjects.slots.WeaponSlot;
 
 public class PlayerEntity extends Entity implements Armored, Armed, Levelable, Experiential, HasInventory, HasOffHand, HasAbilities, HasDodge, HasAttributes, HasSkills, UsesSkillTrees, HasPassives{
 
@@ -94,8 +94,8 @@ public class PlayerEntity extends Entity implements Armored, Armed, Levelable, E
 
         WeaponSlot e = new WeaponSlot("Primary Weapon", 1.0);
         weaponSlots.add(e);
-        e.setEquippedWeapon(club);
-        offHandSlot.setEquippedItem(new Torch(true));
+        e.setItem(club);
+        offHandSlot.setItem(new Torch(true));
 
         this.enduranceHPMult = 3;
 
@@ -153,7 +153,7 @@ public class PlayerEntity extends Entity implements Armored, Armed, Levelable, E
 
     public void setArmorBySlot(ArmorSlot slot, Armor newArmor){
         try {
-            addItemToInventory(slot.setEquippedArmor(newArmor));
+            addItemToInventory(slot.setItem(newArmor));
         } catch (Exception e){
             Display.log(e.getMessage());
         }
