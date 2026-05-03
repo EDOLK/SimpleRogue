@@ -15,10 +15,10 @@ import game.gamelogic.Levelable;
 import game.gamelogic.abilities.Ability;
 import game.gamelogic.behavior.Behavable;
 import game.gameobjects.floors.Floor;
-import game.gameobjects.ItemSlot;
 import game.gameobjects.Space;
 import game.gameobjects.entities.PlayerEntity;
 import game.gameobjects.items.Item;
+import game.gameobjects.slots.ItemSlot;
 import game.gameobjects.terrains.gasses.Smoke;
 
 public class SmokeBombAbility implements Ability, Levelable, Behavable{
@@ -80,7 +80,7 @@ public class SmokeBombAbility implements Ability, Levelable, Behavable{
             PlayerEntity player = f2.getPlayer();
             List<Item> inventory = player.getInventory();
             ItemSlot slot = player.getOffHandSlot();
-            if (!inventory.contains(this) && (slot.getEquippedItem() == null || slot.getEquippedItem() != this)){
+            if (!inventory.contains(this) && (slot.getItem() == null || slot.getItem() != this)){
                 amount--;
             }
         };

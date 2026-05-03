@@ -21,10 +21,10 @@ import game.gamelogic.OverridesAttack;
 import game.gamelogic.HasMemory;
 import game.gameobjects.AttackResult;
 import game.gameobjects.DamageType;
-import game.gameobjects.WeaponSlot;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.entities.PlayerEntity;
 import game.gameobjects.items.weapons.Weapon;
+import game.gameobjects.slots.WeaponSlot;
 import kotlin.Pair;
 
 public class Attack {
@@ -223,8 +223,8 @@ public class Attack {
         
         if (attacker instanceof Armed armedAttacker){
             for (WeaponSlot weaponSlot : armedAttacker.getWeaponSlots()) {
-                if (weaponSlot.getEquippedWeapon() != null && Math.random() < weaponSlot.getChance()){
-                    attackerActiveWeapons.add(weaponSlot.getEquippedWeapon());
+                if (weaponSlot.getItem() != null && Math.random() < weaponSlot.getChance()){
+                    attackerActiveWeapons.add(weaponSlot.getItem());
                 }
             }
         }

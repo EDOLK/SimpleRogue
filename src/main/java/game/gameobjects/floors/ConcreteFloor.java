@@ -22,13 +22,13 @@ import game.gamelogic.abilities.HasAbilities;
 import game.gamelogic.abilities.HasPassives;
 import game.gamelogic.abilities.Passive;
 import game.gamelogic.behavior.Behavable;
-import game.gameobjects.ItemSlot;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.entities.PlayerEntity;
 import game.gameobjects.items.Item;
 import game.gameobjects.items.armor.Armor;
 import game.gameobjects.items.weapons.Weapon;
+import game.gameobjects.slots.ItemSlot;
 import game.gameobjects.statuses.Status;
 import game.gameobjects.terrains.Terrain;
 
@@ -180,7 +180,7 @@ public class ConcreteFloor implements Floor{
 
                     if (entity instanceof HasOffHand hasOffHand){
                         ItemSlot slot = hasOffHand.getOffHandSlot();
-                        if (slot.getEquippedItem() != null && slot.getEquippedItem() instanceof Behavable behavableItem){
+                        if (slot.getItem() != null && slot.getItem() instanceof Behavable behavableItem){
                             behavables.add(behavableItem);
                         }
                     }
@@ -299,8 +299,8 @@ public class ConcreteFloor implements Floor{
                     strongestLightSource = calculateLightSource(strongestLightSource, armor);
                 }
             }
-            if (occupant instanceof HasOffHand hasOffHand && hasOffHand.getOffHandSlot().getEquippedItem() != null){
-                strongestLightSource = calculateLightSource(strongestLightSource, hasOffHand.getOffHandSlot().getEquippedItem());
+            if (occupant instanceof HasOffHand hasOffHand && hasOffHand.getOffHandSlot().getItem() != null){
+                strongestLightSource = calculateLightSource(strongestLightSource, hasOffHand.getOffHandSlot().getItem());
             }
         }
 

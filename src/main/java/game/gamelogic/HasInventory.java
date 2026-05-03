@@ -43,7 +43,7 @@ public interface HasInventory {
             w += armed.getWeapons().stream().mapToInt(i -> i.getWeight()).sum();
         }
         if (this instanceof HasOffHand hasOffHand) {
-            w += hasOffHand.getOffHandSlot().getEquippedItem() != null ? hasOffHand.getOffHandSlot().getEquippedItem().getWeight() : 0;
+            w += hasOffHand.getOffHandSlot().getItem() != null ? hasOffHand.getOffHandSlot().getItem().getWeight() : 0;
         }
         return w;
     }
