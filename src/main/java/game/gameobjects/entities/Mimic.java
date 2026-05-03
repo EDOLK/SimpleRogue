@@ -33,7 +33,7 @@ public class Mimic extends Animal implements DropsXP, HasInventory, HasInteracti
 
     @Override
     public List<Status> getStatuses() {
-        if (!activated) {
+        if (!activated && disguise != null) {
             return Stream.concat(
                 super.getStatuses().stream(),
                 disguise.getStatuses().stream().map(s -> new PseudoStatus(s))
