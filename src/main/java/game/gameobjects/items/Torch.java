@@ -13,6 +13,7 @@ import game.gamelogic.SelfAware;
 import game.gamelogic.behavior.Behavable;
 import game.gamelogic.combat.Attack;
 import game.gamelogic.combat.AttackModifier;
+import game.gamelogic.combat.PostAttackHook;
 import game.gamelogic.floorinteraction.SelectionResult;
 import game.gamelogic.floorinteraction.SimpleSelector;
 import game.gamelogic.interactions.HasInteractions;
@@ -170,9 +171,9 @@ public class Torch extends Weapon implements Flammable, LightSource, SelfAware, 
     @Override
     public void modifyAttack(Attack attack) {
         attack.attachPostAttackHook((attackResult) -> {
-            if (attackResult.weapon() == this && attackResult.hit() && attackResult.crit() && lit)
+            if (attackResult.hit() && lit && attackResult.weapon() == this)
                 attackResult.defender().addStatus(new Burning());
-        });
+        }, PostAttackHook.Condition.ON_CRIT);
     }
 
     private class KindleSelector implements SimpleSelector {

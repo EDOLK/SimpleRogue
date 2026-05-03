@@ -19,6 +19,7 @@ import game.gamelogic.HasInventory;
 import game.gamelogic.HasResistances;
 import game.gamelogic.HasVulnerabilities;
 import game.gamelogic.combat.Attack;
+import game.gamelogic.combat.PostAttackHook;
 import game.gamelogic.resistances.PercentageResistance;
 import game.gamelogic.resistances.Resistance;
 import game.gamelogic.vulnerabilities.PercentageVulnerability;
@@ -138,19 +139,17 @@ public class Slime extends Animal implements DropsXP, HasDodge, HasResistances, 
     @Override
     public void modifyAttack(Attack attack) {
         attack.attachPostAttackHook((attackResult) -> {
-            if (attackResult.defender() == this && !this.isAlive()) {
-                if (attackResult.damageType() == DamageType.FIRE) {
-                    getSpace().setOccupant(new EvaporatedSlime());
-                } else {
-                    getSpace().addTerrain(new SlimeLiquid(1));
-                    Space.getAdjacentSpaces(getSpace()).forEach((s) -> {
-                        if (Math.random() < .50) {
-                            s.addTerrain(new SlimeLiquid(1));
-                        }
-                    });
-                }
+            if (attackResult.damageType() == DamageType.FIRE) {
+                getSpace().setOccupant(new EvaporatedSlime());
+            } else {
+                getSpace().addTerrain(new SlimeLiquid(1));
+                Space.getAdjacentSpaces(getSpace()).forEach((s) -> {
+                    if (Math.random() < .50) {
+                        s.addTerrain(new SlimeLiquid(1));
+                    }
+                });
             }
-        });
+        }, PostAttackHook.Condition.ON_DEATH);
         super.modifyAttack(attack);
     }
 

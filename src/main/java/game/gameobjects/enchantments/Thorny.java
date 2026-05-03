@@ -4,9 +4,9 @@ import static game.App.randomNumber;
 
 import org.hexworks.zircon.api.data.Tile;
 
-import game.gamelogic.Armored;
 import game.gamelogic.combat.Attack;
 import game.gamelogic.combat.AttackModifier;
+import game.gamelogic.combat.PostAttackHook;
 import game.gameobjects.statuses.Bleeding;
 
 public class Thorny extends ArmorEnchantment implements AttackModifier {
@@ -18,10 +18,10 @@ public class Thorny extends ArmorEnchantment implements AttackModifier {
     @Override
     public void modifyAttack(Attack attack) {
         attack.attachPostAttackHook((ar) -> {
-            if (ar.defender() instanceof Armored armored && armored.getArmor().stream().anyMatch(a -> a.getEnchantment() == this) && ar.hit() && randomNumber(1, 5) == 5 && ar.damageDelt() != 0) {
+            if (randomNumber(1, 5) == 5 && ar.damageDelt() != 0) {
                 ar.attacker().addStatus(new Bleeding((int)(ar.damageDelt()*0.5),1,3));
             }
-        });
+        }, PostAttackHook.Condition.ON_HITTED);
     }
 
     @Override

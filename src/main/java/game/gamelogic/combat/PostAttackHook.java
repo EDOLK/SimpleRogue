@@ -59,7 +59,7 @@ public interface PostAttackHook {
         public final Entity target;
         public final Condition condition;
 
-        private Type(Entity target, Condition condition) {
+        public Type(Entity target, Condition condition) {
             this.target = target;
             this.condition = condition;
         }

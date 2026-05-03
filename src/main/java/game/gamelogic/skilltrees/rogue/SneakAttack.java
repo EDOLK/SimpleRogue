@@ -9,6 +9,8 @@ import game.gamelogic.combat.Attack;
 import game.gamelogic.combat.AttackModifier;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.entities.PlayerEntity;
+import game.gamelogic.combat.PostAttackHook;
+import game.gamelogic.combat.PostAttackHook.Condition;
 
 public class SneakAttack implements Passive, AttackModifier, Levelable{
 
@@ -59,7 +61,7 @@ public class SneakAttack implements Passive, AttackModifier, Levelable{
             attack.attachPostAttackHook((attackResult) -> {
                 if (attack.getAttacker() instanceof PlayerEntity)
                     Display.logHeader("Sneak Attack!");
-            });
+            }, Condition.ON_HIT);
         }
     }
 

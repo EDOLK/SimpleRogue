@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 import org.hexworks.zircon.api.color.TileColor;
 import org.hexworks.zircon.api.data.Tile;
 
-import game.gamelogic.Armored;
 import game.gamelogic.behavior.Behavable;
 import game.gamelogic.combat.Attack;
 import game.gamelogic.combat.AttackModifier;
@@ -83,12 +82,12 @@ public class Clotting extends ArmorEnchantment implements AttackModifier {
     @Override
     public void modifyAttack(Attack attack) {
         attack.attachPostAttackHook((ar) -> {
-            if (ar.defender() instanceof Armored armored && armored.getArmor().stream().anyMatch(a -> a.getEnchantment() == this) && ar.damageDelt() != 0 && randomNumber(1, 5) == 1){
+            if (ar.damageDelt() != 0 && randomNumber(1, 5) == 1) {
                 List<Space> adjacentSpaces = Space.getAdjacentSpaces(ar.defender().getSpace()).stream().filter((s) -> !s.isOccupied()).collect(Collectors.toList());
                 if (adjacentSpaces.size() != 0)
                     adjacentSpaces.get(randomNumber(0,adjacentSpaces.size()-1)).setOccupant(new BloodPolyp(ar.damageDelt(), ar.defender()));
             }
-        });
+        }, PostAttackHook.Condition.ON_HITTED);
     }
 
     @Override

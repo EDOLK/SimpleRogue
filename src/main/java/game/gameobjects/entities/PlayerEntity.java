@@ -19,6 +19,7 @@ import game.gamelogic.HasInventory;
 import game.gamelogic.HasOffHand;
 import game.gamelogic.HasSkills;
 import game.gamelogic.Levelable;
+import game.gamelogic.LightSource;
 import game.gamelogic.Skill;
 import game.gamelogic.SkillMap;
 import game.gamelogic.abilities.Ability;
@@ -36,6 +37,7 @@ import game.gameobjects.items.armor.ArmorType;
 import game.gameobjects.items.weapons.Weapon;
 import game.gameobjects.slots.ArmorSlot;
 import game.gameobjects.slots.ItemSlot;
+import game.gameobjects.slots.PredicateWrapper;
 import game.gameobjects.slots.WeaponSlot;
 
 public class PlayerEntity extends Entity implements Armored, Armed, Levelable, Experiential, HasInventory, HasOffHand, HasAbilities, HasDodge, HasAttributes, HasSkills, UsesSkillTrees, HasPassives{
@@ -48,7 +50,10 @@ public class PlayerEntity extends Entity implements Armored, Armed, Levelable, E
     private List<Item> inventory = new ArrayList<>();
     private List<Ability> abilities = new ArrayList<>();
     private List<Passive> passives = new ArrayList<>();
-    private ItemSlot offHandSlot = new ItemSlot("Offhand");
+    private ItemSlot offHandSlot = new PredicateWrapper(
+        new ItemSlot("Offhand"),
+        (item) -> item instanceof LightSource
+    );
     private int level = 1;
     private int XP = 0;
     private int XPToNextLevel = 15;

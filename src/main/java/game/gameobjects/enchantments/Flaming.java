@@ -8,6 +8,7 @@ import game.gamelogic.combat.Attack;
 import game.gamelogic.combat.AttackModifier;
 import game.gameobjects.statuses.Burning;
 import game.gameobjects.terrains.Fire;
+import game.gamelogic.combat.*;
 
 public class Flaming extends WeaponEnchantment implements AttackModifier{
     
@@ -33,9 +34,9 @@ public class Flaming extends WeaponEnchantment implements AttackModifier{
     @Override
     public void modifyAttack(Attack attack) {
         attack.attachPostAttackHook((attackResult) -> {
-            if (attack.getWeapon().getEnchantment() == this && attackResult.hit() && randomNumber(1, 4) == 4)
+            if (randomNumber(1, 4) == 4)
                 attackResult.defender().addStatus(new Burning());
-        });
+        }, PostAttackHook.Condition.ON_HIT);
     }
     
 }

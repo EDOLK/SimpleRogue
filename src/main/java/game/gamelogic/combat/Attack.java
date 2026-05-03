@@ -1,6 +1,7 @@
 package game.gamelogic.combat;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +9,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.PriorityQueue;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import game.App;
@@ -40,6 +42,7 @@ public class Attack {
     private int roll;
     private int dodge;
     private boolean sneak;
+    private Entity currentModder;
 
     private Map<PostAttackHook, PostAttackHook.Type> postAttackHookMap = new LinkedHashMap<>();
     private PriorityQueue<Pair<DodgeModifier, Integer>> dodgeModifierQueue = new PriorityQueue<>((p1,p2) -> p1.getSecond() - p2.getSecond());
@@ -49,11 +52,12 @@ public class Attack {
     public static final int BASE_PRIORITY = 0;
     public static final int CRIT_PRIORITY = 10;
 
-    public void attachPostAttackHook(PostAttackHook hook){
-        attachPostAttackHook(hook, PostAttackHook.generic());
-    }
     public void attachPostAttackHook(PostAttackHook hook, PostAttackHook.Type type){
         postAttackHookMap.put(hook, type);
+    }
+
+    public void attachPostAttackHook(PostAttackHook hook, PostAttackHook.Condition condition){
+        attachPostAttackHook(hook, new PostAttackHook.Type(currentModder, condition));
     }
 
     public void attachDodgeModifier(DodgeModifier mod, int priority){
@@ -115,7 +119,12 @@ public class Attack {
         
         int damageDelt = 0;
         
-        getAttackModifiers(attacker, defender, weapon).forEach(am -> am.modifyAttack(this));
+        for (Entry<Entity, List<AttackModifier>> entry : getAttackModifierMap(attacker, defender, weapon).entrySet()) {
+            currentModder = entry.getKey();
+            entry.getValue().forEach((am) -> am.modifyAttack(this));
+        }
+
+        currentModder = null;
 
         while (!accuracyModifierQueue.isEmpty()) {
             modifiedRoll = accuracyModifierQueue.poll().getFirst().modifyAccuracy(modifiedRoll);
@@ -278,13 +287,21 @@ public class Attack {
         return new Attack(attacker, defender, attackerWeapon).execute();
     }
 
-    private static Stream<AttackModifier> getAttackModifiers(Entity attacker, Entity defender, Weapon weapon){
-        Function<Object, Optional<AttackModifier>> function = (obj) -> obj instanceof AttackModifier attackModifier ? Optional.of(attackModifier) : Optional.empty();
-        return App.concatStreams(
-            App.recursiveCheck(attacker, CheckConditions.all().withInventory(false).withArmedWeapons(false).withUnarmedWeapon(false), function).stream(),
-            App.recursiveCheck(weapon, CheckConditions.all(), function).stream(),
-            App.recursiveCheck(defender, CheckConditions.all().withInventory(false), function).stream()
+    private static Map<Entity, List<AttackModifier>> getAttackModifierMap(Entity attacker, Entity defender, Weapon weapon){
+        Function<Object, Optional<AttackModifier>> function = (obj) -> Optional.ofNullable(obj instanceof AttackModifier am ? am : null);
+        Map<Entity, List<AttackModifier>> ownerMap = new HashMap<>();
+        ownerMap.put(
+            attacker,
+            App.concatStreams(
+                App.recursiveCheck(attacker, CheckConditions.all().withInventory(false).withArmedWeapons(false).withUnarmedWeapon(false), function).stream(),
+                App.recursiveCheck(weapon, CheckConditions.all(), function).stream()
+            ).collect(Collectors.toList())
         );
+        ownerMap.put(
+            defender,
+            App.recursiveCheck(defender, CheckConditions.all().withInventory(false), function)
+        );
+        return ownerMap;
     }
 
     private void getDodge(Entity entity){
