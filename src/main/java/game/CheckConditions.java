@@ -11,7 +11,9 @@ public class CheckConditions {
     private boolean ability;
     private boolean passive;
     private boolean offHand;
-
+    private boolean items;
+    private boolean terrains;
+    private boolean occupant;
     public boolean includesOffHand() {
         return offHand;
     }
@@ -46,6 +48,18 @@ public class CheckConditions {
 
     public boolean includesPassive(){
         return passive;
+    }
+
+    public boolean includesItems() {
+        return items;
+    }
+
+    public boolean includesTerrains() {
+        return terrains;
+    }
+
+    public boolean includesOccupant() {
+        return occupant;
     }
 
     public CheckConditions withStatuses(boolean value) {
@@ -93,6 +107,21 @@ public class CheckConditions {
         return this;
     }
 
+    public CheckConditions withItems(boolean items){
+        this.items = items;
+        return this;
+    }
+
+    public CheckConditions withTerrains(boolean terrains){
+        this.terrains = terrains;
+        return this;
+    }
+
+    public CheckConditions withOccupant(boolean occupant){
+        this.occupant = occupant;
+        return this;
+    }
+
     private CheckConditions(){};
 
     private CheckConditions(boolean all){
@@ -105,6 +134,9 @@ public class CheckConditions {
         this.ability = all;
         this.passive = all;
         this.offHand = all;
+        this.items = all;
+        this.terrains = all;
+        this.occupant = all;
     }
 
     public static CheckConditions all(){
