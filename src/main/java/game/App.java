@@ -17,6 +17,7 @@ import game.gamelogic.HasOffHand;
 import game.gamelogic.abilities.HasAbilities;
 import game.gamelogic.abilities.HasAbility;
 import game.gamelogic.abilities.HasPassives;
+import game.gameobjects.Space;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.items.armor.Armor;
 import game.gameobjects.items.weapons.Weapon;
@@ -79,6 +80,19 @@ public class App
             if (optional.isPresent())
                 tList.add(optional.get());
 
+            if (object instanceof Space space) {
+
+                if (conditions.includesOccupant() && space.isOccupied())
+                    helper.accept(space.getOccupant());
+
+                if (conditions.includesItems())
+                    space.getItems().forEach(helper);
+
+                if (conditions.includesTerrains())
+                    space.getTerrains().forEach(helper);
+
+            }
+
             if (object instanceof Entity entity) {
 
                 if (conditions.includesStatuses())
@@ -101,9 +115,6 @@ public class App
 
             if (object instanceof Armored armored && conditions.includesArmors())
                 armored.getArmor().forEach(helper);
-
-            if (object instanceof HasAbilities hasAbilities && conditions.includesAbility())
-                hasAbilities.getAbilities().forEach(helper);
 
             if (object instanceof Weapon weapon && conditions.includesEnchantments())
                 helper.accept(weapon.getEnchantment());
