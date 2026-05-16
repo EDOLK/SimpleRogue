@@ -2,14 +2,23 @@ package game.gameobjects.floors;
 import static game.App.lerp;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Queue;
+import java.util.Set;
 import java.util.Stack;
 import java.util.WeakHashMap;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 import org.hexworks.zircon.api.color.TileColor;
 
+import game.App;
+import game.CheckConditions;
 import game.Line;
 import game.floorgeneration.FloorGenerator;
 import game.gamelogic.Armed;
@@ -251,118 +260,69 @@ public class ConcreteFloor implements Floor{
 
     public void doLight() {
 
-        for (int x = 0; x < spaces.length; x++) {
-            for (int y = 0; y < spaces[x].length; y++) {
-                getSpace(x, y).setLight(0.0f);
-            }
-        }
+        Map<Space, Integer> lightables = new HashMap<>();
 
         for (int x = 0; x < spaces.length; x++) {
             for (int y = 0; y < spaces[x].length; y++) {
-                doLightRevised(spaces[x][y]);
-            }
-        }
-
-        for (int x = 0; x < spaces.length; x++) {
-            for (int y = 0; y < spaces[x].length; y++) {
-                Space space = spaces[x][y];
-                if (space.getLight() > 0){
-                    doPreLineLight(space, (int)(space.getLight()*10));
+                Space space = getSpace(x, y);
+                space.setLight(0.0f);
+                int l = getLight(space);
+                if (l > 0) {
+                    lightables.put(space, l);
                 }
             }
         }
 
+        lightables.forEach(this::doFloodLight);
+
     }
 
-    public void doLightRevised(Space space){
-        LightSource strongestLightSource = null;
-        int intensity = 0;
-        for (Item item : space.getItems()) {
-            strongestLightSource = calculateLightSource(strongestLightSource, item);
+    public int getLight(Space space){
+        return App.recursiveCheck(space, CheckConditions.all().withInventory(false), (obj) -> Optional.ofNullable(obj instanceof LightSource ls ? ls : null)).stream()
+            .mapToInt(LightSource::getLightSourceIntensity)
+            .max()
+            .orElse(0);
+    }
+
+    public void doFloodLight(Space space, int intensity){
+        if (intensity <= 0) {
+            return;
         }
-        for (Terrain terrain : space.getTerrains()) {
-            strongestLightSource = calculateLightSource(strongestLightSource, terrain);
-        }
-        if (space.isOccupied()){
-            Entity occupant = space.getOccupant();
-            strongestLightSource = calculateLightSource(strongestLightSource, occupant);
-            for (Status status : occupant.getStatuses()) {
-                strongestLightSource = calculateLightSource(strongestLightSource, status);
-            }
-            if (occupant instanceof Armed armedOccupant){
-                for (Weapon weapon : armedOccupant.getWeapons()) {
-                    strongestLightSource = calculateLightSource(strongestLightSource, weapon);
+
+        Set<Space> litSpaces = new HashSet<>();
+        Queue<Space> toBeLitSpaces = new LinkedList<>();
+        List<Space> toBeAddedSpaces = new ArrayList<>();
+
+        toBeLitSpaces.add(space);
+
+        do {
+
+            while (!toBeLitSpaces.isEmpty()) {
+                Space s = toBeLitSpaces.poll();
+                int l = intensity > 10 ? 10 : intensity;
+                float light = (float)lerp(0,0,10,1,l);
+                s.setLight(Math.max(light, s.getLight()));
+                litSpaces.add(s);
+                if (!blocksLight(s)){
+                    toBeAddedSpaces.addAll(Space.getAdjacentSpaces(s));
                 }
+                intensity -= s.getTerrains().stream().mapToInt((t) -> t.getLightAbsorption()).sum();
             }
-            if (occupant instanceof Armored armoredOccupant){
-                for (Armor armor : armoredOccupant.getArmor()) {
-                    strongestLightSource = calculateLightSource(strongestLightSource, armor);
-                }
-            }
-            if (occupant instanceof HasOffHand hasOffHand && hasOffHand.getOffHandSlot().getItem() != null){
-                strongestLightSource = calculateLightSource(strongestLightSource, hasOffHand.getOffHandSlot().getItem());
-            }
-        }
 
-        intensity = strongestLightSource != null ? strongestLightSource.getLightSourceIntensity() : 0;
+            toBeAddedSpaces.stream()
+                .filter((s) -> !litSpaces.contains(s))
+                .forEach(toBeLitSpaces::add);
 
-        doPreLineLight(space, intensity);
+            toBeAddedSpaces.clear();
+
+            intensity--;
+
+        } while (!toBeLitSpaces.isEmpty() && intensity > 0);
+
     }
 
-    private void doPreLineLight(Space space, int intensity) {
-        int minYDiff = clampY(space.getY() - intensity);
-        int maxYDiff = clampY(space.getY() + intensity);
-
-        int minXDiff = clampX(space.getX() - intensity);
-        int maxXDiff = clampX(space.getX() + intensity);
-
-        for (int i = -intensity; i <= intensity; i++) {
-            Space querySpace;
-
-            querySpace = getClampedSpace(space.getX() + i, minYDiff);
-            doLineLight(space, intensity, querySpace);
-
-            querySpace = getClampedSpace(space.getX() + i, maxYDiff);
-            doLineLight(space, intensity, querySpace);
-
-            if (i == -intensity || i == intensity){
-                continue;
-            }
-
-            querySpace = getClampedSpace(minXDiff, space.getY() + i);
-            doLineLight(space, intensity, querySpace);
-
-            querySpace = getClampedSpace(maxXDiff, space.getY() + i);
-            doLineLight(space, intensity, querySpace);
-        }
-    }
-
-    private void doLineLight(Space fromSpace, int intensity, Space toSpace) {
-        List<Space> lineList = Line.getLineAsListInclusive(fromSpace, toSpace, this);
-        for (int i = 0; i < lineList.size(); i++) {
-            Space space = lineList.get(i);
-            int j = intensity - i;
-            j -= space.getTerrains().stream().mapToInt((t) -> t.getLightAbsorption()).sum();
-            j = j > 10 ? 10 : j;
-            if (j <= 0)
-                return;
-            float light = (float)lerp(0,0,10,1,j);
-            if (space.getLight() < light)
-                space.setLight(light);
-            if ((space.isOccupied() && space.getOccupant().isLightBlocker()) || space.getTerrains().stream().anyMatch((t) -> t.isLightBlocker()))
-                return;
-        }
-    }
-
-    private LightSource calculateLightSource(LightSource strongestLightSource, Object object) {
-        if (object instanceof LightSource lightSource){
-            if (strongestLightSource == null){
-                strongestLightSource = lightSource;
-            } else if (strongestLightSource.getLightSourceIntensity() < lightSource.getLightSourceIntensity()){
-                strongestLightSource = lightSource;
-            }
-        }
-        return strongestLightSource;
+    public boolean blocksLight(Space space){
+        return (space.isOccupied() && space.getOccupant().isLightBlocker()) || space.getTerrains().stream().anyMatch((t) -> t.isLightBlocker());
     }
 
 }
