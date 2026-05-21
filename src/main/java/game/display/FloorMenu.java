@@ -150,8 +150,7 @@ public final class FloorMenu extends Menu{
             return;
         }
         for (LayerHandle layerHandle : layers) {
-            Tile t = layerHandle.getTileAtOrNull(position);
-            if (t == null) {
+            if (layerHandle.getTileAtOrNull(position) == null) {
                 layerHandle.draw(tile, position);
                 return;
             }
@@ -188,12 +187,13 @@ public final class FloorMenu extends Menu{
             drawEntity(current.getOccupant(), x, y, darkness);
 
         if (Display.getMode() == Mode.GRAPHICAL){
-            int darkValue = (int)(darkness * 10);
-            Tile darknessTile = Tile.newBuilder()
-                .withName("Darkness " + darkValue)
-                .withTileset(Display.getGraphicalTileSet())
-                .buildGraphicalTile();
-            draw(darknessTile, Position.create(x, y));
+            draw(
+                Tile.newBuilder()
+                    .withName("Darkness " + (int)(darkness * 10))
+                    .withTileset(Display.getGraphicalTileSet())
+                    .buildGraphicalTile(),
+                Position.create(x, y)
+            );
         }
     }
 
@@ -201,10 +201,7 @@ public final class FloorMenu extends Menu{
         if (cursor != null){
             Space cursorSpace = cursor.getSelectedSpace();
             draw(cursor.getTile(), Position.create(cursorSpace.getX(), cursorSpace.getY()));
-            if (
-                (cursor.getSelectedSpace().getLight() > 0 && playerEntity.isWithinVision(cursorSpace)) || 
-                (playerEntity.isWithinVision(cursorSpace) && Space.manDist(playerEntity.getSpace(), cursorSpace) <= playerEntity.getNightVisionRange())
-            ) {
+            if (playerEntity.isWithinVision(cursorSpace)) {
                 cursor.collectExaminables();
                 setExamineTooltip();
             }

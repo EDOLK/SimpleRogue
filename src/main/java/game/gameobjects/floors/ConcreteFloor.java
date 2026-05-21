@@ -4,7 +4,6 @@ import static game.App.lerp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -12,14 +11,13 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.Stack;
 import java.util.WeakHashMap;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.BiConsumer;
-import java.util.stream.Collectors;
 
 import org.hexworks.zircon.api.color.TileColor;
 
 import game.App;
 import game.CheckConditions;
-import game.Line;
 import game.floorgeneration.FloorGenerator;
 import game.gamelogic.Armed;
 import game.gamelogic.Armored;
@@ -267,9 +265,8 @@ public class ConcreteFloor implements Floor{
                 Space space = getSpace(x, y);
                 space.setLight(0.0f);
                 int l = getLight(space);
-                if (l > 0) {
+                if (l > 0)
                     lightables.put(space, l);
-                }
             }
         }
 
@@ -284,18 +281,16 @@ public class ConcreteFloor implements Floor{
             .orElse(0);
     }
 
-    public void doFloodLight(Space space, int intensity){
-        if (intensity <= 0) {
-            return;
-        }
+    private void doFloodLight(Space space, int intensity){
 
         Set<Space> litSpaces = new HashSet<>();
-        Queue<Space> toBeLitSpaces = new LinkedList<>();
-        List<Space> toBeAddedSpaces = new ArrayList<>();
+        Queue<Space> toBeLitSpaces = new LinkedBlockingQueue<>();
 
         toBeLitSpaces.add(space);
 
         do {
+
+            Set<Space> toBeAddedSpaces = new HashSet<>();
 
             while (!toBeLitSpaces.isEmpty()) {
                 Space s = toBeLitSpaces.poll();
@@ -303,17 +298,14 @@ public class ConcreteFloor implements Floor{
                 float light = (float)lerp(0,0,10,1,l);
                 s.setLight(Math.max(light, s.getLight()));
                 litSpaces.add(s);
-                if (!blocksLight(s)){
-                    toBeAddedSpaces.addAll(Space.getAdjacentSpaces(s));
-                }
-                intensity -= s.getTerrains().stream().mapToInt((t) -> t.getLightAbsorption()).sum();
+                if (!blocksLight(s))
+                    toBeAddedSpaces.addAll(Space.getAdjacentSpaces(s, this));
+                intensity -= getLightAbsorption(s);
             }
 
             toBeAddedSpaces.stream()
                 .filter((s) -> !litSpaces.contains(s))
                 .forEach(toBeLitSpaces::add);
-
-            toBeAddedSpaces.clear();
 
             intensity--;
 
@@ -321,8 +313,12 @@ public class ConcreteFloor implements Floor{
 
     }
 
+    private int getLightAbsorption(Space s) {
+        return s.getTerrains().stream().mapToInt(Terrain::getLightAbsorption).sum();
+    }
+
     public boolean blocksLight(Space space){
-        return (space.isOccupied() && space.getOccupant().isLightBlocker()) || space.getTerrains().stream().anyMatch((t) -> t.isLightBlocker());
+        return (space.isOccupied() && space.getOccupant().isLightBlocker()) || space.getTerrains().stream().anyMatch(Terrain::isLightBlocker);
     }
 
 }

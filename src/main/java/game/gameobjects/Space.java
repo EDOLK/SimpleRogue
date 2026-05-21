@@ -11,6 +11,7 @@ import game.gamelogic.OverridesMovement;
 import game.gamelogic.SelfAware;
 import game.gamelogic.Triggerable;
 import game.gameobjects.entities.Entity;
+import game.gameobjects.floors.Floor;
 import game.gameobjects.items.Item;
 import game.gameobjects.terrains.Fire;
 import game.gameobjects.terrains.SpreadableTerrain;
@@ -109,7 +110,7 @@ public class Space extends DisplayableTile{
     public void setLight(float light) {
         this.light = light;
     }
-    
+
     public List<Terrain> getTerrains(){
         return List.copyOf(terrains);
     }
@@ -230,7 +231,15 @@ public class Space extends DisplayableTile{
         return getSpacesWithin(space, 1);
     }
 
+    public static List<Space> getAdjacentSpaces(Space space, Floor floor){
+        return getSpacesWithin(space, 1, floor);
+    }
+
     public static List<Space> getSpacesWithin(Space space, int offset){
+        return getSpacesWithin(space, offset, Dungeon.getCurrentFloor());
+    }
+
+    public static List<Space> getSpacesWithin(Space space, int offset, Floor floor){
         List<Space> list = new ArrayList<>();
         for (int x = -offset; x <= offset; x++) {
             for (int y = -offset; y <= offset ; y++) {
@@ -238,7 +247,7 @@ public class Space extends DisplayableTile{
                     continue;
                 }
                 try {
-                    list.add(Dungeon.getCurrentFloor().getSpace(space.getX() + x, space.getY() + y));
+                    list.add(floor.getSpace(space.getX() + x, space.getY() + y));
                 } catch (Exception e) {
 
                 }
