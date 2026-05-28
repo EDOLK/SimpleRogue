@@ -8,24 +8,23 @@ import java.util.List;
 import org.hexworks.zircon.api.color.TileColor;
 
 import game.PathConditions;
+import game.gamelogic.DamageModifier;
 import game.gamelogic.DropsXP;
+import game.gamelogic.HasDamageModifiers;
 import game.gamelogic.HasDodge;
 import game.gamelogic.HasInventory;
-import game.gamelogic.HasResistances;
 import game.gamelogic.combat.Attack;
 import game.gamelogic.combat.PostAttackHook;
 import game.gamelogic.resistances.PercentageResistance;
-import game.gamelogic.resistances.Resistance;
 import game.gameobjects.DamageType;
 import game.gameobjects.entities.Animal;
 import game.gameobjects.items.Item;
 import game.gameobjects.items.weapons.Weapon;
 import game.gameobjects.terrains.gasses.Miasma;
 
-public class Ghast extends Animal implements HasInventory, DropsXP, HasResistances, HasDodge{
+public class Ghast extends Animal implements HasInventory, DropsXP, HasDamageModifiers, HasDodge{
 
     private List<Item> inventory = new ArrayList<>();
-    private List<Resistance> resistances = new ArrayList<>();
 
     @Override
     public List<Item> getInventory() {
@@ -51,8 +50,6 @@ public class Ghast extends Animal implements HasInventory, DropsXP, HasResistanc
         claws.setDamage(2, 6);
         setUnarmedWeapon(claws);
 
-        this.resistances.add(new PercentageResistance(DamageType.SUFFICATION, 1.00));
-        this.resistances.add(new PercentageResistance(DamageType.POISON, 1.00));
     }
 
     @Override
@@ -71,11 +68,6 @@ public class Ghast extends Animal implements HasInventory, DropsXP, HasResistanc
             this.getSpace().addTerrain(new Miasma(randomNumber(1,5)));
         }
         return super.behave();
-    }
-
-    @Override
-    public List<Resistance> getResistances() {
-        return this.resistances;
     }
 
     @Override
@@ -102,6 +94,14 @@ public class Ghast extends Animal implements HasInventory, DropsXP, HasResistanc
                 }
                 return 0d;
             }
+        );
+    }
+
+    @Override
+    public List<DamageModifier> getDamageModifiers() {
+        return List.of(
+            new PercentageResistance(DamageType.SUFFICATION, 1.00),
+            new PercentageResistance(DamageType.POISON, 1.00)
         );
     }
 }

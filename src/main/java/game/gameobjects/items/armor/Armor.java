@@ -5,8 +5,9 @@ import java.util.List;
 
 import org.hexworks.zircon.api.color.TileColor;
 
+import game.gamelogic.DamageModifier;
+import game.gamelogic.HasDamageModifiers;
 import game.gamelogic.HasDodge;
-import game.gamelogic.HasResistances;
 import game.gamelogic.Levelable;
 import game.gamelogic.Upgradable;
 import game.gamelogic.Upgrader;
@@ -16,7 +17,7 @@ import game.gameobjects.items.Item;
 import game.gameobjects.items.scrolls.ScrollOfEnchantment;
 import game.gameobjects.items.scrolls.ScrollOfUpgrade;
 
-public class Armor extends Item implements HasResistances, HasDodge, Levelable, Upgradable{
+public class Armor extends Item implements HasDamageModifiers, HasDodge, Levelable, Upgradable{
 
     private ArmorType armorType;
     protected List<Resistance> resistances = new ArrayList<Resistance>();
@@ -59,11 +60,6 @@ public class Armor extends Item implements HasResistances, HasDodge, Levelable, 
     }
 
     @Override
-    public List<Resistance> getResistances() {
-        return resistances;
-    }
-
-    @Override
     public int getDodge() {
         return dodge;
     }
@@ -99,6 +95,11 @@ public class Armor extends Item implements HasResistances, HasDodge, Levelable, 
             return this.level == armor.level && this.enchantment == armor.enchantment;
         }
         return super.canStack(otherItem);
+    }
+
+    @Override
+    public List<DamageModifier> getDamageModifiers() {
+        return List.copyOf(resistances);
     }
 
 }

@@ -7,7 +7,8 @@ import org.hexworks.zircon.api.color.TileColor;
 import org.hexworks.zircon.api.data.Tile;
 
 import game.display.Display;
-import game.gamelogic.HasResistances;
+import game.gamelogic.DamageModifier;
+import game.gamelogic.HasDamageModifiers;
 import game.gamelogic.LightSource;
 import game.gamelogic.combat.Attack;
 import game.gamelogic.combat.AttackModifier;
@@ -23,7 +24,7 @@ import game.gameobjects.statuses.Status;
 import game.gameobjects.statuses.Wet;
 import game.gameobjects.terrains.Fire;
 
-public class Brazier extends Entity implements HasResistances {
+public class Brazier extends Entity implements HasDamageModifiers {
 
     private List<Resistance> resistances;
 
@@ -51,11 +52,6 @@ public class Brazier extends Entity implements HasResistances {
     @Override
     public Item getCorpse() {
         return null;
-    }
-
-    @Override
-    public List<Resistance> getResistances() {
-        return this.resistances;
     }
 
     @Override
@@ -138,6 +134,11 @@ public class Brazier extends Entity implements HasResistances {
             return false;
         }
         
+    }
+
+    @Override
+    public List<DamageModifier> getDamageModifiers() {
+        return List.copyOf(this.resistances);
     }
 
 }

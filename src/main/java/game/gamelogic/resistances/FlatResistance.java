@@ -9,7 +9,7 @@ public final class FlatResistance extends Resistance{
     private int scale;
 
     public int getFlat() {
-        return flat * (scale * getLevel());
+        return flat + (scale * getLevel());
     }
 
     public FlatResistance(DamageType type, int flat) {

@@ -2,7 +2,6 @@ package game.display;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.hexworks.zircon.api.ComponentDecorations;
 import org.hexworks.zircon.api.builder.component.ButtonBuilder;
 import org.hexworks.zircon.api.builder.component.HeaderBuilder;
@@ -24,9 +23,10 @@ import game.gamelogic.Armored;
 import game.gamelogic.DropsXP;
 import game.gamelogic.Examinable;
 import game.gamelogic.HasAccuracy;
+import game.gamelogic.HasDamageModifiers;
 import game.gamelogic.HasDodge;
-import game.gamelogic.HasResistances;
-import game.gamelogic.HasVulnerabilities;
+import game.gamelogic.resistances.Resistance;
+import game.gamelogic.vulnerabilities.Vulnerability;
 import game.gameobjects.DisplayableTile;
 import game.gameobjects.enchantments.Enchantment;
 import game.gameobjects.entities.Entity;
@@ -206,43 +206,55 @@ public class ExamineMenu extends Menu{
             infoComponents.add(equipmentButton);
             pos += 2;
         }
-        
-        if (examinable instanceof HasResistances hasResistances && !hasResistances.getResistances().isEmpty()){
 
-            Button resistancesButton = ButtonBuilder.newBuilder()
-                .withText("Resistance")
-                .withPosition(1, pos)
-                .build();
-            
-            infoWidth = compare(resistancesButton, infoWidth);
-
-            infoComponents.add(resistancesButton);
-            
-            resistancesButton.handleComponentEvents(ComponentEventType.ACTIVATED, (event) -> {
-                Display.setMenu(new ResistanceMenu(hasResistances));
-                return UIEventResponse.processed();
+        if (examinable instanceof HasDamageModifiers hasMods) {
+            List<Resistance> resistances = new ArrayList<>();
+            List<Vulnerability> vulnerabilities = new ArrayList<>();
+            hasMods.getDamageModifiers().stream().forEach((dm) -> {
+                if (dm instanceof Resistance res){
+                    resistances.add(res);
+                }
+                if (dm instanceof Vulnerability vuln){
+                    vulnerabilities.add(vuln);
+                }
             });
-            
-            pos += 2;
-        }
 
-        if (examinable instanceof HasVulnerabilities hasVulnerabilities && !hasVulnerabilities.getVulnerabilities().isEmpty()){
+            if (!resistances.isEmpty()) {
+                Button resistancesButton = ButtonBuilder.newBuilder()
+                    .withText("Resistance")
+                    .withPosition(1, pos)
+                    .build();
 
-            Button vulnerabilitiesButton = ButtonBuilder.newBuilder()
-                .withText("Vulnerability")
-                .withPosition(1, pos)
-                .build();
-            
-            infoWidth = compare(vulnerabilitiesButton, infoWidth);
+                infoWidth = compare(resistancesButton, infoWidth);
 
-            infoComponents.add(vulnerabilitiesButton);
-            
-            vulnerabilitiesButton.handleComponentEvents(ComponentEventType.ACTIVATED, (event) -> {
-                Display.setMenu(new VulnerabilityMenu(hasVulnerabilities));
-                return UIEventResponse.processed();
-            });
-            
-            pos += 2;
+                infoComponents.add(resistancesButton);
+
+                resistancesButton.handleComponentEvents(ComponentEventType.ACTIVATED, (event) -> {
+                    Display.setMenu(new ResistanceMenu(resistances));
+                    return UIEventResponse.processed();
+                });
+
+                pos += 2;
+            }
+
+            if (!vulnerabilities.isEmpty()) {
+                Button vulnerabilitiesButton = ButtonBuilder.newBuilder()
+                    .withText("Vulnerability")
+                    .withPosition(1, pos)
+                    .build();
+
+                infoWidth = compare(vulnerabilitiesButton, infoWidth);
+
+                infoComponents.add(vulnerabilitiesButton);
+
+                vulnerabilitiesButton.handleComponentEvents(ComponentEventType.ACTIVATED, (event) -> {
+                    Display.setMenu(new VulnerabilityMenu(vulnerabilities));
+                    return UIEventResponse.processed();
+                });
+
+                pos += 2;
+            }
+
         }
 
         Paragraph descriptionParagraph = ParagraphBuilder.newBuilder()

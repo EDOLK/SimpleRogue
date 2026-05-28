@@ -6,7 +6,7 @@ import static game.Dungeon.getCurrentFloor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
+import java.util.stream.Collectors;
 import org.hexworks.zircon.api.color.TileColor;
 
 import game.App;
@@ -16,14 +16,14 @@ import game.display.Display;
 import game.gamelogic.Armed;
 import game.gamelogic.Armored;
 import game.gamelogic.Attribute;
+import game.gamelogic.DamageModifier;
 import game.gamelogic.DropsXP;
 import game.gamelogic.Examinable;
 import game.gamelogic.Experiential;
+import game.gamelogic.HasDamageModifiers;
 import game.gamelogic.HasDrops;
 import game.gamelogic.HasInventory;
-import game.gamelogic.HasResistances;
 import game.gamelogic.HasStatusVulns;
-import game.gamelogic.HasVulnerabilities;
 import game.gamelogic.SelfAware;
 import game.gamelogic.combat.Attack;
 import game.gamelogic.time.ModifiesAttackTime;
@@ -431,47 +431,19 @@ public abstract class Entity extends DisplayableTile implements Examinable, Self
     }
 
     public int doResistancesAndVulns(int damage, DamageType damageType) {
-        damage = doResistances(damage, damageType);
-        damage = doVulnerabilities(damage, damageType);
-        return damage;
-    }
-    
-    public int doResistances(int damage, DamageType damageType){
-
-        for (HasResistances hasResistances : getHasResistances() ) {
-            damage = hasResistances.applyResistances(damage, damageType);
+        for (DamageModifier mod : getDamageMods()) {
+            damage = mod.calculateDamage(damage, damageType);
         }
-
         return damage;
-
     }
 
-    public List<HasResistances> getHasResistances(){
+    public List<DamageModifier> getDamageMods(){
         return App.recursiveCheck(this, getConditionsForResAndVulns(), (obj) -> {
-            if (obj instanceof HasResistances hResistances) {
-                return Optional.of(hResistances);
+            if (obj instanceof HasDamageModifiers hdm) {
+                return Optional.of(hdm);
             }
             return Optional.empty();
-        });
-    }
-
-    public int doVulnerabilities(int damage, DamageType damageType){
-
-        for (HasVulnerabilities hr : getHasVulnerabilities() ) {
-            damage = hr.applyVulnerabilities(damage, damageType);
-        }
-
-        return damage;
-
-    }
-
-    public List<HasVulnerabilities> getHasVulnerabilities(){
-        return App.recursiveCheck(this, getConditionsForResAndVulns(), (obj) -> {
-            if (obj instanceof HasVulnerabilities has) {
-                return Optional.of(has);
-            }
-            return Optional.empty();
-        });
+        }).stream().flatMap((hdm) -> hdm.getDamageModifiers().stream()).collect(Collectors.toList());
     }
 
     private CheckConditions getConditionsForResAndVulns(){

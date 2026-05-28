@@ -6,17 +6,17 @@ import java.util.List;
 
 import org.hexworks.zircon.api.color.TileColor;
 
+import game.gamelogic.DamageModifier;
 import game.gamelogic.HasAccuracy;
-import game.gamelogic.HasResistances;
+import game.gamelogic.HasDamageModifiers;
 import game.gamelogic.combat.Attack;
 import game.gamelogic.combat.PostAttackHook;
 import game.gamelogic.resistances.RangeResistance;
-import game.gamelogic.resistances.Resistance;
 import game.gameobjects.DamageType;
 import game.gameobjects.items.weapons.Weapon;
 import game.gameobjects.statuses.Bleeding;
 
-public class DireRat extends Rat implements HasResistances, HasAccuracy{
+public class DireRat extends Rat implements HasDamageModifiers, HasAccuracy{
 
     public DireRat(){
         super();
@@ -38,14 +38,6 @@ public class DireRat extends Rat implements HasResistances, HasAccuracy{
     }
 
     @Override
-    public List<Resistance> getResistances() {
-        return List.of(
-            new RangeResistance(DamageType.SLASHING, 0, 3),
-            new RangeResistance(DamageType.PIERCING, 0, 3)
-        );
-    }
-
-    @Override
     public int getAccuracy() {
         return 4;
     }
@@ -62,6 +54,14 @@ public class DireRat extends Rat implements HasResistances, HasAccuracy{
                 attackResult.defender().addStatus(new Bleeding(randomNumber(1, 5), 0, 1));
         }, PostAttackHook.onHit(this));
         super.modifyAttack(attack);
+    }
+
+    @Override
+    public List<DamageModifier> getDamageModifiers() {
+        return List.of(
+            new RangeResistance(DamageType.SLASHING, 0, 3),
+            new RangeResistance(DamageType.PIERCING, 0, 3)
+        );
     }
     
 }

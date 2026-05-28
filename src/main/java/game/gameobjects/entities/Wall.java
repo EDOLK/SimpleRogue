@@ -1,10 +1,12 @@
 package game.gameobjects.entities;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.hexworks.zircon.api.color.TileColor;
 
-import game.gamelogic.HasResistances;
+import game.gamelogic.DamageModifier;
+import game.gamelogic.HasDamageModifiers;
 import game.gamelogic.resistances.PercentageResistance;
 import game.gamelogic.resistances.Resistance;
 import game.gameobjects.DamageType;
@@ -12,7 +14,7 @@ import game.gameobjects.items.Item;
 import game.gameobjects.statuses.Mossy;
 import game.gameobjects.statuses.Status;
 
-public class Wall extends Entity implements HasResistances{
+public class Wall extends Entity implements HasDamageModifiers{
     
     private ArrayList<Resistance> resistances = new ArrayList<Resistance>();
 
@@ -78,13 +80,13 @@ public class Wall extends Entity implements HasResistances{
     }
 
     @Override
-    public ArrayList<Resistance> getResistances() {
-        return resistances;
+    protected boolean baseVulnerable(Status status) {
+        return status instanceof Mossy;
     }
 
     @Override
-    protected boolean baseVulnerable(Status status) {
-        return status instanceof Mossy;
+    public List<DamageModifier> getDamageModifiers() {
+        return List.copyOf(resistances);
     }
 
 }

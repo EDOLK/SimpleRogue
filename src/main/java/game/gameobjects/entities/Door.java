@@ -4,14 +4,14 @@ import java.util.List;
 
 import org.hexworks.zircon.api.color.TileColor;
 
+import game.gamelogic.DamageModifier;
 import game.gamelogic.Flammable;
-import game.gamelogic.HasResistances;
+import game.gamelogic.HasDamageModifiers;
 import game.gamelogic.SelfAware;
 import game.gamelogic.interactions.HasInteraction;
 import game.gamelogic.interactions.Interaction;
 import game.gamelogic.interactions.InteractionResult;
 import game.gamelogic.resistances.PercentageResistance;
-import game.gamelogic.resistances.Resistance;
 import game.gameobjects.DamageType;
 import game.gameobjects.Space;
 import game.gameobjects.items.Item;
@@ -19,7 +19,7 @@ import game.gameobjects.statuses.Burning;
 import game.gameobjects.statuses.Status;
 import game.gameobjects.terrains.OpenDoor;
 
-public class Door extends Entity implements HasResistances, HasInteraction{
+public class Door extends Entity implements HasDamageModifiers, HasInteraction{
     
     public Door(Character c){
         super(TileColor.transparent(), TileColor.create(181, 88, 45, 255), c);
@@ -118,16 +118,6 @@ public class Door extends Entity implements HasResistances, HasInteraction{
     }
 
     @Override
-    public List<Resistance> getResistances() {
-        return List.of(
-            new PercentageResistance(DamageType.FROST, 1.0),
-            new PercentageResistance(DamageType.POISON, 1.0),
-            new PercentageResistance(DamageType.BLEED, 1.0),
-            new PercentageResistance(DamageType.SUFFICATION, 1.0)
-        );
-    }
-
-    @Override
     public String getDeathMessage() {
         return "The " + getName() + " breaks.";
     }
@@ -135,6 +125,16 @@ public class Door extends Entity implements HasResistances, HasInteraction{
     @Override
     protected boolean baseVulnerable(Status status) {
         return status instanceof Burning;
+    }
+
+    @Override
+    public List<DamageModifier> getDamageModifiers() {
+        return List.of(
+            new PercentageResistance(DamageType.FROST, 1.0),
+            new PercentageResistance(DamageType.POISON, 1.0),
+            new PercentageResistance(DamageType.BLEED, 1.0),
+            new PercentageResistance(DamageType.SUFFICATION, 1.0)
+        );
     }
 
 }

@@ -7,11 +7,11 @@ import java.util.List;
 import org.hexworks.zircon.api.color.TileColor;
 
 import game.gamelogic.Consumable;
+import game.gamelogic.DamageModifier;
 import game.gamelogic.DropsXP;
 import game.gamelogic.HasDodge;
-import game.gamelogic.HasResistances;
+import game.gamelogic.HasDamageModifiers;
 import game.gamelogic.resistances.PercentageResistance;
-import game.gamelogic.resistances.Resistance;
 import game.gameobjects.DamageType;
 import game.gameobjects.items.Item;
 import game.gameobjects.items.weapons.Weapon;
@@ -19,7 +19,7 @@ import game.gameobjects.statuses.Burning;
 import game.gameobjects.statuses.Flying;
 import game.gameobjects.statuses.Status;
 
-public class EvaporatedSlime extends Animal implements HasResistances, HasDodge, DropsXP {
+public class EvaporatedSlime extends Animal implements HasDamageModifiers, HasDodge, DropsXP {
     
     public EvaporatedSlime(){
         super(TileColor.transparent(), TileColor.create(20, 230, 20, 255), '▒');
@@ -56,7 +56,7 @@ public class EvaporatedSlime extends Animal implements HasResistances, HasDodge,
     }
 
     @Override
-    public List<Resistance> getResistances() {
+    public List<DamageModifier> getDamageModifiers() {
         return List.of(
             new PercentageResistance(DamageType.FIRE, 0.50),
             new PercentageResistance(DamageType.SLASHING, 0.50),
