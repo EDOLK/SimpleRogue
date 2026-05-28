@@ -14,7 +14,9 @@ import java.util.stream.Collectors;
 import org.hexworks.zircon.api.color.TileColor;
 
 import game.PathConditions;
+import game.gamelogic.Affiliation;
 import game.gamelogic.AttributeMap;
+import game.gamelogic.HasAffiliation;
 import game.gamelogic.HasAttributes;
 import game.gamelogic.HasMemory;
 import game.gamelogic.IsDeterrent;
@@ -32,7 +34,7 @@ import game.gamelogic.passives.MemoryDetector;
 import game.gamelogic.passives.MemoryIncrementor;
 import game.gameobjects.statuses.Sleeping;
 
-public abstract class Animal extends Entity implements HasBehavior, HasAttributes, HasEnemies, HasMemory, HasPassives, AttackModifier{
+public abstract class Animal extends Entity implements HasBehavior, HasAttributes, HasEnemies, HasMemory, HasPassives, AttackModifier, HasAffiliation{
 
     private Behavior behavior;
     private AttributeMap aMap = new AttributeMap();
@@ -69,7 +71,7 @@ public abstract class Animal extends Entity implements HasBehavior, HasAttribute
 
     @Override
     public boolean isEnemy(Entity entity){
-        return entity instanceof PlayerEntity;
+        return entity instanceof HasAffiliation ha ? ha.getAffiliation() == Affiliation.FRIENDLY : false;
     }
 
     public PathConditions getConditionsToSpace(){
@@ -172,4 +174,8 @@ public abstract class Animal extends Entity implements HasBehavior, HasAttribute
         }, PostAttackHook.onHitted(this));
     }
 
+    @Override
+    public Affiliation getAffiliation(){
+        return Affiliation.HOSTILE;
+    }
 }
