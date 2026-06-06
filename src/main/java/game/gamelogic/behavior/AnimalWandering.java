@@ -7,10 +7,12 @@ import java.util.Optional;
 import game.App;
 import game.Dungeon;
 import game.Path;
+import game.display.Display;
+import game.display.animations.Animations;
+import game.display.animations.IteratorAnimation;
 import game.gameobjects.Space;
 import game.gameobjects.entities.Animal;
 import game.gameobjects.entities.Entity;
-import game.gameobjects.statuses.BeginningHunt;
 
 public class AnimalWandering extends Behavior {
 
@@ -27,8 +29,11 @@ public class AnimalWandering extends Behavior {
     public int behave() {
         Optional<? extends Behavior> hunt = checkForHunt();
         if (hunt.isPresent()) {
-            animal.addStatus(new BeginningHunt());
-            return animal.setAndBehave(hunt.get());
+            // animal.addStatus(new BeginningHunt());
+            int time = animal.setAndBehave(hunt.get());
+            IteratorAnimation animation = HuntingAnimation.create(animal, 10);
+            Animations.enqueue(animation);
+            return time;
         }
         if (path == null && !generatePath()) {
             return animal.getTimeToWait();

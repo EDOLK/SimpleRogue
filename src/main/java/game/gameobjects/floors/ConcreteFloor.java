@@ -239,7 +239,7 @@ public class ConcreteFloor implements Floor{
                 timeMap.put(behavable, Math.abs(timeToBehave));
             }
 
-            if (timeToBehave == 0){
+            if (timeToBehave == 0) {
                 timeMap.remove(behavable);
             }
 

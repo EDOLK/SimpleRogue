@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.hexworks.zircon.api.color.TileColor;
+import org.hexworks.zircon.api.data.Position;
 
 import game.Dungeon;
 import game.gamelogic.OverridesMovement;
@@ -224,6 +225,10 @@ public class Space extends DisplayableTile{
                 return false;                
             }
         }
+    }
+
+    public Position position(){
+        return Position.create(getX(), getY());
     }
     
     public static List<Space> getAdjacentSpaces(Space space){

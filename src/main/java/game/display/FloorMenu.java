@@ -39,6 +39,8 @@ import game.CheckConditions;
 import game.Dungeon;
 import game.display.Display.Mode;
 import game.display.KeyMap.Action;
+import game.display.animations.Animations;
+import game.display.animations.WaitAnimation;
 import game.gamelogic.Experiential;
 import game.gamelogic.Levelable;
 import game.gamelogic.OverridesPlayerInput;
@@ -88,6 +90,7 @@ public final class FloorMenu extends Menu{
     private Header enemyHpHeader;
     private int timer = 10;
     private Header timeText;
+    public static boolean rendering = false;
 
     public FloorMenu(){
         super();
@@ -134,10 +137,14 @@ public final class FloorMenu extends Menu{
         layers.forEach((lh) -> lh.removeLayer());
         layers.clear();
 
+        Animations.stop();
+
         for (Space space : playerEntity.getSpacesInVision(true)){
             memoryLayer.draw(Tile.empty(), Position.create(space.getX(), space.getY()));
             addToLayers(space, playerEntity);
         }
+
+        Animations.play();
 
         updatePlayerStatus(playerEntity);
         drawCursor(playerEntity);
@@ -145,20 +152,21 @@ public final class FloorMenu extends Menu{
 
     }
 
-    public void draw(Tile tile, Position position){
+    public TileReference draw(Tile tile, Position position){
         if (tile == null || tile == Tile.empty()) {
-            return;
+            return null;
         }
         for (LayerHandle layerHandle : layers) {
             Tile t = layerHandle.getTileAtOrNull(position);
             if (t == null) {
                 layerHandle.draw(tile, position);
-                return;
+                return new TileReference(position, layerHandle);
             }
         }
         LayerHandle layer = screen.addLayer(Layer.newBuilder().withSize(currentFloor.getSizeX(), currentFloor.getSizeY()).build());
         layer.draw(tile, position);
         layers.add(layer);
+        return new TileReference(position, layer);
     }
 
     public void toggleMemory(){
@@ -614,6 +622,7 @@ public final class FloorMenu extends Menu{
                 break;
             case CENTER: //wait
                 addToLog("waiting...");
+                Animations.enqueue(new WaitAnimation(player));
                 time = player.getTimeToWait();
                 break;
             case INTERACT_TOGGLE: //Interact

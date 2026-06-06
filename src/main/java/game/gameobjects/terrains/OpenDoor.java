@@ -7,15 +7,17 @@ import org.hexworks.zircon.api.color.TileColor;
 import game.display.Display;
 import game.gamelogic.Examinable;
 import game.gamelogic.Flammable;
+import game.gamelogic.SelfAware;
 import game.gamelogic.interactions.HasInteraction;
 import game.gamelogic.interactions.Interaction;
 import game.gamelogic.interactions.InteractionResult;
 import game.gameobjects.DamageType;
+import game.gameobjects.Space;
 import game.gameobjects.entities.Door;
 import game.gameobjects.entities.Entity;
 import game.gameobjects.statuses.Burning;
 
-public class OpenDoor extends Terrain implements Examinable, Flammable, HasInteraction{
+public class OpenDoor extends Terrain implements Examinable, Flammable, HasInteraction, SelfAware{
     
     private Door door;
 
@@ -71,6 +73,16 @@ public class OpenDoor extends Terrain implements Examinable, Flammable, HasInter
             door.getSpace().removeTerrain(this);
         }
         door.dealDamage(damage, DamageType.FIRE);
+    }
+
+    @Override
+    public Space getSpace() {
+        return door.getSpace();
+    }
+
+    @Override
+    public void setSpace(Space space) {
+        door.setSpace(space);
     }
 
 }

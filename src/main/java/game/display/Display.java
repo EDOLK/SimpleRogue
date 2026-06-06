@@ -31,6 +31,7 @@ import org.hexworks.zircon.api.screen.Screen;
 import org.hexworks.zircon.api.uievent.ComponentEventType;
 import org.hexworks.zircon.api.uievent.UIEventResponse;
 
+import game.display.animations.Animation;
 import game.gamelogic.HasName;
 import game.gameobjects.Space;
 import kotlin.Pair;
@@ -48,6 +49,8 @@ public class Display {
     private static Mode mode = Mode.ASCII;
 
     private static KeyMap keyMap = new KeyMap();
+
+    public static boolean rendering = false;
     
     public static KeyMap getKeyMap() {
         return keyMap;
