@@ -50,8 +50,6 @@ public class Display {
 
     private static KeyMap keyMap = new KeyMap();
 
-    public static boolean rendering = false;
-    
     public static KeyMap getKeyMap() {
         return keyMap;
     }

@@ -90,7 +90,6 @@ public final class FloorMenu extends Menu{
     private Header enemyHpHeader;
     private int timer = 10;
     private Header timeText;
-    public static boolean rendering = false;
 
     public FloorMenu(){
         super();
@@ -137,7 +136,7 @@ public final class FloorMenu extends Menu{
         layers.forEach((lh) -> lh.removeLayer());
         layers.clear();
 
-        Animations.stop();
+        // Animations.stop();
 
         for (Space space : playerEntity.getSpacesInVision(true)){
             memoryLayer.draw(Tile.empty(), Position.create(space.getX(), space.getY()));

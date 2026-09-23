@@ -25,6 +25,7 @@ public abstract class Animation implements Runnable {
                 Thread.sleep(Math.round((1f/fps) * 1000));
             } catch (InterruptedException e) {
                 frame.clear();
+                Thread.currentThread().interrupt();
                 break;
             }
             frame.clear();
